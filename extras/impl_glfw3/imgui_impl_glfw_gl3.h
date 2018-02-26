@@ -37,7 +37,7 @@ struct ImGui_ImplGlfwGL3{
 		//if it is first time save default context
 		if (pGImDefaultContext == NULL)
 			pGImDefaultContext = ImGui::GetCurrentContext();
-		ctx = ImGui::CreateContext(NULL,NULL);
+		ctx = ImGui::CreateContext();
 		g_Time = 0.0f;
 		g_MousePressed[0] = false;g_MousePressed[1] = false;g_MousePressed[2] = false;
 		g_MouseWheel = 0.0f;
