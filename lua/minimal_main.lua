@@ -10,7 +10,8 @@ end)
 lj_glfw.init()
 local window = lj_glfw.Window(700,500)
 window:makeContextCurrent()	
-	
+
+--ig.CreateContext(nil)	
 local ig_gl3 = ig.ImplGlfwGL3()
 ig_gl3:Init(window, true)
 
@@ -20,6 +21,8 @@ while not window:shouldClose() do
 	lj_glfw.pollEvents()
 	
 	gl.glClear(glc.GL_COLOR_BUFFER_BIT)
+	
+	print(ig.GetIO().MousePosPrev)
 	
 	ig_gl3:NewFrame()
 	
@@ -35,5 +38,6 @@ end
 
 ig_gl3:destroy()
 window:destroy()
-ig.Shutdown();
+--ig.DestroyContext(nil)
+--ig.Shutdown();
 lj_glfw.terminate()

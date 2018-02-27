@@ -47,9 +47,11 @@ struct Glyph
 };
 typedef struct Glyph ImFontGlyph;
 
+typedef int ImFontAtlasFlags; 
 struct ImFontAtlas 
 {
 //ImTextureID                 TexID;              // User data to refer to the texture once it has been uploaded to user's graphic systems. It is passed back to you during rendering via the ImDrawCmd structure.
+	ImFontAtlasFlags Flags;
 	void* TexID;
     int                         TexDesiredWidth;    // Texture width desired by user before Build(). Must be a power-of-two. If have many glyphs your graphics API have texture size restrictions you may want to increase texture width to decrease height.
     int                         TexGlyphPadding;    // Padding between glyphs within texture in pixels. Defaults to 1.
@@ -60,6 +62,7 @@ struct ImFontAtlas
     unsigned int*               TexPixelsRGBA32;    // 4 component per pixel, each component is unsigned 8-bit. Total size = TexWidth * TexHeight * 4
     int                         TexWidth;           // Texture width calculated during Build().
     int                         TexHeight;          // Texture height calculated during Build().
+	ImVec2						TexUvScale;
 	ImVec2                      TexUvWhitePixel;    // Texture coordinates to a white pixel
     ImVector/*<ImFont*> */          Fonts;              // Hold all the fonts returned by AddFont*. Fonts[0] is the default font upon calling ImGui::NewFrame(), use ImGui::PushFont()/PopFont() to change the current font.
 	ImVector/*<CustomRect> */       CustomRects;        // Rectangles for packing custom texture data into the atlas.

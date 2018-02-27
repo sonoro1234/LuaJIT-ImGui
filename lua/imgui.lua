@@ -6,7 +6,7 @@ local cdecl = [[
 	struct ImVec2;
 	struct ImVec4;
 	struct ImGuiTextEditCallbackData;
-	struct ImGuiSizeConstraintCallbackData;
+	struct ImGuiSizeCallbackData;
 	struct ImDrawList;
 	struct ImGuiStorage;
 	struct ImFont;
@@ -34,13 +34,14 @@ local cdecl = [[
 	typedef int ImGuiSelectableFlags;
 	typedef int ImGuiTreeNodeFlags;
 	typedef int ImGuiHoveredFlags;
+	typedef int ImGuiNavFlags;
 	typedef int ImGuiComboFlags;
 	typedef int ImGuiDragDropFlags;
 	typedef int ImGuiFocusedFlags;
 	typedef int ImDrawCornerFlags;
 	typedef int ImDrawListFlags;
 	typedef int (*ImGuiTextEditCallback)(struct ImGuiTextEditCallbackData *data);
-	typedef void (*ImGuiSizeConstraintCallback)(struct ImGuiSizeConstraintCallbackData *data);
+	typedef void (*ImGuiSizeCallback)(struct ImGuiSizeCallbackData *data);
 	typedef void (*ImDrawCallback)(const struct ImDrawList *parent_list, const struct ImDrawCmd *cmd);
 	typedef unsigned long long ImU64;
 	struct ImVec2
@@ -297,6 +298,39 @@ local cdecl = [[
 	ImDrawListFlags_AntiAliasedLines = 1 << 0,
 	ImDrawListFlags_AntiAliasedFill = 1 << 1
 	};
+	enum ImGuiNavInput_
+	{
+	ImGuiNavInput_Activate,
+	ImGuiNavInput_Cancel,
+	ImGuiNavInput_Input,
+	ImGuiNavInput_Menu,
+	ImGuiNavInput_DpadLeft,
+	ImGuiNavInput_DpadRight,
+	ImGuiNavInput_DpadUp,
+	ImGuiNavInput_DpadDown,
+	ImGuiNavInput_LStickLeft,
+	ImGuiNavInput_LStickRight,
+	ImGuiNavInput_LStickUp,
+	ImGuiNavInput_LStickDown,
+	ImGuiNavInput_FocusPrev,
+	ImGuiNavInput_FocusNext,
+	ImGuiNavInput_TweakSlow,
+	ImGuiNavInput_TweakFast,
+	ImGuiNavInput_KeyMenu_,
+	ImGuiNavInput_KeyLeft_,
+	ImGuiNavInput_KeyRight_,
+	ImGuiNavInput_KeyUp_,
+	ImGuiNavInput_KeyDown_,
+	ImGuiNavInput_COUNT,
+	ImGuiNavInput_InternalStart_ = ImGuiNavInput_KeyMenu_
+	};
+	enum ImGuiNavFlags_
+	{
+	ImGuiNavFlags_EnableKeyboard = 1 << 0,
+	ImGuiNavFlags_EnableGamepad = 1 << 1,
+	ImGuiNavFlags_MoveMouse = 1 << 2,
+	ImGuiNavFlags_NoCaptureKeyboard = 1 << 3
+	};
 	struct ImGuiStyle
 	{
 	float Alpha;
@@ -333,6 +367,7 @@ local cdecl = [[
 	{
 	struct ImVec2 DisplaySize;
 	float DeltaTime;
+	ImGuiNavFlags NavFlags;
 	float IniSavingRate;
 	const char *IniFilename;
 	const char *LogFilename;
@@ -352,17 +387,16 @@ local cdecl = [[
 	struct ImVec2 DisplayVisibleMax;
 	_Bool OptMacOSXBehaviors;
 	_Bool OptCursorBlink;
-	void (*RenderDrawListsFn)(struct ImDrawData *data);
 	const char *(*GetClipboardTextFn)(void *user_data);
 	void (*SetClipboardTextFn)(void *user_data, const char *text);
 	void *ClipboardUserData;
-	void *(*MemAllocFn)(size_t sz);
-	void (*MemFreeFn)(void *ptr);
 	void (*ImeSetInputScreenPosFn)(int x, int y);
 	void *ImeWindowHandle;
+	void (*RenderDrawListsFn)(ImDrawData* data);
 	struct ImVec2 MousePos;
 	_Bool MouseDown[5];
 	float MouseWheel;
+	float MouseWheelH;
 	_Bool MouseDrawCursor;
 	_Bool KeyCtrl;
 	_Bool KeyShift;
@@ -370,19 +404,22 @@ local cdecl = [[
 	_Bool KeySuper;
 	_Bool KeysDown[512];
 	ImWchar InputCharacters[16 + 1];
+	float NavInputs[ImGuiNavInput_COUNT];
 	_Bool WantCaptureMouse;
 	_Bool WantCaptureKeyboard;
 	_Bool WantTextInput;
+	_Bool WantMoveMouse;
+	_Bool NavActive;
+	_Bool NavVisible;
 	float Framerate;
-	int MetricsAllocs;
 	int MetricsRenderVertices;
 	int MetricsRenderIndices;
 	int MetricsActiveWindows;
 	struct ImVec2 MouseDelta;
 	struct ImVec2 MousePosPrev;
-	_Bool MouseClicked[5];
 	struct ImVec2 MouseClickedPos[5];
 	float MouseClickedTime[5];
+	_Bool MouseClicked[5];
 	_Bool MouseDoubleClicked[5];
 	_Bool MouseReleased[5];
 	_Bool MouseDownOwned[5];
@@ -392,6 +429,8 @@ local cdecl = [[
 	float MouseDragMaxDistanceSqr[5];
 	float KeysDownDuration[512];
 	float KeysDownDurationPrev[512];
+	float NavInputsDownDuration[ImGuiNavInput_COUNT];
+	float NavInputsDownDurationPrev[ImGuiNavInput_COUNT];
 	};
 	struct ImGuiTextEditCallbackData
 	{
@@ -409,7 +448,7 @@ local cdecl = [[
 	int SelectionStart;
 	int SelectionEnd;
 	};
-	struct ImGuiSizeConstraintCallbackData
+	struct ImGuiSizeCallbackData
 	{
 	void *UserData;
 	struct ImVec2 Pos;
@@ -479,7 +518,6 @@ local cdecl = [[
 	extern __attribute__((dllexport)) void igNewFrame();
 	extern __attribute__((dllexport)) void igRender();
 	extern __attribute__((dllexport)) void igEndFrame();
-	extern __attribute__((dllexport)) void igShutdown();
 	extern __attribute__((dllexport)) void igShowDemoWindow(_Bool *opened);
 	extern __attribute__((dllexport)) void igShowMetricsWindow(_Bool *opened);
 	extern __attribute__((dllexport)) void igShowStyleEditor(struct ImGuiStyle *ref);
@@ -507,7 +545,7 @@ local cdecl = [[
 	extern __attribute__((dllexport)) void igSetWindowFontScale(float scale);
 	extern __attribute__((dllexport)) void igSetNextWindowPos(const struct ImVec2 pos, ImGuiCond cond, const struct ImVec2 pivot);
 	extern __attribute__((dllexport)) void igSetNextWindowSize(const struct ImVec2 size, ImGuiCond cond);
-	extern __attribute__((dllexport)) void igSetNextWindowSizeConstraints(const struct ImVec2 size_min, const struct ImVec2 size_max, ImGuiSizeConstraintCallback custom_callback, void *custom_callback_data);
+	extern __attribute__((dllexport)) void igSetNextWindowSizeConstraints(const struct ImVec2 size_min, const struct ImVec2 size_max, ImGuiSizeCallback custom_callback, void *custom_callback_data);
 	extern __attribute__((dllexport)) void igSetNextWindowContentSize(const struct ImVec2 size);
 	extern __attribute__((dllexport)) void igSetNextWindowCollapsed(_Bool collapsed, ImGuiCond cond);
 	extern __attribute__((dllexport)) void igSetNextWindowFocus();
@@ -719,7 +757,7 @@ local cdecl = [[
 	extern __attribute__((dllexport)) void igLogFinish();
 	extern __attribute__((dllexport)) void igLogButtons();
 	extern __attribute__((dllexport)) void igLogText(const char *fmt, ...);
-	extern __attribute__((dllexport)) _Bool igBeginDragDropSource(ImGuiDragDropFlags flags, int mouse_button);
+	extern __attribute__((dllexport)) _Bool igBeginDragDropSource(ImGuiDragDropFlags flags);
 	extern __attribute__((dllexport)) _Bool igSetDragDropPayload(const char *type, const void *data, size_t size, ImGuiCond cond);
 	extern __attribute__((dllexport)) void igEndDragDropSource();
 	extern __attribute__((dllexport)) _Bool igBeginDragDropTarget();
@@ -788,7 +826,7 @@ local cdecl = [[
 	extern __attribute__((dllexport)) const char *igGetClipboardText();
 	extern __attribute__((dllexport)) void igSetClipboardText(const char *text);
 	extern __attribute__((dllexport)) const char *igGetVersion();
-	extern __attribute__((dllexport)) struct ImGuiContext *igCreateContext(void *(*malloc_fn)(size_t), void (*free_fn)(void *));
+	extern __attribute__((dllexport)) struct ImGuiContext *igCreateContext(struct ImFontAtlas* shared_font_atlas);
 	extern __attribute__((dllexport)) void igDestroyContext(struct ImGuiContext *ctx);
 	extern __attribute__((dllexport)) struct ImGuiContext *igGetCurrentContext();
 	extern __attribute__((dllexport)) void igSetCurrentContext(struct ImGuiContext *ctx);
@@ -959,8 +997,6 @@ local cdecl = [[
 	extern __attribute__((dllexport)) unsigned short ImFont_IndexLookup_index(const struct ImFont *font, int index);
 	]]
 --[[ END AUTOGENERATED SEGMENT ]]
-
-
 local ffi = require"ffi"
 
 --uncomment to debug cdef calls
@@ -980,6 +1016,7 @@ ffi.cdef = function(code)
 	end
 end
 --]]
+
 assert(cdecl, "imgui.lua not properly build")
 ffi.cdef(cdecl)
 
@@ -1139,11 +1176,9 @@ int           igImTextCountUtf8BytesFromStr(const ImWchar* in_text, const ImWcha
 end
 
 --local lib = ffi.load[[C:\luaGL\gitsources\cimgui\buildcimgui2\libcimgui]]
-local lib = ffi.load[[C:\luaGL\gitsources\build_cimgui3\libcimgui]]
+--local lib = ffi.load[[C:\luaGL\gitsources\build_cimgui3\libcimgui]]
 --lib = ffi.load[[C:\luaGL\gitsources\cimgui\builddebug\libcimguiMT]]
---local lib = ffi.load[[libcimgui]]
-
-
+local lib = ffi.load[[libcimgui]]
 
 local ImVec2 
 ImVec2 = ffi.metatype("ImVec2",{
@@ -1240,7 +1275,7 @@ if jit.os == "Windows" then
 end
 
 M.FLT_MAX = lib.igGET_FLT_MAX()
----[[
+
 ----------- ImFontAtlas
 local ImFontAtlas = {}
 ImFontAtlas.__index = ImFontAtlas
@@ -1314,7 +1349,7 @@ end
 function M.U32(a,b,c,d) return lib.igGetColorU32Vec(ImVec4(a,b,c,d or 1)) end
 
 ffi.metatype("ImDrawList",ImDrawList)
---]]
+
 -----------ImGui_ImplGlfwGL3
 local ImGui_ImplGlfwGL3 = {}
 ImGui_ImplGlfwGL3.__index = ImGui_ImplGlfwGL3

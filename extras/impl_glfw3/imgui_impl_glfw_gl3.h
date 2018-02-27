@@ -10,7 +10,7 @@
 
 struct GLFWwindow;
 typedef unsigned int GLuint;
-ImGuiContext*     pGImDefaultContext=NULL;
+//ImGuiContext*     pGImDefaultContext=NULL;
 struct ImGui_ImplGlfwGL3{
 	// Data
 	GLFWwindow*  g_Window ;
@@ -35,8 +35,8 @@ struct ImGui_ImplGlfwGL3{
 	ImGui_ImplGlfwGL3(){
 		g_Window = NULL;
 		//if it is first time save default context
-		if (pGImDefaultContext == NULL)
-			pGImDefaultContext = ImGui::GetCurrentContext();
+		//if (pGImDefaultContext == NULL)
+		//	pGImDefaultContext = ImGui::GetCurrentContext();
 		ctx = ImGui::CreateContext();
 		g_Time = 0.0f;
 		g_MousePressed[0] = false;g_MousePressed[1] = false;g_MousePressed[2] = false;
@@ -49,7 +49,7 @@ struct ImGui_ImplGlfwGL3{
 	};
 	~ImGui_ImplGlfwGL3(){
 		InvalidateDeviceObjects();
-		ImGui::SetCurrentContext(pGImDefaultContext);
+		//ImGui::SetCurrentContext(pGImDefaultContext);
 		ImGui::DestroyContext(ctx);
 	};
 };
