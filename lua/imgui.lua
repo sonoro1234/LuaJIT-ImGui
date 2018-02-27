@@ -126,15 +126,18 @@ local cdecl = [[
 	{
 	ImGuiFocusedFlags_ChildWindows = 1 << 0,
 	ImGuiFocusedFlags_RootWindow = 1 << 1,
+	ImGuiFocusedFlags_AnyWindow = 1 << 2,
 	ImGuiFocusedFlags_RootAndChildWindows = ImGuiFocusedFlags_RootWindow | ImGuiFocusedFlags_ChildWindows
 	};
 	enum ImGuiHoveredFlags_
 	{
+	ImGuiHoveredFlags_Default = 0,
 	ImGuiHoveredFlags_ChildWindows = 1 << 0,
 	ImGuiHoveredFlags_RootWindow = 1 << 1,
-	ImGuiHoveredFlags_AllowWhenBlockedByPopup = 1 << 2,
-	ImGuiHoveredFlags_AllowWhenBlockedByActiveItem = 1 << 4,
-	ImGuiHoveredFlags_AllowWhenOverlapped = 1 << 5,
+	ImGuiHoveredFlags_AnyWindow = 1 << 2,
+	ImGuiHoveredFlags_AllowWhenBlockedByPopup = 1 << 3,
+	ImGuiHoveredFlags_AllowWhenBlockedByActiveItem = 1 << 5,
+	ImGuiHoveredFlags_AllowWhenOverlapped = 1 << 6,
 	ImGuiHoveredFlags_RectOnly = ImGuiHoveredFlags_AllowWhenBlockedByPopup | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_AllowWhenOverlapped,
 	ImGuiHoveredFlags_RootAndChildWindows = ImGuiHoveredFlags_RootWindow | ImGuiHoveredFlags_ChildWindows
 	};
@@ -160,8 +163,10 @@ local cdecl = [[
 	ImGuiKey_PageDown,
 	ImGuiKey_Home,
 	ImGuiKey_End,
+	ImGuiKey_Insert,
 	ImGuiKey_Delete,
 	ImGuiKey_Backspace,
+	ImGuiKey_Space,
 	ImGuiKey_Enter,
 	ImGuiKey_Escape,
 	ImGuiKey_A,
@@ -392,7 +397,7 @@ local cdecl = [[
 	void *ClipboardUserData;
 	void (*ImeSetInputScreenPosFn)(int x, int y);
 	void *ImeWindowHandle;
-	void (*RenderDrawListsFn)(ImDrawData* data);
+	void (*RenderDrawListsFn)(struct ImDrawData* data);
 	struct ImVec2 MousePos;
 	_Bool MouseDown[5];
 	float MouseWheel;
@@ -1046,9 +1051,11 @@ struct Glyph
 };
 typedef struct Glyph ImFontGlyph;
 
+typedef int ImFontAtlasFlags; 
 struct ImFontAtlas 
 {
 //ImTextureID                 TexID;              // User data to refer to the texture once it has been uploaded to user's graphic systems. It is passed back to you during rendering via the ImDrawCmd structure.
+	ImFontAtlasFlags Flags;
 	void* TexID;
     int                         TexDesiredWidth;    // Texture width desired by user before Build(). Must be a power-of-two. If have many glyphs your graphics API have texture size restrictions you may want to increase texture width to decrease height.
     int                         TexGlyphPadding;    // Padding between glyphs within texture in pixels. Defaults to 1.
@@ -1059,6 +1066,7 @@ struct ImFontAtlas
     unsigned int*               TexPixelsRGBA32;    // 4 component per pixel, each component is unsigned 8-bit. Total size = TexWidth * TexHeight * 4
     int                         TexWidth;           // Texture width calculated during Build().
     int                         TexHeight;          // Texture height calculated during Build().
+	ImVec2						TexUvScale;
 	ImVec2                      TexUvWhitePixel;    // Texture coordinates to a white pixel
     ImVector/*<ImFont*> */          Fonts;              // Hold all the fonts returned by AddFont*. Fonts[0] is the default font upon calling ImGui::NewFrame(), use ImGui::PushFont()/PopFont() to change the current font.
 	ImVector/*<CustomRect> */       CustomRects;        // Rectangles for packing custom texture data into the atlas.

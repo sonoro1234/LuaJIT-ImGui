@@ -22,7 +22,7 @@ while not window:shouldClose() do
 	
 	gl.glClear(glc.GL_COLOR_BUFFER_BIT)
 	
-	print(ig.GetIO().MousePosPrev)
+	--print(ig.GetIO().MousePosPrev)
 	
 	ig_gl3:NewFrame()
 	
