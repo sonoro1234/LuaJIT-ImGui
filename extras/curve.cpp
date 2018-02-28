@@ -642,7 +642,8 @@ namespace ImGui
 	{
 		int max = 0;
         while (max < maxpoints && points[max].x >= 0) max++;
-
+		
+		ImVec2 p;
         int kill = 0;
         do
         {
@@ -660,7 +661,10 @@ namespace ImGui
 
             for (int i = 1; i < max ; i++)
             {
-				if (fabs(points[i].x - points[i - 1].x) < 1.0 / 128.0)
+				p = points[i] - points[i - 1];
+				float dis = sqrt(p.x*p.x+p.y*p.y);
+				if (dis < 1.0/128.0)
+				// if (fabs(points[i].x - points[i - 1].x) < 1.0 / 128.0)
                 {
                     kill = i;
                 }
@@ -757,7 +761,8 @@ namespace ImGui
                 }
                 else
                 {   
-                    if (max < maxpoints)
+                    if (g.IO.MouseDownDuration[0] == 0.0){ //just clicked
+					if (max < maxpoints)
                     {
                         max++;
                         for (i = max-1; i > left + 1; i--)
@@ -769,6 +774,7 @@ namespace ImGui
                     }
                     if (max < maxpoints)
                         points[max].x = -1;
+					}
                 }
 
             }
