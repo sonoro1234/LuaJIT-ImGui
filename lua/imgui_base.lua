@@ -28,74 +28,16 @@ ffi.cdef(cdecl)
 
 -- fonts ---------------------
 ffi.cdef[[
-typedef struct ImVec2 ImVec2;
 
-struct ImVector
-{
-	int Size;
-	int Capacity;
-	void* Data;
-};
-typedef struct ImVector ImVector;
-
-struct Glyph
-{
-    ImWchar         Codepoint;          // 0x0000..0xFFFF
-    float           AdvanceX;           // Distance to next character (= data from font + ImFontConfig::GlyphExtraSpacing.x baked in)
-    float           X0, Y0, X1, Y1;     // Glyph corners
-    float           U0, V0, U1, V1;     // Texture coordinates
-};
-typedef struct Glyph ImFontGlyph;
+typedef struct ImFontGlyph Glyph;
 
 typedef int ImFontAtlasFlags; 
-struct ImFontAtlas 
-{
-//ImTextureID                 TexID;              // User data to refer to the texture once it has been uploaded to user's graphic systems. It is passed back to you during rendering via the ImDrawCmd structure.
-	ImFontAtlasFlags Flags;
-	void* TexID;
-    int                         TexDesiredWidth;    // Texture width desired by user before Build(). Must be a power-of-two. If have many glyphs your graphics API have texture size restrictions you may want to increase texture width to decrease height.
-    int                         TexGlyphPadding;    // Padding between glyphs within texture in pixels. Defaults to 1.
 
-    // [Internal]
-    // NB: Access texture data via GetTexData*() calls! Which will setup a default font for you.
-    unsigned char*              TexPixelsAlpha8;    // 1 component per pixel, each component is unsigned 8-bit. Total size = TexWidth * TexHeight
-    unsigned int*               TexPixelsRGBA32;    // 4 component per pixel, each component is unsigned 8-bit. Total size = TexWidth * TexHeight * 4
-    int                         TexWidth;           // Texture width calculated during Build().
-    int                         TexHeight;          // Texture height calculated during Build().
-	ImVec2						TexUvScale;
-	ImVec2                      TexUvWhitePixel;    // Texture coordinates to a white pixel
-    ImVector/*<ImFont*> */          Fonts;              // Hold all the fonts returned by AddFont*. Fonts[0] is the default font upon calling ImGui::NewFrame(), use ImGui::PushFont()/PopFont() to change the current font.
-	ImVector/*<CustomRect> */       CustomRects;        // Rectangles for packing custom texture data into the atlas.
-	ImVector/*<ImFontConfig>*/      ConfigData;         // Internal data
-    int                         CustomRectIds[1];   // Identifiers of custom texture rectangle used by ImFontAtlas/ImDrawList
-	
-};
 typedef struct ImFontAtlas ImFontAtlas;
 
 typedef struct ImGuiContext ImGuiContext;
 typedef struct ImFontConfig ImFontConfig;
 
-struct ImFont
-{
-    // Members: Hot ~62/78 bytes
-    float                       FontSize;           // <user set>   // Height of characters, set during loading (don't change after loading)
-    float                       Scale;              // = 1.f        // Base font scale, multiplied by the per-window font scale which you can adjust with SetFontScale()
-    ImVec2                      DisplayOffset;      // = (0.f,1.f)  // Offset font rendering by xx pixels
-    ImVector/*<ImFontGlyph>*/       Glyphs;             //              // All glyphs.
-    ImVector/*<float>*/             IndexAdvanceX;      //              // Sparse. Glyphs->AdvanceX in a directly indexable way (more cache-friendly, for CalcTextSize functions which are often bottleneck in large UI).
-    ImVector/*<unsigned short>*/    IndexLookup;        //              // Sparse. Index glyphs by Unicode code-point.
-    const ImFontGlyph*          FallbackGlyph;      // == FindGlyph(FontFallbackChar)
-    float                       FallbackAdvanceX;   // == FallbackGlyph->AdvanceX
-    ImWchar                     FallbackChar;       // = '?'        // Replacement glyph if one isn't found. Only set via SetFallbackChar()
-
-    // Members: Cold ~18/26 bytes
-    short                       ConfigDataCount;    // ~ 1          // Number of ImFontConfig involved in creating this font. Bigger than 1 when merging multiple font sources into one ImFont.
-    struct ImFontConfig*               ConfigData;         //              // Pointer within ContainerAtlas->ConfigData
-    struct ImFontAtlas*                ContainerAtlas;     //              // What we has been loaded into
-    float                       Ascent, Descent;    //              // Ascent: distance from top to bottom of e.g. 'A' [0..FontSize]
-    int                         MetricsTotalSurface;//              // Total surface in pixels to get an idea of the font rasterization/texture cost (not exact, we approximate the cost of padding between glyphs)
-
-};
 typedef struct ImFont ImFont;
 
 typedef struct ImDrawList ImDrawList;	
@@ -182,7 +124,8 @@ end
 --local lib = ffi.load[[C:\luaGL\gitsources\cimgui\buildcimgui2\libcimgui]]
 --local lib = ffi.load[[C:\luaGL\gitsources\build_cimgui3\libcimgui]]
 --lib = ffi.load[[C:\luaGL\gitsources\cimgui\builddebug\libcimguiMT]]
-local lib = ffi.load[[libcimgui]]
+local lib = ffi.load[[C:\luaGL\gitsources\build_luajit-imgui160\libcimgui]]
+--local lib = ffi.load[[libcimgui]]
 
 local ImVec2 
 ImVec2 = ffi.metatype("ImVec2",{

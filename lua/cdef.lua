@@ -9,6 +9,7 @@ cdefs = {}
 
 location_re = '^# %d+ "([^"]*)"'
 cimpath_re = '^(.*[\\/])(cimgui)%.h$' 
+cimpath2_re = '^(.*[\\/])(imgui_structs)%.h$' 
 define_re = "^#define%s+([^%s]+)%s+([^%s]+)$"
 
 number_re = "^-?[0-9]+$"
@@ -29,8 +30,8 @@ repeat -- simulate continue with break
 			--print("location_match",line)
 			-- If we are transitioning to a header we need to parse, set the flag
 			local cimpath_match,aaa = location_match:match(cimpath_re)
-			in_cimgui = (cimpath_match ~= nil)
-			--if in_gl then print(aaa) end
+			local cimpath_match2,aaa = location_match:match(cimpath2_re)
+			in_cimgui = (cimpath_match ~= nil) or (cimpath_match2 ~= nil)
 			break
 		end
 		
