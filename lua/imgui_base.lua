@@ -254,23 +254,7 @@ local ImFontConfig = {}
 ImFontConfig.__index = ImFontConfig
 ImFontConfig.__new = function(tp)
 	local ret = ffi.new(tp)
-	
-	--FontData = NULL;
-    --FontDataSize = 0;
-    ret.FontDataOwnedByAtlas = true;
-    --FontNo = 0;
-    --SizePixels = 0.0f;
-    ret.OversampleH = 3;
-    ret.OversampleV = 1;
-    ret.PixelSnapH = false;
-    ret.GlyphExtraSpacing = ImVec2(0.0, 0.0);
-    ret.GlyphOffset = ImVec2(0.0, 0.0);
-    --GlyphRanges = NULL;
-    ret.MergeMode = false;
-    --RasterizerFlags = 0x00;
-    ret.RasterizerMultiply = 1.0;
-    --memset(Name, 0, sizeof(Name));
-    --DstFont = NULL;
+	lib.ImFontConfig_DefaultConstructor(ret)
 	return ret
 end
 M.ImFontConfig = ffi.metatype("ImFontConfig",ImFontConfig)
