@@ -9,7 +9,8 @@ cdefs = {}
 
 location_re = '^# %d+ "([^"]*)"'
 cimpath_re = '^(.*[\\/])(cimgui)%.h$' 
-cimpath2_re = '^(.*[\\/])(imgui_structs)%.h$' 
+cimpath2_re = '^(.*[\\/])(imgui_structs)%.h$'
+cimpath3_re = '^(.*[\\/])(auto_funcs)%.h$'  
 define_re = "^#define%s+([^%s]+)%s+([^%s]+)$"
 
 number_re = "^-?[0-9]+$"
@@ -31,7 +32,8 @@ repeat -- simulate continue with break
 			-- If we are transitioning to a header we need to parse, set the flag
 			local cimpath_match,aaa = location_match:match(cimpath_re)
 			local cimpath_match2,aaa = location_match:match(cimpath2_re)
-			in_cimgui = (cimpath_match ~= nil) or (cimpath_match2 ~= nil)
+			local cimpath_match3,aaa = location_match:match(cimpath3_re)
+			in_cimgui = (cimpath_match ~= nil) or (cimpath_match2 ~= nil) or (cimpath_match3 ~= nil)
 			break
 		end
 		

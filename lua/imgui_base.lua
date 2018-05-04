@@ -124,7 +124,7 @@ end
 --local lib = ffi.load[[C:\luaGL\gitsources\cimgui\buildcimgui2\libcimgui]]
 --local lib = ffi.load[[C:\luaGL\gitsources\build_cimgui3\libcimgui]]
 --lib = ffi.load[[C:\luaGL\gitsources\cimgui\builddebug\libcimguiMT]]
-local lib = ffi.load[[C:\luaGL\gitsources\build_luajit-imgui160\libcimgui]]
+local lib = ffi.load[[C:\luaGL\gitsources\build_luajit-imgui_auto\libcimgui]]
 --local lib = ffi.load[[libcimgui]]
 
 local ImVec2 
@@ -162,9 +162,9 @@ function M.CollapsingHeader(label,flags)
 end
 
 function M.GetCursorScreenPos()
-	local pos = ImVec2_p()
-	lib.igGetCursorScreenPos(pos)
-	return pos[0]
+	--local pos = ImVec2_p()
+	return lib.igGetCursorScreenPos()--pos)
+	--return pos[0]
 end
 function M.CalcItemRectClosestPoint(pos, on_edge, outward)
 	if on_edge == nil then on_edge = false end
@@ -174,9 +174,10 @@ function M.CalcItemRectClosestPoint(pos, on_edge, outward)
 end
 function M.CalcTextSize(text, text_end, hide_text_after_double_hash, wrap_width)
 	if hide_text_after_double_hash == nil then hide_text_after_double_hash = false end
-	local ret = ImVec2_p()
-	lib.igCalcTextSize(ret, text, text_end, hide_text_after_double_hash, wrap_width or -1)
-	return ret[0]
+	--local ret = ImVec2_p()
+	--lib.igCalcTextSize(ret, text, text_end, hide_text_after_double_hash, wrap_width or -1)
+	--return ret[0]
+	return lib.igCalcTextSize( text, text_end, hide_text_after_double_hash, wrap_width or -1)
 end
 function M.GetMouseDragDelta(button , lock_threshold)
 	local pos = ImVec2_p()
@@ -190,12 +191,12 @@ function M.SliderInt(label,v, v_min, v_max, display_format)
 	return lib.igSliderInt(label,v, v_min, v_max, display_format or "%.0f")
 end
 function M.PlotLines(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
-	lib.igPlotLines(label, values, values_count, values_offset or 0, overlay_text, scale_min or M.FLT_MAX, scale_max or M.FLT_MAX, graph_size or ImVec2(0,0), stride or ffi.sizeof"float")
+	lib.igPlotLinesFloatPtr(label, values, values_count, values_offset or 0, overlay_text, scale_min or M.FLT_MAX, scale_max or M.FLT_MAX, graph_size or ImVec2(0,0), stride or ffi.sizeof"float")
 end
 function M.GetContentRegionAvail()
-	local avail = ImVec2(0,0)
-	lib.igGetContentRegionAvail(avail)
-	return avail
+	--local avail = ImVec2(0,0)
+	return lib.igGetContentRegionAvail()--avail)
+	--return avail
 end
 
 function M.SetNextWindowPos(pos,cond,pivot)
@@ -342,6 +343,24 @@ function M.PopId()
 end
 function M.ShowTestWindow(a)
 	return lib.igShowDemoWindow(a)
+end
+function M.PushStyleColor(...)
+	lib.igPushStyleColorVec4(...)
+end
+function M.PushStyleVar(...)
+	return lib.igPushStyleVarFloat(...)
+end
+function M.BeginPopup(c,f)
+	return lib.igBeginPopup(c,f or 0)
+end
+function M.Combo(...)
+	return lib.igComboStr_arr(...)
+end
+function M.BeginChild(...)
+	return lib.igBeginChildStr(...)
+end
+function M.Selectable(...)
+	return lib.igSelectableBool(...)
 end
 ----------- get ig.. functions without prefix
 M = setmetatable(M,{
