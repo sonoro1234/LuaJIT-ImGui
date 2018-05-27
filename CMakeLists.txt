@@ -3,8 +3,12 @@ cmake_minimum_required(VERSION 2.8)
 
 if (WIN32)
 FIND_LIBRARY(GLFW_LIBRARY NAMES glfw3.dll PATHS ${GLFW_PATH})
-#add_definitions("-DIMGUI_API=__declspec(dllexport)")
+
 endif(WIN32)
+
+if (${IMGUI_DISABLE_OBSOLETE_FUNCTIONS})
+add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
+endif(${IMGUI_DISABLE_OBSOLETE_FUNCTIONS})
 
 include_directories(cimgui/imgui/examples/libs/gl3w)
 include_directories(cimgui/imgui)
