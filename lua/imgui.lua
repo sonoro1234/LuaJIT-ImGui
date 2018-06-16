@@ -753,7 +753,7 @@ typedef ImVector ImVector_ImWchar;
  void igStyleColorsLight(ImGuiStyle* dst);
  _Bool igBegin(const char* name,_Bool* p_open,ImGuiWindowFlags flags);
  void igEnd();
- _Bool igBeginChildStr(const char* str_id,const ImVec2 size,_Bool border,ImGuiWindowFlags flags);
+ _Bool igBeginChild(const char* str_id,const ImVec2 size,_Bool border,ImGuiWindowFlags flags);
  _Bool igBeginChildID(ImGuiID id,const ImVec2 size,_Bool border,ImGuiWindowFlags flags);
  void igEndChild();
  _Bool igIsWindowAppearing();
@@ -940,7 +940,7 @@ typedef ImVector ImVector_ImWchar;
  void igSetNextTreeNodeOpen(_Bool is_open,ImGuiCond cond);
  _Bool igCollapsingHeader(const char* label,ImGuiTreeNodeFlags flags);
  _Bool igCollapsingHeaderBoolPtr(const char* label,_Bool* p_open,ImGuiTreeNodeFlags flags);
- _Bool igSelectableBool(const char* label,_Bool selected,ImGuiSelectableFlags flags,const ImVec2 size);
+ _Bool igSelectable(const char* label,_Bool selected,ImGuiSelectableFlags flags,const ImVec2 size);
  _Bool igSelectableBoolPtr(const char* label,_Bool* p_selected,ImGuiSelectableFlags flags,const ImVec2 size);
  _Bool igListBoxStr_arr(const char* label,int* current_item,const char* const items[],int items_count,int height_in_items);
  _Bool igListBoxFnPtr(const char* label,int* current_item,_Bool(*items_getter)(void* data,int idx,const char** out_text),void* data,int items_count,int height_in_items);
@@ -2025,11 +2025,11 @@ function M.Begin(name,p_open,flags)
     flags = flags or 0
     return lib.igBegin(name,p_open,flags)
 end
-function M.BeginChildStr(str_id,size,border,flags)
+function M.BeginChild(str_id,size,border,flags)
     border = border or false
     size = size or ImVec2(0,0)
     flags = flags or 0
-    return lib.igBeginChildStr(str_id,size,border,flags)
+    return lib.igBeginChild(str_id,size,border,flags)
 end
 function M.BeginChildID(id,size,border,flags)
     border = border or false
@@ -2875,11 +2875,11 @@ function M.SameLine(pos_x,spacing_w)
     spacing_w = spacing_w or -1.0
     return lib.igSameLine(pos_x,spacing_w)
 end
-function M.SelectableBool(label,selected,flags,size)
+function M.Selectable(label,selected,flags,size)
     flags = flags or 0
     size = size or ImVec2(0,0)
     selected = selected or false
-    return lib.igSelectableBool(label,selected,flags,size)
+    return lib.igSelectable(label,selected,flags,size)
 end
 function M.SelectableBoolPtr(label,p_selected,flags,size)
     size = size or ImVec2(0,0)
