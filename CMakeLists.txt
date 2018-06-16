@@ -19,6 +19,6 @@ add_compile_options(-std=c++11) # CMake 2.8.12 or newer
 add_library(cimgui SHARED ./cimgui/imgui/examples/libs/gl3w/GL/gl3w.c 
 ./cimgui/imgui/imgui.cpp ./cimgui/imgui/imgui_draw.cpp ./cimgui/imgui/imgui_demo.cpp 
 ./cimgui/cimgui/cimgui.cpp
-./extras/cimgui_extras.cpp ./extras/impl_glfw3/imgui_impl_glfw_gl3.cpp ./extras/knob.cpp  ./extras/curve.cpp ./extras/Bezier.cpp)
+./extras/impl_glfw3/imgui_impl_glfw_gl3.cpp ./extras/knob.cpp  ./extras/curve.cpp ./extras/Bezier.cpp)
 
 target_link_libraries(cimgui ${GLFW_LIBRARY} opengl32)

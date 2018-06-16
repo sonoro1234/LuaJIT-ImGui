@@ -21,31 +21,8 @@ end
 assert(cdecl, "imgui.lua not properly build")
 ffi.cdef(cdecl)
 
--- local file = io.open([[c:/luagl/lua/cimgui.txt]],"r")
--- local strfile = file:read"*a"
--- file:close()
--- ffi.cdef(strfile)
-
--- fonts ---------------------
+-- glfw3 implementation and extras ----------------------------------------
 ffi.cdef[[
-
-typedef struct ImFontGlyph Glyph;
-
-typedef int ImFontAtlasFlags; 
-
-typedef struct ImFontAtlas ImFontAtlas;
-
-typedef struct ImGuiContext ImGuiContext;
-typedef struct ImFontConfig ImFontConfig;
-
-typedef struct ImFont ImFont;
-
-typedef struct ImDrawList ImDrawList;	
-]]
-
--- glfw3 implementation and extras
-ffi.cdef[[
-float igGET_FLT_MAX();
 
 //////////////// glfw3 gl3 Implementation
 int Do_gl3wInit(void);
@@ -121,12 +98,10 @@ int           igImTextCountUtf8BytesFromStr(const ImWchar* in_text, const ImWcha
 ]]
 end
 
---local lib = ffi.load[[C:\luaGL\gitsources\cimgui\buildcimgui2\libcimgui]]
---local lib = ffi.load[[C:\luaGL\gitsources\build_cimgui3\libcimgui]]
---lib = ffi.load[[C:\luaGL\gitsources\cimgui\builddebug\libcimguiMT]]
-local lib = ffi.load[[C:\luaGL\gitsources\build_luajit-imgui_auto\libcimgui]]
---local lib = ffi.load[[libcimgui]]
+--load dll
+local lib = ffi.load[[C:\luaGL\gitsources\build_luajit-imgui_auto2\libcimgui]]
 
+-----------ImVec2 definition
 local ImVec2 
 ImVec2 = ffi.metatype("ImVec2",{
 	__add = function(a,b) return ImVec2(a.x + b.x, a.y + b.y) end,
@@ -139,73 +114,19 @@ ImVec2 = ffi.metatype("ImVec2",{
 	end,
 	__tostring = function(v) return 'ImVec2<'..v.x..','..v.y..'>' end
 })
-sss = ImVec2(3,2)
-local ImVec2_p = ffi.typeof("ImVec2[1]")
 local ImVec4 = ffi.typeof("struct ImVec4")
+--the module
+local M = {ImVec2 = ImVec2, ImVec4 = ImVec4 ,lib = lib}
+----------ImFontConfig
+local ImFontConfig = {}
+ImFontConfig.__index = ImFontConfig
+ImFontConfig.__new = function(tp)
+	local ret = ffi.new(tp)
+	lib.ImFontConfig_DefaultConstructor(ret)
+	return ret
+end
+M.ImFontConfig = ffi.metatype("ImFontConfig",ImFontConfig)
 
-
--- hand written functions
-
-local M = {ImVec2 = ImVec2, ImVec4 = ImVec4, lib = lib}
-function M.Begin(name, p_open, flags)
-	 return  lib.igBegin(name, p_open or nil,flags or 0);
-end
-function M.End()
-	 return  lib.igEnd();
-end
-function M.Button(label, size)
-	return lib.igButton(label, size or ImVec2(0, 0))
-end
-
-function M.CollapsingHeader(label,flags)
-	return lib.igCollapsingHeader(label,flags or 0)
-end
-
-function M.GetCursorScreenPos()
-	--local pos = ImVec2_p()
-	return lib.igGetCursorScreenPos()--pos)
-	--return pos[0]
-end
-function M.CalcItemRectClosestPoint(pos, on_edge, outward)
-	if on_edge == nil then on_edge = false end
-	local ret = ImVec2_p()
-	lib.igCalcItemRectClosestPoint(ret, pos, on_edge, outward or 0);
-	return ret[0]
-end
-function M.CalcTextSize(text, text_end, hide_text_after_double_hash, wrap_width)
-	if hide_text_after_double_hash == nil then hide_text_after_double_hash = false end
-	--local ret = ImVec2_p()
-	--lib.igCalcTextSize(ret, text, text_end, hide_text_after_double_hash, wrap_width or -1)
-	--return ret[0]
-	return lib.igCalcTextSize( text, text_end, hide_text_after_double_hash, wrap_width or -1)
-end
-function M.GetMouseDragDelta(button , lock_threshold)
-	local pos = ImVec2_p()
-	lib.igGetMouseDragDelta(pos, button or 0, lock_threshold or -1)
-	return pos[0]
-end
-function M.SameLine(pos_x, spacing_w)
-	return lib.igSameLine(pos_x or 0.0, spacing_w or -1.0)
-end
-function M.SliderInt(label,v, v_min, v_max, display_format)
-	return lib.igSliderInt(label,v, v_min, v_max, display_format or "%.0f")
-end
-function M.PlotLines(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
-	lib.igPlotLinesFloatPtr(label, values, values_count, values_offset or 0, overlay_text, scale_min or M.FLT_MAX, scale_max or M.FLT_MAX, graph_size or ImVec2(0,0), stride or ffi.sizeof"float")
-end
-function M.GetContentRegionAvail()
-	--local avail = ImVec2(0,0)
-	return lib.igGetContentRegionAvail()--avail)
-	--return avail
-end
-
-function M.SetNextWindowPos(pos,cond,pivot)
-	return lib.igSetNextWindowPos(pos, cond or 0, pivot or ImVec2(0,0));
-end
-
-function M.IsItemHovered(flags)
-	return lib.igIsItemHovered(flags or 0)
-end
 if jit.os == "Windows" then
 	function M.ToUTF(unc_str)
 		local buf_len = lib.igImTextCountUtf8BytesFromStr(unc_str, nil) + 1;
@@ -223,64 +144,6 @@ if jit.os == "Windows" then
 end
 
 M.FLT_MAX = lib.igGET_FLT_MAX()
-
------------ ImFontAtlas
-local ImFontAtlas = {}
-ImFontAtlas.__index = ImFontAtlas
-
-function ImFontAtlas:AddFontDefault(font_cfg)
-	return lib.ImFontAtlas_AddFontDefault(self, font_cfg)
-end
-
-function ImFontAtlas:AddFontFromFileTTF(filename, size_pixels, font_cfg, glyph_ranges)
-	return lib.ImFontAtlas_AddFontFromFileTTF(self, filename, size_pixels, font_cfg, glyph_ranges);
-end
-
-function ImFontAtlas:GetTexDataAsRGBA32(out_pixels, out_width, out_height, out_bytes_per_pixel)
-	lib.ImFontAtlas_GetTexDataAsRGBA32(self,out_pixels, out_width, out_height, out_bytes_per_pixel);
-end
-
-ffi.metatype("ImFontAtlas", ImFontAtlas)
-------------ImFont
-local ImFont = {}
-ImFont.__index = ImFont
-
-function ImFont:FindGlyph(codepoint)
-	return lib.ImFont_FindGlyph(self, codepoint)
-end
-
-ffi.metatype("ImFont",ImFont)
-----------ImFontConfig
-local ImFontConfig = {}
-ImFontConfig.__index = ImFontConfig
-ImFontConfig.__new = function(tp)
-	local ret = ffi.new(tp)
-	lib.ImFontConfig_DefaultConstructor(ret)
-	return ret
-end
-M.ImFontConfig = ffi.metatype("ImFontConfig",ImFontConfig)
------------ImDrawList
-local ImDrawList = {}
-ImDrawList.__index = ImDrawList
-
-function ImDrawList:AddLine(a, b, col,thickness)
-	lib.ImDrawList_AddLine(self, a, b, col, thickness or 1)
-end
-function ImDrawList:AddRect(a,b,col,rounding,rounding_corners,thickness)
- return lib.ImDrawList_AddRect(self, a, b, col, rounding or 0, rounding_corners or 0, thickness or 1)
-end
-
-function ImDrawList:AddText(pos, col, text_begin, text_end)
-	lib.ImDrawList_AddText(self, pos, col, text_begin, text_end)
-end
-
-function ImDrawList:AddCircleFilled(centre, radius, col, num_segments)
-	lib.ImDrawList_AddCircleFilled(self, centre, radius, col, num_segments or 12)
-end
-
-function M.U32(a,b,c,d) return lib.igGetColorU32Vec(ImVec4(a,b,c,d or 1)) end
-
-ffi.metatype("ImDrawList",ImDrawList)
 
 -----------ImGui_ImplGlfwGL3
 local ImGui_ImplGlfwGL3 = {}
@@ -315,7 +178,7 @@ function ImGui_ImplGlfwGL3:Init(window, install_callbacks)
 end
 
 M.ImplGlfwGL3 = ffi.metatype("ImGui_ImplGlfwGL3",ImGui_ImplGlfwGL3)
----------------------------------
+-----------------------another Log
 local Log = {}
 Log.__index = Log
 function Log.__new()
@@ -331,46 +194,5 @@ function Log:Draw(title)
 	lib.Log_Draw(self,title)
 end
 M.Log = ffi.metatype("Log",Log)
---------obsoletes
-function M.GetItemsLineHeightWithSpacing() 
-	return lib.igGetFrameHeightWithSpacing()
-end
-function M.PushIdStr(id) 
-	return lib.igPushIDStr(id)
-end
-function M.PopId() 
-	return lib.igPopID()
-end
-function M.ShowTestWindow(a)
-	return lib.igShowDemoWindow(a)
-end
-function M.PushStyleColor(...)
-	lib.igPushStyleColorVec4(...)
-end
-function M.PushStyleVar(...)
-	return lib.igPushStyleVarFloat(...)
-end
-function M.BeginPopup(c,f)
-	return lib.igBeginPopup(c,f or 0)
-end
-function M.Combo(...)
-	return lib.igComboStr_arr(...)
-end
-function M.BeginChild(...)
-	return lib.igBeginChildStr(...)
-end
-function M.Selectable(...)
-	return lib.igSelectableBool(...)
-end
------------ get ig.. functions without prefix
-M = setmetatable(M,{
-	__index = function(t,k) 
-		local ok, obj = pcall(function(val) return lib[val] end, "ig"..k)
-		if not ok then error("Couldn't find function "..k.." (are you accessing the right function?)",2) end
-		rawset(M, k, obj)
-		return obj
-	end
-})
-
-
-return M
+------------convenience function
+function M.U32(a,b,c,d) return lib.igGetColorU32Vec4(ImVec4(a,b,c,d or 1)) end
