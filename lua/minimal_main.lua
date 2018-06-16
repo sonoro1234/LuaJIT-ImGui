@@ -1,5 +1,5 @@
 local ffi = require "ffi"
-local lj_glfw = require"GLFW.glfw"
+local lj_glfw = require"glfw"
 local gl, glc, glu, glfw, glext = lj_glfw.libraries()
 local ig = require"imgui"
 
@@ -29,7 +29,7 @@ while not window:shouldClose() do
 	if ig.Button"Hello" then
 		print"Hello World!!"
 	end
-	ig.ShowTestWindow(showdemo)
+	ig.ShowDemoWindow(showdemo)
 	
 	ig_gl3:Render()
 	
