@@ -1,8 +1,11 @@
-require"anima.utils"
-local dir = [[C:\luaGL\gitsources\luajit-imgui\cimgui\cimgui\generator/]]
+-----------------------------------------------
+-- script to build lua classes
+-- expects lua 5.1 or luajit
+-- expects "../cimgui/cimgui/generator/definitions.lua" to be generated in cimgui (master_auto2 branch)
+-----------------------------------------------
 
 --load function definitions
---local dir = [[../cimgui/cimgui/generator]]
+local dir = [[../cimgui/cimgui/generator/]]
 local fundefs = dofile(dir..[[definitions.lua]])
 
 --group them by structs
@@ -14,6 +17,7 @@ for fun,defs in pairs(fundefs) do
 end
 
 --[[ tests
+require"anima.utils" --gives us prtable
 -- prtable(structs.ImFontConfig)
 -- prtable(fundefs.igCombo)
 local defaults = {}
@@ -28,7 +32,7 @@ prtable(defaults)
 do return end
 --]]
 
---test correctness of generated code
+--test correctness of generated lua code
 local function testcode(codestr,code)
 	local fl,err = loadstring(codestr)
 	if not fl then 
