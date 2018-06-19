@@ -8,7 +8,7 @@
 #endif
 
 #ifndef M_PI
-#define M_PI 3.14159
+#define M_PI 3.14159f
 #endif
 IMGUI_APIX ImVec2 igGetCursorScreenPosORIG()
 {

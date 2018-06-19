@@ -717,7 +717,7 @@ namespace ImGui
 
         ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size);
         ItemSize(bb);
-        if (!ItemAdd(bb, NULL))
+        if (!ItemAdd(bb, 0))
             return false;
 
         const bool hovered = ItemHoverable(bb, id);
