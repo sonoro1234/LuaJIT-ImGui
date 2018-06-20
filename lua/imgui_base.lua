@@ -4,17 +4,16 @@ local ffi = require"ffi"
 ---[[
 local ffi_cdef = ffi.cdef
 ffi.cdef = function(code)
-	local ret,err = pcall(ffi_cdef,code)
-	if not ret then
-		
-		local lineN = 1
-		for line in code:gmatch("([^\n\r]*)\r?\n") do
-			print(lineN, line)
-			lineN = lineN + 1
-		end
-		print(err)
-		error"bad cdef"
-	end
+    local ret,err = pcall(ffi_cdef,code)
+    if not ret then
+        local lineN = 1
+        for line in code:gmatch("([^\n\r]*)\r?\n") do
+            print(lineN, line)
+            lineN = lineN + 1
+        end
+        print(err)
+        error"bad cdef"
+    end
 end
 --]]
 
@@ -28,43 +27,43 @@ ffi.cdef[[
 int Do_gl3wInit(void);
 typedef struct GLFWwindow GLFWwindow;
 typedef struct {
-	// Data
-	GLFWwindow*  g_Window ;
-	struct ImGuiContext* ctx;
-	double       g_Time ;
-	bool         g_MousePressed[3] ;
-	float        g_MouseWheel;
-	unsigned int g_FontTexture;
-	int          g_ShaderHandle, g_VertHandle, g_FragHandle;
-	int          g_AttribLocationTex, g_AttribLocationProjMtx;
-	int          g_AttribLocationPosition, g_AttribLocationUV, g_AttribLocationColor;
-	unsigned int g_VboHandle, g_VaoHandle, g_ElementsHandle;
+    // Data
+    GLFWwindow*  g_Window ;
+    struct ImGuiContext* ctx;
+    double       g_Time ;
+    bool         g_MousePressed[3] ;
+    float        g_MouseWheel;
+    unsigned int g_FontTexture;
+    int          g_ShaderHandle, g_VertHandle, g_FragHandle;
+    int          g_AttribLocationTex, g_AttribLocationProjMtx;
+    int          g_AttribLocationPosition, g_AttribLocationUV, g_AttribLocationColor;
+    unsigned int g_VboHandle, g_VaoHandle, g_ElementsHandle;
 }ImGui_ImplGlfwGL3;
 
 ImGui_ImplGlfwGL3* ImGui_ImplGlfwGL3_new();
 void ImGui_ImplGlfwGL3_delete(ImGui_ImplGlfwGL3*);
-bool        ImGui_ImplGlfwGL3_Init(ImGui_ImplGlfwGL3*,GLFWwindow* window, bool install_callbacks);
-void        ImGui_ImplGlfwGL3_NewFrame(ImGui_ImplGlfwGL3*);
-void        ImGui_ImplGlfwGL3_Render(ImGui_ImplGlfwGL3* impl);
+bool ImGui_ImplGlfwGL3_Init(ImGui_ImplGlfwGL3*,GLFWwindow* window, bool install_callbacks);
+void ImGui_ImplGlfwGL3_NewFrame(ImGui_ImplGlfwGL3*);
+void ImGui_ImplGlfwGL3_Render(ImGui_ImplGlfwGL3* impl);
 // Use if you want to reset your rendering device without losing ImGui state.
-void        ImGui_ImplGlfwGL3_InvalidateDeviceObjects(ImGui_ImplGlfwGL3*);
-void 		ImGui_ImplGlfwGL3_Set(ImGui_ImplGlfwGL3*);
-// bool        ImGui_ImplGlfwGL3_CreateDeviceObjects();
+void ImGui_ImplGlfwGL3_InvalidateDeviceObjects(ImGui_ImplGlfwGL3*);
+void ImGui_ImplGlfwGL3_Set(ImGui_ImplGlfwGL3*);
+//bool        ImGui_ImplGlfwGL3_CreateDeviceObjects();
 
 // GLFW callbacks (installed by default if you enable 'install_callbacks' during initialization)
 // Provided here if you want to chain callbacks.
 // You can also handle inputs yourself and use those as a reference.
- void        ImGui_ImplGlfwGL3_MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
- void        ImGui_ImplGlfwGL3_ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
- void        ImGui_ImplGlfwGL3_KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
- void        ImGui_ImplGlfwGL3_CharCallback(GLFWwindow* window, unsigned int c);
- 
+void ImGui_ImplGlfwGL3_MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+void ImGui_ImplGlfwGL3_ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+void ImGui_ImplGlfwGL3_KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void ImGui_ImplGlfwGL3_CharCallback(GLFWwindow* window, unsigned int c);
+
 //addons
 bool Knob(const char* label, float* value_p, float minv, float maxv);
 int Bezier( const char *label, float P[4] );
 bool Curve(const char *label, const struct ImVec2& size, struct ImVec2 *points, const int maxpoints, float *data, int datalen);
 void CurveGetData(struct ImVec2 *points, const int maxpoints, float *data, int datalen);
- 								
+                                
 
 //experiments
 struct ImVec2 igGetCursorScreenPosORIG();
@@ -79,7 +78,7 @@ typedef struct Log Log;
 Log* Log_new();
 void Log_Add(Log* log,const char* fmt, ...);
 void Log_Draw(Log* log, const char* title); //, bool* p_open = NULL
-void Log_delete(Log* log);	
+void Log_delete(Log* log);  
 
 ]]
 
@@ -89,11 +88,11 @@ if jit.os == "Windows" then
 ffi.cdef[[
  
 // Helpers: UTF-8 <> wchar
-int           igImTextStrToUtf8(char* buf, int buf_size, const ImWchar* in_text, const ImWchar* in_text_end);      // return output UTF-8 bytes count 
-int           igImTextCharFromUtf8(unsigned int* out_char, const char* in_text, const char* in_text_end);          // return input UTF-8 bytes count 
-int           igImTextStrFromUtf8(ImWchar* buf, int buf_size, const char* in_text, const char* in_text_end, const char** in_remaining);   // return input UTF-8 bytes count 
-int           igImTextCountCharsFromUtf8(const char* in_text, const char* in_text_end);                            // return number of UTF-8 code-points (NOT bytes count) 
-int           igImTextCountUtf8BytesFromStr(const ImWchar* in_text, const ImWchar* in_text_end);                   // return number of bytes to express string as UTF-8 code-points 
+int igImTextStrToUtf8(char* buf, int buf_size, const ImWchar* in_text, const ImWchar* in_text_end);      // return output UTF-8 bytes count 
+int igImTextCharFromUtf8(unsigned int* out_char, const char* in_text, const char* in_text_end);          // return input UTF-8 bytes count 
+int igImTextStrFromUtf8(ImWchar* buf, int buf_size, const char* in_text, const char* in_text_end, const char** in_remaining);   // return input UTF-8 bytes count 
+int igImTextCountCharsFromUtf8(const char* in_text, const char* in_text_end);                            // return number of UTF-8 code-points (NOT bytes count) 
+int igImTextCountUtf8BytesFromStr(const ImWchar* in_text, const ImWchar* in_text_end);                   // return number of bytes to express string as UTF-8 code-points 
  
 ]]
 end
@@ -104,15 +103,15 @@ local lib = ffi.load[[C:\luaGL\gitsources\build_luajit-imgui_implementations\lib
 -----------ImVec2 definition
 local ImVec2 
 ImVec2 = ffi.metatype("ImVec2",{
-	__add = function(a,b) return ImVec2(a.x + b.x, a.y + b.y) end,
-	__sub = function(a,b) return ImVec2(a.x - b.x, a.y - b.y) end,
-	__unm = function(a) return ImVec2(-a.x,-a.y) end,
-	__mul = function(a, b) --scalar mult
-		if not ffi.istype(ImVec2, b) then
-		return ImVec2(a.x * b, a.y * b) end
-		return ImVec2(a * b.x, a * b.y)
-	end,
-	__tostring = function(v) return 'ImVec2<'..v.x..','..v.y..'>' end
+    __add = function(a,b) return ImVec2(a.x + b.x, a.y + b.y) end,
+    __sub = function(a,b) return ImVec2(a.x - b.x, a.y - b.y) end,
+    __unm = function(a) return ImVec2(-a.x,-a.y) end,
+    __mul = function(a, b) --scalar mult
+        if not ffi.istype(ImVec2, b) then
+        return ImVec2(a.x * b, a.y * b) end
+        return ImVec2(a * b.x, a * b.y)
+    end,
+    __tostring = function(v) return 'ImVec2<'..v.x..','..v.y..'>' end
 })
 local ImVec4 = ffi.typeof("struct ImVec4")
 --the module
@@ -121,26 +120,26 @@ local M = {ImVec2 = ImVec2, ImVec4 = ImVec4 ,lib = lib}
 local ImFontConfig = {}
 ImFontConfig.__index = ImFontConfig
 ImFontConfig.__new = function(tp)
-	local ret = ffi.new(tp)
-	lib.ImFontConfig_DefaultConstructor(ret)
-	return ret
+    local ret = ffi.new(tp)
+    lib.ImFontConfig_DefaultConstructor(ret)
+    return ret
 end
 M.ImFontConfig = ffi.metatype("ImFontConfig",ImFontConfig)
 
 if jit.os == "Windows" then
-	function M.ToUTF(unc_str)
-		local buf_len = lib.igImTextCountUtf8BytesFromStr(unc_str, nil) + 1;
-		local buf_local = ffi.new("char[?]",buf_len)
-		lib.igImTextStrToUtf8(buf_local, buf_len, unc_str, nil);
-		return buf_local
-	end
-	
-	function M.FromUTF(utf_str)
-		local wbuf_length = lib.igImTextCountCharsFromUtf8(utf_str, nil) + 1;
-		local buf_local = ffi.new("ImWchar[?]",wbuf_length)
-		lib.igImTextStrFromUtf8(buf_local, wbuf_length, utf_str, nil,nil);
-		return buf_local
-	end
+    function M.ToUTF(unc_str)
+        local buf_len = lib.igImTextCountUtf8BytesFromStr(unc_str, nil) + 1;
+        local buf_local = ffi.new("char[?]",buf_len)
+        lib.igImTextStrToUtf8(buf_local, buf_len, unc_str, nil);
+        return buf_local
+    end
+    
+    function M.FromUTF(utf_str)
+        local wbuf_length = lib.igImTextCountCharsFromUtf8(utf_str, nil) + 1;
+        local buf_local = ffi.new("ImWchar[?]",wbuf_length)
+        lib.igImTextStrFromUtf8(buf_local, wbuf_length, utf_str, nil,nil);
+        return buf_local
+    end
 end
 
 M.FLT_MAX = lib.igGET_FLT_MAX()
@@ -151,46 +150,46 @@ ImGui_ImplGlfwGL3.__index = ImGui_ImplGlfwGL3
 
 local gl3w_inited = false
 function ImGui_ImplGlfwGL3.__new()
-	if gl3w_inited == false then
-		lib.Do_gl3wInit()
-		gl3w_inited = true
-	end
-	local ptr = lib.ImGui_ImplGlfwGL3_new()
-	ffi.gc(ptr,lib.ImGui_ImplGlfwGL3_delete)
-	return ptr
+    if gl3w_inited == false then
+        lib.Do_gl3wInit()
+        gl3w_inited = true
+    end
+    local ptr = lib.ImGui_ImplGlfwGL3_new()
+    ffi.gc(ptr,lib.ImGui_ImplGlfwGL3_delete)
+    return ptr
 end
 
 function ImGui_ImplGlfwGL3:destroy()
-	ffi.gc(self,nil) --prevent gc twice
-	lib.ImGui_ImplGlfwGL3_delete(self)
+    ffi.gc(self,nil) --prevent gc twice
+    lib.ImGui_ImplGlfwGL3_delete(self)
 end
 
 function ImGui_ImplGlfwGL3:NewFrame()
-	return lib.ImGui_ImplGlfwGL3_NewFrame(self)
+    return lib.ImGui_ImplGlfwGL3_NewFrame(self)
 end
 
 function ImGui_ImplGlfwGL3:Render()
-	return lib.ImGui_ImplGlfwGL3_Render(self)
+    return lib.ImGui_ImplGlfwGL3_Render(self)
 end
 
 function ImGui_ImplGlfwGL3:Init(window, install_callbacks)
-	return lib.ImGui_ImplGlfwGL3_Init(self, window,install_callbacks);
+    return lib.ImGui_ImplGlfwGL3_Init(self, window,install_callbacks);
 end
 
 function ImGui_ImplGlfwGL3.KeyCallback(window, key,scancode, action, mods)
-	return lib.ImGui_ImplGlfwGL3_KeyCallback(window, key,scancode, action, mods);
+    return lib.ImGui_ImplGlfwGL3_KeyCallback(window, key,scancode, action, mods);
 end
 
 function ImGui_ImplGlfwGL3.MouseButtonCallback(win, button, action, mods)
-	return lib.ImGui_ImplGlfwGL3_MouseButtonCallback(win, button, action, mods)
+    return lib.ImGui_ImplGlfwGL3_MouseButtonCallback(win, button, action, mods)
 end
 
 function ImGui_ImplGlfwGL3.ScrollCallback(window,xoffset,yoffset)
-	return lib.ImGui_ImplGlfwGL3_MouseButtonCallback(window,xoffset,yoffset)
+    return lib.ImGui_ImplGlfwGL3_MouseButtonCallback(window,xoffset,yoffset)
 end
 
 function ImGui_ImplGlfwGL3.CharCallback(window,c)
-	return lib.ImGui_ImplGlfwGL3_CharCallback(window, c);
+    return lib.ImGui_ImplGlfwGL3_CharCallback(window, c);
 end
 
 M.ImplGlfwGL3 = ffi.metatype("ImGui_ImplGlfwGL3",ImGui_ImplGlfwGL3)
@@ -200,50 +199,50 @@ local Imgui_Impl_glfw_opengl3 = {}
 Imgui_Impl_glfw_opengl3.__index = Imgui_Impl_glfw_opengl3
 
 function Imgui_Impl_glfw_opengl3:new()
-	if gl3w_inited == false then
-		lib.Do_gl3wInit()
-		gl3w_inited = true
-	end
-	return setmetatable({},self)
+    if gl3w_inited == false then
+        lib.Do_gl3wInit()
+        gl3w_inited = true
+    end
+    return setmetatable({},self)
 end
 
 function Imgui_Impl_glfw_opengl3:Init(window, install_callbacks)
-	lib.igCreateContext(nil);
-	lib.ImGui_ImplGlfw_InitForOpenGL(window, install_callbacks);
+    lib.igCreateContext(nil);
+    lib.ImGui_ImplGlfw_InitForOpenGL(window, install_callbacks);
     lib.ImGui_ImplOpenGL3_Init("#version 150");
 end
 
 function Imgui_Impl_glfw_opengl3:destroy()
-	lib.ImGui_ImplOpenGL3_Shutdown();
+    lib.ImGui_ImplOpenGL3_Shutdown();
     lib.ImGui_ImplGlfw_Shutdown();
     lib.igDestroyContext(nil);
 end
 
 function Imgui_Impl_glfw_opengl3:NewFrame()
-	lib.ImGui_ImplOpenGL3_NewFrame();
+    lib.ImGui_ImplOpenGL3_NewFrame();
     lib.ImGui_ImplGlfw_NewFrame();
     lib.igNewFrame();
 end
 
 function Imgui_Impl_glfw_opengl3:Render()
-	lib.igRender()
-	lib.ImGui_ImplOpenGL3_RenderDrawData(lib.igGetDrawData());
+    lib.igRender()
+    lib.ImGui_ImplOpenGL3_RenderDrawData(lib.igGetDrawData());
 end
 
 function Imgui_Impl_glfw_opengl3.KeyCallback(window, key,scancode, action, mods)
-	return lib.ImGui_ImplGlfw_KeyCallback(window, key,scancode, action, mods);
+    return lib.ImGui_ImplGlfw_KeyCallback(window, key,scancode, action, mods);
 end
 
 function Imgui_Impl_glfw_opengl3.MouseButtonCallback(win, button, action, mods)
-	return lib.ImGui_ImplGlfw_MouseButtonCallback(win, button, action, mods)
+    return lib.ImGui_ImplGlfw_MouseButtonCallback(win, button, action, mods)
 end
 
 function Imgui_Impl_glfw_opengl3.ScrollCallback(window,xoffset,yoffset)
-	return lib.ImGui_ImplGlfw_ScrollCallback(window,xoffset,yoffset)
+    return lib.ImGui_ImplGlfw_ScrollCallback(window,xoffset,yoffset)
 end
 
 function Imgui_Impl_glfw_opengl3.CharCallback(window,c)
-	return lib.ImGui_ImplGlfw_CharCallback(window, c);
+    return lib.ImGui_ImplGlfw_CharCallback(window, c);
 end
 
 M.Imgui_Impl_glfw_opengl3 = Imgui_Impl_glfw_opengl3
@@ -251,16 +250,16 @@ M.Imgui_Impl_glfw_opengl3 = Imgui_Impl_glfw_opengl3
 local Log = {}
 Log.__index = Log
 function Log.__new()
-	local ptr = lib.Log_new()
-	ffi.gc(ptr,lib.Log_delete)
-	return ptr
+    local ptr = lib.Log_new()
+    ffi.gc(ptr,lib.Log_delete)
+    return ptr
 end
 function Log:Add(fmt,...)
-	lib.Log_Add(self,fmt,...)
+    lib.Log_Add(self,fmt,...)
 end
 function Log:Draw(title)
-	title = title or "Log"
-	lib.Log_Draw(self,title)
+    title = title or "Log"
+    lib.Log_Draw(self,title)
 end
 M.Log = ffi.metatype("Log",Log)
 ------------convenience function

@@ -9,35 +9,33 @@ end)
 
 lj_glfw.init()
 local window = lj_glfw.Window(700,500)
-window:makeContextCurrent()	
+window:makeContextCurrent() 
 
---ig.CreateContext(nil)	
-local ig_gl3 = ig.ImplGlfwGL3()
+--choose implementation
+-- local ig_gl3 = ig.ImplGlfwGL3() --multicontext
+local ig_gl3 = ig.Imgui_Impl_glfw_opengl3:new() --standard imgui example
+
 ig_gl3:Init(window, true)
 
 local showdemo = ffi.new("bool[1]",false)
 while not window:shouldClose() do
 
-	lj_glfw.pollEvents()
-	
-	gl.glClear(glc.GL_COLOR_BUFFER_BIT)
-	
-	--print(ig.GetIO().MousePosPrev)
-	
-	ig_gl3:NewFrame()
-	
-	if ig.Button"Hello" then
-		print"Hello World!!"
-	end
-	ig.ShowDemoWindow(showdemo)
-	
-	ig_gl3:Render()
-	
-	window:swapBuffers()					
+    lj_glfw.pollEvents()
+    
+    gl.glClear(glc.GL_COLOR_BUFFER_BIT)
+    
+    ig_gl3:NewFrame()
+    
+    if ig.Button"Hello" then
+        print"Hello World!!"
+    end
+    ig.ShowDemoWindow(showdemo)
+    
+    ig_gl3:Render()
+    
+    window:swapBuffers()                    
 end
 
 ig_gl3:destroy()
 window:destroy()
---ig.DestroyContext(nil)
---ig.Shutdown();
 lj_glfw.terminate()
