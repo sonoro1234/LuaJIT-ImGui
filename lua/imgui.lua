@@ -79,6 +79,7 @@ struct ImGuiPayload;
 struct ImGuiContext;
 typedef void* ImTextureID;
 
+
 typedef unsigned int ImGuiID;
 typedef unsigned short ImWchar;
 typedef int ImGuiCol;
@@ -925,9 +926,9 @@ typedef ImVector ImVector_ImWchar;
  ImGuiIO* igGetIO();
  ImGuiStyle* igGetStyle();
  void igNewFrame();
+ void igEndFrame();
  void igRender();
  ImDrawData* igGetDrawData();
- void igEndFrame();
 
  void igShowDemoWindow(_Bool* p_open);
  void igShowMetricsWindow(_Bool* p_open);
