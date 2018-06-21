@@ -58,7 +58,7 @@ local function Plotter(xmin,xmax,nvals)
 	Graph:init()
 	return Graph
 end
-local Graph = Plotter(-1,1)
+local Graph = Plotter(-10,10)
 --Graph:calc(function(x) return math.exp(x) end)
 Graph:calc(function(x) return 1/x end)
 --Graph:calc(function(x) return x*(x+1)/x end)
@@ -71,10 +71,10 @@ lj_glfw.init()
 local window = lj_glfw.Window(700,500)
 window:makeContextCurrent()	
 
---ig.CreateContext(nil)	
 local ig_gl3 = ig.ImplGlfwGL3()
 ig_gl3:Init(window, true)
 
+local buffer = ffi.new("char[256]", "1/x")
 local showdemo = ffi.new("bool[1]",false)
 while not window:shouldClose() do
 
@@ -82,10 +82,19 @@ while not window:shouldClose() do
 	
 	gl.glClear(glc.GL_COLOR_BUFFER_BIT)
 	
-	--print(ig.GetIO().MousePosPrev)
-	
 	ig_gl3:NewFrame()
 	
+	if ig.InputText("function(x)",buffer,ffi.sizeof(buffer),ig.lib.ImGuiInputTextFlags_EnterReturnsTrue) then
+		local str = ffi.string(buffer)
+		str = "return function(x) return "..str.." end"
+		--print(str)
+		local f = loadstring(str)
+		if f then
+			Graph:calc(f())
+		else
+			print"bad function definition"
+		end
+	end
 	Graph:draw()
 	
 	ig_gl3:Render()
