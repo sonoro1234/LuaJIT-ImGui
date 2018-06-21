@@ -12,10 +12,11 @@ local window = lj_glfw.Window(700,500)
 window:makeContextCurrent() 
 
 --choose implementation
--- local ig_gl3 = ig.ImplGlfwGL3() --multicontext
-local ig_gl3 = ig.Imgui_Impl_glfw_opengl3:new() --standard imgui example
+--local ig_impl = ig.ImplGlfwGL3() --multicontext
+--local ig_impl = ig.Imgui_Impl_glfw_opengl3() --standard imgui opengl3 example
+local ig_impl = ig.Imgui_Impl_glfw_opengl2() --standard imgui opengl2 example
 
-ig_gl3:Init(window, true)
+ig_impl:Init(window, true)
 
 local showdemo = ffi.new("bool[1]",false)
 while not window:shouldClose() do
@@ -24,18 +25,18 @@ while not window:shouldClose() do
     
     gl.glClear(glc.GL_COLOR_BUFFER_BIT)
     
-    ig_gl3:NewFrame()
+    ig_impl:NewFrame()
     
     if ig.Button"Hello" then
         print"Hello World!!"
     end
     ig.ShowDemoWindow(showdemo)
     
-    ig_gl3:Render()
+    ig_impl:Render()
     
     window:swapBuffers()                    
 end
 
-ig_gl3:destroy()
+ig_impl:destroy()
 window:destroy()
 lj_glfw.terminate()

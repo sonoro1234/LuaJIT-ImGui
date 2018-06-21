@@ -198,12 +198,12 @@ M.ImplGlfwGL3 = ffi.metatype("ImGui_ImplGlfwGL3",ImGui_ImplGlfwGL3)
 local Imgui_Impl_glfw_opengl3 = {}
 Imgui_Impl_glfw_opengl3.__index = Imgui_Impl_glfw_opengl3
 
-function Imgui_Impl_glfw_opengl3:new()
+function Imgui_Impl_glfw_opengl3.__call()
     if gl3w_inited == false then
         lib.Do_gl3wInit()
         gl3w_inited = true
     end
-    return setmetatable({},self)
+    return setmetatable({},Imgui_Impl_glfw_opengl3)
 end
 
 function Imgui_Impl_glfw_opengl3:Init(window, install_callbacks)
@@ -245,7 +245,56 @@ function Imgui_Impl_glfw_opengl3.CharCallback(window,c)
     return lib.ImGui_ImplGlfw_CharCallback(window, c);
 end
 
-M.Imgui_Impl_glfw_opengl3 = Imgui_Impl_glfw_opengl3
+M.Imgui_Impl_glfw_opengl3 = setmetatable({},Imgui_Impl_glfw_opengl3)
+
+-----------------------Imgui_Impl_glfw_opengl2
+local Imgui_Impl_glfw_opengl2 = {}
+Imgui_Impl_glfw_opengl2.__index = Imgui_Impl_glfw_opengl2
+
+function Imgui_Impl_glfw_opengl2.__call()
+    return setmetatable({},Imgui_Impl_glfw_opengl2)
+end
+
+function Imgui_Impl_glfw_opengl2:Init(window, install_callbacks)
+    lib.igCreateContext(nil);
+    lib.ImGui_ImplGlfw_InitForOpenGL(window, install_callbacks);
+    lib.ImGui_ImplOpenGL2_Init();
+end
+
+function Imgui_Impl_glfw_opengl2:destroy()
+    lib.ImGui_ImplOpenGL2_Shutdown();
+    lib.ImGui_ImplGlfw_Shutdown();
+    lib.igDestroyContext(nil);
+end
+
+function Imgui_Impl_glfw_opengl2:NewFrame()
+    lib.ImGui_ImplOpenGL2_NewFrame();
+    lib.ImGui_ImplGlfw_NewFrame();
+    lib.igNewFrame();
+end
+
+function Imgui_Impl_glfw_opengl2:Render()
+    lib.igRender()
+    lib.ImGui_ImplOpenGL2_RenderDrawData(lib.igGetDrawData());
+end
+
+function Imgui_Impl_glfw_opengl2.KeyCallback(window, key,scancode, action, mods)
+    return lib.ImGui_ImplGlfw_KeyCallback(window, key,scancode, action, mods);
+end
+
+function Imgui_Impl_glfw_opengl2.MouseButtonCallback(win, button, action, mods)
+    return lib.ImGui_ImplGlfw_MouseButtonCallback(win, button, action, mods)
+end
+
+function Imgui_Impl_glfw_opengl2.ScrollCallback(window,xoffset,yoffset)
+    return lib.ImGui_ImplGlfw_ScrollCallback(window,xoffset,yoffset)
+end
+
+function Imgui_Impl_glfw_opengl2.CharCallback(window,c)
+    return lib.ImGui_ImplGlfw_CharCallback(window, c);
+end
+
+M.Imgui_Impl_glfw_opengl2 = setmetatable({},Imgui_Impl_glfw_opengl2)
 -----------------------another Log
 local Log = {}
 Log.__index = Log
