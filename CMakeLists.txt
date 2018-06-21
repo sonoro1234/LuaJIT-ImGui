@@ -11,7 +11,7 @@ if (${IMGUI_DISABLE_OBSOLETE_FUNCTIONS})
 add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
 endif(${IMGUI_DISABLE_OBSOLETE_FUNCTIONS})
 
-#add_definitions("-DIMGUI_APIX=extern \"C\" __declspec\(dllexport\)")
+add_definitions("-DIMGUI_IMPL_API=extern \"C\" __declspec\(dllexport\)")
 #set_source_files_properties(./cimgui/imgui/examples/imgui_impl_glfw.cpp PROPERTIES COMPILE_DEFINITIONS "IMGUI_API=extern \"C\" __declspec\(dllexport\)")
 #set_source_files_properties(./cimgui/imgui/examples/imgui_impl_opengl3.cpp PROPERTIES COMPILE_DEFINITIONS "IMGUI_API=extern \"C\" __declspec\(dllexport\)")
 
@@ -23,7 +23,7 @@ add_compile_options(-std=c++11) # CMake 2.8.12 or newer
 
 add_library(cimgui SHARED ./cimgui/imgui/examples/libs/gl3w/GL/gl3w.c 
 ./cimgui/imgui/imgui.cpp ./cimgui/imgui/imgui_draw.cpp ./cimgui/imgui/imgui_demo.cpp
-#./cimgui/imgui/examples/imgui_impl_opengl3.cpp ./cimgui/imgui/examples/imgui_impl_glfw.cpp  
+./cimgui/imgui/examples/imgui_impl_opengl3.cpp ./cimgui/imgui/examples/imgui_impl_glfw.cpp  
 ./cimgui/cimgui/cimgui.cpp
 ./extras/impl_glfw3/imgui_impl_glfw_gl3.cpp ./extras/knob.cpp  ./extras/curve.cpp ./extras/Bezier.cpp)
 
