@@ -1,5 +1,5 @@
 local ffi = require"ffi"
-
+local basedir = [[C:\luaGL\gitsources\build_luajit_imgui_glfw_opengl2\]]
 --uncomment to debug cdef calls
 ---[[
 local ffi_cdef = ffi.cdef
@@ -98,7 +98,7 @@ int igImTextCountUtf8BytesFromStr(const ImWchar* in_text, const ImWchar* in_text
 end
 
 --load dll
-local lib = ffi.load[[C:\luaGL\gitsources\build_luajit-imgui_implementations\libcimgui]]
+local lib = ffi.load(basedir.."libcimgui")
 
 -----------ImVec2 definition
 local ImVec2 
@@ -215,7 +215,7 @@ end
 function Imgui_Impl_glfw_opengl3:destroy()
     lib.ImGui_ImplOpenGL3_Shutdown();
     lib.ImGui_ImplGlfw_Shutdown();
-    lib.igDestroyContext(nil);
+    lib.igDestroyContext(self.igctx);
 end
 
 function Imgui_Impl_glfw_opengl3:NewFrame()

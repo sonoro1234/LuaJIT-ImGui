@@ -10,13 +10,16 @@ end)
 lj_glfw.init()
 local window = lj_glfw.Window(700,500)
 window:makeContextCurrent()
-local ig_gl3 = ig.ImplGlfwGL3()
+--local ig_gl3 = ig.ImplGlfwGL3()
+local ig_gl3 = ig.Imgui_Impl_glfw_opengl3() --standard imgui opengl3 example
 ig_gl3:Init(window, true)
+local fontat = ig.GetIO().Fonts
 
 local windowB = lj_glfw.Window(700,500)
 windowB:makeContextCurrent()
-local ig_gl3B = ig.ImplGlfwGL3()
-ig_gl3B:Init(windowB, true)
+--local ig_gl3B = ig.ImplGlfwGL3()
+local ig_gl3B = ig.Imgui_Impl_glfw_opengl3()
+ig_gl3B:Init(windowB, true,fontat)
 
 local showdemo = ffi.new("bool[1]",false)
 while not window:shouldClose() or not windowB:shouldClose() do

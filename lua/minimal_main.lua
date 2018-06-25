@@ -13,8 +13,8 @@ window:makeContextCurrent()
 
 --choose implementation
 --local ig_impl = ig.ImplGlfwGL3() --multicontext
---local ig_impl = ig.Imgui_Impl_glfw_opengl3() --standard imgui opengl3 example
-local ig_impl = ig.Imgui_Impl_glfw_opengl2() --standard imgui opengl2 example
+local ig_impl = ig.Imgui_Impl_glfw_opengl3() --standard imgui opengl3 example
+--local ig_impl = ig.Imgui_Impl_glfw_opengl2() --standard imgui opengl2 example
 
 ig_impl:Init(window, true)
 
