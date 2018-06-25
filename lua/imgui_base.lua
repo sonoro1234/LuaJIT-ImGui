@@ -215,7 +215,7 @@ end
 function Imgui_Impl_glfw_opengl3:destroy()
     lib.ImGui_ImplOpenGL3_Shutdown();
     lib.ImGui_ImplGlfw_Shutdown();
-    lib.igDestroyContext(self.igctx);
+    lib.igDestroyContext(nil);
 end
 
 function Imgui_Impl_glfw_opengl3:NewFrame()
