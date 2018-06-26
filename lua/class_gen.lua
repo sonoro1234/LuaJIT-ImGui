@@ -1,11 +1,11 @@
 -----------------------------------------------
 -- script to build lua classes
 -- expects lua 5.1 or luajit
--- expects "../cimgui/cimgui/generator/definitions.lua" to be generated in cimgui (master_auto2 branch)
+-- expects "../cimgui/generator/definitions.lua" to be generated in cimgui (master_auto2 branch)
 -----------------------------------------------
 
 --load function definitions
-local dir = [[../cimgui/cimgui/generator/]]
+local dir = [[../cimgui/generator/]]
 local fundefs = dofile(dir..[[definitions.lua]])
 
 --group them by structs

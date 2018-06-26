@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8)
 #general settings
 include_directories(cimgui/imgui)
 add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
-set(IMGUI_SOURCES ./cimgui/cimgui/cimgui.cpp ./cimgui/imgui/imgui.cpp ./cimgui/imgui/imgui_draw.cpp ./cimgui/imgui/imgui_demo.cpp)
+set(IMGUI_SOURCES ./cimgui/cimgui.cpp ./cimgui/imgui/imgui.cpp ./cimgui/imgui/imgui_draw.cpp ./cimgui/imgui/imgui_demo.cpp)
 
 set(IMGUI_LIBRARIES )
 
