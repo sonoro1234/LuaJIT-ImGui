@@ -7,11 +7,11 @@ Uses the cimgui_auto_implementations branch of cimgui to be the most "up to date
 Notes:
 * currently this wrapper is based on version [1.62WIP of imgui](https://github.com/ocornut/imgui/releases/tag/v1.62)
 
-#compiling
+# compiling
 
 * run one of the scripts in the build directory from a sibling folder to the repo.
 * make
 
-#binding generation
+# binding generation
 
 * if cimgui is updated the binding can be remade with ./lua/build.bat

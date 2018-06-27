@@ -4,7 +4,9 @@ cmake_minimum_required(VERSION 2.8)
 #general settings
 include_directories(cimgui/imgui)
 add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
-set(IMGUI_SOURCES ./cimgui/cimgui.cpp ./cimgui/imgui/imgui.cpp ./cimgui/imgui/imgui_draw.cpp ./cimgui/imgui/imgui_demo.cpp)
+#set(IMGUI_SOURCES ./cimgui/cimgui.cpp ./cimgui/imgui/imgui.cpp ./cimgui/imgui/imgui_draw.cpp ./cimgui/imgui/imgui_demo.cpp)
+include_directories(cimgui/generator/generated)
+set(IMGUI_SOURCES ./cimgui/generator/generated/cimgui_auto.cpp ./cimgui/imgui/imgui.cpp ./cimgui/imgui/imgui_draw.cpp ./cimgui/imgui/imgui_demo.cpp)
 
 set(IMGUI_LIBRARIES )
 
@@ -49,7 +51,6 @@ endif(IMPL_OPENGL3)
 
 if(IMPL_OPENGL2)
 	list(APPEND IMGUI_SOURCES ./cimgui/imgui/examples/imgui_impl_opengl2.cpp)
-	#include_directories(cimgui/imgui/examples/libs/gl3w)
 	list(APPEND IMGUI_LIBRARIES opengl32)
 endif(IMPL_OPENGL2)
 

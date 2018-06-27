@@ -54,7 +54,7 @@ end
 	print("local cdecl = cdecl or ''")
 	print("cdecl = cdecl..[[")
 	for i,line in ipairs(cdefs) do
-		io.write( line,"\n") 
+		if line~="" then io.write( line,"\n") end
 	end
 	print("]]")
 

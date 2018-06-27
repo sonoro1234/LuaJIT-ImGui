@@ -5,7 +5,7 @@
 -----------------------------------------------
 
 --load function definitions
-local dir = [[../cimgui/generator/]]
+local dir = [[../cimgui/generator/generated/]]
 local fundefs = dofile(dir..[[definitions.lua]])
 
 --group them by structs
