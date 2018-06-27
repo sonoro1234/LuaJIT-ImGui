@@ -203,11 +203,10 @@ function Imgui_Impl_glfw_opengl3.__call()
         lib.Do_gl3wInit()
         gl3w_inited = true
     end
-    return setmetatable({},Imgui_Impl_glfw_opengl3)
+    return setmetatable({ctx = lib.igCreateContext(nil)},Imgui_Impl_glfw_opengl3)
 end
 
 function Imgui_Impl_glfw_opengl3:Init(window, install_callbacks)
-    lib.igCreateContext(nil);
     lib.ImGui_ImplGlfw_InitForOpenGL(window, install_callbacks);
     lib.ImGui_ImplOpenGL3_Init("#version 150");
 end
@@ -215,7 +214,7 @@ end
 function Imgui_Impl_glfw_opengl3:destroy()
     lib.ImGui_ImplOpenGL3_Shutdown();
     lib.ImGui_ImplGlfw_Shutdown();
-    lib.igDestroyContext(nil);
+    lib.igDestroyContext(self.ctx);
 end
 
 function Imgui_Impl_glfw_opengl3:NewFrame()
@@ -252,11 +251,10 @@ local Imgui_Impl_glfw_opengl2 = {}
 Imgui_Impl_glfw_opengl2.__index = Imgui_Impl_glfw_opengl2
 
 function Imgui_Impl_glfw_opengl2.__call()
-    return setmetatable({},Imgui_Impl_glfw_opengl2)
+    return setmetatable({ctx = lib.igCreateContext(nil)},Imgui_Impl_glfw_opengl2)
 end
 
 function Imgui_Impl_glfw_opengl2:Init(window, install_callbacks)
-    lib.igCreateContext(nil);
     lib.ImGui_ImplGlfw_InitForOpenGL(window, install_callbacks);
     lib.ImGui_ImplOpenGL2_Init();
 end
@@ -264,7 +262,7 @@ end
 function Imgui_Impl_glfw_opengl2:destroy()
     lib.ImGui_ImplOpenGL2_Shutdown();
     lib.ImGui_ImplGlfw_Shutdown();
-    lib.igDestroyContext(nil);
+    lib.igDestroyContext(self.ctx);
 end
 
 function Imgui_Impl_glfw_opengl2:NewFrame()
