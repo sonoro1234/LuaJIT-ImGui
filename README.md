@@ -1,5 +1,6 @@
 # LuaJIT-ImGui
 
+![sample](sample.png)
 
 This is a LuaJIT binding for the excellent C++ intermediate gui [imgui](https://github.com/ocornut/imgui).
 Uses the cimgui_auto_implementations branch of cimgui to be the most "up to date" as possible.
