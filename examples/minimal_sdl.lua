@@ -43,7 +43,7 @@ end
         --SDL_Event 
         local event = ffi.new"SDL_Event"
         while (sdl.pollEvent(event) ~=0) do
-            --ImGui_ImplSDL2_ProcessEvent(&event);
+            ig.lib.ImGui_ImplSDL2_ProcessEvent(event);
             if (event.type == sdl.QUIT) then
                 done = true;
             end

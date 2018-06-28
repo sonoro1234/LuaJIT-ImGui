@@ -8,17 +8,17 @@ glfw.glfwSetErrorCallback(function(error,description)
 end)
 
 lj_glfw.init()
-local window = lj_glfw.Window(700,500)
+local window = lj_glfw.Window(700,500,"first")
 window:makeContextCurrent()
 local ig_gl3 = ig.ImplGlfwGL3()
---local ig_gl3 = ig.Imgui_Impl_glfw_opengl3() --standard imgui opengl3 example
+-- local ig_gl3 = ig.Imgui_Impl_glfw_opengl3() --standard imgui opengl3 example
 ig_gl3:Init(window, true)
 local fontat = ig.GetIO().Fonts
 
-local windowB = lj_glfw.Window(700,500)
+local windowB = lj_glfw.Window(700,500,"second",nil,window)
 windowB:makeContextCurrent()
 local ig_gl3B = ig.ImplGlfwGL3()
---local ig_gl3B = ig.Imgui_Impl_glfw_opengl3()
+-- local ig_gl3B = ig.Imgui_Impl_glfw_opengl3()
 ig_gl3B:Init(windowB, true,fontat)
 
 local showdemo = ffi.new("bool[1]",false)

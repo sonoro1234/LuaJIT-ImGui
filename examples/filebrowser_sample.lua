@@ -169,8 +169,8 @@ function gui.FileBrowser(filename_p, args, funcOK)
             end
             ig.EndChild()
             
-            ig.InputText("file",save_file_name,256,0,nil,nil)
-            if ig.InputText("pattern",pattern_ed,32,0,nil,nil) then curr_dir_done = false end
+            ig.InputText("file",save_file_name,256)
+            if ig.InputText("pattern",pattern_ed,32,ig.lib.ImGuiInputTextFlags_EnterReturnsTrue) then curr_dir_done = false end
             local doit = false
             
             if ig.Button("OK") then
@@ -213,7 +213,7 @@ function gui.FileBrowser(filename_p, args, funcOK)
     return {draw = filechooser, open = function() curr_dir_done = false;ig.OpenPopup(args.key) end,func = funcOK}
 end
 
-local fb = gui.FileBrowser(nil,{key="loader"},function(fname) print("load",fname) end)
+local fb = gui.FileBrowser(nil,{key="loader",pattern="%.lua"},function(fname) print("load",fname) end)
 local fbs = gui.FileBrowser(nil,{key="saver",check_existence=true},function(fname) print("save",fname) end)
 -------------------------main program------------------
 glfw.glfwSetErrorCallback(function(error,description)
