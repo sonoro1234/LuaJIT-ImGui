@@ -1,10 +1,15 @@
 local ffi = require "ffi"
+-- https://github.com/sonoro1234/LuaJIT-GLFW
 local lj_glfw = require"glfw"
 local gl, glc, glu, glfw, glext = lj_glfw.libraries()
 local ig = require"imgui"
 local imgui = ig.lib
 ---------------------------------------------FileBrowser---------------------------------------
+-- plain luafilesystem
 local lfs = require"lfs"
+-- or to get unicode lfs with luajit
+-- https://github.com/sonoro1234/luafilesystem
+-- local lfs = require"lfs_ffi"
    --------------path utilities extracted from penligth (Steve Donovan)
 local M = {}
 local is_windows = package.config:sub(1,1) == '\\'
@@ -106,7 +111,6 @@ function gui.FileBrowser(filename_p, args, funcOK)
     local curr_dir_dirs = {}
     local fullname
     
-    local lfs = require"lfs"
     local function funcdir(path, patt)
         for file in lfs.dir(path) do
             if file ~= "."  then --and file ~= ".." then
