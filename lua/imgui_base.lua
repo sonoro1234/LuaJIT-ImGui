@@ -1,5 +1,5 @@
 local ffi = require"ffi"
-local basedir = [[C:\luaGL\gitsources\build_luajit_imgui_glfw_opengl2\]]
+
 --uncomment to debug cdef calls
 ---[[
 local ffi_cdef = ffi.cdef

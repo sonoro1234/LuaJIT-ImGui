@@ -12,6 +12,7 @@ Notes:
 
 * run one of the scripts in the build directory from a sibling folder to the repo.
 * make
+* set basedir variable in imgui.lua to the directory libimgui is found (except if it is on luajit directory)
 
 # binding generation
 
