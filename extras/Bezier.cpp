@@ -198,3 +198,8 @@ namespace ImGui
   }
 }
 
+IMGUI_IMPL_API int Bezier( const char *label, float P[4] )
+{
+	return ImGui::Bezier(label,P);
+}
+

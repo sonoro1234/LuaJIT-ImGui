@@ -1,62 +1,13 @@
 #include <imgui.h>
 #include <imgui_internal.h> 
 
-#if defined _WIN32 || defined __CYGWIN__
-#define IMGUI_APIX extern "C" __declspec( dllexport )
-#else
-#define IMGUI_APIX extern "C" 
-#endif
+
 
 #ifndef M_PI
 #define M_PI 3.14159f
 #endif
-IMGUI_APIX ImVec2 igGetCursorScreenPosORIG()
-{
-    return ImGui::GetCursorScreenPos();
-}
 
-typedef ImVec2 (*ImVec2returner)();
 
-__declspec( dllexport)  ImVec2returner igGetCursorScreenPosORIG2 = ImGui::GetCursorScreenPos;
-//extern "C"
- __declspec( dllexport ) ImVec2 ImGui::GetCursorScreenPos();
-
- //////////////
-namespace ImGui
-{
-    bool Curve(const char *label, const ImVec2& size, ImVec2 *points, const int maxpoints, float *data, int datalen);
-	void CurveGetData(ImVec2 *points, const int maxpoints, float *data, int datalen);
-};
-
-IMGUI_APIX bool Curve(const char *label, const ImVec2& size, ImVec2 *points, const int maxpoints, float *data, int datalen)
-{
-	return ImGui::Curve(label, size, points, maxpoints, data, datalen);
-}
-
-IMGUI_APIX void CurveGetData(ImVec2 *points, const int maxpoints, float *data, int datalen)
-{
-	return ImGui::CurveGetData(points, maxpoints, data, datalen);
-}
-
-/*
-IMGUI_APIX float CurveValue(float p, int maxpoints, const ImVec2 *points)
-{
-	return ImGui::CurveValue(p, maxpoints, points);
-}
-IMGUI_APIX float CurveValueSmooth(float p, int maxpoints, const ImVec2 *points)
-{
-	return ImGui::CurveValueSmooth(p,maxpoints, points);
-}
-*/
- //////////////
-namespace ImGui{
- int Bezier( const char *label, float P[4] );
-};
-
-IMGUI_APIX int Bezier( const char *label, float P[4] )
-{
-	return ImGui::Bezier(label,P);
-}
 ////////////// Log
 struct Log
 {
@@ -118,11 +69,11 @@ struct Log
     }
 };
 
-IMGUI_APIX Log* Log_new()
+IMGUI_IMPL_API Log* Log_new()
 {
 	return new Log;
 }
-IMGUI_APIX void Log_Add(Log* log,const char* fmt, ...)
+IMGUI_IMPL_API void Log_Add(Log* log,const char* fmt, ...)
 {
 	va_list args;
     va_start(args, fmt);
@@ -130,18 +81,18 @@ IMGUI_APIX void Log_Add(Log* log,const char* fmt, ...)
 	va_end(args);
 }
 
-IMGUI_APIX void Log_Draw(Log* log, const char* title) 
+IMGUI_IMPL_API void Log_Draw(Log* log, const char* title) 
 {
 	bool open = true;
 	log->Draw(title,&open);
 }
 
-IMGUI_APIX void Log_delete(Log* log)
+IMGUI_IMPL_API void Log_delete(Log* log)
 {
 	delete log;
 }
 ////////////////
-IMGUI_APIX bool Knob(const char* label, float* value_p, float minv, float maxv)
+IMGUI_IMPL_API bool Knob(const char* label, float* value_p, float minv, float maxv)
 {	
 	ImGuiStyle& style = ImGui::GetStyle();
 	float line_height = ImGui::GetTextLineHeight();

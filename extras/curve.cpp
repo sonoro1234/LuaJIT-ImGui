@@ -938,3 +938,13 @@ namespace ImGui
     }
 
 };
+
+IMGUI_IMPL_API bool Curve(const char *label, const ImVec2& size, ImVec2 *points, const int maxpoints, float *data, int datalen)
+{
+	return ImGui::Curve(label, size, points, maxpoints, data, datalen);
+}
+
+IMGUI_IMPL_API void CurveGetData(ImVec2 *points, const int maxpoints, float *data, int datalen)
+{
+	return ImGui::CurveGetData(points, maxpoints, data, datalen);
+}
