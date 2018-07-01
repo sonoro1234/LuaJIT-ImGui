@@ -17,6 +17,8 @@ struct ImGui_ImplGlfwGL3{
 	ImGuiContext* ctx;
 	double       g_Time ;
 	bool         g_MousePressed[3] ;
+	bool         g_MouseJustPressed[5];// = { false, false, false, false, false };
+	GLFWcursor*      g_MouseCursors[ImGuiMouseCursor_COUNT];// = { 0 };
 	float        g_MouseWheel;
 	GLuint       g_FontTexture;
 	int          g_ShaderHandle, g_VertHandle, g_FragHandle;
@@ -32,14 +34,21 @@ struct ImGui_ImplGlfwGL3{
 	bool 		CreateFontsTexture();
 	void 		Render();
 	void 		Set();
+	void 		ImGui_ImplGlfw_UpdateMousePosAndButtons();
+	void		ImGui_ImplGlfw_UpdateMouseCursor();
 	ImGui_ImplGlfwGL3(){
 		g_Window = NULL;
-		//if it is first time save default context
-		//if (pGImDefaultContext == NULL)
-		//	pGImDefaultContext = ImGui::GetCurrentContext();
+
 		ctx = ImGui::CreateContext();
 		g_Time = 0.0f;
 		g_MousePressed[0] = false;g_MousePressed[1] = false;g_MousePressed[2] = false;
+		//g_MouseJustPressed[] = { false, false, false, false, false };
+		//g_MouseCursors[ImGuiMouseCursor_COUNT] = { 0 };
+		for(int i=0; i<5; i++){g_MouseJustPressed[i]=false;}
+		for (ImGuiMouseCursor cursor_n = 0; cursor_n < ImGuiMouseCursor_COUNT; cursor_n++)
+		{
+			g_MouseCursors[cursor_n] = 0;
+		}
 		g_MouseWheel = 0.0f;
 		g_FontTexture = 0;
 		g_ShaderHandle = 0, g_VertHandle = 0, g_FragHandle = 0;
@@ -49,7 +58,11 @@ struct ImGui_ImplGlfwGL3{
 	};
 	~ImGui_ImplGlfwGL3(){
 		InvalidateDeviceObjects();
-		//ImGui::SetCurrentContext(pGImDefaultContext);
+		for (ImGuiMouseCursor cursor_n = 0; cursor_n < ImGuiMouseCursor_COUNT; cursor_n++)
+		{
+			glfwDestroyCursor(g_MouseCursors[cursor_n]);
+			g_MouseCursors[cursor_n] = NULL;
+		}
 		ImGui::DestroyContext(ctx);
 	};
 };
