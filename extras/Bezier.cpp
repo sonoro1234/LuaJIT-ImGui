@@ -33,17 +33,17 @@ namespace ImGui
           }
       }
       for (unsigned step = 0; step <= steps; ++step) {
-          ImVec2 point = {
+          ImVec2 point(
               K[step*4+0]*P[0].x + K[step*4+1]*P[1].x + K[step*4+2]*P[2].x + K[step*4+3]*P[3].x,
               K[step*4+0]*P[0].y + K[step*4+1]*P[1].y + K[step*4+2]*P[2].y + K[step*4+3]*P[3].y
-          };
+          );
           results[step] = point;
       }
   }
 
   float BezierValue( float dt01, float P[4] ) {
     enum { STEPS = 256 };
-    ImVec2 Q[4] = { { 0, 0 }, { P[0], P[1] }, { P[2], P[3] }, { 1, 1 } };
+    ImVec2 Q[4] = { ImVec2( 0, 0 ), ImVec2( P[0], P[1] ), ImVec2( P[2], P[3] ), ImVec2( 1, 1 ) };
     ImVec2 results[STEPS+1];
     bezier_table<STEPS>( Q, results );
     return results[ (int)((dt01 < 0 ? 0 : dt01 > 1 ? 1 : dt01) * STEPS) ].y;
@@ -99,7 +99,7 @@ namespace ImGui
     }   
 
     // eval curve
-    ImVec2 Q[4] = { { 0, 0 }, { P[0], P[1] }, { P[2], P[3] }, { 1, 1 } };
+    ImVec2 Q[4] = { ImVec2( 0, 0 ), ImVec2( P[0], P[1] ), ImVec2( P[2], P[3] ), ImVec2( 1, 1 ) };
     ImVec2 results[SMOOTHNESS+1];
     bezier_table<SMOOTHNESS>( Q, results );
 
@@ -132,8 +132,8 @@ namespace ImGui
         {
           ImColor color( GetStyle().Colors[ ImGuiCol_PlotLines ] );
           for( int i = 0; i < SMOOTHNESS; ++i ) {
-            ImVec2 p = { results[i+0].x, 1 - results[i+0].y };
-            ImVec2 q = { results[i+1].x, 1 - results[i+1].y };
+            ImVec2 p( results[i+0].x, 1 - results[i+0].y );
+            ImVec2 q( results[i+1].x, 1 - results[i+1].y );
             ImVec2 r( p.x * (bb.Max.x - bb.Min.x) + bb.Min.x, p.y * (bb.Max.y - bb.Min.y) + bb.Min.y);
             ImVec2 s( q.x * (bb.Max.x - bb.Min.x) + bb.Min.x, q.y * (bb.Max.y - bb.Min.y) + bb.Min.y);
             DrawList->AddLine(r, s, color, CURVE_WIDTH);

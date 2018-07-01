@@ -176,7 +176,7 @@ IMGUI_APIX bool Knob(const char* label, float* value_p, float minv, float maxv)
 		touched = true;
 		ImVec2 mp = ImGui::GetIO().MousePos;
 		alpha = atan2f(mp.x - center.x, center.y - mp.y) + M_PI;
-		alpha = ImMax(gamma,ImMin(2.0f*M_PI-gamma,alpha));
+		alpha = ImMax(gamma,ImMin((float)(2.0f*M_PI-gamma),alpha));
 		float value = 0.5f*(alpha-gamma)/(M_PI-gamma);
 		value_p[0] = value*(maxv - minv) + minv;
 	}

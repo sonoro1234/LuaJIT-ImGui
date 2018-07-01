@@ -48,7 +48,7 @@ if(IMPL_OPENGL2)
 endif(IMPL_OPENGL2)
 
 if(IMPL_EXTRAS)
-    add_compile_options(-std=c++11)
+    #add_compile_options(-std=c++11)
     list(APPEND IMGUI_SOURCES ./extras/impl_glfw3/imgui_impl_glfw_gl3.cpp
  ./extras/knob.cpp  ./extras/curve.cpp ./extras/Bezier.cpp)
 endif(IMPL_EXTRAS)
