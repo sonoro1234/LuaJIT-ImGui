@@ -49,9 +49,17 @@ endif(IMPL_OPENGL2)
 
 if(IMPL_EXTRAS)
     list(APPEND IMGUI_SOURCES ./extras/impl_glfw3/imgui_impl_glfw_gl3.cpp
-	./extras/knob.cpp  ./extras/curve.cpp)
+    ./extras/knob.cpp  ./extras/curve.cpp)
 endif(IMPL_EXTRAS)
 
 #add library and link
 add_library(cimgui SHARED ${IMGUI_SOURCES})
 target_link_libraries(cimgui ${IMGUI_LIBRARIES})
+
+#install
+install(TARGETS cimgui
+              RUNTIME DESTINATION  .
+              LIBRARY DESTINATION  .
+              #ARCHIVE DESTINATION lib 
+              )
+install(FILES lua/imgui.lua DESTINATION lua)
