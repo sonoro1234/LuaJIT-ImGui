@@ -15,6 +15,7 @@ for fun,defs in pairs(fundefs) do
 	structs[stname] = structs[stname] or {}
 	table.insert(structs[stname],fun)
 end
+structs.ImVec4 = nil
 
 --[[ tests
 require"anima.utils" --gives us prtable

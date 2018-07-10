@@ -113,7 +113,9 @@ ImVec2 = ffi.metatype("ImVec2",{
     end,
     __tostring = function(v) return 'ImVec2<'..v.x..','..v.y..'>' end
 })
-local ImVec4 = ffi.typeof("struct ImVec4")
+local ImVec4= {}
+ImVec4.__index = ImVec4
+ImVec4 = ffi.metatype("ImVec4",ImVec4)
 --the module
 local M = {ImVec2 = ImVec2, ImVec4 = ImVec4 ,lib = lib}
 ----------ImFontConfig

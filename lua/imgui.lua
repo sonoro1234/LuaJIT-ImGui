@@ -3,30 +3,11 @@ local basedir = '' --set imgui directory location
 local cdecl = cdecl or ''
 cdecl = cdecl..[[
 typedef unsigned long long ImU64;
-typedef struct ImFont ImFont;
-typedef struct ImFontAtlas ImFontAtlas;
 typedef struct CustomRect CustomRect;
 typedef struct GlyphRangesBuilder GlyphRangesBuilder;
 typedef struct ImFontGlyph ImFontGlyph;
-typedef struct ImFontConfig ImFontConfig;
-typedef struct ImDrawData ImDrawData;
-typedef struct ImDrawList ImDrawList;
-typedef struct ImDrawChannel ImDrawChannel;
-typedef struct ImDrawVert ImDrawVert;
-typedef struct ImDrawCmd ImDrawCmd;
-typedef struct ImGuiListClipper ImGuiListClipper;
-typedef struct ImColor ImColor;
-typedef struct ImGuiPayload ImGuiPayload;
-typedef struct ImGuiSizeCallbackData ImGuiSizeCallbackData;
-typedef struct ImGuiTextEditCallbackData ImGuiTextEditCallbackData;
-typedef struct ImGuiStorage ImGuiStorage;
 typedef struct Pair Pair;
-typedef struct ImGuiTextBuffer ImGuiTextBuffer;
-typedef struct ImGuiTextFilter ImGuiTextFilter;
 typedef struct TextRange TextRange;
-typedef struct ImGuiOnceUponAFrame ImGuiOnceUponAFrame;
-typedef struct ImGuiIO ImGuiIO;
-typedef struct ImGuiStyle ImGuiStyle;
 typedef struct ImVec4 ImVec4;
 typedef struct ImVec2 ImVec2;
 typedef struct ImGuiContext ImGuiContext;
@@ -1423,7 +1404,9 @@ ImVec2 = ffi.metatype("ImVec2",{
     end,
     __tostring = function(v) return 'ImVec2<'..v.x..','..v.y..'>' end
 })
-local ImVec4 = ffi.typeof("struct ImVec4")
+local ImVec4= {}
+ImVec4.__index = ImVec4
+ImVec4 = ffi.metatype("ImVec4",ImVec4)
 --the module
 local M = {ImVec2 = ImVec2, ImVec4 = ImVec4 ,lib = lib}
 ----------ImFontConfig
@@ -1842,10 +1825,6 @@ function CustomRect:IsPacked()
     return lib.CustomRect_IsPacked(self)
 end
 M.CustomRect = ffi.metatype("CustomRect",CustomRect)
---------------------------ImVec4----------------------------
-local ImVec4= {}
-ImVec4.__index = ImVec4
-M.ImVec4 = ffi.metatype("ImVec4",ImVec4)
 --------------------------ImGuiStorage----------------------------
 local ImGuiStorage= {}
 ImGuiStorage.__index = ImGuiStorage
