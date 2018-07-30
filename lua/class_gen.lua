@@ -41,7 +41,11 @@ local function testcode(codestr,code)
 		print(codestr)
 		print"--end error codestr--------------------"
 		local linenum = err:match(":(%d+):")
-		print("error on:",linenum,code[tonumber(linenum)])
+		linenum = tonumber(linenum)
+		print("error on:",linenum,code[linenum])
+		for i=-2,2 do
+			print("error on:",linenum+i,code[linenum+i])
+		end
 		error(err)
 	end
 end
@@ -69,8 +73,10 @@ function sanitize_reserved(def)
 		if not is_cstring then
 			--numbers without f in the end
 			def.defaults[k] = v:gsub("([%d%.%-]+)f","%1")
+			--+ in front of numbers
+			def.defaults[k] = def.defaults[k]:gsub("^%+([%d%.%-]+)","%1")
 			--FLT_MAX
-			def.defaults[k] = def.defaults[k]:gsub("FLT_MAX","M.FLT_MAX")
+			def.defaults[k] = def.defaults[k]:gsub("3%.40282346638528859812e%+38F","M.FLT_MAX")
 			def.defaults[k] = def.defaults[k]:gsub("ImDrawCornerFlags_All","lib.ImDrawCornerFlags_All")
 			def.defaults[k] = def.defaults[k]:gsub("sizeof%((%w+)%)",[[ffi.sizeof("%1")]])
 			def.defaults[k] = def.defaults[k]:gsub("%(%(void %*%)0%)","nil")

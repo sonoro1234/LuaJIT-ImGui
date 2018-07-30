@@ -3003,27 +3003,35 @@ function M.OpenPopupOnItemClick(str_id,mouse_button)
 end
 function M.PlotHistogramFloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
     overlay_text = overlay_text or nil
-    stride = stride or ffi.sizeof("float")
     values_offset = values_offset or 0
+    scale_max = scale_max or M.FLT_MAX
+    scale_min = scale_min or M.FLT_MAX
     graph_size = graph_size or ImVec2(0,0)
+    stride = stride or ffi.sizeof("float")
     return lib.igPlotHistogramFloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
 end
 function M.PlotHistogramFnPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
     overlay_text = overlay_text or nil
     values_offset = values_offset or 0
+    scale_max = scale_max or M.FLT_MAX
+    scale_min = scale_min or M.FLT_MAX
     graph_size = graph_size or ImVec2(0,0)
     return lib.igPlotHistogramFnPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
 end
 function M.PlotLines(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
     overlay_text = overlay_text or nil
-    stride = stride or ffi.sizeof("float")
     values_offset = values_offset or 0
+    scale_max = scale_max or M.FLT_MAX
+    scale_min = scale_min or M.FLT_MAX
     graph_size = graph_size or ImVec2(0,0)
+    stride = stride or ffi.sizeof("float")
     return lib.igPlotLines(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
 end
 function M.PlotLinesFnPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
     overlay_text = overlay_text or nil
     values_offset = values_offset or 0
+    scale_max = scale_max or M.FLT_MAX
+    scale_min = scale_min or M.FLT_MAX
     graph_size = graph_size or ImVec2(0,0)
     return lib.igPlotLinesFnPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
 end
@@ -3301,6 +3309,7 @@ function M.ShowUserGuide()
 end
 function M.SliderAngle(label,v_rad,v_degrees_min,v_degrees_max)
     v_degrees_min = v_degrees_min or -360.0
+    v_degrees_max = v_degrees_max or 360.0
     return lib.igSliderAngle(label,v_rad,v_degrees_min,v_degrees_max)
 end
 function M.SliderFloat(label,v,v_min,v_max,format,power)
