@@ -8,6 +8,16 @@
 local dir = [[../cimgui/generator/generated/]]
 local fundefs = dofile(dir..[[definitions.lua]])
 
+--clean nonUDT functions
+for fun,defs in pairs(fundefs) do
+	for i,def in ipairs(defs) do
+		if def.nonUDT then
+			table.remove(defs,i)
+		end
+	end
+end
+
+
 --group them by structs
 local structs = {}
 for fun,defs in pairs(fundefs) do
@@ -16,6 +26,8 @@ for fun,defs in pairs(fundefs) do
 	table.insert(structs[stname],fun)
 end
 structs.ImVec4 = nil
+
+
 
 --[[ tests
 require"anima.utils" --gives us prtable
