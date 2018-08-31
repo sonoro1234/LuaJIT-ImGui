@@ -6,7 +6,7 @@ This is a LuaJIT binding for the excellent C++ intermediate gui [imgui](https://
 Uses the cimgui_auto_implementations branch of cimgui to be the most "up to date" as possible.
 
 Notes:
-* currently this wrapper is based on version [1.62WIP of imgui](https://github.com/ocornut/imgui/releases/tag/v1.62)
+* currently this wrapper is based on version [1.63 of imgui]
 
 # compiling
 
