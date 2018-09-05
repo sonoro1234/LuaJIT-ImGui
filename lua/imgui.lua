@@ -3,6 +3,9 @@ local basedir = '' --set imgui directory location
 local cdecl = cdecl or ''
 cdecl = cdecl..[[
 typedef unsigned long long ImU64;
+typedef struct ImVec2_Simple { float x; float y; } ImVec2_Simple;
+typedef struct ImVec4_Simple { float x; float y; float z; float w;} ImVec4_Simple;
+typedef struct ImColor_Simple { ImVec4_Simple Value;} ImColor_Simple;
 typedef struct CustomRect CustomRect;
 typedef struct GlyphRangesBuilder GlyphRangesBuilder;
 typedef struct ImFontGlyph ImFontGlyph;
@@ -1248,27 +1251,49 @@ typedef ImVector ImVector_ImWchar;
  void ImFont_AddGlyph(ImFont* self,ImWchar c,float x0,float y0,float x1,float y1,float u0,float v0,float u1,float v1,float advance_x);
  void ImFont_AddRemapChar(ImFont* self,ImWchar dst,ImWchar src,_Bool overwrite_dst);
  void igGetWindowPos_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetWindowPos_nonUDT2();
  void igGetWindowSize_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetWindowSize_nonUDT2();
  void igGetContentRegionMax_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetContentRegionMax_nonUDT2();
  void igGetContentRegionAvail_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetContentRegionAvail_nonUDT2();
  void igGetWindowContentRegionMin_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetWindowContentRegionMin_nonUDT2();
  void igGetWindowContentRegionMax_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetWindowContentRegionMax_nonUDT2();
  void igGetFontTexUvWhitePixel_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetFontTexUvWhitePixel_nonUDT2();
  void igGetCursorPos_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetCursorPos_nonUDT2();
  void igGetCursorStartPos_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetCursorStartPos_nonUDT2();
  void igGetCursorScreenPos_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetCursorScreenPos_nonUDT2();
  void igGetItemRectMin_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetItemRectMin_nonUDT2();
  void igGetItemRectMax_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetItemRectMax_nonUDT2();
  void igGetItemRectSize_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetItemRectSize_nonUDT2();
  void igCalcTextSize_nonUDT(ImVec2 *pOut,const char* text,const char* text_end,_Bool hide_text_after_double_hash,float wrap_width);
+ ImVec2_Simple igCalcTextSize_nonUDT2(const char* text,const char* text_end,_Bool hide_text_after_double_hash,float wrap_width);
  void igColorConvertU32ToFloat4_nonUDT(ImVec4 *pOut,ImU32 in);
+ ImVec4_Simple igColorConvertU32ToFloat4_nonUDT2(ImU32 in);
  void igGetMousePos_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetMousePos_nonUDT2();
  void igGetMousePosOnOpeningCurrentPopup_nonUDT(ImVec2 *pOut);
+ ImVec2_Simple igGetMousePosOnOpeningCurrentPopup_nonUDT2();
  void igGetMouseDragDelta_nonUDT(ImVec2 *pOut,int button,float lock_threshold);
+ ImVec2_Simple igGetMouseDragDelta_nonUDT2(int button,float lock_threshold);
  void ImColor_HSV_nonUDT(ImColor* self,ImColor *pOut,float h,float s,float v,float a);
+ ImColor_Simple ImColor_HSV_nonUDT2(ImColor* self,float h,float s,float v,float a);
  void ImDrawList_GetClipRectMin_nonUDT(ImDrawList* self,ImVec2 *pOut);
+ ImVec2_Simple ImDrawList_GetClipRectMin_nonUDT2(ImDrawList* self);
  void ImDrawList_GetClipRectMax_nonUDT(ImDrawList* self,ImVec2 *pOut);
+ ImVec2_Simple ImDrawList_GetClipRectMax_nonUDT2(ImDrawList* self);
  void ImFont_CalcTextSizeA_nonUDT(ImFont* self,ImVec2 *pOut,float size,float max_width,float wrap_width,const char* text_begin,const char* text_end,const char** remaining);
+ ImVec2_Simple ImFont_CalcTextSizeA_nonUDT2(ImFont* self,float size,float max_width,float wrap_width,const char* text_begin,const char* text_end,const char** remaining);
  void igLogText(const char *fmt, ...);
  void ImGuiTextBuffer_appendf(struct ImGuiTextBuffer *buffer, const char *fmt, ...);
  void ImFontConfig_DefaultConstructor(ImFontConfig *config);
@@ -1743,8 +1768,14 @@ end
 function ImDrawList:GetClipRectMax()
     return lib.ImDrawList_GetClipRectMax(self)
 end
+function ImDrawList:GetClipRectMax_nonUDT2()
+    return lib.ImDrawList_GetClipRectMax_nonUDT2(self)
+end
 function ImDrawList:GetClipRectMin()
     return lib.ImDrawList_GetClipRectMin(self)
+end
+function ImDrawList:GetClipRectMin_nonUDT2()
+    return lib.ImDrawList_GetClipRectMin_nonUDT2(self)
 end
 function ImDrawList:PathArcTo(centre,radius,a_min,a_max,num_segments)
     num_segments = num_segments or 10
@@ -1930,6 +1961,11 @@ function ImFont:CalcTextSizeA(size,max_width,wrap_width,text_begin,text_end,rema
     text_end = text_end or nil
     remaining = remaining or nil
     return lib.ImFont_CalcTextSizeA(self,size,max_width,wrap_width,text_begin,text_end,remaining)
+end
+function ImFont:CalcTextSizeA_nonUDT2(size,max_width,wrap_width,text_begin,text_end,remaining)
+    text_end = text_end or nil
+    remaining = remaining or nil
+    return lib.ImFont_CalcTextSizeA_nonUDT2(self,size,max_width,wrap_width,text_begin,text_end,remaining)
 end
 function ImFont:CalcWordWrapPositionA(scale,text,text_end,wrap_width)
     return lib.ImFont_CalcWordWrapPositionA(self,scale,text,text_end,wrap_width)
@@ -2188,6 +2224,10 @@ function ImColor:HSV(h,s,v,a)
     a = a or 1.0
     return lib.ImColor_HSV(self,h,s,v,a)
 end
+function ImColor:HSV_nonUDT2(h,s,v,a)
+    a = a or 1.0
+    return lib.ImColor_HSV_nonUDT2(self,h,s,v,a)
+end
 function ImColor:SetHSV(h,s,v,a)
     a = a or 1.0
     return lib.ImColor_SetHSV(self,h,s,v,a)
@@ -2338,6 +2378,12 @@ function M.CalcTextSize(text,text_end,hide_text_after_double_hash,wrap_width)
     hide_text_after_double_hash = hide_text_after_double_hash or false
     return lib.igCalcTextSize(text,text_end,hide_text_after_double_hash,wrap_width)
 end
+function M.CalcTextSize_nonUDT2(text,text_end,hide_text_after_double_hash,wrap_width)
+    text_end = text_end or nil
+    wrap_width = wrap_width or -1.0
+    hide_text_after_double_hash = hide_text_after_double_hash or false
+    return lib.igCalcTextSize_nonUDT2(text,text_end,hide_text_after_double_hash,wrap_width)
+end
 function M.CaptureKeyboardFromApp(capture)
     capture = capture or true
     return lib.igCaptureKeyboardFromApp(capture)
@@ -2379,6 +2425,9 @@ function M.ColorConvertRGBtoHSV(r,g,b,out_h,out_s,out_v)
 end
 function M.ColorConvertU32ToFloat4(_in)
     return lib.igColorConvertU32ToFloat4(_in)
+end
+function M.ColorConvertU32ToFloat4_nonUDT2(_in)
+    return lib.igColorConvertU32ToFloat4_nonUDT2(_in)
 end
 function M.ColorEdit3(label,col,flags)
     flags = flags or 0
@@ -2589,17 +2638,26 @@ end
 function M.GetContentRegionAvail()
     return lib.igGetContentRegionAvail()
 end
+function M.GetContentRegionAvail_nonUDT2()
+    return lib.igGetContentRegionAvail_nonUDT2()
+end
 function M.GetContentRegionAvailWidth()
     return lib.igGetContentRegionAvailWidth()
 end
 function M.GetContentRegionMax()
     return lib.igGetContentRegionMax()
 end
+function M.GetContentRegionMax_nonUDT2()
+    return lib.igGetContentRegionMax_nonUDT2()
+end
 function M.GetCurrentContext()
     return lib.igGetCurrentContext()
 end
 function M.GetCursorPos()
     return lib.igGetCursorPos()
+end
+function M.GetCursorPos_nonUDT2()
+    return lib.igGetCursorPos_nonUDT2()
 end
 function M.GetCursorPosX()
     return lib.igGetCursorPosX()
@@ -2610,8 +2668,14 @@ end
 function M.GetCursorScreenPos()
     return lib.igGetCursorScreenPos()
 end
+function M.GetCursorScreenPos_nonUDT2()
+    return lib.igGetCursorScreenPos_nonUDT2()
+end
 function M.GetCursorStartPos()
     return lib.igGetCursorStartPos()
+end
+function M.GetCursorStartPos_nonUDT2()
+    return lib.igGetCursorStartPos_nonUDT2()
 end
 function M.GetDrawData()
     return lib.igGetDrawData()
@@ -2627,6 +2691,9 @@ function M.GetFontSize()
 end
 function M.GetFontTexUvWhitePixel()
     return lib.igGetFontTexUvWhitePixel()
+end
+function M.GetFontTexUvWhitePixel_nonUDT2()
+    return lib.igGetFontTexUvWhitePixel_nonUDT2()
 end
 function M.GetFrameCount()
     return lib.igGetFrameCount()
@@ -2652,11 +2719,20 @@ end
 function M.GetItemRectMax()
     return lib.igGetItemRectMax()
 end
+function M.GetItemRectMax_nonUDT2()
+    return lib.igGetItemRectMax_nonUDT2()
+end
 function M.GetItemRectMin()
     return lib.igGetItemRectMin()
 end
+function M.GetItemRectMin_nonUDT2()
+    return lib.igGetItemRectMin_nonUDT2()
+end
 function M.GetItemRectSize()
     return lib.igGetItemRectSize()
+end
+function M.GetItemRectSize_nonUDT2()
+    return lib.igGetItemRectSize_nonUDT2()
 end
 function M.GetKeyIndex(imgui_key)
     return lib.igGetKeyIndex(imgui_key)
@@ -2672,11 +2748,22 @@ function M.GetMouseDragDelta(button,lock_threshold)
     button = button or 0
     return lib.igGetMouseDragDelta(button,lock_threshold)
 end
+function M.GetMouseDragDelta_nonUDT2(button,lock_threshold)
+    lock_threshold = lock_threshold or -1.0
+    button = button or 0
+    return lib.igGetMouseDragDelta_nonUDT2(button,lock_threshold)
+end
 function M.GetMousePos()
     return lib.igGetMousePos()
 end
+function M.GetMousePos_nonUDT2()
+    return lib.igGetMousePos_nonUDT2()
+end
 function M.GetMousePosOnOpeningCurrentPopup()
     return lib.igGetMousePosOnOpeningCurrentPopup()
+end
+function M.GetMousePosOnOpeningCurrentPopup_nonUDT2()
+    return lib.igGetMousePosOnOpeningCurrentPopup_nonUDT2()
 end
 function M.GetOverlayDrawList()
     return lib.igGetOverlayDrawList()
@@ -2723,8 +2810,14 @@ end
 function M.GetWindowContentRegionMax()
     return lib.igGetWindowContentRegionMax()
 end
+function M.GetWindowContentRegionMax_nonUDT2()
+    return lib.igGetWindowContentRegionMax_nonUDT2()
+end
 function M.GetWindowContentRegionMin()
     return lib.igGetWindowContentRegionMin()
+end
+function M.GetWindowContentRegionMin_nonUDT2()
+    return lib.igGetWindowContentRegionMin_nonUDT2()
 end
 function M.GetWindowContentRegionWidth()
     return lib.igGetWindowContentRegionWidth()
@@ -2738,8 +2831,14 @@ end
 function M.GetWindowPos()
     return lib.igGetWindowPos()
 end
+function M.GetWindowPos_nonUDT2()
+    return lib.igGetWindowPos_nonUDT2()
+end
 function M.GetWindowSize()
     return lib.igGetWindowSize()
+end
+function M.GetWindowSize_nonUDT2()
+    return lib.igGetWindowSize_nonUDT2()
 end
 function M.GetWindowWidth()
     return lib.igGetWindowWidth()
