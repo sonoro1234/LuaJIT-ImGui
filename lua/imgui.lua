@@ -483,8 +483,9 @@ struct ImGuiIO
     ImVec2 DisplayFramebufferScale;
     ImVec2 DisplayVisibleMin;
     ImVec2 DisplayVisibleMax;
+    _Bool MouseDrawCursor;
     _Bool ConfigMacOSXBehaviors;
-    _Bool ConfigCursorBlink;
+    _Bool ConfigInputTextCursorBlink;
     _Bool ConfigResizeWindowsFromEdges;
     const char* (*GetClipboardTextFn)(void* user_data);
     void (*SetClipboardTextFn)(void* user_data, const char* text);
@@ -496,7 +497,6 @@ struct ImGuiIO
     _Bool MouseDown[5];
     float MouseWheel;
     float MouseWheelH;
-    _Bool MouseDrawCursor;
     _Bool KeyCtrl;
     _Bool KeyShift;
     _Bool KeyAlt;
