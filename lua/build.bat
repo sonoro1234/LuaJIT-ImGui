@@ -5,7 +5,7 @@
 :: set PATH=%PATH%;C:\mingw32\bin;C:\luaGL;
 
 echo local basedir = '' --set imgui directory location > tmp0.txt
-gcc -E -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS ../cimgui/generator/generated/cimgui_auto.h | luajit.exe ./cdef.lua false cimgui_auto > tmp.txt
+gcc -E -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS ../cimgui/generator/generated/cimgui.h | luajit.exe ./cdef.lua false cimgui > tmp.txt
 gcc -E -DCIMGUI_API="" ../cimgui/generator/generated/cimgui_impl.h | luajit.exe ./cdef.lua true cimgui_impl > tmp2.txt
 luajit.exe ./class_gen.lua > tmp_end.lua
 type tmp0.txt tmp.txt tmp2.txt imgui_base.lua tmp_end.lua > imgui.lua
