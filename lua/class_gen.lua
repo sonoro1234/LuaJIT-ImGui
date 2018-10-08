@@ -5,7 +5,7 @@
 -----------------------------------------------
 
 --load function definitions
-local dir = [[../cimgui/generator/generated/]]
+local dir = [[../cimgui/generator/output/]]
 local fundefs = dofile(dir..[[definitions.lua]])
 
 --clean nonUDT functions
@@ -88,7 +88,7 @@ function sanitize_reserved(def)
 			--+ in front of numbers
 			def.defaults[k] = def.defaults[k]:gsub("^%+([%d%.%-]+)","%1")
 			--FLT_MAX
-			def.defaults[k] = def.defaults[k]:gsub("3%.40282346638528859812e%+38F","M.FLT_MAX")
+			def.defaults[k] = def.defaults[k]:gsub("FLT_MAX","M.FLT_MAX")
 			def.defaults[k] = def.defaults[k]:gsub("ImDrawCornerFlags_All","lib.ImDrawCornerFlags_All")
 			def.defaults[k] = def.defaults[k]:gsub("sizeof%((%w+)%)",[[ffi.sizeof("%1")]])
 			def.defaults[k] = def.defaults[k]:gsub("%(%(void %*%)0%)","nil")
