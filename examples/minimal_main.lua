@@ -16,6 +16,10 @@ window:makeContextCurrent()
 local ig_impl = ig.Imgui_Impl_glfw_opengl3() --standard imgui opengl3 example
 --local ig_impl = ig.Imgui_Impl_glfw_opengl2() --standard imgui opengl2 example
 
+local igio = ig.GetIO()
+igio.ConfigFlags = ig.lib.ImGuiConfigFlags_NavEnableKeyboard + igio.ConfigFlags
+
+
 ig_impl:Init(window, true)
 
 local showdemo = ffi.new("bool[1]",false)

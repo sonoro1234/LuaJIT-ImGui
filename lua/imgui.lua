@@ -5,6 +5,7 @@ cdecl = cdecl..[[
 typedef struct ImVec2_Simple { float x; float y; } ImVec2_Simple;
 typedef struct ImVec4_Simple { float x; float y; float z; float w;} ImVec4_Simple;
 typedef struct ImColor_Simple { ImVec4_Simple Value;} ImColor_Simple;
+struct ImDrawChannel;
 typedef struct CustomRect CustomRect;
 typedef struct GlyphRangesBuilder GlyphRangesBuilder;
 typedef struct ImFontGlyph ImFontGlyph;
@@ -33,7 +34,6 @@ typedef struct ImDrawList ImDrawList;
 typedef struct ImDrawData ImDrawData;
 typedef struct ImDrawCmd ImDrawCmd;
 typedef struct ImDrawChannel ImDrawChannel;
-struct ImDrawChannel;
 struct ImDrawCmd;
 struct ImDrawData;
 struct ImDrawList;
@@ -881,7 +881,7 @@ typedef ImVector ImVector_ImWchar;
  void igPushIDInt(int int_id);
  void igPopID(void);
  ImGuiID igGetIDStr(const char* str_id);
- ImGuiID igGetIDStrStr(const char* str_id_begin,const char* str_id_end);
+ ImGuiID igGetIDRange(const char* str_id_begin,const char* str_id_end);
  ImGuiID igGetIDPtr(const void* ptr_id);
  void igTextUnformatted(const char* text,const char* text_end);
  void igText(const char* fmt,...);
@@ -2706,8 +2706,8 @@ end
 function M.GetIDStr(str_id)
     return lib.igGetIDStr(str_id)
 end
-function M.GetIDStrStr(str_id_begin,str_id_end)
-    return lib.igGetIDStrStr(str_id_begin,str_id_end)
+function M.GetIDRange(str_id_begin,str_id_end)
+    return lib.igGetIDRange(str_id_begin,str_id_end)
 end
 function M.GetIDPtr(ptr_id)
     return lib.igGetIDPtr(ptr_id)
