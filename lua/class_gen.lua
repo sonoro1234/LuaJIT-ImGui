@@ -150,6 +150,16 @@ local function code_for_struct(st)
 		for _,def in ipairs(defs) do
 			if def.ret then --avoid constructors and destructors
 				struct_function_gen(code,def)
+			else --constructors
+				local empty = def.args:match("^%(%)") --no args
+				if not def.funcname:match("~") and empty then
+					local fname = def.ov_cimguiname or def.cimguiname --overloaded or original
+					table.insert(code,"function "..st..".__new()")
+					table.insert(code,"    local ptr = lib."..fname..def.call_args)
+					table.insert(code,"    ffi.gc(ptr,lib."..st.."_destroy)")
+					table.insert(code,"    return ptr")
+					table.insert(code,"end")
+				end
 			end
 		end
 	end

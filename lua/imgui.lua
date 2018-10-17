@@ -763,6 +763,12 @@ struct ImFont
     };
 typedef ImVector ImVector_TextRange;
 typedef ImVector ImVector_ImWchar;
+ ImVec2* ImVec2_ImVec2(void);
+ void ImVec2_destroy(ImVec2* self);
+ ImVec2* ImVec2_ImVec2Float(float _x,float _y);
+ ImVec4* ImVec4_ImVec4(void);
+ void ImVec4_destroy(ImVec4* self);
+ ImVec4* ImVec4_ImVec4Float(float _x,float _y,float _z,float _w);
  ImGuiContext* igCreateContext(ImFontAtlas* shared_font_atlas);
  void igDestroyContext(ImGuiContext* ctx);
  ImGuiContext* igGetCurrentContext(void);
@@ -1096,19 +1102,31 @@ typedef ImVector ImVector_ImWchar;
  void igSetAllocatorFunctions(void*(*alloc_func)(size_t sz,void* user_data),void(*free_func)(void* ptr,void* user_data),void* user_data);
  void* igMemAlloc(size_t size);
  void igMemFree(void* ptr);
+ ImGuiStyle* ImGuiStyle_ImGuiStyle(void);
+ void ImGuiStyle_destroy(ImGuiStyle* self);
  void ImGuiStyle_ScaleAllSizes(ImGuiStyle* self,float scale_factor);
  void ImGuiIO_AddInputCharacter(ImGuiIO* self,ImWchar c);
  void ImGuiIO_AddInputCharactersUTF8(ImGuiIO* self,const char* utf8_chars);
  void ImGuiIO_ClearInputCharacters(ImGuiIO* self);
+ ImGuiIO* ImGuiIO_ImGuiIO(void);
+ void ImGuiIO_destroy(ImGuiIO* self);
+ ImGuiOnceUponAFrame* ImGuiOnceUponAFrame_ImGuiOnceUponAFrame(void);
+ void ImGuiOnceUponAFrame_destroy(ImGuiOnceUponAFrame* self);
+ ImGuiTextFilter* ImGuiTextFilter_ImGuiTextFilter(const char* default_filter);
  _Bool ImGuiTextFilter_Draw(ImGuiTextFilter* self,const char* label,float width);
  _Bool ImGuiTextFilter_PassFilter(ImGuiTextFilter* self,const char* text,const char* text_end);
  void ImGuiTextFilter_Build(ImGuiTextFilter* self);
  void ImGuiTextFilter_Clear(ImGuiTextFilter* self);
  _Bool ImGuiTextFilter_IsActive(ImGuiTextFilter* self);
+ TextRange* TextRange_TextRange(void);
+ void TextRange_destroy(TextRange* self);
+ TextRange* TextRange_TextRangeStr(const char* _b,const char* _e);
  const char* TextRange_begin(TextRange* self);
  const char* TextRange_end(TextRange* self);
  _Bool TextRange_empty(TextRange* self);
  void TextRange_split(TextRange* self,char separator,ImVector_TextRange* out);
+ ImGuiTextBuffer* ImGuiTextBuffer_ImGuiTextBuffer(void);
+ void ImGuiTextBuffer_destroy(ImGuiTextBuffer* self);
  const char* ImGuiTextBuffer_begin(ImGuiTextBuffer* self);
  const char* ImGuiTextBuffer_end(ImGuiTextBuffer* self);
  int ImGuiTextBuffer_size(ImGuiTextBuffer* self);
@@ -1117,6 +1135,9 @@ typedef ImVector ImVector_ImWchar;
  void ImGuiTextBuffer_reserve(ImGuiTextBuffer* self,int capacity);
  const char* ImGuiTextBuffer_c_str(ImGuiTextBuffer* self);
  void ImGuiTextBuffer_appendfv(ImGuiTextBuffer* self,const char* fmt,va_list args);
+ Pair* Pair_PairInt(ImGuiID _key,int _val_i);
+ Pair* Pair_PairFloat(ImGuiID _key,float _val_f);
+ Pair* Pair_PairPtr(ImGuiID _key,void* _val_p);
  void ImGuiStorage_Clear(ImGuiStorage* self);
  int ImGuiStorage_GetInt(ImGuiStorage* self,ImGuiID key,int default_val);
  void ImGuiStorage_SetInt(ImGuiStorage* self,ImGuiID key,int val);
@@ -1132,18 +1153,32 @@ typedef ImVector ImVector_ImWchar;
  void** ImGuiStorage_GetVoidPtrRef(ImGuiStorage* self,ImGuiID key,void* default_val);
  void ImGuiStorage_SetAllInt(ImGuiStorage* self,int val);
  void ImGuiStorage_BuildSortByKey(ImGuiStorage* self);
+ ImGuiInputTextCallbackData* ImGuiInputTextCallbackData_ImGuiInputTextCallbackData(void);
+ void ImGuiInputTextCallbackData_destroy(ImGuiInputTextCallbackData* self);
  void ImGuiInputTextCallbackData_DeleteChars(ImGuiInputTextCallbackData* self,int pos,int bytes_count);
  void ImGuiInputTextCallbackData_InsertChars(ImGuiInputTextCallbackData* self,int pos,const char* text,const char* text_end);
  _Bool ImGuiInputTextCallbackData_HasSelection(ImGuiInputTextCallbackData* self);
+ ImGuiPayload* ImGuiPayload_ImGuiPayload(void);
+ void ImGuiPayload_destroy(ImGuiPayload* self);
  void ImGuiPayload_Clear(ImGuiPayload* self);
  _Bool ImGuiPayload_IsDataType(ImGuiPayload* self,const char* type);
  _Bool ImGuiPayload_IsPreview(ImGuiPayload* self);
  _Bool ImGuiPayload_IsDelivery(ImGuiPayload* self);
+ ImColor* ImColor_ImColor(void);
+ void ImColor_destroy(ImColor* self);
+ ImColor* ImColor_ImColorInt(int r,int g,int b,int a);
+ ImColor* ImColor_ImColorU32(ImU32 rgba);
+ ImColor* ImColor_ImColorFloat(float r,float g,float b,float a);
+ ImColor* ImColor_ImColorVec4(const ImVec4 col);
  void ImColor_SetHSV(ImColor* self,float h,float s,float v,float a);
  ImColor ImColor_HSV(ImColor* self,float h,float s,float v,float a);
+ ImGuiListClipper* ImGuiListClipper_ImGuiListClipper(int items_count,float items_height);
  _Bool ImGuiListClipper_Step(ImGuiListClipper* self);
  void ImGuiListClipper_Begin(ImGuiListClipper* self,int items_count,float items_height);
  void ImGuiListClipper_End(ImGuiListClipper* self);
+ ImDrawCmd* ImDrawCmd_ImDrawCmd(void);
+ void ImDrawCmd_destroy(ImDrawCmd* self);
+ ImDrawList* ImDrawList_ImDrawList(const ImDrawListSharedData* shared_data);
  void ImDrawList_PushClipRect(ImDrawList* self,ImVec2 clip_rect_min,ImVec2 clip_rect_max,_Bool intersect_with_current_clip_rect);
  void ImDrawList_PushClipRectFullScreen(ImDrawList* self);
  void ImDrawList_PopClipRect(ImDrawList* self);
@@ -1195,9 +1230,15 @@ typedef ImVector ImVector_ImWchar;
  void ImDrawList_PrimVtx(ImDrawList* self,const ImVec2 pos,const ImVec2 uv,ImU32 col);
  void ImDrawList_UpdateClipRect(ImDrawList* self);
  void ImDrawList_UpdateTextureID(ImDrawList* self);
+ ImDrawData* ImDrawData_ImDrawData(void);
+ void ImDrawData_destroy(ImDrawData* self);
  void ImDrawData_Clear(ImDrawData* self);
  void ImDrawData_DeIndexAllBuffers(ImDrawData* self);
  void ImDrawData_ScaleClipRects(ImDrawData* self,const ImVec2 sc);
+ ImFontConfig* ImFontConfig_ImFontConfig(void);
+ void ImFontConfig_destroy(ImFontConfig* self);
+ ImFontAtlas* ImFontAtlas_ImFontAtlas(void);
+ void ImFontAtlas_destroy(ImFontAtlas* self);
  ImFont* ImFontAtlas_AddFont(ImFontAtlas* self,const ImFontConfig* font_cfg);
  ImFont* ImFontAtlas_AddFontDefault(ImFontAtlas* self,const ImFontConfig* font_cfg);
  ImFont* ImFontAtlas_AddFontFromFileTTF(ImFontAtlas* self,const char* filename,float size_pixels,const ImFontConfig* font_cfg,const ImWchar* glyph_ranges);
@@ -1220,18 +1261,24 @@ typedef ImVector ImVector_ImWchar;
  const ImWchar* ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon(ImFontAtlas* self);
  const ImWchar* ImFontAtlas_GetGlyphRangesCyrillic(ImFontAtlas* self);
  const ImWchar* ImFontAtlas_GetGlyphRangesThai(ImFontAtlas* self);
+ GlyphRangesBuilder* GlyphRangesBuilder_GlyphRangesBuilder(void);
+ void GlyphRangesBuilder_destroy(GlyphRangesBuilder* self);
  _Bool GlyphRangesBuilder_GetBit(GlyphRangesBuilder* self,int n);
  void GlyphRangesBuilder_SetBit(GlyphRangesBuilder* self,int n);
  void GlyphRangesBuilder_AddChar(GlyphRangesBuilder* self,ImWchar c);
  void GlyphRangesBuilder_AddText(GlyphRangesBuilder* self,const char* text,const char* text_end);
  void GlyphRangesBuilder_AddRanges(GlyphRangesBuilder* self,const ImWchar* ranges);
  void GlyphRangesBuilder_BuildRanges(GlyphRangesBuilder* self,ImVector_ImWchar* out_ranges);
+ CustomRect* CustomRect_CustomRect(void);
+ void CustomRect_destroy(CustomRect* self);
  _Bool CustomRect_IsPacked(CustomRect* self);
  int ImFontAtlas_AddCustomRectRegular(ImFontAtlas* self,unsigned int id,int width,int height);
  int ImFontAtlas_AddCustomRectFontGlyph(ImFontAtlas* self,ImFont* font,ImWchar id,int width,int height,float advance_x,const ImVec2 offset);
  const CustomRect* ImFontAtlas_GetCustomRectByIndex(ImFontAtlas* self,int index);
  void ImFontAtlas_CalcCustomRectUV(ImFontAtlas* self,const CustomRect* rect,ImVec2* out_uv_min,ImVec2* out_uv_max);
  _Bool ImFontAtlas_GetMouseCursorTexData(ImFontAtlas* self,ImGuiMouseCursor cursor,ImVec2* out_offset,ImVec2* out_size,ImVec2 out_uv_border[2],ImVec2 out_uv_fill[2]);
+ ImFont* ImFont_ImFont(void);
+ void ImFont_destroy(ImFont* self);
  void ImFont_ClearOutputData(ImFont* self);
  void ImFont_BuildLookupTable(ImFont* self);
  const ImFontGlyph* ImFont_FindGlyph(ImFont* self,ImWchar c);
@@ -1297,6 +1344,10 @@ typedef ImVector ImVector_ImWchar;
  float igGET_FLT_MAX();
  void igColorConvertRGBtoHSV(float r,float g,float b,float *out_h,float *out_s,float *out_v);
  void igColorConvertHSVtoRGB(float h,float s,float v,float *out_r,float *out_g,float *out_b);
+ ImVector_ImWchar* ImVector_ImWchar_create();
+ void ImVector_ImWchar_destroy(ImVector_ImWchar* p);
+ void ImVector_ImWchar_Init(ImVector_ImWchar* p);
+ void ImVector_ImWchar_UnInit(ImVector_ImWchar* p);
 ]]
 --[[ END AUTOGENERATED SEGMENT ]]
 --[[ BEGIN AUTOGENERATED SEGMENT ]]
@@ -1855,6 +1906,11 @@ M.ImDrawList = ffi.metatype("ImDrawList",ImDrawList)
 --------------------------TextRange----------------------------
 local TextRange= {}
 TextRange.__index = TextRange
+function TextRange.__new()
+    local ptr = lib.TextRange_TextRange()
+    ffi.gc(ptr,lib.TextRange_destroy)
+    return ptr
+end
 function TextRange:begin()
     return lib.TextRange_begin(self)
 end
@@ -1871,6 +1927,11 @@ M.TextRange = ffi.metatype("TextRange",TextRange)
 --------------------------CustomRect----------------------------
 local CustomRect= {}
 CustomRect.__index = CustomRect
+function CustomRect.__new()
+    local ptr = lib.CustomRect_CustomRect()
+    ffi.gc(ptr,lib.CustomRect_destroy)
+    return ptr
+end
 function CustomRect:IsPacked()
     return lib.CustomRect_IsPacked(self)
 end
@@ -1934,10 +1995,20 @@ M.ImGuiStorage = ffi.metatype("ImGuiStorage",ImGuiStorage)
 --------------------------ImDrawCmd----------------------------
 local ImDrawCmd= {}
 ImDrawCmd.__index = ImDrawCmd
+function ImDrawCmd.__new()
+    local ptr = lib.ImDrawCmd_ImDrawCmd()
+    ffi.gc(ptr,lib.ImDrawCmd_destroy)
+    return ptr
+end
 M.ImDrawCmd = ffi.metatype("ImDrawCmd",ImDrawCmd)
 --------------------------ImGuiOnceUponAFrame----------------------------
 local ImGuiOnceUponAFrame= {}
 ImGuiOnceUponAFrame.__index = ImGuiOnceUponAFrame
+function ImGuiOnceUponAFrame.__new()
+    local ptr = lib.ImGuiOnceUponAFrame_ImGuiOnceUponAFrame()
+    ffi.gc(ptr,lib.ImGuiOnceUponAFrame_destroy)
+    return ptr
+end
 M.ImGuiOnceUponAFrame = ffi.metatype("ImGuiOnceUponAFrame",ImGuiOnceUponAFrame)
 --------------------------Pair----------------------------
 local Pair= {}
@@ -1987,6 +2058,11 @@ end
 function ImFont:GrowIndex(new_size)
     return lib.ImFont_GrowIndex(self,new_size)
 end
+function ImFont.__new()
+    local ptr = lib.ImFont_ImFont()
+    ffi.gc(ptr,lib.ImFont_destroy)
+    return ptr
+end
 function ImFont:IsLoaded()
     return lib.ImFont_IsLoaded(self)
 end
@@ -2005,6 +2081,11 @@ M.ImFont = ffi.metatype("ImFont",ImFont)
 --------------------------ImGuiStyle----------------------------
 local ImGuiStyle= {}
 ImGuiStyle.__index = ImGuiStyle
+function ImGuiStyle.__new()
+    local ptr = lib.ImGuiStyle_ImGuiStyle()
+    ffi.gc(ptr,lib.ImGuiStyle_destroy)
+    return ptr
+end
 function ImGuiStyle:ScaleAllSizes(scale_factor)
     return lib.ImGuiStyle_ScaleAllSizes(self,scale_factor)
 end
@@ -2020,6 +2101,11 @@ function ImGuiIO:AddInputCharactersUTF8(utf8_chars)
 end
 function ImGuiIO:ClearInputCharacters()
     return lib.ImGuiIO_ClearInputCharacters(self)
+end
+function ImGuiIO.__new()
+    local ptr = lib.ImGuiIO_ImGuiIO()
+    ffi.gc(ptr,lib.ImGuiIO_destroy)
+    return ptr
 end
 M.ImGuiIO = ffi.metatype("ImGuiIO",ImGuiIO)
 --------------------------ImGuiListClipper----------------------------
@@ -2039,6 +2125,11 @@ M.ImGuiListClipper = ffi.metatype("ImGuiListClipper",ImGuiListClipper)
 --------------------------ImGuiTextBuffer----------------------------
 local ImGuiTextBuffer= {}
 ImGuiTextBuffer.__index = ImGuiTextBuffer
+function ImGuiTextBuffer.__new()
+    local ptr = lib.ImGuiTextBuffer_ImGuiTextBuffer()
+    ffi.gc(ptr,lib.ImGuiTextBuffer_destroy)
+    return ptr
+end
 function ImGuiTextBuffer:appendf(fmt,...)
     return lib.ImGuiTextBuffer_appendf(self,fmt,...)
 end
@@ -2076,6 +2167,11 @@ end
 function ImDrawData:DeIndexAllBuffers()
     return lib.ImDrawData_DeIndexAllBuffers(self)
 end
+function ImDrawData.__new()
+    local ptr = lib.ImDrawData_ImDrawData()
+    ffi.gc(ptr,lib.ImDrawData_destroy)
+    return ptr
+end
 function ImDrawData:ScaleClipRects(sc)
     return lib.ImDrawData_ScaleClipRects(self,sc)
 end
@@ -2098,6 +2194,11 @@ function GlyphRangesBuilder:BuildRanges(out_ranges)
 end
 function GlyphRangesBuilder:GetBit(n)
     return lib.GlyphRangesBuilder_GetBit(self,n)
+end
+function GlyphRangesBuilder.__new()
+    local ptr = lib.GlyphRangesBuilder_GlyphRangesBuilder()
+    ffi.gc(ptr,lib.GlyphRangesBuilder_destroy)
+    return ptr
 end
 function GlyphRangesBuilder:SetBit(n)
     return lib.GlyphRangesBuilder_SetBit(self,n)
@@ -2193,6 +2294,11 @@ function ImFontAtlas:GetTexDataAsRGBA32(out_pixels,out_width,out_height,out_byte
     out_bytes_per_pixel = out_bytes_per_pixel or nil
     return lib.ImFontAtlas_GetTexDataAsRGBA32(self,out_pixels,out_width,out_height,out_bytes_per_pixel)
 end
+function ImFontAtlas.__new()
+    local ptr = lib.ImFontAtlas_ImFontAtlas()
+    ffi.gc(ptr,lib.ImFontAtlas_destroy)
+    return ptr
+end
 function ImFontAtlas:IsBuilt()
     return lib.ImFontAtlas_IsBuilt(self)
 end
@@ -2205,6 +2311,11 @@ local ImGuiPayload= {}
 ImGuiPayload.__index = ImGuiPayload
 function ImGuiPayload:Clear()
     return lib.ImGuiPayload_Clear(self)
+end
+function ImGuiPayload.__new()
+    local ptr = lib.ImGuiPayload_ImGuiPayload()
+    ffi.gc(ptr,lib.ImGuiPayload_destroy)
+    return ptr
 end
 function ImGuiPayload:IsDataType(type)
     return lib.ImGuiPayload_IsDataType(self,type)
@@ -2227,6 +2338,11 @@ function ImColor:HSV_nonUDT2(h,s,v,a)
     a = a or 1.0
     return lib.ImColor_HSV_nonUDT2(self,h,s,v,a)
 end
+function ImColor.__new()
+    local ptr = lib.ImColor_ImColor()
+    ffi.gc(ptr,lib.ImColor_destroy)
+    return ptr
+end
 function ImColor:SetHSV(h,s,v,a)
     a = a or 1.0
     return lib.ImColor_SetHSV(self,h,s,v,a)
@@ -2240,6 +2356,11 @@ function ImGuiInputTextCallbackData:DeleteChars(pos,bytes_count)
 end
 function ImGuiInputTextCallbackData:HasSelection()
     return lib.ImGuiInputTextCallbackData_HasSelection(self)
+end
+function ImGuiInputTextCallbackData.__new()
+    local ptr = lib.ImGuiInputTextCallbackData_ImGuiInputTextCallbackData()
+    ffi.gc(ptr,lib.ImGuiInputTextCallbackData_destroy)
+    return ptr
 end
 function ImGuiInputTextCallbackData:InsertChars(pos,text,text_end)
     text_end = text_end or nil
