@@ -1,5 +1,5 @@
 local ffi = require "ffi"
-jit.off(true,true)
+--jit.off(true,true)
 local lj_glfw = require"glfw"
 local gl, glc, glu, glfw, glext = lj_glfw.libraries()
 local ig = require"imgui_viewport"
@@ -33,7 +33,7 @@ while not window:shouldClose() do
 
     lj_glfw.pollEvents()
 
-    gl.glClear(glc.GL_COLOR_BUFFER_BIT)
+   -- gl.glClear(glc.GL_COLOR_BUFFER_BIT)
  
     ig_impl:NewFrame()
   
@@ -43,7 +43,7 @@ while not window:shouldClose() do
    ig.ShowDemoWindow(showdemo)
     
     ig_impl:Render()
-
+	window:makeContextCurrent() 
     if bit.band(igio.ConfigFlags , ig.lib.ImGuiConfigFlags_ViewportsEnable) ~= 0 then
         ig.UpdatePlatformWindows();
         ig.RenderPlatformWindowsDefault();

@@ -118,15 +118,6 @@ ImVec4.__index = ImVec4
 ImVec4 = ffi.metatype("ImVec4",ImVec4)
 --the module
 local M = {ImVec2 = ImVec2, ImVec4 = ImVec4 ,lib = lib}
-----------ImFontConfig
-local ImFontConfig = {}
-ImFontConfig.__index = ImFontConfig
-ImFontConfig.__new = function(tp)
-    local ret = ffi.new(tp)
-    lib.ImFontConfig_DefaultConstructor(ret)
-    return ret
-end
-M.ImFontConfig = ffi.metatype("ImFontConfig",ImFontConfig)
 
 if jit.os == "Windows" then
     function M.ToUTF(unc_str)
