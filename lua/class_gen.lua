@@ -107,14 +107,18 @@ local function struct_function_gen(code,def)
 	--end is reserved in lua so make it _end
 	if fname_m == "end" then fname_m = "_end" end
 	--dump function code
-	table.insert(code,"function " .. def.stname .. ":" .. fname_m .. def.call_args)
-	--set defaults
-	for k,v in pairs(def.defaults) do
-		table.insert(code,"    "..k.." = "..k.." or "..v)
+	if next(def.defaults) then
+		table.insert(code,"function " .. def.stname .. ":" .. fname_m .. def.call_args)
+		--set defaults
+		for k,v in pairs(def.defaults) do
+			table.insert(code,"    "..k.." = "..k.." or "..v)
+		end
+		--call cimgui
+		table.insert(code,"    return lib."..fname..args)
+		table.insert(code,"end")
+	else
+		table.insert(code, def.stname.."."..fname_m.." = lib."..fname)
 	end
-	--call cimgui
-	table.insert(code,"    return lib."..fname..args)
-	table.insert(code,"end")
 end
 
 
@@ -126,14 +130,18 @@ local function function_gen(code,def)
 	--end is reserved in lua so make it _end
 	if fname_m == "end" then fname_m = "_end" end
 	--dump function code
-	table.insert(code,"function M." .. fname_m .. def.call_args)
-	--set defaults
-	for k,v in pairs(def.defaults) do
-		table.insert(code,"    "..k.." = "..k.." or "..v)
+	if next(def.defaults) then
+		table.insert(code,"function M." .. fname_m .. def.call_args)
+		--set defaults
+		for k,v in pairs(def.defaults) do
+			table.insert(code,"    "..k.." = "..k.." or "..v)
+		end
+		--call cimgui
+		table.insert(code,"    return lib."..fname..def.call_args)
+		table.insert(code,"end")
+	else
+		table.insert(code,"M." .. fname_m .. " = lib."..fname)
 	end
-	--call cimgui
-	table.insert(code,"    return lib."..fname..def.call_args)
-	table.insert(code,"end")
 end
 
 --struct code generator
@@ -148,7 +156,8 @@ local function code_for_struct(st)
 	for _,f in ipairs(funs) do
 		local defs = fundefs[f]
 		for _,def in ipairs(defs) do
-			if def.ret then --avoid constructors and destructors
+			if not def.destructor then
+			if def.ret  then --avoid constructors and destructors
 				struct_function_gen(code,def)
 			else --constructors
 				local empty = def.args:match("^%(%)") --no args
@@ -160,6 +169,7 @@ local function code_for_struct(st)
 					table.insert(code,"    return ptr")
 					table.insert(code,"end")
 				end
+			end
 			end
 		end
 	end

@@ -1431,7 +1431,7 @@ ffi.cdef(cdecl)
 -- glfw3 implementation and extras ----------------------------------------
 ffi.cdef[[
 
-//////////////// glfw3 gl3 Implementation
+//////////////// glfw3 gl3 custom multiwindow Implementation
 int Do_gl3wInit(void);
 typedef struct GLFWwindow GLFWwindow;
 typedef struct {
@@ -1472,12 +1472,6 @@ int Bezier( const char *label, float P[4] );
 bool Curve(const char *label, const struct ImVec2& size, struct ImVec2 *points, const int maxpoints, float *data, int datalen);
 void CurveGetData(struct ImVec2 *points, const int maxpoints, float *data, int datalen);
                                 
-
-//experiments
-struct ImVec2 igGetCursorScreenPosORIG();
-struct ImVec2 igGetCursorScreenPosORIG2();
-
-//ImVec2 GetCursorScreenPos();
 ]]
 
 ffi.cdef[[
@@ -1721,40 +1715,24 @@ function ImFontConfig.__new()
     ffi.gc(ptr,lib.ImFontConfig_destroy)
     return ptr
 end
-function ImFontConfig:destroy(self)
-    return lib.ImFontConfig_destroy(self,self)
-end
 M.ImFontConfig = ffi.metatype("ImFontConfig",ImFontConfig)
 --------------------------GlyphRangesBuilder----------------------------
 local GlyphRangesBuilder= {}
 GlyphRangesBuilder.__index = GlyphRangesBuilder
-function GlyphRangesBuilder:AddChar(c)
-    return lib.GlyphRangesBuilder_AddChar(self,c)
-end
-function GlyphRangesBuilder:AddRanges(ranges)
-    return lib.GlyphRangesBuilder_AddRanges(self,ranges)
-end
+GlyphRangesBuilder.AddChar = lib.GlyphRangesBuilder_AddChar
+GlyphRangesBuilder.AddRanges = lib.GlyphRangesBuilder_AddRanges
 function GlyphRangesBuilder:AddText(text,text_end)
     text_end = text_end or nil
     return lib.GlyphRangesBuilder_AddText(self,text,text_end)
 end
-function GlyphRangesBuilder:BuildRanges(out_ranges)
-    return lib.GlyphRangesBuilder_BuildRanges(self,out_ranges)
-end
-function GlyphRangesBuilder:GetBit(n)
-    return lib.GlyphRangesBuilder_GetBit(self,n)
-end
+GlyphRangesBuilder.BuildRanges = lib.GlyphRangesBuilder_BuildRanges
+GlyphRangesBuilder.GetBit = lib.GlyphRangesBuilder_GetBit
 function GlyphRangesBuilder.__new()
     local ptr = lib.GlyphRangesBuilder_GlyphRangesBuilder()
     ffi.gc(ptr,lib.GlyphRangesBuilder_destroy)
     return ptr
 end
-function GlyphRangesBuilder:SetBit(n)
-    return lib.GlyphRangesBuilder_SetBit(self,n)
-end
-function GlyphRangesBuilder:destroy(self)
-    return lib.GlyphRangesBuilder_destroy(self,self)
-end
+GlyphRangesBuilder.SetBit = lib.GlyphRangesBuilder_SetBit
 M.GlyphRangesBuilder = ffi.metatype("GlyphRangesBuilder",GlyphRangesBuilder)
 --------------------------TextRange----------------------------
 local TextRange= {}
@@ -1764,21 +1742,10 @@ function TextRange.__new()
     ffi.gc(ptr,lib.TextRange_destroy)
     return ptr
 end
-function TextRange:begin()
-    return lib.TextRange_begin(self)
-end
-function TextRange:destroy(self)
-    return lib.TextRange_destroy(self,self)
-end
-function TextRange:empty()
-    return lib.TextRange_empty(self)
-end
-function TextRange:_end()
-    return lib.TextRange_end(self)
-end
-function TextRange:split(separator,out)
-    return lib.TextRange_split(self,separator,out)
-end
+TextRange.begin = lib.TextRange_begin
+TextRange.empty = lib.TextRange_empty
+TextRange._end = lib.TextRange_end
+TextRange.split = lib.TextRange_split
 M.TextRange = ffi.metatype("TextRange",TextRange)
 --------------------------ImGuiListClipper----------------------------
 local ImGuiListClipper= {}
@@ -1787,15 +1754,8 @@ function ImGuiListClipper:Begin(items_count,items_height)
     items_height = items_height or -1.0
     return lib.ImGuiListClipper_Begin(self,items_count,items_height)
 end
-function ImGuiListClipper:End()
-    return lib.ImGuiListClipper_End(self)
-end
-function ImGuiListClipper:Step()
-    return lib.ImGuiListClipper_Step(self)
-end
-function ImGuiListClipper:destroy(self)
-    return lib.ImGuiListClipper_destroy(self,self)
-end
+ImGuiListClipper.End = lib.ImGuiListClipper_End
+ImGuiListClipper.Step = lib.ImGuiListClipper_Step
 M.ImGuiListClipper = ffi.metatype("ImGuiListClipper",ImGuiListClipper)
 --------------------------ImFontAtlas----------------------------
 local ImFontAtlas= {}
@@ -1804,12 +1764,8 @@ function ImFontAtlas:AddCustomRectFontGlyph(font,id,width,height,advance_x,offse
     offset = offset or ImVec2(0,0)
     return lib.ImFontAtlas_AddCustomRectFontGlyph(self,font,id,width,height,advance_x,offset)
 end
-function ImFontAtlas:AddCustomRectRegular(id,width,height)
-    return lib.ImFontAtlas_AddCustomRectRegular(self,id,width,height)
-end
-function ImFontAtlas:AddFont(font_cfg)
-    return lib.ImFontAtlas_AddFont(self,font_cfg)
-end
+ImFontAtlas.AddCustomRectRegular = lib.ImFontAtlas_AddCustomRectRegular
+ImFontAtlas.AddFont = lib.ImFontAtlas_AddFont
 function ImFontAtlas:AddFontDefault(font_cfg)
     font_cfg = font_cfg or nil
     return lib.ImFontAtlas_AddFontDefault(self,font_cfg)
@@ -1834,51 +1790,21 @@ function ImFontAtlas:AddFontFromMemoryTTF(font_data,font_size,size_pixels,font_c
     font_cfg = font_cfg or nil
     return lib.ImFontAtlas_AddFontFromMemoryTTF(self,font_data,font_size,size_pixels,font_cfg,glyph_ranges)
 end
-function ImFontAtlas:Build()
-    return lib.ImFontAtlas_Build(self)
-end
-function ImFontAtlas:CalcCustomRectUV(rect,out_uv_min,out_uv_max)
-    return lib.ImFontAtlas_CalcCustomRectUV(self,rect,out_uv_min,out_uv_max)
-end
-function ImFontAtlas:Clear()
-    return lib.ImFontAtlas_Clear(self)
-end
-function ImFontAtlas:ClearFonts()
-    return lib.ImFontAtlas_ClearFonts(self)
-end
-function ImFontAtlas:ClearInputData()
-    return lib.ImFontAtlas_ClearInputData(self)
-end
-function ImFontAtlas:ClearTexData()
-    return lib.ImFontAtlas_ClearTexData(self)
-end
-function ImFontAtlas:GetCustomRectByIndex(index)
-    return lib.ImFontAtlas_GetCustomRectByIndex(self,index)
-end
-function ImFontAtlas:GetGlyphRangesChineseFull()
-    return lib.ImFontAtlas_GetGlyphRangesChineseFull(self)
-end
-function ImFontAtlas:GetGlyphRangesChineseSimplifiedCommon()
-    return lib.ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon(self)
-end
-function ImFontAtlas:GetGlyphRangesCyrillic()
-    return lib.ImFontAtlas_GetGlyphRangesCyrillic(self)
-end
-function ImFontAtlas:GetGlyphRangesDefault()
-    return lib.ImFontAtlas_GetGlyphRangesDefault(self)
-end
-function ImFontAtlas:GetGlyphRangesJapanese()
-    return lib.ImFontAtlas_GetGlyphRangesJapanese(self)
-end
-function ImFontAtlas:GetGlyphRangesKorean()
-    return lib.ImFontAtlas_GetGlyphRangesKorean(self)
-end
-function ImFontAtlas:GetGlyphRangesThai()
-    return lib.ImFontAtlas_GetGlyphRangesThai(self)
-end
-function ImFontAtlas:GetMouseCursorTexData(cursor,out_offset,out_size,out_uv_border,out_uv_fill)
-    return lib.ImFontAtlas_GetMouseCursorTexData(self,cursor,out_offset,out_size,out_uv_border,out_uv_fill)
-end
+ImFontAtlas.Build = lib.ImFontAtlas_Build
+ImFontAtlas.CalcCustomRectUV = lib.ImFontAtlas_CalcCustomRectUV
+ImFontAtlas.Clear = lib.ImFontAtlas_Clear
+ImFontAtlas.ClearFonts = lib.ImFontAtlas_ClearFonts
+ImFontAtlas.ClearInputData = lib.ImFontAtlas_ClearInputData
+ImFontAtlas.ClearTexData = lib.ImFontAtlas_ClearTexData
+ImFontAtlas.GetCustomRectByIndex = lib.ImFontAtlas_GetCustomRectByIndex
+ImFontAtlas.GetGlyphRangesChineseFull = lib.ImFontAtlas_GetGlyphRangesChineseFull
+ImFontAtlas.GetGlyphRangesChineseSimplifiedCommon = lib.ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon
+ImFontAtlas.GetGlyphRangesCyrillic = lib.ImFontAtlas_GetGlyphRangesCyrillic
+ImFontAtlas.GetGlyphRangesDefault = lib.ImFontAtlas_GetGlyphRangesDefault
+ImFontAtlas.GetGlyphRangesJapanese = lib.ImFontAtlas_GetGlyphRangesJapanese
+ImFontAtlas.GetGlyphRangesKorean = lib.ImFontAtlas_GetGlyphRangesKorean
+ImFontAtlas.GetGlyphRangesThai = lib.ImFontAtlas_GetGlyphRangesThai
+ImFontAtlas.GetMouseCursorTexData = lib.ImFontAtlas_GetMouseCursorTexData
 function ImFontAtlas:GetTexDataAsAlpha8(out_pixels,out_width,out_height,out_bytes_per_pixel)
     out_bytes_per_pixel = out_bytes_per_pixel or nil
     return lib.ImFontAtlas_GetTexDataAsAlpha8(self,out_pixels,out_width,out_height,out_bytes_per_pixel)
@@ -1892,43 +1818,24 @@ function ImFontAtlas.__new()
     ffi.gc(ptr,lib.ImFontAtlas_destroy)
     return ptr
 end
-function ImFontAtlas:IsBuilt()
-    return lib.ImFontAtlas_IsBuilt(self)
-end
-function ImFontAtlas:SetTexID(id)
-    return lib.ImFontAtlas_SetTexID(self,id)
-end
-function ImFontAtlas:destroy(self)
-    return lib.ImFontAtlas_destroy(self,self)
-end
+ImFontAtlas.IsBuilt = lib.ImFontAtlas_IsBuilt
+ImFontAtlas.SetTexID = lib.ImFontAtlas_SetTexID
 M.ImFontAtlas = ffi.metatype("ImFontAtlas",ImFontAtlas)
 --------------------------ImDrawData----------------------------
 local ImDrawData= {}
 ImDrawData.__index = ImDrawData
-function ImDrawData:Clear()
-    return lib.ImDrawData_Clear(self)
-end
-function ImDrawData:DeIndexAllBuffers()
-    return lib.ImDrawData_DeIndexAllBuffers(self)
-end
+ImDrawData.Clear = lib.ImDrawData_Clear
+ImDrawData.DeIndexAllBuffers = lib.ImDrawData_DeIndexAllBuffers
 function ImDrawData.__new()
     local ptr = lib.ImDrawData_ImDrawData()
     ffi.gc(ptr,lib.ImDrawData_destroy)
     return ptr
 end
-function ImDrawData:ScaleClipRects(sc)
-    return lib.ImDrawData_ScaleClipRects(self,sc)
-end
-function ImDrawData:destroy(self)
-    return lib.ImDrawData_destroy(self,self)
-end
+ImDrawData.ScaleClipRects = lib.ImDrawData_ScaleClipRects
 M.ImDrawData = ffi.metatype("ImDrawData",ImDrawData)
 --------------------------Pair----------------------------
 local Pair= {}
 Pair.__index = Pair
-function Pair:destroy(self)
-    return lib.Pair_destroy(self,self)
-end
 M.Pair = ffi.metatype("Pair",Pair)
 --------------------------CustomRect----------------------------
 local CustomRect= {}
@@ -1938,12 +1845,7 @@ function CustomRect.__new()
     ffi.gc(ptr,lib.CustomRect_destroy)
     return ptr
 end
-function CustomRect:IsPacked()
-    return lib.CustomRect_IsPacked(self)
-end
-function CustomRect:destroy(self)
-    return lib.CustomRect_destroy(self,self)
-end
+CustomRect.IsPacked = lib.CustomRect_IsPacked
 M.CustomRect = ffi.metatype("CustomRect",CustomRect)
 --------------------------ImGuiTextBuffer----------------------------
 local ImGuiTextBuffer= {}
@@ -1953,36 +1855,15 @@ function ImGuiTextBuffer.__new()
     ffi.gc(ptr,lib.ImGuiTextBuffer_destroy)
     return ptr
 end
-function ImGuiTextBuffer:appendf(fmt,...)
-    return lib.ImGuiTextBuffer_appendf(self,fmt,...)
-end
-function ImGuiTextBuffer:appendfv(fmt,args)
-    return lib.ImGuiTextBuffer_appendfv(self,fmt,args)
-end
-function ImGuiTextBuffer:begin()
-    return lib.ImGuiTextBuffer_begin(self)
-end
-function ImGuiTextBuffer:c_str()
-    return lib.ImGuiTextBuffer_c_str(self)
-end
-function ImGuiTextBuffer:clear()
-    return lib.ImGuiTextBuffer_clear(self)
-end
-function ImGuiTextBuffer:destroy(self)
-    return lib.ImGuiTextBuffer_destroy(self,self)
-end
-function ImGuiTextBuffer:empty()
-    return lib.ImGuiTextBuffer_empty(self)
-end
-function ImGuiTextBuffer:_end()
-    return lib.ImGuiTextBuffer_end(self)
-end
-function ImGuiTextBuffer:reserve(capacity)
-    return lib.ImGuiTextBuffer_reserve(self,capacity)
-end
-function ImGuiTextBuffer:size()
-    return lib.ImGuiTextBuffer_size(self)
-end
+ImGuiTextBuffer.appendf = lib.ImGuiTextBuffer_appendf
+ImGuiTextBuffer.appendfv = lib.ImGuiTextBuffer_appendfv
+ImGuiTextBuffer.begin = lib.ImGuiTextBuffer_begin
+ImGuiTextBuffer.c_str = lib.ImGuiTextBuffer_c_str
+ImGuiTextBuffer.clear = lib.ImGuiTextBuffer_clear
+ImGuiTextBuffer.empty = lib.ImGuiTextBuffer_empty
+ImGuiTextBuffer._end = lib.ImGuiTextBuffer_end
+ImGuiTextBuffer.reserve = lib.ImGuiTextBuffer_reserve
+ImGuiTextBuffer.size = lib.ImGuiTextBuffer_size
 M.ImGuiTextBuffer = ffi.metatype("ImGuiTextBuffer",ImGuiTextBuffer)
 --------------------------ImGuiStyle----------------------------
 local ImGuiStyle= {}
@@ -1992,12 +1873,7 @@ function ImGuiStyle.__new()
     ffi.gc(ptr,lib.ImGuiStyle_destroy)
     return ptr
 end
-function ImGuiStyle:ScaleAllSizes(scale_factor)
-    return lib.ImGuiStyle_ScaleAllSizes(self,scale_factor)
-end
-function ImGuiStyle:destroy(self)
-    return lib.ImGuiStyle_destroy(self,self)
-end
+ImGuiStyle.ScaleAllSizes = lib.ImGuiStyle_ScaleAllSizes
 M.ImGuiStyle = ffi.metatype("ImGuiStyle",ImGuiStyle)
 --------------------------ImDrawCmd----------------------------
 local ImDrawCmd= {}
@@ -2007,19 +1883,12 @@ function ImDrawCmd.__new()
     ffi.gc(ptr,lib.ImDrawCmd_destroy)
     return ptr
 end
-function ImDrawCmd:destroy(self)
-    return lib.ImDrawCmd_destroy(self,self)
-end
 M.ImDrawCmd = ffi.metatype("ImDrawCmd",ImDrawCmd)
 --------------------------ImGuiStorage----------------------------
 local ImGuiStorage= {}
 ImGuiStorage.__index = ImGuiStorage
-function ImGuiStorage:BuildSortByKey()
-    return lib.ImGuiStorage_BuildSortByKey(self)
-end
-function ImGuiStorage:Clear()
-    return lib.ImGuiStorage_Clear(self)
-end
+ImGuiStorage.BuildSortByKey = lib.ImGuiStorage_BuildSortByKey
+ImGuiStorage.Clear = lib.ImGuiStorage_Clear
 function ImGuiStorage:GetBool(key,default_val)
     default_val = default_val or false
     return lib.ImGuiStorage_GetBool(self,key,default_val)
@@ -2044,28 +1913,16 @@ function ImGuiStorage:GetIntRef(key,default_val)
     default_val = default_val or 0
     return lib.ImGuiStorage_GetIntRef(self,key,default_val)
 end
-function ImGuiStorage:GetVoidPtr(key)
-    return lib.ImGuiStorage_GetVoidPtr(self,key)
-end
+ImGuiStorage.GetVoidPtr = lib.ImGuiStorage_GetVoidPtr
 function ImGuiStorage:GetVoidPtrRef(key,default_val)
     default_val = default_val or nil
     return lib.ImGuiStorage_GetVoidPtrRef(self,key,default_val)
 end
-function ImGuiStorage:SetAllInt(val)
-    return lib.ImGuiStorage_SetAllInt(self,val)
-end
-function ImGuiStorage:SetBool(key,val)
-    return lib.ImGuiStorage_SetBool(self,key,val)
-end
-function ImGuiStorage:SetFloat(key,val)
-    return lib.ImGuiStorage_SetFloat(self,key,val)
-end
-function ImGuiStorage:SetInt(key,val)
-    return lib.ImGuiStorage_SetInt(self,key,val)
-end
-function ImGuiStorage:SetVoidPtr(key,val)
-    return lib.ImGuiStorage_SetVoidPtr(self,key,val)
-end
+ImGuiStorage.SetAllInt = lib.ImGuiStorage_SetAllInt
+ImGuiStorage.SetBool = lib.ImGuiStorage_SetBool
+ImGuiStorage.SetFloat = lib.ImGuiStorage_SetFloat
+ImGuiStorage.SetInt = lib.ImGuiStorage_SetInt
+ImGuiStorage.SetVoidPtr = lib.ImGuiStorage_SetVoidPtr
 M.ImGuiStorage = ffi.metatype("ImGuiStorage",ImGuiStorage)
 --------------------------ImGuiOnceUponAFrame----------------------------
 local ImGuiOnceUponAFrame= {}
@@ -2075,9 +1932,6 @@ function ImGuiOnceUponAFrame.__new()
     ffi.gc(ptr,lib.ImGuiOnceUponAFrame_destroy)
     return ptr
 end
-function ImGuiOnceUponAFrame:destroy(self)
-    return lib.ImGuiOnceUponAFrame_destroy(self,self)
-end
 M.ImGuiOnceUponAFrame = ffi.metatype("ImGuiOnceUponAFrame",ImGuiOnceUponAFrame)
 --------------------------ImDrawList----------------------------
 local ImDrawList= {}
@@ -2086,9 +1940,7 @@ function ImDrawList:AddBezierCurve(pos0,cp0,cp1,pos1,col,thickness,num_segments)
     num_segments = num_segments or 0
     return lib.ImDrawList_AddBezierCurve(self,pos0,cp0,cp1,pos1,col,thickness,num_segments)
 end
-function ImDrawList:AddCallback(callback,callback_data)
-    return lib.ImDrawList_AddCallback(self,callback,callback_data)
-end
+ImDrawList.AddCallback = lib.ImDrawList_AddCallback
 function ImDrawList:AddCircle(centre,radius,col,num_segments,thickness)
     num_segments = num_segments or 12
     thickness = thickness or 1.0
@@ -2098,12 +1950,8 @@ function ImDrawList:AddCircleFilled(centre,radius,col,num_segments)
     num_segments = num_segments or 12
     return lib.ImDrawList_AddCircleFilled(self,centre,radius,col,num_segments)
 end
-function ImDrawList:AddConvexPolyFilled(points,num_points,col)
-    return lib.ImDrawList_AddConvexPolyFilled(self,points,num_points,col)
-end
-function ImDrawList:AddDrawCmd()
-    return lib.ImDrawList_AddDrawCmd(self)
-end
+ImDrawList.AddConvexPolyFilled = lib.ImDrawList_AddConvexPolyFilled
+ImDrawList.AddDrawCmd = lib.ImDrawList_AddDrawCmd
 function ImDrawList:AddImage(user_texture_id,a,b,uv_a,uv_b,col)
     uv_b = uv_b or ImVec2(1,1)
     uv_a = uv_a or ImVec2(0,0)
@@ -2126,16 +1974,12 @@ function ImDrawList:AddLine(a,b,col,thickness)
     thickness = thickness or 1.0
     return lib.ImDrawList_AddLine(self,a,b,col,thickness)
 end
-function ImDrawList:AddPolyline(points,num_points,col,closed,thickness)
-    return lib.ImDrawList_AddPolyline(self,points,num_points,col,closed,thickness)
-end
+ImDrawList.AddPolyline = lib.ImDrawList_AddPolyline
 function ImDrawList:AddQuad(a,b,c,d,col,thickness)
     thickness = thickness or 1.0
     return lib.ImDrawList_AddQuad(self,a,b,c,d,col,thickness)
 end
-function ImDrawList:AddQuadFilled(a,b,c,d,col)
-    return lib.ImDrawList_AddQuadFilled(self,a,b,c,d,col)
-end
+ImDrawList.AddQuadFilled = lib.ImDrawList_AddQuadFilled
 function ImDrawList:AddRect(a,b,col,rounding,rounding_corners_flags,thickness)
     rounding = rounding or 0.0
     thickness = thickness or 1.0
@@ -2147,9 +1991,7 @@ function ImDrawList:AddRectFilled(a,b,col,rounding,rounding_corners_flags)
     rounding_corners_flags = rounding_corners_flags or lib.ImDrawCornerFlags_All
     return lib.ImDrawList_AddRectFilled(self,a,b,col,rounding,rounding_corners_flags)
 end
-function ImDrawList:AddRectFilledMultiColor(a,b,col_upr_left,col_upr_right,col_bot_right,col_bot_left)
-    return lib.ImDrawList_AddRectFilledMultiColor(self,a,b,col_upr_left,col_upr_right,col_bot_right,col_bot_left)
-end
+ImDrawList.AddRectFilledMultiColor = lib.ImDrawList_AddRectFilledMultiColor
 function ImDrawList:AddText(pos,col,text_begin,text_end)
     text_end = text_end or nil
     return lib.ImDrawList_AddText(self,pos,col,text_begin,text_end)
@@ -2164,62 +2006,30 @@ function ImDrawList:AddTriangle(a,b,c,col,thickness)
     thickness = thickness or 1.0
     return lib.ImDrawList_AddTriangle(self,a,b,c,col,thickness)
 end
-function ImDrawList:AddTriangleFilled(a,b,c,col)
-    return lib.ImDrawList_AddTriangleFilled(self,a,b,c,col)
-end
-function ImDrawList:ChannelsMerge()
-    return lib.ImDrawList_ChannelsMerge(self)
-end
-function ImDrawList:ChannelsSetCurrent(channel_index)
-    return lib.ImDrawList_ChannelsSetCurrent(self,channel_index)
-end
-function ImDrawList:ChannelsSplit(channels_count)
-    return lib.ImDrawList_ChannelsSplit(self,channels_count)
-end
-function ImDrawList:Clear()
-    return lib.ImDrawList_Clear(self)
-end
-function ImDrawList:ClearFreeMemory()
-    return lib.ImDrawList_ClearFreeMemory(self)
-end
-function ImDrawList:CloneOutput()
-    return lib.ImDrawList_CloneOutput(self)
-end
-function ImDrawList:GetClipRectMax()
-    return lib.ImDrawList_GetClipRectMax(self)
-end
-function ImDrawList:GetClipRectMax_nonUDT2()
-    return lib.ImDrawList_GetClipRectMax_nonUDT2(self)
-end
-function ImDrawList:GetClipRectMin()
-    return lib.ImDrawList_GetClipRectMin(self)
-end
-function ImDrawList:GetClipRectMin_nonUDT2()
-    return lib.ImDrawList_GetClipRectMin_nonUDT2(self)
-end
+ImDrawList.AddTriangleFilled = lib.ImDrawList_AddTriangleFilled
+ImDrawList.ChannelsMerge = lib.ImDrawList_ChannelsMerge
+ImDrawList.ChannelsSetCurrent = lib.ImDrawList_ChannelsSetCurrent
+ImDrawList.ChannelsSplit = lib.ImDrawList_ChannelsSplit
+ImDrawList.Clear = lib.ImDrawList_Clear
+ImDrawList.ClearFreeMemory = lib.ImDrawList_ClearFreeMemory
+ImDrawList.CloneOutput = lib.ImDrawList_CloneOutput
+ImDrawList.GetClipRectMax = lib.ImDrawList_GetClipRectMax
+ImDrawList.GetClipRectMax_nonUDT2 = lib.ImDrawList_GetClipRectMax_nonUDT2
+ImDrawList.GetClipRectMin = lib.ImDrawList_GetClipRectMin
+ImDrawList.GetClipRectMin_nonUDT2 = lib.ImDrawList_GetClipRectMin_nonUDT2
 function ImDrawList:PathArcTo(centre,radius,a_min,a_max,num_segments)
     num_segments = num_segments or 10
     return lib.ImDrawList_PathArcTo(self,centre,radius,a_min,a_max,num_segments)
 end
-function ImDrawList:PathArcToFast(centre,radius,a_min_of_12,a_max_of_12)
-    return lib.ImDrawList_PathArcToFast(self,centre,radius,a_min_of_12,a_max_of_12)
-end
+ImDrawList.PathArcToFast = lib.ImDrawList_PathArcToFast
 function ImDrawList:PathBezierCurveTo(p1,p2,p3,num_segments)
     num_segments = num_segments or 0
     return lib.ImDrawList_PathBezierCurveTo(self,p1,p2,p3,num_segments)
 end
-function ImDrawList:PathClear()
-    return lib.ImDrawList_PathClear(self)
-end
-function ImDrawList:PathFillConvex(col)
-    return lib.ImDrawList_PathFillConvex(self,col)
-end
-function ImDrawList:PathLineTo(pos)
-    return lib.ImDrawList_PathLineTo(self,pos)
-end
-function ImDrawList:PathLineToMergeDuplicate(pos)
-    return lib.ImDrawList_PathLineToMergeDuplicate(self,pos)
-end
+ImDrawList.PathClear = lib.ImDrawList_PathClear
+ImDrawList.PathFillConvex = lib.ImDrawList_PathFillConvex
+ImDrawList.PathLineTo = lib.ImDrawList_PathLineTo
+ImDrawList.PathLineToMergeDuplicate = lib.ImDrawList_PathLineToMergeDuplicate
 function ImDrawList:PathRect(rect_min,rect_max,rounding,rounding_corners_flags)
     rounding = rounding or 0.0
     rounding_corners_flags = rounding_corners_flags or lib.ImDrawCornerFlags_All
@@ -2229,97 +2039,48 @@ function ImDrawList:PathStroke(col,closed,thickness)
     thickness = thickness or 1.0
     return lib.ImDrawList_PathStroke(self,col,closed,thickness)
 end
-function ImDrawList:PopClipRect()
-    return lib.ImDrawList_PopClipRect(self)
-end
-function ImDrawList:PopTextureID()
-    return lib.ImDrawList_PopTextureID(self)
-end
-function ImDrawList:PrimQuadUV(a,b,c,d,uv_a,uv_b,uv_c,uv_d,col)
-    return lib.ImDrawList_PrimQuadUV(self,a,b,c,d,uv_a,uv_b,uv_c,uv_d,col)
-end
-function ImDrawList:PrimRect(a,b,col)
-    return lib.ImDrawList_PrimRect(self,a,b,col)
-end
-function ImDrawList:PrimRectUV(a,b,uv_a,uv_b,col)
-    return lib.ImDrawList_PrimRectUV(self,a,b,uv_a,uv_b,col)
-end
-function ImDrawList:PrimReserve(idx_count,vtx_count)
-    return lib.ImDrawList_PrimReserve(self,idx_count,vtx_count)
-end
-function ImDrawList:PrimVtx(pos,uv,col)
-    return lib.ImDrawList_PrimVtx(self,pos,uv,col)
-end
-function ImDrawList:PrimWriteIdx(idx)
-    return lib.ImDrawList_PrimWriteIdx(self,idx)
-end
-function ImDrawList:PrimWriteVtx(pos,uv,col)
-    return lib.ImDrawList_PrimWriteVtx(self,pos,uv,col)
-end
+ImDrawList.PopClipRect = lib.ImDrawList_PopClipRect
+ImDrawList.PopTextureID = lib.ImDrawList_PopTextureID
+ImDrawList.PrimQuadUV = lib.ImDrawList_PrimQuadUV
+ImDrawList.PrimRect = lib.ImDrawList_PrimRect
+ImDrawList.PrimRectUV = lib.ImDrawList_PrimRectUV
+ImDrawList.PrimReserve = lib.ImDrawList_PrimReserve
+ImDrawList.PrimVtx = lib.ImDrawList_PrimVtx
+ImDrawList.PrimWriteIdx = lib.ImDrawList_PrimWriteIdx
+ImDrawList.PrimWriteVtx = lib.ImDrawList_PrimWriteVtx
 function ImDrawList:PushClipRect(clip_rect_min,clip_rect_max,intersect_with_current_clip_rect)
     intersect_with_current_clip_rect = intersect_with_current_clip_rect or false
     return lib.ImDrawList_PushClipRect(self,clip_rect_min,clip_rect_max,intersect_with_current_clip_rect)
 end
-function ImDrawList:PushClipRectFullScreen()
-    return lib.ImDrawList_PushClipRectFullScreen(self)
-end
-function ImDrawList:PushTextureID(texture_id)
-    return lib.ImDrawList_PushTextureID(self,texture_id)
-end
-function ImDrawList:UpdateClipRect()
-    return lib.ImDrawList_UpdateClipRect(self)
-end
-function ImDrawList:UpdateTextureID()
-    return lib.ImDrawList_UpdateTextureID(self)
-end
-function ImDrawList:destroy(self)
-    return lib.ImDrawList_destroy(self,self)
-end
+ImDrawList.PushClipRectFullScreen = lib.ImDrawList_PushClipRectFullScreen
+ImDrawList.PushTextureID = lib.ImDrawList_PushTextureID
+ImDrawList.UpdateClipRect = lib.ImDrawList_UpdateClipRect
+ImDrawList.UpdateTextureID = lib.ImDrawList_UpdateTextureID
 M.ImDrawList = ffi.metatype("ImDrawList",ImDrawList)
 --------------------------ImGuiIO----------------------------
 local ImGuiIO= {}
 ImGuiIO.__index = ImGuiIO
-function ImGuiIO:AddInputCharacter(c)
-    return lib.ImGuiIO_AddInputCharacter(self,c)
-end
-function ImGuiIO:AddInputCharactersUTF8(utf8_chars)
-    return lib.ImGuiIO_AddInputCharactersUTF8(self,utf8_chars)
-end
-function ImGuiIO:ClearInputCharacters()
-    return lib.ImGuiIO_ClearInputCharacters(self)
-end
+ImGuiIO.AddInputCharacter = lib.ImGuiIO_AddInputCharacter
+ImGuiIO.AddInputCharactersUTF8 = lib.ImGuiIO_AddInputCharactersUTF8
+ImGuiIO.ClearInputCharacters = lib.ImGuiIO_ClearInputCharacters
 function ImGuiIO.__new()
     local ptr = lib.ImGuiIO_ImGuiIO()
     ffi.gc(ptr,lib.ImGuiIO_destroy)
     return ptr
 end
-function ImGuiIO:destroy(self)
-    return lib.ImGuiIO_destroy(self,self)
-end
 M.ImGuiIO = ffi.metatype("ImGuiIO",ImGuiIO)
 --------------------------ImGuiPayload----------------------------
 local ImGuiPayload= {}
 ImGuiPayload.__index = ImGuiPayload
-function ImGuiPayload:Clear()
-    return lib.ImGuiPayload_Clear(self)
-end
+ImGuiPayload.Clear = lib.ImGuiPayload_Clear
 function ImGuiPayload.__new()
     local ptr = lib.ImGuiPayload_ImGuiPayload()
     ffi.gc(ptr,lib.ImGuiPayload_destroy)
     return ptr
 end
-function ImGuiPayload:IsDataType(type)
-    return lib.ImGuiPayload_IsDataType(self,type)
-end
-function ImGuiPayload:IsDelivery()
-    return lib.ImGuiPayload_IsDelivery(self)
-end
-function ImGuiPayload:IsPreview()
-    return lib.ImGuiPayload_IsPreview(self)
-end
-function ImGuiPayload:destroy(self)
-    return lib.ImGuiPayload_destroy(self,self)
-end
+ImGuiPayload.IsDataType = lib.ImGuiPayload_IsDataType
+ImGuiPayload.IsDelivery = lib.ImGuiPayload_IsDelivery
+ImGuiPayload.IsPreview = lib.ImGuiPayload_IsPreview
 M.ImGuiPayload = ffi.metatype("ImGuiPayload",ImGuiPayload)
 --------------------------ImColor----------------------------
 local ImColor= {}
@@ -2341,23 +2102,16 @@ function ImColor:SetHSV(h,s,v,a)
     a = a or 1.0
     return lib.ImColor_SetHSV(self,h,s,v,a)
 end
-function ImColor:destroy(self)
-    return lib.ImColor_destroy(self,self)
-end
 M.ImColor = ffi.metatype("ImColor",ImColor)
 --------------------------ImFont----------------------------
 local ImFont= {}
 ImFont.__index = ImFont
-function ImFont:AddGlyph(c,x0,y0,x1,y1,u0,v0,u1,v1,advance_x)
-    return lib.ImFont_AddGlyph(self,c,x0,y0,x1,y1,u0,v0,u1,v1,advance_x)
-end
+ImFont.AddGlyph = lib.ImFont_AddGlyph
 function ImFont:AddRemapChar(dst,src,overwrite_dst)
     overwrite_dst = overwrite_dst or true
     return lib.ImFont_AddRemapChar(self,dst,src,overwrite_dst)
 end
-function ImFont:BuildLookupTable()
-    return lib.ImFont_BuildLookupTable(self)
-end
+ImFont.BuildLookupTable = lib.ImFont_BuildLookupTable
 function ImFont:CalcTextSizeA(size,max_width,wrap_width,text_begin,text_end,remaining)
     text_end = text_end or nil
     remaining = remaining or nil
@@ -2368,84 +2122,48 @@ function ImFont:CalcTextSizeA_nonUDT2(size,max_width,wrap_width,text_begin,text_
     remaining = remaining or nil
     return lib.ImFont_CalcTextSizeA_nonUDT2(self,size,max_width,wrap_width,text_begin,text_end,remaining)
 end
-function ImFont:CalcWordWrapPositionA(scale,text,text_end,wrap_width)
-    return lib.ImFont_CalcWordWrapPositionA(self,scale,text,text_end,wrap_width)
-end
-function ImFont:ClearOutputData()
-    return lib.ImFont_ClearOutputData(self)
-end
-function ImFont:FindGlyph(c)
-    return lib.ImFont_FindGlyph(self,c)
-end
-function ImFont:FindGlyphNoFallback(c)
-    return lib.ImFont_FindGlyphNoFallback(self,c)
-end
-function ImFont:GetCharAdvance(c)
-    return lib.ImFont_GetCharAdvance(self,c)
-end
-function ImFont:GetDebugName()
-    return lib.ImFont_GetDebugName(self)
-end
-function ImFont:GrowIndex(new_size)
-    return lib.ImFont_GrowIndex(self,new_size)
-end
+ImFont.CalcWordWrapPositionA = lib.ImFont_CalcWordWrapPositionA
+ImFont.ClearOutputData = lib.ImFont_ClearOutputData
+ImFont.FindGlyph = lib.ImFont_FindGlyph
+ImFont.FindGlyphNoFallback = lib.ImFont_FindGlyphNoFallback
+ImFont.GetCharAdvance = lib.ImFont_GetCharAdvance
+ImFont.GetDebugName = lib.ImFont_GetDebugName
+ImFont.GrowIndex = lib.ImFont_GrowIndex
 function ImFont.__new()
     local ptr = lib.ImFont_ImFont()
     ffi.gc(ptr,lib.ImFont_destroy)
     return ptr
 end
-function ImFont:IsLoaded()
-    return lib.ImFont_IsLoaded(self)
-end
-function ImFont:RenderChar(draw_list,size,pos,col,c)
-    return lib.ImFont_RenderChar(self,draw_list,size,pos,col,c)
-end
+ImFont.IsLoaded = lib.ImFont_IsLoaded
+ImFont.RenderChar = lib.ImFont_RenderChar
 function ImFont:RenderText(draw_list,size,pos,col,clip_rect,text_begin,text_end,wrap_width,cpu_fine_clip)
     wrap_width = wrap_width or 0.0
     cpu_fine_clip = cpu_fine_clip or false
     return lib.ImFont_RenderText(self,draw_list,size,pos,col,clip_rect,text_begin,text_end,wrap_width,cpu_fine_clip)
 end
-function ImFont:SetFallbackChar(c)
-    return lib.ImFont_SetFallbackChar(self,c)
-end
-function ImFont:destroy(self)
-    return lib.ImFont_destroy(self,self)
-end
+ImFont.SetFallbackChar = lib.ImFont_SetFallbackChar
 M.ImFont = ffi.metatype("ImFont",ImFont)
 --------------------------ImGuiTextFilter----------------------------
 local ImGuiTextFilter= {}
 ImGuiTextFilter.__index = ImGuiTextFilter
-function ImGuiTextFilter:Build()
-    return lib.ImGuiTextFilter_Build(self)
-end
-function ImGuiTextFilter:Clear()
-    return lib.ImGuiTextFilter_Clear(self)
-end
+ImGuiTextFilter.Build = lib.ImGuiTextFilter_Build
+ImGuiTextFilter.Clear = lib.ImGuiTextFilter_Clear
 function ImGuiTextFilter:Draw(label,width)
     label = label or "Filter(inc,-exc)"
     width = width or 0.0
     return lib.ImGuiTextFilter_Draw(self,label,width)
 end
-function ImGuiTextFilter:IsActive()
-    return lib.ImGuiTextFilter_IsActive(self)
-end
+ImGuiTextFilter.IsActive = lib.ImGuiTextFilter_IsActive
 function ImGuiTextFilter:PassFilter(text,text_end)
     text_end = text_end or nil
     return lib.ImGuiTextFilter_PassFilter(self,text,text_end)
-end
-function ImGuiTextFilter:destroy(self)
-    return lib.ImGuiTextFilter_destroy(self,self)
 end
 M.ImGuiTextFilter = ffi.metatype("ImGuiTextFilter",ImGuiTextFilter)
 --------------------------ImGuiInputTextCallbackData----------------------------
 local ImGuiInputTextCallbackData= {}
 ImGuiInputTextCallbackData.__index = ImGuiInputTextCallbackData
-function ImGuiInputTextCallbackData:DeleteChars(pos,bytes_count)
-    return lib.ImGuiInputTextCallbackData_DeleteChars(self,pos,bytes_count)
-end
-function ImGuiInputTextCallbackData:HasSelection()
-    return lib.ImGuiInputTextCallbackData_HasSelection(self)
-end
+ImGuiInputTextCallbackData.DeleteChars = lib.ImGuiInputTextCallbackData_DeleteChars
+ImGuiInputTextCallbackData.HasSelection = lib.ImGuiInputTextCallbackData_HasSelection
 function ImGuiInputTextCallbackData.__new()
     local ptr = lib.ImGuiInputTextCallbackData_ImGuiInputTextCallbackData()
     ffi.gc(ptr,lib.ImGuiInputTextCallbackData_destroy)
@@ -2455,21 +2173,14 @@ function ImGuiInputTextCallbackData:InsertChars(pos,text,text_end)
     text_end = text_end or nil
     return lib.ImGuiInputTextCallbackData_InsertChars(self,pos,text,text_end)
 end
-function ImGuiInputTextCallbackData:destroy(self)
-    return lib.ImGuiInputTextCallbackData_destroy(self,self)
-end
 M.ImGuiInputTextCallbackData = ffi.metatype("ImGuiInputTextCallbackData",ImGuiInputTextCallbackData)
 --------------------------ImGui----------------------------
 function M.AcceptDragDropPayload(type,flags)
     flags = flags or 0
     return lib.igAcceptDragDropPayload(type,flags)
 end
-function M.AlignTextToFramePadding()
-    return lib.igAlignTextToFramePadding()
-end
-function M.ArrowButton(str_id,dir)
-    return lib.igArrowButton(str_id,dir)
-end
+M.AlignTextToFramePadding = lib.igAlignTextToFramePadding
+M.ArrowButton = lib.igArrowButton
 function M.Begin(name,p_open,flags)
     p_open = p_open or nil
     flags = flags or 0
@@ -2499,22 +2210,14 @@ function M.BeginDragDropSource(flags)
     flags = flags or 0
     return lib.igBeginDragDropSource(flags)
 end
-function M.BeginDragDropTarget()
-    return lib.igBeginDragDropTarget()
-end
-function M.BeginGroup()
-    return lib.igBeginGroup()
-end
-function M.BeginMainMenuBar()
-    return lib.igBeginMainMenuBar()
-end
+M.BeginDragDropTarget = lib.igBeginDragDropTarget
+M.BeginGroup = lib.igBeginGroup
+M.BeginMainMenuBar = lib.igBeginMainMenuBar
 function M.BeginMenu(label,enabled)
     enabled = enabled or true
     return lib.igBeginMenu(label,enabled)
 end
-function M.BeginMenuBar()
-    return lib.igBeginMenuBar()
-end
+M.BeginMenuBar = lib.igBeginMenuBar
 function M.BeginPopup(str_id,flags)
     flags = flags or 0
     return lib.igBeginPopup(str_id,flags)
@@ -2540,28 +2243,16 @@ function M.BeginPopupModal(name,p_open,flags)
     flags = flags or 0
     return lib.igBeginPopupModal(name,p_open,flags)
 end
-function M.BeginTooltip()
-    return lib.igBeginTooltip()
-end
-function M.Bullet()
-    return lib.igBullet()
-end
-function M.BulletText(fmt,...)
-    return lib.igBulletText(fmt,...)
-end
-function M.BulletTextV(fmt,args)
-    return lib.igBulletTextV(fmt,args)
-end
+M.BeginTooltip = lib.igBeginTooltip
+M.Bullet = lib.igBullet
+M.BulletText = lib.igBulletText
+M.BulletTextV = lib.igBulletTextV
 function M.Button(label,size)
     size = size or ImVec2(0,0)
     return lib.igButton(label,size)
 end
-function M.CalcItemWidth()
-    return lib.igCalcItemWidth()
-end
-function M.CalcListClipping(items_count,items_height,out_items_display_start,out_items_display_end)
-    return lib.igCalcListClipping(items_count,items_height,out_items_display_start,out_items_display_end)
-end
+M.CalcItemWidth = lib.igCalcItemWidth
+M.CalcListClipping = lib.igCalcListClipping
 function M.CalcTextSize(text,text_end,hide_text_after_double_hash,wrap_width)
     text_end = text_end or nil
     wrap_width = wrap_width or -1.0
@@ -2582,15 +2273,9 @@ function M.CaptureMouseFromApp(capture)
     capture = capture or true
     return lib.igCaptureMouseFromApp(capture)
 end
-function M.Checkbox(label,v)
-    return lib.igCheckbox(label,v)
-end
-function M.CheckboxFlags(label,flags,flags_value)
-    return lib.igCheckboxFlags(label,flags,flags_value)
-end
-function M.CloseCurrentPopup()
-    return lib.igCloseCurrentPopup()
-end
+M.Checkbox = lib.igCheckbox
+M.CheckboxFlags = lib.igCheckboxFlags
+M.CloseCurrentPopup = lib.igCloseCurrentPopup
 function M.CollapsingHeader(label,flags)
     flags = flags or 0
     return lib.igCollapsingHeader(label,flags)
@@ -2604,21 +2289,11 @@ function M.ColorButton(desc_id,col,flags,size)
     flags = flags or 0
     return lib.igColorButton(desc_id,col,flags,size)
 end
-function M.ColorConvertFloat4ToU32(_in)
-    return lib.igColorConvertFloat4ToU32(_in)
-end
-function M.ColorConvertHSVtoRGB(h,s,v,out_r,out_g,out_b)
-    return lib.igColorConvertHSVtoRGB(h,s,v,out_r,out_g,out_b)
-end
-function M.ColorConvertRGBtoHSV(r,g,b,out_h,out_s,out_v)
-    return lib.igColorConvertRGBtoHSV(r,g,b,out_h,out_s,out_v)
-end
-function M.ColorConvertU32ToFloat4(_in)
-    return lib.igColorConvertU32ToFloat4(_in)
-end
-function M.ColorConvertU32ToFloat4_nonUDT2(_in)
-    return lib.igColorConvertU32ToFloat4_nonUDT2(_in)
-end
+M.ColorConvertFloat4ToU32 = lib.igColorConvertFloat4ToU32
+M.ColorConvertHSVtoRGB = lib.igColorConvertHSVtoRGB
+M.ColorConvertRGBtoHSV = lib.igColorConvertRGBtoHSV
+M.ColorConvertU32ToFloat4 = lib.igColorConvertU32ToFloat4
+M.ColorConvertU32ToFloat4_nonUDT2 = lib.igColorConvertU32ToFloat4_nonUDT2
 function M.ColorEdit3(label,col,flags)
     flags = flags or 0
     return lib.igColorEdit3(label,col,flags)
@@ -2658,9 +2333,7 @@ function M.CreateContext(shared_font_atlas)
     shared_font_atlas = shared_font_atlas or nil
     return lib.igCreateContext(shared_font_atlas)
 end
-function M.DebugCheckVersionAndDataLayout(version_str,sz_io,sz_style,sz_vec2,sz_vec4,sz_drawvert)
-    return lib.igDebugCheckVersionAndDataLayout(version_str,sz_io,sz_style,sz_vec2,sz_vec4,sz_drawvert)
-end
+M.DebugCheckVersionAndDataLayout = lib.igDebugCheckVersionAndDataLayout
 function M.DestroyContext(ctx)
     ctx = ctx or nil
     return lib.igDestroyContext(ctx)
@@ -2756,64 +2429,28 @@ function M.DragScalarN(label,data_type,v,components,v_speed,v_min,v_max,format,p
     power = power or 1.0
     return lib.igDragScalarN(label,data_type,v,components,v_speed,v_min,v_max,format,power)
 end
-function M.Dummy(size)
-    return lib.igDummy(size)
-end
-function M.End()
-    return lib.igEnd()
-end
-function M.EndChild()
-    return lib.igEndChild()
-end
-function M.EndChildFrame()
-    return lib.igEndChildFrame()
-end
-function M.EndCombo()
-    return lib.igEndCombo()
-end
-function M.EndDragDropSource()
-    return lib.igEndDragDropSource()
-end
-function M.EndDragDropTarget()
-    return lib.igEndDragDropTarget()
-end
-function M.EndFrame()
-    return lib.igEndFrame()
-end
-function M.EndGroup()
-    return lib.igEndGroup()
-end
-function M.EndMainMenuBar()
-    return lib.igEndMainMenuBar()
-end
-function M.EndMenu()
-    return lib.igEndMenu()
-end
-function M.EndMenuBar()
-    return lib.igEndMenuBar()
-end
-function M.EndPopup()
-    return lib.igEndPopup()
-end
-function M.EndTooltip()
-    return lib.igEndTooltip()
-end
-function M.GetClipboardText()
-    return lib.igGetClipboardText()
-end
+M.Dummy = lib.igDummy
+M.End = lib.igEnd
+M.EndChild = lib.igEndChild
+M.EndChildFrame = lib.igEndChildFrame
+M.EndCombo = lib.igEndCombo
+M.EndDragDropSource = lib.igEndDragDropSource
+M.EndDragDropTarget = lib.igEndDragDropTarget
+M.EndFrame = lib.igEndFrame
+M.EndGroup = lib.igEndGroup
+M.EndMainMenuBar = lib.igEndMainMenuBar
+M.EndMenu = lib.igEndMenu
+M.EndMenuBar = lib.igEndMenuBar
+M.EndPopup = lib.igEndPopup
+M.EndTooltip = lib.igEndTooltip
+M.GetClipboardText = lib.igGetClipboardText
 function M.GetColorU32(idx,alpha_mul)
     alpha_mul = alpha_mul or 1.0
     return lib.igGetColorU32(idx,alpha_mul)
 end
-function M.GetColorU32Vec4(col)
-    return lib.igGetColorU32Vec4(col)
-end
-function M.GetColorU32U32(col)
-    return lib.igGetColorU32U32(col)
-end
-function M.GetColumnIndex()
-    return lib.igGetColumnIndex()
-end
+M.GetColorU32Vec4 = lib.igGetColorU32Vec4
+M.GetColorU32U32 = lib.igGetColorU32U32
+M.GetColumnIndex = lib.igGetColumnIndex
 function M.GetColumnOffset(column_index)
     column_index = column_index or -1
     return lib.igGetColumnOffset(column_index)
@@ -2822,117 +2459,43 @@ function M.GetColumnWidth(column_index)
     column_index = column_index or -1
     return lib.igGetColumnWidth(column_index)
 end
-function M.GetColumnsCount()
-    return lib.igGetColumnsCount()
-end
-function M.GetContentRegionAvail()
-    return lib.igGetContentRegionAvail()
-end
-function M.GetContentRegionAvail_nonUDT2()
-    return lib.igGetContentRegionAvail_nonUDT2()
-end
-function M.GetContentRegionAvailWidth()
-    return lib.igGetContentRegionAvailWidth()
-end
-function M.GetContentRegionMax()
-    return lib.igGetContentRegionMax()
-end
-function M.GetContentRegionMax_nonUDT2()
-    return lib.igGetContentRegionMax_nonUDT2()
-end
-function M.GetCurrentContext()
-    return lib.igGetCurrentContext()
-end
-function M.GetCursorPos()
-    return lib.igGetCursorPos()
-end
-function M.GetCursorPos_nonUDT2()
-    return lib.igGetCursorPos_nonUDT2()
-end
-function M.GetCursorPosX()
-    return lib.igGetCursorPosX()
-end
-function M.GetCursorPosY()
-    return lib.igGetCursorPosY()
-end
-function M.GetCursorScreenPos()
-    return lib.igGetCursorScreenPos()
-end
-function M.GetCursorScreenPos_nonUDT2()
-    return lib.igGetCursorScreenPos_nonUDT2()
-end
-function M.GetCursorStartPos()
-    return lib.igGetCursorStartPos()
-end
-function M.GetCursorStartPos_nonUDT2()
-    return lib.igGetCursorStartPos_nonUDT2()
-end
-function M.GetDrawData()
-    return lib.igGetDrawData()
-end
-function M.GetDrawListSharedData()
-    return lib.igGetDrawListSharedData()
-end
-function M.GetFont()
-    return lib.igGetFont()
-end
-function M.GetFontSize()
-    return lib.igGetFontSize()
-end
-function M.GetFontTexUvWhitePixel()
-    return lib.igGetFontTexUvWhitePixel()
-end
-function M.GetFontTexUvWhitePixel_nonUDT2()
-    return lib.igGetFontTexUvWhitePixel_nonUDT2()
-end
-function M.GetFrameCount()
-    return lib.igGetFrameCount()
-end
-function M.GetFrameHeight()
-    return lib.igGetFrameHeight()
-end
-function M.GetFrameHeightWithSpacing()
-    return lib.igGetFrameHeightWithSpacing()
-end
-function M.GetIDStr(str_id)
-    return lib.igGetIDStr(str_id)
-end
-function M.GetIDRange(str_id_begin,str_id_end)
-    return lib.igGetIDRange(str_id_begin,str_id_end)
-end
-function M.GetIDPtr(ptr_id)
-    return lib.igGetIDPtr(ptr_id)
-end
-function M.GetIO()
-    return lib.igGetIO()
-end
-function M.GetItemRectMax()
-    return lib.igGetItemRectMax()
-end
-function M.GetItemRectMax_nonUDT2()
-    return lib.igGetItemRectMax_nonUDT2()
-end
-function M.GetItemRectMin()
-    return lib.igGetItemRectMin()
-end
-function M.GetItemRectMin_nonUDT2()
-    return lib.igGetItemRectMin_nonUDT2()
-end
-function M.GetItemRectSize()
-    return lib.igGetItemRectSize()
-end
-function M.GetItemRectSize_nonUDT2()
-    return lib.igGetItemRectSize_nonUDT2()
-end
-function M.GetKeyIndex(imgui_key)
-    return lib.igGetKeyIndex(imgui_key)
-end
-function M.GetKeyPressedAmount(key_index,repeat_delay,rate)
-    return lib.igGetKeyPressedAmount(key_index,repeat_delay,rate)
-end
-function M.GetMouseCursor()
-    return lib.igGetMouseCursor()
-end
+M.GetColumnsCount = lib.igGetColumnsCount
+M.GetContentRegionAvail = lib.igGetContentRegionAvail
+M.GetContentRegionAvail_nonUDT2 = lib.igGetContentRegionAvail_nonUDT2
+M.GetContentRegionAvailWidth = lib.igGetContentRegionAvailWidth
+M.GetContentRegionMax = lib.igGetContentRegionMax
+M.GetContentRegionMax_nonUDT2 = lib.igGetContentRegionMax_nonUDT2
+M.GetCurrentContext = lib.igGetCurrentContext
+M.GetCursorPos = lib.igGetCursorPos
+M.GetCursorPos_nonUDT2 = lib.igGetCursorPos_nonUDT2
+M.GetCursorPosX = lib.igGetCursorPosX
+M.GetCursorPosY = lib.igGetCursorPosY
+M.GetCursorScreenPos = lib.igGetCursorScreenPos
+M.GetCursorScreenPos_nonUDT2 = lib.igGetCursorScreenPos_nonUDT2
+M.GetCursorStartPos = lib.igGetCursorStartPos
+M.GetCursorStartPos_nonUDT2 = lib.igGetCursorStartPos_nonUDT2
+M.GetDrawData = lib.igGetDrawData
+M.GetDrawListSharedData = lib.igGetDrawListSharedData
+M.GetFont = lib.igGetFont
+M.GetFontSize = lib.igGetFontSize
+M.GetFontTexUvWhitePixel = lib.igGetFontTexUvWhitePixel
+M.GetFontTexUvWhitePixel_nonUDT2 = lib.igGetFontTexUvWhitePixel_nonUDT2
+M.GetFrameCount = lib.igGetFrameCount
+M.GetFrameHeight = lib.igGetFrameHeight
+M.GetFrameHeightWithSpacing = lib.igGetFrameHeightWithSpacing
+M.GetIDStr = lib.igGetIDStr
+M.GetIDRange = lib.igGetIDRange
+M.GetIDPtr = lib.igGetIDPtr
+M.GetIO = lib.igGetIO
+M.GetItemRectMax = lib.igGetItemRectMax
+M.GetItemRectMax_nonUDT2 = lib.igGetItemRectMax_nonUDT2
+M.GetItemRectMin = lib.igGetItemRectMin
+M.GetItemRectMin_nonUDT2 = lib.igGetItemRectMin_nonUDT2
+M.GetItemRectSize = lib.igGetItemRectSize
+M.GetItemRectSize_nonUDT2 = lib.igGetItemRectSize_nonUDT2
+M.GetKeyIndex = lib.igGetKeyIndex
+M.GetKeyPressedAmount = lib.igGetKeyPressedAmount
+M.GetMouseCursor = lib.igGetMouseCursor
 function M.GetMouseDragDelta(button,lock_threshold)
     lock_threshold = lock_threshold or -1.0
     button = button or 0
@@ -2943,96 +2506,36 @@ function M.GetMouseDragDelta_nonUDT2(button,lock_threshold)
     button = button or 0
     return lib.igGetMouseDragDelta_nonUDT2(button,lock_threshold)
 end
-function M.GetMousePos()
-    return lib.igGetMousePos()
-end
-function M.GetMousePos_nonUDT2()
-    return lib.igGetMousePos_nonUDT2()
-end
-function M.GetMousePosOnOpeningCurrentPopup()
-    return lib.igGetMousePosOnOpeningCurrentPopup()
-end
-function M.GetMousePosOnOpeningCurrentPopup_nonUDT2()
-    return lib.igGetMousePosOnOpeningCurrentPopup_nonUDT2()
-end
-function M.GetOverlayDrawList()
-    return lib.igGetOverlayDrawList()
-end
-function M.GetScrollMaxX()
-    return lib.igGetScrollMaxX()
-end
-function M.GetScrollMaxY()
-    return lib.igGetScrollMaxY()
-end
-function M.GetScrollX()
-    return lib.igGetScrollX()
-end
-function M.GetScrollY()
-    return lib.igGetScrollY()
-end
-function M.GetStateStorage()
-    return lib.igGetStateStorage()
-end
-function M.GetStyle()
-    return lib.igGetStyle()
-end
-function M.GetStyleColorName(idx)
-    return lib.igGetStyleColorName(idx)
-end
-function M.GetStyleColorVec4(idx)
-    return lib.igGetStyleColorVec4(idx)
-end
-function M.GetTextLineHeight()
-    return lib.igGetTextLineHeight()
-end
-function M.GetTextLineHeightWithSpacing()
-    return lib.igGetTextLineHeightWithSpacing()
-end
-function M.GetTime()
-    return lib.igGetTime()
-end
-function M.GetTreeNodeToLabelSpacing()
-    return lib.igGetTreeNodeToLabelSpacing()
-end
-function M.GetVersion()
-    return lib.igGetVersion()
-end
-function M.GetWindowContentRegionMax()
-    return lib.igGetWindowContentRegionMax()
-end
-function M.GetWindowContentRegionMax_nonUDT2()
-    return lib.igGetWindowContentRegionMax_nonUDT2()
-end
-function M.GetWindowContentRegionMin()
-    return lib.igGetWindowContentRegionMin()
-end
-function M.GetWindowContentRegionMin_nonUDT2()
-    return lib.igGetWindowContentRegionMin_nonUDT2()
-end
-function M.GetWindowContentRegionWidth()
-    return lib.igGetWindowContentRegionWidth()
-end
-function M.GetWindowDrawList()
-    return lib.igGetWindowDrawList()
-end
-function M.GetWindowHeight()
-    return lib.igGetWindowHeight()
-end
-function M.GetWindowPos()
-    return lib.igGetWindowPos()
-end
-function M.GetWindowPos_nonUDT2()
-    return lib.igGetWindowPos_nonUDT2()
-end
-function M.GetWindowSize()
-    return lib.igGetWindowSize()
-end
-function M.GetWindowSize_nonUDT2()
-    return lib.igGetWindowSize_nonUDT2()
-end
-function M.GetWindowWidth()
-    return lib.igGetWindowWidth()
-end
+M.GetMousePos = lib.igGetMousePos
+M.GetMousePos_nonUDT2 = lib.igGetMousePos_nonUDT2
+M.GetMousePosOnOpeningCurrentPopup = lib.igGetMousePosOnOpeningCurrentPopup
+M.GetMousePosOnOpeningCurrentPopup_nonUDT2 = lib.igGetMousePosOnOpeningCurrentPopup_nonUDT2
+M.GetOverlayDrawList = lib.igGetOverlayDrawList
+M.GetScrollMaxX = lib.igGetScrollMaxX
+M.GetScrollMaxY = lib.igGetScrollMaxY
+M.GetScrollX = lib.igGetScrollX
+M.GetScrollY = lib.igGetScrollY
+M.GetStateStorage = lib.igGetStateStorage
+M.GetStyle = lib.igGetStyle
+M.GetStyleColorName = lib.igGetStyleColorName
+M.GetStyleColorVec4 = lib.igGetStyleColorVec4
+M.GetTextLineHeight = lib.igGetTextLineHeight
+M.GetTextLineHeightWithSpacing = lib.igGetTextLineHeightWithSpacing
+M.GetTime = lib.igGetTime
+M.GetTreeNodeToLabelSpacing = lib.igGetTreeNodeToLabelSpacing
+M.GetVersion = lib.igGetVersion
+M.GetWindowContentRegionMax = lib.igGetWindowContentRegionMax
+M.GetWindowContentRegionMax_nonUDT2 = lib.igGetWindowContentRegionMax_nonUDT2
+M.GetWindowContentRegionMin = lib.igGetWindowContentRegionMin
+M.GetWindowContentRegionMin_nonUDT2 = lib.igGetWindowContentRegionMin_nonUDT2
+M.GetWindowContentRegionWidth = lib.igGetWindowContentRegionWidth
+M.GetWindowDrawList = lib.igGetWindowDrawList
+M.GetWindowHeight = lib.igGetWindowHeight
+M.GetWindowPos = lib.igGetWindowPos
+M.GetWindowPos_nonUDT2 = lib.igGetWindowPos_nonUDT2
+M.GetWindowSize = lib.igGetWindowSize
+M.GetWindowSize_nonUDT2 = lib.igGetWindowSize_nonUDT2
+M.GetWindowWidth = lib.igGetWindowWidth
 function M.Image(user_texture_id,size,uv0,uv1,tint_col,border_col)
     border_col = border_col or ImVec4(0,0,0,0)
     tint_col = tint_col or ImVec4(1,1,1,1)
@@ -3126,67 +2629,37 @@ function M.InputTextMultiline(label,buf,buf_size,size,flags,callback,user_data)
     flags = flags or 0
     return lib.igInputTextMultiline(label,buf,buf_size,size,flags,callback,user_data)
 end
-function M.InvisibleButton(str_id,size)
-    return lib.igInvisibleButton(str_id,size)
-end
-function M.IsAnyItemActive()
-    return lib.igIsAnyItemActive()
-end
-function M.IsAnyItemFocused()
-    return lib.igIsAnyItemFocused()
-end
-function M.IsAnyItemHovered()
-    return lib.igIsAnyItemHovered()
-end
-function M.IsAnyMouseDown()
-    return lib.igIsAnyMouseDown()
-end
-function M.IsItemActive()
-    return lib.igIsItemActive()
-end
+M.InvisibleButton = lib.igInvisibleButton
+M.IsAnyItemActive = lib.igIsAnyItemActive
+M.IsAnyItemFocused = lib.igIsAnyItemFocused
+M.IsAnyItemHovered = lib.igIsAnyItemHovered
+M.IsAnyMouseDown = lib.igIsAnyMouseDown
+M.IsItemActive = lib.igIsItemActive
 function M.IsItemClicked(mouse_button)
     mouse_button = mouse_button or 0
     return lib.igIsItemClicked(mouse_button)
 end
-function M.IsItemDeactivated()
-    return lib.igIsItemDeactivated()
-end
-function M.IsItemDeactivatedAfterEdit()
-    return lib.igIsItemDeactivatedAfterEdit()
-end
-function M.IsItemEdited()
-    return lib.igIsItemEdited()
-end
-function M.IsItemFocused()
-    return lib.igIsItemFocused()
-end
+M.IsItemDeactivated = lib.igIsItemDeactivated
+M.IsItemDeactivatedAfterEdit = lib.igIsItemDeactivatedAfterEdit
+M.IsItemEdited = lib.igIsItemEdited
+M.IsItemFocused = lib.igIsItemFocused
 function M.IsItemHovered(flags)
     flags = flags or 0
     return lib.igIsItemHovered(flags)
 end
-function M.IsItemVisible()
-    return lib.igIsItemVisible()
-end
-function M.IsKeyDown(user_key_index)
-    return lib.igIsKeyDown(user_key_index)
-end
+M.IsItemVisible = lib.igIsItemVisible
+M.IsKeyDown = lib.igIsKeyDown
 function M.IsKeyPressed(user_key_index,_repeat)
     _repeat = _repeat or true
     return lib.igIsKeyPressed(user_key_index,_repeat)
 end
-function M.IsKeyReleased(user_key_index)
-    return lib.igIsKeyReleased(user_key_index)
-end
+M.IsKeyReleased = lib.igIsKeyReleased
 function M.IsMouseClicked(button,_repeat)
     _repeat = _repeat or false
     return lib.igIsMouseClicked(button,_repeat)
 end
-function M.IsMouseDoubleClicked(button)
-    return lib.igIsMouseDoubleClicked(button)
-end
-function M.IsMouseDown(button)
-    return lib.igIsMouseDown(button)
-end
+M.IsMouseDoubleClicked = lib.igIsMouseDoubleClicked
+M.IsMouseDown = lib.igIsMouseDown
 function M.IsMouseDragging(button,lock_threshold)
     lock_threshold = lock_threshold or -1.0
     button = button or 0
@@ -3200,24 +2673,12 @@ function M.IsMousePosValid(mouse_pos)
     mouse_pos = mouse_pos or nil
     return lib.igIsMousePosValid(mouse_pos)
 end
-function M.IsMouseReleased(button)
-    return lib.igIsMouseReleased(button)
-end
-function M.IsPopupOpen(str_id)
-    return lib.igIsPopupOpen(str_id)
-end
-function M.IsRectVisible(size)
-    return lib.igIsRectVisible(size)
-end
-function M.IsRectVisibleVec2(rect_min,rect_max)
-    return lib.igIsRectVisibleVec2(rect_min,rect_max)
-end
-function M.IsWindowAppearing()
-    return lib.igIsWindowAppearing()
-end
-function M.IsWindowCollapsed()
-    return lib.igIsWindowCollapsed()
-end
+M.IsMouseReleased = lib.igIsMouseReleased
+M.IsPopupOpen = lib.igIsPopupOpen
+M.IsRectVisible = lib.igIsRectVisible
+M.IsRectVisibleVec2 = lib.igIsRectVisibleVec2
+M.IsWindowAppearing = lib.igIsWindowAppearing
+M.IsWindowCollapsed = lib.igIsWindowCollapsed
 function M.IsWindowFocused(flags)
     flags = flags or 0
     return lib.igIsWindowFocused(flags)
@@ -3226,12 +2687,8 @@ function M.IsWindowHovered(flags)
     flags = flags or 0
     return lib.igIsWindowHovered(flags)
 end
-function M.LabelText(label,fmt,...)
-    return lib.igLabelText(label,fmt,...)
-end
-function M.LabelTextV(label,fmt,args)
-    return lib.igLabelTextV(label,fmt,args)
-end
+M.LabelText = lib.igLabelText
+M.LabelTextV = lib.igLabelTextV
 function M.ListBoxStr_arr(label,current_item,items,items_count,height_in_items)
     height_in_items = height_in_items or -1
     return lib.igListBoxStr_arr(label,current_item,items,items_count,height_in_items)
@@ -3240,9 +2697,7 @@ function M.ListBoxFnPtr(label,current_item,items_getter,data,items_count,height_
     height_in_items = height_in_items or -1
     return lib.igListBoxFnPtr(label,current_item,items_getter,data,items_count,height_in_items)
 end
-function M.ListBoxFooter()
-    return lib.igListBoxFooter()
-end
+M.ListBoxFooter = lib.igListBoxFooter
 function M.ListBoxHeaderVec2(label,size)
     size = size or ImVec2(0,0)
     return lib.igListBoxHeaderVec2(label,size)
@@ -3251,22 +2706,14 @@ function M.ListBoxHeaderInt(label,items_count,height_in_items)
     height_in_items = height_in_items or -1
     return lib.igListBoxHeaderInt(label,items_count,height_in_items)
 end
-function M.LoadIniSettingsFromDisk(ini_filename)
-    return lib.igLoadIniSettingsFromDisk(ini_filename)
-end
+M.LoadIniSettingsFromDisk = lib.igLoadIniSettingsFromDisk
 function M.LoadIniSettingsFromMemory(ini_data,ini_size)
     ini_size = ini_size or 0
     return lib.igLoadIniSettingsFromMemory(ini_data,ini_size)
 end
-function M.LogButtons()
-    return lib.igLogButtons()
-end
-function M.LogFinish()
-    return lib.igLogFinish()
-end
-function M.LogText(fmt,...)
-    return lib.igLogText(fmt,...)
-end
+M.LogButtons = lib.igLogButtons
+M.LogFinish = lib.igLogFinish
+M.LogText = lib.igLogText
 function M.LogToClipboard(max_depth)
     max_depth = max_depth or -1
     return lib.igLogToClipboard(max_depth)
@@ -3280,12 +2727,8 @@ function M.LogToTTY(max_depth)
     max_depth = max_depth or -1
     return lib.igLogToTTY(max_depth)
 end
-function M.MemAlloc(size)
-    return lib.igMemAlloc(size)
-end
-function M.MemFree(ptr)
-    return lib.igMemFree(ptr)
-end
+M.MemAlloc = lib.igMemAlloc
+M.MemFree = lib.igMemFree
 function M.MenuItemBool(label,shortcut,selected,enabled)
     enabled = enabled or true
     shortcut = shortcut or nil
@@ -3296,18 +2739,10 @@ function M.MenuItemBoolPtr(label,shortcut,p_selected,enabled)
     enabled = enabled or true
     return lib.igMenuItemBoolPtr(label,shortcut,p_selected,enabled)
 end
-function M.NewFrame()
-    return lib.igNewFrame()
-end
-function M.NewLine()
-    return lib.igNewLine()
-end
-function M.NextColumn()
-    return lib.igNextColumn()
-end
-function M.OpenPopup(str_id)
-    return lib.igOpenPopup(str_id)
-end
+M.NewFrame = lib.igNewFrame
+M.NewLine = lib.igNewLine
+M.NextColumn = lib.igNextColumn
+M.OpenPopup = lib.igOpenPopup
 function M.OpenPopupOnItemClick(str_id,mouse_button)
     mouse_button = mouse_button or 1
     str_id = str_id or nil
@@ -3347,24 +2782,12 @@ function M.PlotLinesFnPtr(label,values_getter,data,values_count,values_offset,ov
     overlay_text = overlay_text or nil
     return lib.igPlotLinesFnPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
 end
-function M.PopAllowKeyboardFocus()
-    return lib.igPopAllowKeyboardFocus()
-end
-function M.PopButtonRepeat()
-    return lib.igPopButtonRepeat()
-end
-function M.PopClipRect()
-    return lib.igPopClipRect()
-end
-function M.PopFont()
-    return lib.igPopFont()
-end
-function M.PopID()
-    return lib.igPopID()
-end
-function M.PopItemWidth()
-    return lib.igPopItemWidth()
-end
+M.PopAllowKeyboardFocus = lib.igPopAllowKeyboardFocus
+M.PopButtonRepeat = lib.igPopButtonRepeat
+M.PopClipRect = lib.igPopClipRect
+M.PopFont = lib.igPopFont
+M.PopID = lib.igPopID
+M.PopItemWidth = lib.igPopItemWidth
 function M.PopStyleColor(count)
     count = count or 1
     return lib.igPopStyleColor(count)
@@ -3373,66 +2796,32 @@ function M.PopStyleVar(count)
     count = count or 1
     return lib.igPopStyleVar(count)
 end
-function M.PopTextWrapPos()
-    return lib.igPopTextWrapPos()
-end
+M.PopTextWrapPos = lib.igPopTextWrapPos
 function M.ProgressBar(fraction,size_arg,overlay)
     overlay = overlay or nil
     size_arg = size_arg or ImVec2(-1,0)
     return lib.igProgressBar(fraction,size_arg,overlay)
 end
-function M.PushAllowKeyboardFocus(allow_keyboard_focus)
-    return lib.igPushAllowKeyboardFocus(allow_keyboard_focus)
-end
-function M.PushButtonRepeat(_repeat)
-    return lib.igPushButtonRepeat(_repeat)
-end
-function M.PushClipRect(clip_rect_min,clip_rect_max,intersect_with_current_clip_rect)
-    return lib.igPushClipRect(clip_rect_min,clip_rect_max,intersect_with_current_clip_rect)
-end
-function M.PushFont(font)
-    return lib.igPushFont(font)
-end
-function M.PushIDStr(str_id)
-    return lib.igPushIDStr(str_id)
-end
-function M.PushIDRange(str_id_begin,str_id_end)
-    return lib.igPushIDRange(str_id_begin,str_id_end)
-end
-function M.PushIDPtr(ptr_id)
-    return lib.igPushIDPtr(ptr_id)
-end
-function M.PushIDInt(int_id)
-    return lib.igPushIDInt(int_id)
-end
-function M.PushItemWidth(item_width)
-    return lib.igPushItemWidth(item_width)
-end
-function M.PushStyleColorU32(idx,col)
-    return lib.igPushStyleColorU32(idx,col)
-end
-function M.PushStyleColor(idx,col)
-    return lib.igPushStyleColor(idx,col)
-end
-function M.PushStyleVarFloat(idx,val)
-    return lib.igPushStyleVarFloat(idx,val)
-end
-function M.PushStyleVarVec2(idx,val)
-    return lib.igPushStyleVarVec2(idx,val)
-end
+M.PushAllowKeyboardFocus = lib.igPushAllowKeyboardFocus
+M.PushButtonRepeat = lib.igPushButtonRepeat
+M.PushClipRect = lib.igPushClipRect
+M.PushFont = lib.igPushFont
+M.PushIDStr = lib.igPushIDStr
+M.PushIDRange = lib.igPushIDRange
+M.PushIDPtr = lib.igPushIDPtr
+M.PushIDInt = lib.igPushIDInt
+M.PushItemWidth = lib.igPushItemWidth
+M.PushStyleColorU32 = lib.igPushStyleColorU32
+M.PushStyleColor = lib.igPushStyleColor
+M.PushStyleVarFloat = lib.igPushStyleVarFloat
+M.PushStyleVarVec2 = lib.igPushStyleVarVec2
 function M.PushTextWrapPos(wrap_pos_x)
     wrap_pos_x = wrap_pos_x or 0.0
     return lib.igPushTextWrapPos(wrap_pos_x)
 end
-function M.RadioButtonBool(label,active)
-    return lib.igRadioButtonBool(label,active)
-end
-function M.RadioButtonIntPtr(label,v,v_button)
-    return lib.igRadioButtonIntPtr(label,v,v_button)
-end
-function M.Render()
-    return lib.igRender()
-end
+M.RadioButtonBool = lib.igRadioButtonBool
+M.RadioButtonIntPtr = lib.igRadioButtonIntPtr
+M.Render = lib.igRender
 function M.ResetMouseDragDelta(button)
     button = button or 0
     return lib.igResetMouseDragDelta(button)
@@ -3442,9 +2831,7 @@ function M.SameLine(pos_x,spacing_w)
     spacing_w = spacing_w or -1.0
     return lib.igSameLine(pos_x,spacing_w)
 end
-function M.SaveIniSettingsToDisk(ini_filename)
-    return lib.igSaveIniSettingsToDisk(ini_filename)
-end
+M.SaveIniSettingsToDisk = lib.igSaveIniSettingsToDisk
 function M.SaveIniSettingsToMemory(out_ini_size)
     out_ini_size = out_ini_size or nil
     return lib.igSaveIniSettingsToMemory(out_ini_size)
@@ -3460,74 +2847,42 @@ function M.SelectableBoolPtr(label,p_selected,flags,size)
     flags = flags or 0
     return lib.igSelectableBoolPtr(label,p_selected,flags,size)
 end
-function M.Separator()
-    return lib.igSeparator()
-end
+M.Separator = lib.igSeparator
 function M.SetAllocatorFunctions(alloc_func,free_func,user_data)
     user_data = user_data or nil
     return lib.igSetAllocatorFunctions(alloc_func,free_func,user_data)
 end
-function M.SetClipboardText(text)
-    return lib.igSetClipboardText(text)
-end
-function M.SetColorEditOptions(flags)
-    return lib.igSetColorEditOptions(flags)
-end
-function M.SetColumnOffset(column_index,offset_x)
-    return lib.igSetColumnOffset(column_index,offset_x)
-end
-function M.SetColumnWidth(column_index,width)
-    return lib.igSetColumnWidth(column_index,width)
-end
-function M.SetCurrentContext(ctx)
-    return lib.igSetCurrentContext(ctx)
-end
-function M.SetCursorPos(local_pos)
-    return lib.igSetCursorPos(local_pos)
-end
-function M.SetCursorPosX(x)
-    return lib.igSetCursorPosX(x)
-end
-function M.SetCursorPosY(y)
-    return lib.igSetCursorPosY(y)
-end
-function M.SetCursorScreenPos(screen_pos)
-    return lib.igSetCursorScreenPos(screen_pos)
-end
+M.SetClipboardText = lib.igSetClipboardText
+M.SetColorEditOptions = lib.igSetColorEditOptions
+M.SetColumnOffset = lib.igSetColumnOffset
+M.SetColumnWidth = lib.igSetColumnWidth
+M.SetCurrentContext = lib.igSetCurrentContext
+M.SetCursorPos = lib.igSetCursorPos
+M.SetCursorPosX = lib.igSetCursorPosX
+M.SetCursorPosY = lib.igSetCursorPosY
+M.SetCursorScreenPos = lib.igSetCursorScreenPos
 function M.SetDragDropPayload(type,data,size,cond)
     cond = cond or 0
     return lib.igSetDragDropPayload(type,data,size,cond)
 end
-function M.SetItemAllowOverlap()
-    return lib.igSetItemAllowOverlap()
-end
-function M.SetItemDefaultFocus()
-    return lib.igSetItemDefaultFocus()
-end
+M.SetItemAllowOverlap = lib.igSetItemAllowOverlap
+M.SetItemDefaultFocus = lib.igSetItemDefaultFocus
 function M.SetKeyboardFocusHere(offset)
     offset = offset or 0
     return lib.igSetKeyboardFocusHere(offset)
 end
-function M.SetMouseCursor(type)
-    return lib.igSetMouseCursor(type)
-end
+M.SetMouseCursor = lib.igSetMouseCursor
 function M.SetNextTreeNodeOpen(is_open,cond)
     cond = cond or 0
     return lib.igSetNextTreeNodeOpen(is_open,cond)
 end
-function M.SetNextWindowBgAlpha(alpha)
-    return lib.igSetNextWindowBgAlpha(alpha)
-end
+M.SetNextWindowBgAlpha = lib.igSetNextWindowBgAlpha
 function M.SetNextWindowCollapsed(collapsed,cond)
     cond = cond or 0
     return lib.igSetNextWindowCollapsed(collapsed,cond)
 end
-function M.SetNextWindowContentSize(size)
-    return lib.igSetNextWindowContentSize(size)
-end
-function M.SetNextWindowFocus()
-    return lib.igSetNextWindowFocus()
-end
+M.SetNextWindowContentSize = lib.igSetNextWindowContentSize
+M.SetNextWindowFocus = lib.igSetNextWindowFocus
 function M.SetNextWindowPos(pos,cond,pivot)
     cond = cond or 0
     pivot = pivot or ImVec2(0,0)
@@ -3550,21 +2905,11 @@ function M.SetScrollHere(center_y_ratio)
     center_y_ratio = center_y_ratio or 0.5
     return lib.igSetScrollHere(center_y_ratio)
 end
-function M.SetScrollX(scroll_x)
-    return lib.igSetScrollX(scroll_x)
-end
-function M.SetScrollY(scroll_y)
-    return lib.igSetScrollY(scroll_y)
-end
-function M.SetStateStorage(storage)
-    return lib.igSetStateStorage(storage)
-end
-function M.SetTooltip(fmt,...)
-    return lib.igSetTooltip(fmt,...)
-end
-function M.SetTooltipV(fmt,args)
-    return lib.igSetTooltipV(fmt,args)
-end
+M.SetScrollX = lib.igSetScrollX
+M.SetScrollY = lib.igSetScrollY
+M.SetStateStorage = lib.igSetStateStorage
+M.SetTooltip = lib.igSetTooltip
+M.SetTooltipV = lib.igSetTooltipV
 function M.SetWindowCollapsedBool(collapsed,cond)
     cond = cond or 0
     return lib.igSetWindowCollapsedBool(collapsed,cond)
@@ -3573,15 +2918,9 @@ function M.SetWindowCollapsedStr(name,collapsed,cond)
     cond = cond or 0
     return lib.igSetWindowCollapsedStr(name,collapsed,cond)
 end
-function M.SetWindowFocus()
-    return lib.igSetWindowFocus()
-end
-function M.SetWindowFocusStr(name)
-    return lib.igSetWindowFocusStr(name)
-end
-function M.SetWindowFontScale(scale)
-    return lib.igSetWindowFontScale(scale)
-end
+M.SetWindowFocus = lib.igSetWindowFocus
+M.SetWindowFocusStr = lib.igSetWindowFocusStr
+M.SetWindowFontScale = lib.igSetWindowFontScale
 function M.SetWindowPosVec2(pos,cond)
     cond = cond or 0
     return lib.igSetWindowPosVec2(pos,cond)
@@ -3602,9 +2941,7 @@ function M.ShowDemoWindow(p_open)
     p_open = p_open or nil
     return lib.igShowDemoWindow(p_open)
 end
-function M.ShowFontSelector(label)
-    return lib.igShowFontSelector(label)
-end
+M.ShowFontSelector = lib.igShowFontSelector
 function M.ShowMetricsWindow(p_open)
     p_open = p_open or nil
     return lib.igShowMetricsWindow(p_open)
@@ -3613,12 +2950,8 @@ function M.ShowStyleEditor(ref)
     ref = ref or nil
     return lib.igShowStyleEditor(ref)
 end
-function M.ShowStyleSelector(label)
-    return lib.igShowStyleSelector(label)
-end
-function M.ShowUserGuide()
-    return lib.igShowUserGuide()
-end
+M.ShowStyleSelector = lib.igShowStyleSelector
+M.ShowUserGuide = lib.igShowUserGuide
 function M.SliderAngle(label,v_rad,v_degrees_min,v_degrees_max)
     v_degrees_min = v_degrees_min or -360.0
     v_degrees_max = v_degrees_max or 360.0
@@ -3670,12 +3003,8 @@ function M.SliderScalarN(label,data_type,v,components,v_min,v_max,format,power)
     format = format or nil
     return lib.igSliderScalarN(label,data_type,v,components,v_min,v_max,format,power)
 end
-function M.SmallButton(label)
-    return lib.igSmallButton(label)
-end
-function M.Spacing()
-    return lib.igSpacing()
-end
+M.SmallButton = lib.igSmallButton
+M.Spacing = lib.igSpacing
 function M.StyleColorsClassic(dst)
     dst = dst or nil
     return lib.igStyleColorsClassic(dst)
@@ -3688,74 +3017,34 @@ function M.StyleColorsLight(dst)
     dst = dst or nil
     return lib.igStyleColorsLight(dst)
 end
-function M.Text(fmt,...)
-    return lib.igText(fmt,...)
-end
-function M.TextColored(col,fmt,...)
-    return lib.igTextColored(col,fmt,...)
-end
-function M.TextColoredV(col,fmt,args)
-    return lib.igTextColoredV(col,fmt,args)
-end
-function M.TextDisabled(fmt,...)
-    return lib.igTextDisabled(fmt,...)
-end
-function M.TextDisabledV(fmt,args)
-    return lib.igTextDisabledV(fmt,args)
-end
+M.Text = lib.igText
+M.TextColored = lib.igTextColored
+M.TextColoredV = lib.igTextColoredV
+M.TextDisabled = lib.igTextDisabled
+M.TextDisabledV = lib.igTextDisabledV
 function M.TextUnformatted(text,text_end)
     text_end = text_end or nil
     return lib.igTextUnformatted(text,text_end)
 end
-function M.TextV(fmt,args)
-    return lib.igTextV(fmt,args)
-end
-function M.TextWrapped(fmt,...)
-    return lib.igTextWrapped(fmt,...)
-end
-function M.TextWrappedV(fmt,args)
-    return lib.igTextWrappedV(fmt,args)
-end
-function M.TreeAdvanceToLabelPos()
-    return lib.igTreeAdvanceToLabelPos()
-end
-function M.TreeNodeStr(label)
-    return lib.igTreeNodeStr(label)
-end
-function M.TreeNodeStrStr(str_id,fmt,...)
-    return lib.igTreeNodeStrStr(str_id,fmt,...)
-end
-function M.TreeNodePtr(ptr_id,fmt,...)
-    return lib.igTreeNodePtr(ptr_id,fmt,...)
-end
+M.TextV = lib.igTextV
+M.TextWrapped = lib.igTextWrapped
+M.TextWrappedV = lib.igTextWrappedV
+M.TreeAdvanceToLabelPos = lib.igTreeAdvanceToLabelPos
+M.TreeNodeStr = lib.igTreeNodeStr
+M.TreeNodeStrStr = lib.igTreeNodeStrStr
+M.TreeNodePtr = lib.igTreeNodePtr
 function M.TreeNodeExStr(label,flags)
     flags = flags or 0
     return lib.igTreeNodeExStr(label,flags)
 end
-function M.TreeNodeExStrStr(str_id,flags,fmt,...)
-    return lib.igTreeNodeExStrStr(str_id,flags,fmt,...)
-end
-function M.TreeNodeExPtr(ptr_id,flags,fmt,...)
-    return lib.igTreeNodeExPtr(ptr_id,flags,fmt,...)
-end
-function M.TreeNodeExVStr(str_id,flags,fmt,args)
-    return lib.igTreeNodeExVStr(str_id,flags,fmt,args)
-end
-function M.TreeNodeExVPtr(ptr_id,flags,fmt,args)
-    return lib.igTreeNodeExVPtr(ptr_id,flags,fmt,args)
-end
-function M.TreeNodeVStr(str_id,fmt,args)
-    return lib.igTreeNodeVStr(str_id,fmt,args)
-end
-function M.TreeNodeVPtr(ptr_id,fmt,args)
-    return lib.igTreeNodeVPtr(ptr_id,fmt,args)
-end
-function M.TreePop()
-    return lib.igTreePop()
-end
-function M.TreePushStr(str_id)
-    return lib.igTreePushStr(str_id)
-end
+M.TreeNodeExStrStr = lib.igTreeNodeExStrStr
+M.TreeNodeExPtr = lib.igTreeNodeExPtr
+M.TreeNodeExVStr = lib.igTreeNodeExVStr
+M.TreeNodeExVPtr = lib.igTreeNodeExVPtr
+M.TreeNodeVStr = lib.igTreeNodeVStr
+M.TreeNodeVPtr = lib.igTreeNodeVPtr
+M.TreePop = lib.igTreePop
+M.TreePushStr = lib.igTreePushStr
 function M.TreePushPtr(ptr_id)
     ptr_id = ptr_id or nil
     return lib.igTreePushPtr(ptr_id)
@@ -3778,15 +3067,9 @@ function M.VSliderScalar(label,size,data_type,v,v_min,v_max,format,power)
     format = format or nil
     return lib.igVSliderScalar(label,size,data_type,v,v_min,v_max,format,power)
 end
-function M.ValueBool(prefix,b)
-    return lib.igValueBool(prefix,b)
-end
-function M.ValueInt(prefix,v)
-    return lib.igValueInt(prefix,v)
-end
-function M.ValueUint(prefix,v)
-    return lib.igValueUint(prefix,v)
-end
+M.ValueBool = lib.igValueBool
+M.ValueInt = lib.igValueInt
+M.ValueUint = lib.igValueUint
 function M.ValueFloat(prefix,v,float_format)
     float_format = float_format or nil
     return lib.igValueFloat(prefix,v,float_format)

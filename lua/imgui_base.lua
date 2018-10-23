@@ -23,7 +23,7 @@ ffi.cdef(cdecl)
 -- glfw3 implementation and extras ----------------------------------------
 ffi.cdef[[
 
-//////////////// glfw3 gl3 Implementation
+//////////////// glfw3 gl3 custom multiwindow Implementation
 int Do_gl3wInit(void);
 typedef struct GLFWwindow GLFWwindow;
 typedef struct {
@@ -64,12 +64,6 @@ int Bezier( const char *label, float P[4] );
 bool Curve(const char *label, const struct ImVec2& size, struct ImVec2 *points, const int maxpoints, float *data, int datalen);
 void CurveGetData(struct ImVec2 *points, const int maxpoints, float *data, int datalen);
                                 
-
-//experiments
-struct ImVec2 igGetCursorScreenPosORIG();
-struct ImVec2 igGetCursorScreenPosORIG2();
-
-//ImVec2 GetCursorScreenPos();
 ]]
 
 ffi.cdef[[
