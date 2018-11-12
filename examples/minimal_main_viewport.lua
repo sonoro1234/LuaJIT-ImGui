@@ -1,10 +1,11 @@
 local ffi = require "ffi"
 --jit.off(true,true)
 local lj_glfw = require"glfw"
-local gl, glc, glu, glfw, glext = lj_glfw.libraries()
+local gllib = require"gl"(lj_glfw)
+local gl, glc, glu, glext = gllib.libraries()
 local ig = require"imgui_viewport"
 
-glfw.glfwSetErrorCallback(function(error,description)
+lj_glfw.setErrorCallback(function(error,description)
     print("GLFW error:",error,ffi.string(description or ""));
 end)
 
@@ -33,7 +34,7 @@ while not window:shouldClose() do
 
     lj_glfw.pollEvents()
 
-   -- gl.glClear(glc.GL_COLOR_BUFFER_BIT)
+    gl.glClear(glc.GL_COLOR_BUFFER_BIT)
  
     ig_impl:NewFrame()
   

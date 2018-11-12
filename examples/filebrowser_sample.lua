@@ -1,15 +1,16 @@
 local ffi = require "ffi"
 -- https://github.com/sonoro1234/LuaJIT-GLFW
 local lj_glfw = require"glfw"
-local gl, glc, glu, glfw, glext = lj_glfw.libraries()
+local gllib = require"gl"(lj_glfw)
+local gl, glc, glu, glext = gllib.libraries()
 local ig = require"imgui"
 local imgui = ig.lib
 ---------------------------------------------FileBrowser---------------------------------------
 -- plain luafilesystem
-local lfs = require"lfs"
+--local lfs = require"lfs"
 -- or to get unicode lfs with luajit
 -- https://github.com/sonoro1234/luafilesystem
--- local lfs = require"lfs_ffi"
+local lfs = require"lfs_ffi"
    --------------path utilities extracted from penligth (Steve Donovan)
 local M = {}
 local is_windows = package.config:sub(1,1) == '\\'
@@ -220,7 +221,7 @@ end
 local fb = gui.FileBrowser(nil,{key="loader",pattern="%.lua"},function(fname) print("load",fname) end)
 local fbs = gui.FileBrowser(nil,{key="saver",check_existence=true},function(fname) print("save",fname) end)
 -------------------------main program------------------
-glfw.glfwSetErrorCallback(function(error,description)
+lj_glfw.setErrorCallback(function(error,description)
     print("GLFW error:",error,ffi.string(description or ""));
 end)
 
@@ -228,7 +229,9 @@ lj_glfw.init()
 local window = lj_glfw.Window(700,500)
 window:makeContextCurrent() 
 
-local ig_gl3 = ig.ImplGlfwGL3()
+--local ig_gl3 = ig.ImplGlfwGL3()
+local ig_gl3 = ig.Imgui_Impl_glfw_opengl3() --standard imgui opengl3 example
+
 ig_gl3:Init(window, true)
 
 local buffer = ffi.new("char[256]", "1/x")

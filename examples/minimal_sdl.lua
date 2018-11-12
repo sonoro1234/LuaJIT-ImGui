@@ -2,11 +2,11 @@ local ffi = require"ffi"
 
 --from https://github.com/torch/sdl2-ffi
 local sdl = require"sdl2"
-
+--for k,v in pairs(sdl) do print(k,v) end
 --just to get gl functions
 -- from https://github.com/sonoro1234/LuaJIT-GLFW
-local lj_glfw = require"glfw"
-local gl, glc, glu, glfw, glext = lj_glfw.libraries()
+local gllib = require"gl"(sdl)
+local gl, glc, glu, glext = gllib.libraries()
 
 local ig = require"imgui_sdl"
 

@@ -1,9 +1,10 @@
 local ffi = require "ffi"
 local lj_glfw = require"glfw"
-local gl, glc, glu, glfw, glext = lj_glfw.libraries()
+local gllib = require"gl"(lj_glfw)
+local gl, glc, glu, glext = gllib.libraries()
 local ig = require"imgui"
 
-glfw.glfwSetErrorCallback(function(error,description)
+lj_glfw.setErrorCallback(function(error,description)
     print("GLFW error:",error,ffi.string(description or ""));
 end)
 
