@@ -29,14 +29,11 @@ end
     local gl_context = sdl.gL_CreateContext(window);
     sdl.gL_SetSwapInterval(1); -- Enable vsync
     
-    -------------------
-    ig.lib.Do_gl3wInit()
-    ig.CreateContext(nil)
+    local ig_Impl = ig.Imgui_Impl_SDL_opengl3()
+    
+    ig_Impl:Init(window, gl_context)
+
     local igio = ig.GetIO()
-    
-    ig.lib.ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
-    ig.lib.ImGui_ImplOpenGL3_Init(nil);
-    
     
     local done = false;
     while (not done) do
@@ -55,10 +52,8 @@ end
         sdl.gL_MakeCurrent(window, gl_context);
         gl.glViewport(0, 0, igio.DisplaySize.x, igio.DisplaySize.y);
         gl.glClear(glc.GL_COLOR_BUFFER_BIT)
-        -- Start the ImGui frame
-        ig.lib.ImGui_ImplOpenGL3_NewFrame();
-        ig.lib.ImGui_ImplSDL2_NewFrame(window);
-        ig.lib.igNewFrame();
+
+        ig_Impl:NewFrame()
         
         
         if ig.Button"Hello" then
@@ -66,15 +61,12 @@ end
         end
         ig.ShowDemoWindow(showdemo)
         
-        ig.lib.igRender();
-        ig.lib.ImGui_ImplOpenGL3_RenderDrawData(ig.lib.igGetDrawData());
+        ig_Impl:Render()
         sdl.gL_SwapWindow(window);
     end
     
     -- Cleanup
-    ig.lib.ImGui_ImplOpenGL3_Shutdown();
-    ig.lib.ImGui_ImplSDL2_Shutdown();
-    ig.DestroyContext();
+    ig_Impl:destroy()
 
     sdl.gL_DeleteContext(gl_context);
     sdl.destroyWindow(window);

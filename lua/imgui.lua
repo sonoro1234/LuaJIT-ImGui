@@ -1589,6 +1589,41 @@ end
 
 M.ImplGlfwGL3 = ffi.metatype("ImGui_ImplGlfwGL3",ImGui_ImplGlfwGL3)
 
+-----------------------Imgui_Impl_SDL_opengl3
+local Imgui_Impl_SDL_opengl3 = {}
+Imgui_Impl_SDL_opengl3.__index = Imgui_Impl_SDL_opengl3
+
+function Imgui_Impl_SDL_opengl3.__call()
+    if gl3w_inited == false then
+        lib.Do_gl3wInit()
+        gl3w_inited = true
+    end
+    return setmetatable({ctx = lib.igCreateContext(nil)},Imgui_Impl_SDL_opengl3)
+end
+
+function Imgui_Impl_SDL_opengl3:Init(window, gl_context)
+    self.window = window
+    lib.ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
+    lib.ImGui_ImplOpenGL3_Init("#version 150");
+end
+
+function Imgui_Impl_SDL_opengl3:destroy()
+    lib.ImGui_ImplOpenGL3_Shutdown();
+    lib.ImGui_ImplSDL2_Shutdown();
+    lib.igDestroyContext(self.ctx);
+end
+
+function Imgui_Impl_SDL_opengl3:NewFrame()
+    lib.ImGui_ImplOpenGL3_NewFrame();
+    lib.ImGui_ImplSDL2_NewFrame(self.window);
+    lib.igNewFrame();
+end
+
+function Imgui_Impl_SDL_opengl3:Render()
+    lib.igRender()
+    lib.ImGui_ImplOpenGL3_RenderDrawData(lib.igGetDrawData());
+end
+M.Imgui_Impl_SDL_opengl3 = setmetatable({},Imgui_Impl_SDL_opengl3)
 -----------------------Imgui_Impl_glfw_opengl3
 local Imgui_Impl_glfw_opengl3 = {}
 Imgui_Impl_glfw_opengl3.__index = Imgui_Impl_glfw_opengl3
