@@ -1,7 +1,8 @@
 local ffi = require "ffi"
 --jit.off(true,true)
 local lj_glfw = require"glfw"
-local gllib = require"gl"(lj_glfw)
+local gllib = require"gl"
+gllib.set_loader(lj_glfw)
 local gl, glc, glu, glext = gllib.libraries()
 local ig = require"imgui_viewport"
 

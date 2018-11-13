@@ -5,7 +5,8 @@ local sdl = require"sdl2"
 --for k,v in pairs(sdl) do print(k,v) end
 --just to get gl functions
 -- from https://github.com/sonoro1234/LuaJIT-GLFW
-local gllib = require"gl"(sdl)
+local gllib = require"gl"
+gllib.set_loader(sdl)
 local gl, glc, glu, glext = gllib.libraries()
 
 local ig = require"imgui_sdl"

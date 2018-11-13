@@ -1,7 +1,8 @@
 local ffi = require "ffi"
 -- https://github.com/sonoro1234/LuaJIT-GLFW
 local lj_glfw = require"glfw"
-local gllib = require"gl"(lj_glfw)
+local gllib = require"gl"
+gllib.set_loader(lj_glfw)
 local gl, glc, glu, glext = gllib.libraries()
 local ig = require"imgui"
 local imgui = ig.lib
