@@ -91,7 +91,7 @@ function sanitize_reserved(def)
 			def.defaults[k] = def.defaults[k]:gsub("FLT_MAX","M.FLT_MAX")
 			def.defaults[k] = def.defaults[k]:gsub("ImDrawCornerFlags_All","lib.ImDrawCornerFlags_All")
 			def.defaults[k] = def.defaults[k]:gsub("sizeof%((%w+)%)",[[ffi.sizeof("%1")]])
-			def.defaults[k] = def.defaults[k]:gsub("%(%(void %*%)0%)","nil")
+			def.defaults[k] = def.defaults[k]:gsub("%(%(void%s*%*%)0%)","nil")
 		end
 	end
 end
