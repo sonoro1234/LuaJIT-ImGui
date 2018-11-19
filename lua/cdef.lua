@@ -72,7 +72,8 @@ local struct_re = "^%s*struct%s+([^%s;]+);$"
 
 local cdefs = {}
 for line in location(io.input(),locations) do
-	line = line:gsub("extern __attribute__%(%(dllexport%)%)","")
+	line = line:gsub("extern __attribute__%(%(dllexport%)%)%s*","")
+	line = line:gsub("extern __declspec%(dllexport%)%s*","")
 	table.insert(cdefs,line)
 	local stname = line:match(struct_re)
 	if ADD_TYPEDEF and stname then table.insert(cdefs,"typedef struct "..stname.." "..stname..";\n") end
