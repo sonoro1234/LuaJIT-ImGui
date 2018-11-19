@@ -1,8 +1,7 @@
 local ffi = require"ffi"
 
---from https://github.com/torch/sdl2-ffi
-local sdl = require"sdl2"
---for k,v in pairs(sdl) do print(k,v) end
+--from https://github.com/sonoro1234/LuaJIT-SDL2
+local sdl = require"sdl2_ffi"
 --just to get gl functions
 -- from https://github.com/sonoro1234/LuaJIT-GLFW
 local gllib = require"gl"
