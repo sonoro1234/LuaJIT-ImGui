@@ -18,8 +18,9 @@ end
 -----audio stuff
 local sampleHz = 48000
 
-local function MyAudioCallback(ud,stream,len)
-	local ffi = require"ffi"
+local function MyAudioCallback()
+local ffi = require"ffi"
+return function(ud,stream,len)
 	local buf = ffi.cast("float*",stream)
 	local udc = ffi.cast("struct {double Phase;double dPhase;}*",ud)
 	local lenf = len/ffi.sizeof"float"
@@ -31,11 +32,14 @@ local function MyAudioCallback(ud,stream,len)
 		buf[i+1] = sample
 	end
 end
+end
 
 local ud = ffi.new"struct {double Phase;double dPhase;}"
 local freqval = ffi.new("float[1]",100)
 local function setFreq(ff)
+	sdl.LockAudio() -- not really needed
 	ud.dPhase = 2 * math.pi * ff / sampleHz
+	sdl.UnlockAudio()
 end
 setFreq(freqval[0])
 
