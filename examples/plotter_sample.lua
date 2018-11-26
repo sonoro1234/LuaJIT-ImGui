@@ -3,7 +3,7 @@ local lj_glfw = require"glfw"
 local gllib = require"gl"
 gllib.set_loader(lj_glfw)
 local gl, glc, glu, glext = gllib.libraries()
-local ig = require"imgui"
+local ig = require"imgui.glfw"
 -----------Ploter--------------------------
 local function Plotter(xmin,xmax,nvals)
 	local Graph = {xmin=xmin or 0,xmax=xmax or 1,nvals=nvals or 400}

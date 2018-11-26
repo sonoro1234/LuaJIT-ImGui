@@ -4,7 +4,7 @@ local lj_glfw = require"glfw"
 local gllib = require"gl"
 gllib.set_loader(lj_glfw)
 local gl, glc, glu, glext = gllib.libraries()
-local ig = require"imgui"
+local ig = require"imgui.glfw"
 local imgui = ig.lib
 ---------------------------------------------FileBrowser---------------------------------------
 -- plain luafilesystem

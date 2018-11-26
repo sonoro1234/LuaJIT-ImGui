@@ -8,6 +8,8 @@ add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
 include_directories(cimgui)
 set(IMGUI_SOURCES ./cimgui/cimgui.cpp ./cimgui/imgui/imgui.cpp ./cimgui/imgui/imgui_draw.cpp ./cimgui/imgui/imgui_demo.cpp ./cimgui/imgui/imgui_widgets.cpp)
 
+set(IMGUI_SOURCES_glfw)
+set(IMGUI_SOURCES_sdl)
 set(IMGUI_LIBRARIES )
 
 if (WIN32)
@@ -22,17 +24,6 @@ option(IMPL_SDL "add SDL implementation" OFF)
 option(IMPL_OPENGL2 "add OPENGL2 implementation" OFF)
 option(IMPL_OPENGL3 "add OPENGL3 implementation" OFF)
 
-if(IMPL_GLFW)
-    list(APPEND IMGUI_SOURCES ./cimgui/imgui/examples/imgui_impl_glfw.cpp)
-    FIND_PACKAGE(glfw3 3.2 REQUIRED PATHS ${GLFW_PATH})
-    list(APPEND IMGUI_LIBRARIES glfw)
-endif(IMPL_GLFW)
-
-if(IMPL_SDL)
-    list(APPEND IMGUI_SOURCES ./cimgui/imgui/examples/imgui_impl_sdl.cpp)
-    include_directories(${SDL_INCLUDE})
-    list(APPEND IMGUI_LIBRARIES ${SDL_LIBRARY})
-endif(IMPL_SDL)
 
 if(IMPL_OPENGL3)
     list(APPEND IMGUI_SOURCES ./cimgui/imgui/examples/imgui_impl_opengl3.cpp
@@ -48,18 +39,50 @@ if(IMPL_OPENGL2)
 endif(IMPL_OPENGL2)
 
 if(IMPL_EXTRAS)
-    list(APPEND IMGUI_SOURCES ./extras/impl_glfw3/imgui_impl_glfw_gl3.cpp
-    ./extras/knob.cpp  ./extras/curve.cpp)
+    list(APPEND IMGUI_SOURCES_glfw ./extras/impl_glfw3/imgui_impl_glfw_gl3.cpp)
+    list(APPEND IMGUI_SOURCES ./extras/knob.cpp  ./extras/curve.cpp)
 endif(IMPL_EXTRAS)
 
-#add library and link
-add_library(cimgui SHARED ${IMGUI_SOURCES})
-target_link_libraries(cimgui ${IMGUI_LIBRARIES})
-
-#install
-install(TARGETS cimgui
-              RUNTIME DESTINATION  .
-              LIBRARY DESTINATION  .
+if(IMPL_GLFW)
+    list(APPEND IMGUI_SOURCES_glfw ./cimgui/imgui/examples/imgui_impl_glfw.cpp)
+	if (DEFINED GLFW_PATH)
+        FIND_PACKAGE(glfw3 3.2 REQUIRED PATHS ${GLFW_PATH})
+	else (DEFINED GLFW_PATH)
+		#include_directories(${GLFW_INCLUDE})
+	endif(DEFINED GLFW_PATH)
+    #list(APPEND IMGUI_LIBRARIES glfw)
+	add_library(cimgui_glfw SHARED ${IMGUI_SOURCES} ${IMGUI_SOURCES_glfw})
+	target_link_libraries(cimgui_glfw ${IMGUI_LIBRARIES} glfw)
+	install(TARGETS cimgui_glfw
+              RUNTIME DESTINATION  ${LUAJIT_BIN}
+              LIBRARY DESTINATION  ${LUAJIT_BIN}
               #ARCHIVE DESTINATION lib 
               )
-install(FILES lua/imgui.lua DESTINATION lua)
+endif(IMPL_GLFW)
+
+if(IMPL_SDL)
+    list(APPEND IMGUI_SOURCES_sdl ./cimgui/imgui/examples/imgui_impl_sdl.cpp)
+	if(DEFINED SDL_PATH)
+		FIND_PACKAGE(SDL2 REQUIRED PATHS ${SDL_PATH})
+		message(STATUS "sdlfound")
+		get_target_property(SDL_INCLUDE SDL2::SDL2 INTERFACE_INCLUDE_DIRECTORIES)
+		message(STATUS "sdlinclude is " ${SDL_INCLUDE})
+		include_directories(${SDL_INCLUDE})
+		set(IMGUI_SDL_LIBRARY SDL2::SDL2)
+	else(DEFINED SDL_PATH)
+		set(IMGUI_SDL_LIBRARY SDL2)
+	endif(DEFINED SDL_PATH)
+    #list(APPEND IMGUI_LIBRARIES ${SDL_LIBRARY})
+	add_library(cimgui_sdl SHARED ${IMGUI_SOURCES} ${IMGUI_SOURCES_sdl})
+	target_link_libraries(cimgui_sdl ${IMGUI_LIBRARIES} ${IMGUI_SDL_LIBRARY})
+	install(TARGETS cimgui_sdl
+              RUNTIME DESTINATION  ${LUAJIT_BIN}
+              LIBRARY DESTINATION  ${LUAJIT_BIN}
+              #ARCHIVE DESTINATION lib 
+              )
+endif(IMPL_SDL)
+
+
+#install
+
+install(DIRECTORY lua/imgui DESTINATION ${LUAJIT_BIN}/lua)

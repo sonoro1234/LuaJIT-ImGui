@@ -8,7 +8,7 @@ local gllib = require"gl"
 gllib.set_loader(sdl)
 local gl, glc, glu, glext = gllib.libraries()
 
-local ig = require"imgui_sdl"
+local ig = require"imgui.sdl"
 
 if (sdl.init(sdl.INIT_AUDIO+sdl.INIT_VIDEO+sdl.INIT_TIMER) ~= 0) then
 

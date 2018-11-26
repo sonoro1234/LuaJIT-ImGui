@@ -11,7 +11,7 @@ Notes:
 # compiling
 
 * run one of the scripts in the build directory from a sibling folder to the repo. If you want to install,
-(recomended) add this <code>-DCMAKE_INSTALL_PREFIX="folder where LuaJIT is"</code> to the cmake command. 
+(recomended) add this <code>-DLUAJIT_BIN="folder where LuaJIT is"</code> to the cmake command. 
 * make (or make install).
 * If you didnt install in LuaJIT directory, set basedir variable in imgui.lua to the directory libimgui is found.
 
