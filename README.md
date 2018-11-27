@@ -6,7 +6,7 @@ This is a LuaJIT binding for the excellent C++ intermediate gui [imgui](https://
 Uses cimgui to be the most "up to date" as possible.
 
 Notes:
-* currently this wrapper is based on version [1.65 of imgui]
+* currently this wrapper is based on version [1.66 of imgui]
 
 # compiling
 
@@ -24,3 +24,7 @@ Notes:
 # binding generation
 
 * if cimgui is updated the binding can be remade with ./lua/build.bat
+
+# used in
+
+* https://github.com/sonoro1234/anima
