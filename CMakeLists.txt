@@ -1,6 +1,6 @@
 Project(cimgui)
 cmake_minimum_required(VERSION 2.8)
-
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
 #general settings
 include_directories(cimgui/imgui)
 add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
