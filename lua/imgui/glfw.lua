@@ -1494,6 +1494,10 @@ function M.SetWindowSizeStr(name,size,cond)
     cond = cond or 0
     return lib.igSetWindowSizeStr(name,size,cond)
 end
+function M.ShowAboutWindow(p_open)
+    p_open = p_open or nil
+    return lib.igShowAboutWindow(p_open)
+end
 function M.ShowDemoWindow(p_open)
     p_open = p_open or nil
     return lib.igShowDemoWindow(p_open)

@@ -294,6 +294,7 @@ enum ImGuiNavInput_
 };
 enum ImGuiConfigFlags_
 {
+    ImGuiConfigFlags_None = 0,
     ImGuiConfigFlags_NavEnableKeyboard = 1 << 0,
     ImGuiConfigFlags_NavEnableGamepad = 1 << 1,
     ImGuiConfigFlags_NavEnableSetMousePos = 1 << 2,
@@ -305,6 +306,7 @@ enum ImGuiConfigFlags_
 };
 enum ImGuiBackendFlags_
 {
+    ImGuiBackendFlags_None = 0,
     ImGuiBackendFlags_HasGamepad = 1 << 0,
     ImGuiBackendFlags_HasMouseCursors = 1 << 1,
     ImGuiBackendFlags_HasSetMousePos = 1 << 2
@@ -489,6 +491,8 @@ struct ImGuiIO
     _Bool ConfigMacOSXBehaviors;
     _Bool ConfigInputTextCursorBlink;
     _Bool ConfigResizeWindowsFromEdges;
+    const char* BackendPlatformName;
+    const char* BackendRendererName;
     const char* (*GetClipboardTextFn)(void* user_data);
     void (*SetClipboardTextFn)(void* user_data, const char* text);
     void* ClipboardUserData;
@@ -536,6 +540,39 @@ struct ImGuiIO
     float NavInputsDownDuration[ImGuiNavInput_COUNT];
     float NavInputsDownDurationPrev[ImGuiNavInput_COUNT];
 };
+struct ImGuiInputTextCallbackData
+{
+    ImGuiInputTextFlags EventFlag;
+    ImGuiInputTextFlags Flags;
+    void* UserData;
+    ImWchar EventChar;
+    ImGuiKey EventKey;
+    char* Buf;
+    int BufTextLen;
+    int BufSize;
+    _Bool BufDirty;
+    int CursorPos;
+    int SelectionStart;
+    int SelectionEnd;
+};
+struct ImGuiSizeCallbackData
+{
+    void* UserData;
+    ImVec2 Pos;
+    ImVec2 CurrentSize;
+    ImVec2 DesiredSize;
+};
+struct ImGuiPayload
+{
+    void* Data;
+    int DataSize;
+    ImGuiID SourceId;
+    ImGuiID SourceParentId;
+    int DataFrameCount;
+    char DataType[32+1];
+    _Bool Preview;
+    _Bool Delivery;
+};
 typedef struct ImVector{int Size;int Capacity;void* Data;} ImVector;
 typedef struct ImVector_float {int Size;int Capacity;float* Data;} ImVector_float;
 typedef struct ImVector_ImWchar {int Size;int Capacity;ImWchar* Data;} ImVector_ImWchar;
@@ -572,48 +609,15 @@ struct ImGuiStorage
 {
     ImVector_Pair Data;
 };
-struct ImGuiInputTextCallbackData
-{
-    ImGuiInputTextFlags EventFlag;
-    ImGuiInputTextFlags Flags;
-    void* UserData;
-    ImWchar EventChar;
-    ImGuiKey EventKey;
-    char* Buf;
-    int BufTextLen;
-    int BufSize;
-    _Bool BufDirty;
-    int CursorPos;
-    int SelectionStart;
-    int SelectionEnd;
-};
-struct ImGuiSizeCallbackData
-{
-    void* UserData;
-    ImVec2 Pos;
-    ImVec2 CurrentSize;
-    ImVec2 DesiredSize;
-};
-struct ImGuiPayload
-{
-    void* Data;
-    int DataSize;
-    ImGuiID SourceId;
-    ImGuiID SourceParentId;
-    int DataFrameCount;
-    char DataType[32+1];
-    _Bool Preview;
-    _Bool Delivery;
-};
-struct ImColor
-{
-    ImVec4 Value;
-};
 struct ImGuiListClipper
 {
     float StartPosY;
     float ItemsHeight;
     int ItemsCount, StepNo, DisplayStart, DisplayEnd;
+};
+struct ImColor
+{
+    ImVec4 Value;
 };
 typedef void (*ImDrawCallback)(const ImDrawList* parent_list, const ImDrawCmd* cmd);
 struct ImDrawCmd
@@ -649,6 +653,7 @@ enum ImDrawCornerFlags_
 };
 enum ImDrawListFlags_
 {
+    ImDrawListFlags_None = 0,
     ImDrawListFlags_AntiAliasedLines = 1 << 0,
     ImDrawListFlags_AntiAliasedFill = 1 << 1
 };
@@ -791,6 +796,7 @@ void igEndFrame(void);
 void igRender(void);
 ImDrawData* igGetDrawData(void);
 void igShowDemoWindow(_Bool* p_open);
+void igShowAboutWindow(_Bool* p_open);
 void igShowMetricsWindow(_Bool* p_open);
 void igShowStyleEditor(ImGuiStyle* ref);
 _Bool igShowStyleSelector(const char* label);
@@ -1121,6 +1127,17 @@ void ImGuiIO_AddInputCharactersUTF8(ImGuiIO* self,const char* utf8_chars);
 void ImGuiIO_ClearInputCharacters(ImGuiIO* self);
 ImGuiIO* ImGuiIO_ImGuiIO(void);
 void ImGuiIO_destroy(ImGuiIO* self);
+ImGuiInputTextCallbackData* ImGuiInputTextCallbackData_ImGuiInputTextCallbackData(void);
+void ImGuiInputTextCallbackData_destroy(ImGuiInputTextCallbackData* self);
+void ImGuiInputTextCallbackData_DeleteChars(ImGuiInputTextCallbackData* self,int pos,int bytes_count);
+void ImGuiInputTextCallbackData_InsertChars(ImGuiInputTextCallbackData* self,int pos,const char* text,const char* text_end);
+_Bool ImGuiInputTextCallbackData_HasSelection(ImGuiInputTextCallbackData* self);
+ImGuiPayload* ImGuiPayload_ImGuiPayload(void);
+void ImGuiPayload_destroy(ImGuiPayload* self);
+void ImGuiPayload_Clear(ImGuiPayload* self);
+_Bool ImGuiPayload_IsDataType(ImGuiPayload* self,const char* type);
+_Bool ImGuiPayload_IsPreview(ImGuiPayload* self);
+_Bool ImGuiPayload_IsDelivery(ImGuiPayload* self);
 ImGuiOnceUponAFrame* ImGuiOnceUponAFrame_ImGuiOnceUponAFrame(void);
 void ImGuiOnceUponAFrame_destroy(ImGuiOnceUponAFrame* self);
 ImGuiTextFilter* ImGuiTextFilter_ImGuiTextFilter(const char* default_filter);
@@ -1166,17 +1183,11 @@ float* ImGuiStorage_GetFloatRef(ImGuiStorage* self,ImGuiID key,float default_val
 void** ImGuiStorage_GetVoidPtrRef(ImGuiStorage* self,ImGuiID key,void* default_val);
 void ImGuiStorage_SetAllInt(ImGuiStorage* self,int val);
 void ImGuiStorage_BuildSortByKey(ImGuiStorage* self);
-ImGuiInputTextCallbackData* ImGuiInputTextCallbackData_ImGuiInputTextCallbackData(void);
-void ImGuiInputTextCallbackData_destroy(ImGuiInputTextCallbackData* self);
-void ImGuiInputTextCallbackData_DeleteChars(ImGuiInputTextCallbackData* self,int pos,int bytes_count);
-void ImGuiInputTextCallbackData_InsertChars(ImGuiInputTextCallbackData* self,int pos,const char* text,const char* text_end);
-_Bool ImGuiInputTextCallbackData_HasSelection(ImGuiInputTextCallbackData* self);
-ImGuiPayload* ImGuiPayload_ImGuiPayload(void);
-void ImGuiPayload_destroy(ImGuiPayload* self);
-void ImGuiPayload_Clear(ImGuiPayload* self);
-_Bool ImGuiPayload_IsDataType(ImGuiPayload* self,const char* type);
-_Bool ImGuiPayload_IsPreview(ImGuiPayload* self);
-_Bool ImGuiPayload_IsDelivery(ImGuiPayload* self);
+ImGuiListClipper* ImGuiListClipper_ImGuiListClipper(int items_count,float items_height);
+void ImGuiListClipper_destroy(ImGuiListClipper* self);
+_Bool ImGuiListClipper_Step(ImGuiListClipper* self);
+void ImGuiListClipper_Begin(ImGuiListClipper* self,int items_count,float items_height);
+void ImGuiListClipper_End(ImGuiListClipper* self);
 ImColor* ImColor_ImColor(void);
 void ImColor_destroy(ImColor* self);
 ImColor* ImColor_ImColorInt(int r,int g,int b,int a);
@@ -1185,11 +1196,6 @@ ImColor* ImColor_ImColorFloat(float r,float g,float b,float a);
 ImColor* ImColor_ImColorVec4(const ImVec4 col);
 void ImColor_SetHSV(ImColor* self,float h,float s,float v,float a);
 ImColor ImColor_HSV(ImColor* self,float h,float s,float v,float a);
-ImGuiListClipper* ImGuiListClipper_ImGuiListClipper(int items_count,float items_height);
-void ImGuiListClipper_destroy(ImGuiListClipper* self);
-_Bool ImGuiListClipper_Step(ImGuiListClipper* self);
-void ImGuiListClipper_Begin(ImGuiListClipper* self,int items_count,float items_height);
-void ImGuiListClipper_End(ImGuiListClipper* self);
 ImDrawCmd* ImDrawCmd_ImDrawCmd(void);
 void ImDrawCmd_destroy(ImDrawCmd* self);
 ImDrawList* ImDrawList_ImDrawList(const ImDrawListSharedData* shared_data);
@@ -1404,7 +1410,7 @@ typedef union SDL_Event SDL_Event;
  bool ImGui_ImplSDL2_InitForVulkan(SDL_Window* window);
  void ImGui_ImplSDL2_Shutdown();
  void ImGui_ImplSDL2_NewFrame(SDL_Window* window);
- bool ImGui_ImplSDL2_ProcessEvent(SDL_Event* event);
+ bool ImGui_ImplSDL2_ProcessEvent(const SDL_Event* event);
 ]]
 --[[ END AUTOGENERATED SEGMENT ]]
 
