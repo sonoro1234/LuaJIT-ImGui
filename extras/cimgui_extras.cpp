@@ -1,15 +1,11 @@
 #include "../imgui/imgui.h"
-//#include "../imgui/imgui_internal.h"
-//#include <float.h> 
-#include "../cimgui/cimgui.h"
 
-CIMGUI_API float igGET_FLT_MAX()
-{
-	return FLT_MAX;
-}
-/*
-CIMGUI_API const struct IMFONTGLYPH *   ImFont_FindGlyph( ImFont* font,ImWchar c)
-{
-	return font->FindGlyph(c);
-}
-*/
+// GL3W/GLFW
+#include <GL/gl3w.h>    // This example is using gl3w to access OpenGL functions (because it is small). You may use glew/glad/glLoadGen/etc. whatever already works for you.
+
+//making it accesible for luajit
+#ifdef _WIN32
+extern "C" __declspec( dllexport ) int Do_gl3wInit(void){ return gl3wInit();};
+#else
+	int Do_gl3wInit(void){ return gl3wInit();};
+#endif
