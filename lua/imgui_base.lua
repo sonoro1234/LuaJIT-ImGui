@@ -261,3 +261,13 @@ end
 M.Log = ffi.metatype("Log",Log)
 ------------convenience function
 function M.U32(a,b,c,d) return lib.igGetColorU32Vec4(ImVec4(a,b,c,d or 1)) end
+
+---------------for using nonUDT2 versions
+function M.use_nonUDT2()
+    for k,v in pairs(M) do
+        if M[k.."_nonUDT2"] then
+            M[k] = M[k.."_nonUDT2"]
+        end
+    end
+end
+

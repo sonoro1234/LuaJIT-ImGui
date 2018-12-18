@@ -4,6 +4,7 @@ local gllib = require"gl"
 gllib.set_loader(lj_glfw)
 local gl, glc, glu, glext = gllib.libraries()
 local ig = require"imgui.glfw"
+ig.use_nonUDT2() --this is needed if compiled with MSVC
 -----------Ploter--------------------------
 local function Plotter(xmin,xmax,nvals)
 	local Graph = {xmin=xmin or 0,xmax=xmax or 1,nvals=nvals or 400}
@@ -73,7 +74,7 @@ lj_glfw.init()
 local window = lj_glfw.Window(700,500)
 window:makeContextCurrent()	
 
-local ig_gl3 = ig.ImplGlfwGL3()
+local ig_gl3 = ig.Imgui_Impl_glfw_opengl3()
 ig_gl3:Init(window, true)
 
 local buffer = ffi.new("char[256]", "1/x")

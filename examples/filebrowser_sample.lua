@@ -5,6 +5,7 @@ local gllib = require"gl"
 gllib.set_loader(lj_glfw)
 local gl, glc, glu, glext = gllib.libraries()
 local ig = require"imgui.glfw"
+ig.use_nonUDT2() --this is needed if compiled with MSVC
 local imgui = ig.lib
 ---------------------------------------------FileBrowser---------------------------------------
 -- plain luafilesystem
