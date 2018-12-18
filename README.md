@@ -20,6 +20,7 @@ Notes:
 * Remember you also need GLFW https://github.com/sonoro1234/LuaJIT-GLFW or SDL2 https://github.com/sonoro1234/LuaJIT-SDL2 .
 * You have some scripts on the examples folder.
 * In case you are in a hurry, you can get all done in the releases (GLFW version only).
+* If the compiler used complains about returning user defined types (MSVC will do) a crash will happen with this functions, to avoid it you can use the nonUDT2 variants by calling ig.use_nonUDT2() after require.
 
 # binding generation
 
