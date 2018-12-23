@@ -8,16 +8,6 @@
 local dir = [[../cimgui/generator/output/]]
 local fundefs = dofile(dir..[[definitions.lua]])
 
---clean nonUDT functions
-for fun,defs in pairs(fundefs) do
-	for i,def in ipairs(defs) do
-		if def.nonUDT then
-			table.remove(defs,i)
-		end
-	end
-end
-
-
 --group them by structs
 local structs = {}
 for fun,defs in pairs(fundefs) do
@@ -96,51 +86,67 @@ function sanitize_reserved(def)
 	end
 end
 
---struct function generator
-local function struct_function_gen(code,def)
-	sanitize_reserved(def)
+local function make_function(method,def)
+	sanitize_reserved(def)	
 	local fname = def.ov_cimguiname or def.cimguiname --overloaded or original
-	local fname_m = fname:match("_(.*)") --drop struct name part
-	--add self to args
-	local empty = def.call_args:match("^%(%)") --no args
-	local args = def.call_args:gsub("^%(","(self"..(empty and "" or ","))
-	--end is reserved in lua so make it _end
+	local fname_m = method and fname:match("_(.*)") or fname:match("^ig(.*)") --drop struct name part
+	fname_m = fname_m:match("(.*)_nonUDT$") or fname_m --drop "_nonUDT" suffix
 	if fname_m == "end" then fname_m = "_end" end
 	--dump function code
-	if next(def.defaults) then
-		table.insert(code,"function " .. def.stname .. ":" .. fname_m .. def.call_args)
+	if def.nonUDT == 1 or next(def.defaults) then
+		local code = {}
+		local args, fname_lua
+		local empty = def.call_args:match("^%(%)") --no args
+		if method then
+			args = def.call_args:gsub("^%(","(self"..(empty and "" or ","))
+			fname_lua = def.stname..":"..fname_m
+			empty = false
+		else
+			args = def.call_args
+			fname_lua = "M."..fname_m
+		end
+		table.insert(code,"function "..fname_lua..def.call_args)
 		--set defaults
 		for k,v in pairs(def.defaults) do
 			table.insert(code,"    "..k.." = "..k.." or "..v)
 		end
-		--call cimgui
-		table.insert(code,"    return lib."..fname..args)
+		if def.nonUDT == 1 then
+			--allocate variable for return value
+			local out_type = def.argsT[1].type:gsub("*", "[1]")
+			table.insert(code,'    local nonUDT_out = ffi.new(\"'..out_type..'")')
+			--prepend nonUDT_out to args
+			args = args:gsub("%(", "(nonUDT_out" .. (empty and "" or ","), 1)
+			--call cimgui and return value of out variable
+			table.insert(code,"    lib."..fname..args)
+			table.insert(code,"    return nonUDT_out[0]")
+		else
+			--call cimgui
+			table.insert(code,"    return lib."..fname..args)
+		end
 		table.insert(code,"end")
-	else
-		table.insert(code, def.stname.."."..fname_m.." = lib."..fname)
+		return table.concat(code,"\n")
 	end
+	return (method and def.stname or "M").."."..fname_m.." = lib."..fname
 end
 
+--struct function generator
+local function struct_function_gen(code,def)
+	table.insert(code,make_function(true,def))
+end
 
 --top level function generator (ImGui namespace)
 local function function_gen(code,def)
-	sanitize_reserved(def)
-	local fname = def.ov_cimguiname or def.cimguiname --overloaded or original
-	local fname_m = fname:match("^ig(.*)") --drop struct name part
-	--end is reserved in lua so make it _end
-	if fname_m == "end" then fname_m = "_end" end
-	--dump function code
-	if next(def.defaults) then
-		table.insert(code,"function M." .. fname_m .. def.call_args)
-		--set defaults
-		for k,v in pairs(def.defaults) do
-			table.insert(code,"    "..k.." = "..k.." or "..v)
+	table.insert(code,make_function(false,def))
+end
+
+local function find_nonudt_def(defs,name)
+	for _,def in ipairs(defs) do
+		if def.nonUDT == 1 then
+			local fname = def.ov_cimguiname or def.cimguiname
+			if fname:sub(1,#name) == name then
+				return def
+			end
 		end
-		--call cimgui
-		table.insert(code,"    return lib."..fname..def.call_args)
-		table.insert(code,"end")
-	else
-		table.insert(code,"M." .. fname_m .. " = lib."..fname)
 	end
 end
 
@@ -157,19 +163,24 @@ local function code_for_struct(st)
 		local defs = fundefs[f]
 		for _,def in ipairs(defs) do
 			if not def.destructor then
-			if def.ret  then --avoid constructors and destructors
-				struct_function_gen(code,def)
-			else --constructors
-				local empty = def.args:match("^%(%)") --no args
-				if not def.funcname:match("~") and empty then
-					local fname = def.ov_cimguiname or def.cimguiname --overloaded or original
-					table.insert(code,"function "..st..".__new()")
-					table.insert(code,"    local ptr = lib."..fname..def.call_args)
-					table.insert(code,"    ffi.gc(ptr,lib."..st.."_destroy)")
-					table.insert(code,"    return ptr")
-					table.insert(code,"end")
+				if def.ret then --avoid constructors and destructors
+					if def.nonUDT ~= 1 then
+						local fname = def.ov_cimguiname or def.cimguiname
+						--prefer nonUDT1 defs
+						local nonudt_def = find_nonudt_def(defs,fname)
+						struct_function_gen(code,nonudt_def or def)
+					end
+				else --constructors
+					local empty = def.args:match("^%(%)") --no args
+					if not def.funcname:match("~") and empty then
+						local fname = def.ov_cimguiname or def.cimguiname --overloaded or original
+						table.insert(code,"function "..st..".__new()")
+						table.insert(code,"    local ptr = lib."..fname..def.call_args)
+						table.insert(code,"    ffi.gc(ptr,lib."..st.."_destroy)")
+						table.insert(code,"    return ptr")
+						table.insert(code,"end")
+					end
 				end
-			end
 			end
 		end
 	end
@@ -190,8 +201,13 @@ local function code_for_imguifuns(st)
 	for _,f in ipairs(funs) do
 		local defs = fundefs[f]
 		for _,def in ipairs(defs) do
-			def.stname = "M"
-			function_gen(code,def)
+			if def.nonUDT ~= 1 then
+				def.stname = "M"
+				local fname = def.ov_cimguiname or def.cimguiname
+				--prefer nonUDT1 defs
+				local nonudt_def = find_nonudt_def(defs,fname)
+				function_gen(code,nonudt_def or def)
+			end
 		end
 	end
 	local codestr = table.concat(code,"\n")

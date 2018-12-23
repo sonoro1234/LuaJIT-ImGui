@@ -579,9 +579,17 @@ ImDrawList.ChannelsSplit = lib.ImDrawList_ChannelsSplit
 ImDrawList.Clear = lib.ImDrawList_Clear
 ImDrawList.ClearFreeMemory = lib.ImDrawList_ClearFreeMemory
 ImDrawList.CloneOutput = lib.ImDrawList_CloneOutput
-ImDrawList.GetClipRectMax = lib.ImDrawList_GetClipRectMax
+function ImDrawList:GetClipRectMax()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.ImDrawList_GetClipRectMax_nonUDT(nonUDT_out,self)
+    return nonUDT_out[0]
+end
 ImDrawList.GetClipRectMax_nonUDT2 = lib.ImDrawList_GetClipRectMax_nonUDT2
-ImDrawList.GetClipRectMin = lib.ImDrawList_GetClipRectMin
+function ImDrawList:GetClipRectMin()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.ImDrawList_GetClipRectMin_nonUDT(nonUDT_out,self)
+    return nonUDT_out[0]
+end
 ImDrawList.GetClipRectMin_nonUDT2 = lib.ImDrawList_GetClipRectMin_nonUDT2
 function ImDrawList:PathArcTo(centre,radius,a_min,a_max,num_segments)
     num_segments = num_segments or 10
@@ -653,7 +661,9 @@ local ImColor= {}
 ImColor.__index = ImColor
 function ImColor:HSV(h,s,v,a)
     a = a or 1.0
-    return lib.ImColor_HSV(self,h,s,v,a)
+    local nonUDT_out = ffi.new("ImColor[1]")
+    lib.ImColor_HSV_nonUDT(nonUDT_out,self,h,s,v,a)
+    return nonUDT_out[0]
 end
 function ImColor:HSV_nonUDT2(h,s,v,a)
     a = a or 1.0
@@ -681,7 +691,9 @@ ImFont.BuildLookupTable = lib.ImFont_BuildLookupTable
 function ImFont:CalcTextSizeA(size,max_width,wrap_width,text_begin,text_end,remaining)
     text_end = text_end or nil
     remaining = remaining or nil
-    return lib.ImFont_CalcTextSizeA(self,size,max_width,wrap_width,text_begin,text_end,remaining)
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.ImFont_CalcTextSizeA_nonUDT(nonUDT_out,self,size,max_width,wrap_width,text_begin,text_end,remaining)
+    return nonUDT_out[0]
 end
 function ImFont:CalcTextSizeA_nonUDT2(size,max_width,wrap_width,text_begin,text_end,remaining)
     text_end = text_end or nil
@@ -823,7 +835,9 @@ function M.CalcTextSize(text,text_end,hide_text_after_double_hash,wrap_width)
     text_end = text_end or nil
     wrap_width = wrap_width or -1.0
     hide_text_after_double_hash = hide_text_after_double_hash or false
-    return lib.igCalcTextSize(text,text_end,hide_text_after_double_hash,wrap_width)
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igCalcTextSize_nonUDT(nonUDT_out,text,text_end,hide_text_after_double_hash,wrap_width)
+    return nonUDT_out[0]
 end
 function M.CalcTextSize_nonUDT2(text,text_end,hide_text_after_double_hash,wrap_width)
     text_end = text_end or nil
@@ -858,7 +872,11 @@ end
 M.ColorConvertFloat4ToU32 = lib.igColorConvertFloat4ToU32
 M.ColorConvertHSVtoRGB = lib.igColorConvertHSVtoRGB
 M.ColorConvertRGBtoHSV = lib.igColorConvertRGBtoHSV
-M.ColorConvertU32ToFloat4 = lib.igColorConvertU32ToFloat4
+function M.ColorConvertU32ToFloat4(_in)
+    local nonUDT_out = ffi.new("ImVec4[1]")
+    lib.igColorConvertU32ToFloat4_nonUDT(nonUDT_out,_in)
+    return nonUDT_out[0]
+end
 M.ColorConvertU32ToFloat4_nonUDT2 = lib.igColorConvertU32ToFloat4_nonUDT2
 function M.ColorEdit3(label,col,flags)
     flags = flags or 0
@@ -1026,26 +1044,50 @@ function M.GetColumnWidth(column_index)
     return lib.igGetColumnWidth(column_index)
 end
 M.GetColumnsCount = lib.igGetColumnsCount
-M.GetContentRegionAvail = lib.igGetContentRegionAvail
+function M.GetContentRegionAvail()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetContentRegionAvail_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetContentRegionAvail_nonUDT2 = lib.igGetContentRegionAvail_nonUDT2
 M.GetContentRegionAvailWidth = lib.igGetContentRegionAvailWidth
-M.GetContentRegionMax = lib.igGetContentRegionMax
+function M.GetContentRegionMax()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetContentRegionMax_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetContentRegionMax_nonUDT2 = lib.igGetContentRegionMax_nonUDT2
 M.GetCurrentContext = lib.igGetCurrentContext
-M.GetCursorPos = lib.igGetCursorPos
+function M.GetCursorPos()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetCursorPos_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetCursorPos_nonUDT2 = lib.igGetCursorPos_nonUDT2
 M.GetCursorPosX = lib.igGetCursorPosX
 M.GetCursorPosY = lib.igGetCursorPosY
-M.GetCursorScreenPos = lib.igGetCursorScreenPos
+function M.GetCursorScreenPos()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetCursorScreenPos_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetCursorScreenPos_nonUDT2 = lib.igGetCursorScreenPos_nonUDT2
-M.GetCursorStartPos = lib.igGetCursorStartPos
+function M.GetCursorStartPos()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetCursorStartPos_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetCursorStartPos_nonUDT2 = lib.igGetCursorStartPos_nonUDT2
 M.GetDragDropPayload = lib.igGetDragDropPayload
 M.GetDrawData = lib.igGetDrawData
 M.GetDrawListSharedData = lib.igGetDrawListSharedData
 M.GetFont = lib.igGetFont
 M.GetFontSize = lib.igGetFontSize
-M.GetFontTexUvWhitePixel = lib.igGetFontTexUvWhitePixel
+function M.GetFontTexUvWhitePixel()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetFontTexUvWhitePixel_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetFontTexUvWhitePixel_nonUDT2 = lib.igGetFontTexUvWhitePixel_nonUDT2
 M.GetFrameCount = lib.igGetFrameCount
 M.GetFrameHeight = lib.igGetFrameHeight
@@ -1054,11 +1096,23 @@ M.GetIDStr = lib.igGetIDStr
 M.GetIDRange = lib.igGetIDRange
 M.GetIDPtr = lib.igGetIDPtr
 M.GetIO = lib.igGetIO
-M.GetItemRectMax = lib.igGetItemRectMax
+function M.GetItemRectMax()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetItemRectMax_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetItemRectMax_nonUDT2 = lib.igGetItemRectMax_nonUDT2
-M.GetItemRectMin = lib.igGetItemRectMin
+function M.GetItemRectMin()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetItemRectMin_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetItemRectMin_nonUDT2 = lib.igGetItemRectMin_nonUDT2
-M.GetItemRectSize = lib.igGetItemRectSize
+function M.GetItemRectSize()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetItemRectSize_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetItemRectSize_nonUDT2 = lib.igGetItemRectSize_nonUDT2
 M.GetKeyIndex = lib.igGetKeyIndex
 M.GetKeyPressedAmount = lib.igGetKeyPressedAmount
@@ -1066,16 +1120,26 @@ M.GetMouseCursor = lib.igGetMouseCursor
 function M.GetMouseDragDelta(button,lock_threshold)
     lock_threshold = lock_threshold or -1.0
     button = button or 0
-    return lib.igGetMouseDragDelta(button,lock_threshold)
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetMouseDragDelta_nonUDT(nonUDT_out,button,lock_threshold)
+    return nonUDT_out[0]
 end
 function M.GetMouseDragDelta_nonUDT2(button,lock_threshold)
     lock_threshold = lock_threshold or -1.0
     button = button or 0
     return lib.igGetMouseDragDelta_nonUDT2(button,lock_threshold)
 end
-M.GetMousePos = lib.igGetMousePos
+function M.GetMousePos()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetMousePos_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetMousePos_nonUDT2 = lib.igGetMousePos_nonUDT2
-M.GetMousePosOnOpeningCurrentPopup = lib.igGetMousePosOnOpeningCurrentPopup
+function M.GetMousePosOnOpeningCurrentPopup()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetMousePosOnOpeningCurrentPopup_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetMousePosOnOpeningCurrentPopup_nonUDT2 = lib.igGetMousePosOnOpeningCurrentPopup_nonUDT2
 M.GetOverlayDrawList = lib.igGetOverlayDrawList
 M.GetScrollMaxX = lib.igGetScrollMaxX
@@ -1091,16 +1155,32 @@ M.GetTextLineHeightWithSpacing = lib.igGetTextLineHeightWithSpacing
 M.GetTime = lib.igGetTime
 M.GetTreeNodeToLabelSpacing = lib.igGetTreeNodeToLabelSpacing
 M.GetVersion = lib.igGetVersion
-M.GetWindowContentRegionMax = lib.igGetWindowContentRegionMax
+function M.GetWindowContentRegionMax()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetWindowContentRegionMax_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetWindowContentRegionMax_nonUDT2 = lib.igGetWindowContentRegionMax_nonUDT2
-M.GetWindowContentRegionMin = lib.igGetWindowContentRegionMin
+function M.GetWindowContentRegionMin()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetWindowContentRegionMin_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetWindowContentRegionMin_nonUDT2 = lib.igGetWindowContentRegionMin_nonUDT2
 M.GetWindowContentRegionWidth = lib.igGetWindowContentRegionWidth
 M.GetWindowDrawList = lib.igGetWindowDrawList
 M.GetWindowHeight = lib.igGetWindowHeight
-M.GetWindowPos = lib.igGetWindowPos
+function M.GetWindowPos()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetWindowPos_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetWindowPos_nonUDT2 = lib.igGetWindowPos_nonUDT2
-M.GetWindowSize = lib.igGetWindowSize
+function M.GetWindowSize()
+    local nonUDT_out = ffi.new("ImVec2[1]")
+    lib.igGetWindowSize_nonUDT(nonUDT_out)
+    return nonUDT_out[0]
+end
 M.GetWindowSize_nonUDT2 = lib.igGetWindowSize_nonUDT2
 M.GetWindowWidth = lib.igGetWindowWidth
 function M.Image(user_texture_id,size,uv0,uv1,tint_col,border_col)
