@@ -271,3 +271,16 @@ function M.use_nonUDT2()
     end
 end
 
+--- ImVector_ImWchar
+local ImVector_ImWchar = {}
+ImVector_ImWchar.__index = ImVector_ImWchar
+ImVector_ImWchar.__new = function()
+    local ptr = lib.ImVector_ImWchar_create()
+    lib.ImVector_ImWchar_Init(ptr);
+    ffi.gc(ptr,function(self)
+        lib.ImVector_ImWchar_UnInit(self)
+        lib.ImVector_ImWchar_destroy(self)
+    end)
+    return ptr
+end
+M.ImVector_ImWchar = ffi.metatype("ImVector_ImWchar",ImVector_ImWchar)
