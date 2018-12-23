@@ -3,9 +3,7 @@ local lj_glfw = require"glfw"
 local gllib = require"gl"
 gllib.set_loader(lj_glfw)
 local gl, glc, glu, glext = gllib.libraries()
-
 local ig = require"imgui.glfw"
-ig.use_nonUDT2() --this is needed if compiled with MSVC not for mingw-w64
 
 lj_glfw.setErrorCallback(function(error,description)
     print("GLFW error:",error,ffi.string(description or ""));
