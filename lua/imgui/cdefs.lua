@@ -5,15 +5,13 @@ typedef struct ImVec2_Simple { float x; float y; } ImVec2_Simple;
 typedef struct ImVec4_Simple { float x; float y; float z; float w;} ImVec4_Simple;
 typedef struct ImColor_Simple { ImVec4_Simple Value;} ImColor_Simple;
 typedef struct CustomRect CustomRect;
-typedef struct GlyphRangesBuilder GlyphRangesBuilder;
-typedef struct ImFontGlyph ImFontGlyph;
 typedef unsigned short ImDrawIdx;;
 typedef struct Pair Pair;
 typedef struct TextRange TextRange;
 typedef struct ImVec4 ImVec4;
 typedef struct ImVec2 ImVec2;
-typedef struct ImGuiTextBuffer ImGuiTextBuffer;
 typedef struct ImGuiTextFilter ImGuiTextFilter;
+typedef struct ImGuiTextBuffer ImGuiTextBuffer;
 typedef struct ImGuiStyle ImGuiStyle;
 typedef struct ImGuiStorage ImGuiStorage;
 typedef struct ImGuiSizeCallbackData ImGuiSizeCallbackData;
@@ -24,6 +22,8 @@ typedef struct ImGuiInputTextCallbackData ImGuiInputTextCallbackData;
 typedef struct ImGuiIO ImGuiIO;
 typedef struct ImGuiContext ImGuiContext;
 typedef struct ImColor ImColor;
+typedef struct ImFontGlyphRangesBuilder ImFontGlyphRangesBuilder;
+typedef struct ImFontGlyph ImFontGlyph;
 typedef struct ImFontConfig ImFontConfig;
 typedef struct ImFontAtlas ImFontAtlas;
 typedef struct ImFont ImFont;
@@ -42,8 +42,9 @@ struct ImDrawVert;
 struct ImFont;
 struct ImFontAtlas;
 struct ImFontConfig;
+struct ImFontGlyph;
+struct ImFontGlyphRangesBuilder;
 struct ImColor;
-typedef void* ImTextureID;
 struct ImGuiContext;
 struct ImGuiIO;
 struct ImGuiInputTextCallbackData;
@@ -53,8 +54,9 @@ struct ImGuiPayload;
 struct ImGuiSizeCallbackData;
 struct ImGuiStorage;
 struct ImGuiStyle;
-struct ImGuiTextFilter;
 struct ImGuiTextBuffer;
+struct ImGuiTextFilter;
+typedef void* ImTextureID;
 typedef unsigned int ImGuiID;
 typedef unsigned short ImWchar;
 typedef int ImGuiCol;
@@ -78,6 +80,8 @@ typedef int ImGuiFocusedFlags;
 typedef int ImGuiHoveredFlags;
 typedef int ImGuiInputTextFlags;
 typedef int ImGuiSelectableFlags;
+typedef int ImGuiTabBarFlags;
+typedef int ImGuiTabItemFlags;
 typedef int ImGuiTreeNodeFlags;
 typedef int ImGuiWindowFlags;
 typedef int (*ImGuiInputTextCallback)(ImGuiInputTextCallbackData *data);
@@ -116,6 +120,7 @@ enum ImGuiWindowFlags_
     ImGuiWindowFlags_AlwaysUseWindowPadding = 1 << 16,
     ImGuiWindowFlags_NoNavInputs = 1 << 18,
     ImGuiWindowFlags_NoNavFocus = 1 << 19,
+    ImGuiWindowFlags_UnsavedDocument = 1 << 20,
     ImGuiWindowFlags_NoNav = ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus,
     ImGuiWindowFlags_NoDecoration = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse,
     ImGuiWindowFlags_NoInputs = ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus,
@@ -186,6 +191,28 @@ enum ImGuiComboFlags_
     ImGuiComboFlags_NoArrowButton = 1 << 5,
     ImGuiComboFlags_NoPreview = 1 << 6,
     ImGuiComboFlags_HeightMask_ = ImGuiComboFlags_HeightSmall | ImGuiComboFlags_HeightRegular | ImGuiComboFlags_HeightLarge | ImGuiComboFlags_HeightLargest
+};
+enum ImGuiTabBarFlags_
+{
+    ImGuiTabBarFlags_None = 0,
+    ImGuiTabBarFlags_Reorderable = 1 << 0,
+    ImGuiTabBarFlags_AutoSelectNewTabs = 1 << 1,
+    ImGuiTabBarFlags_NoCloseWithMiddleMouseButton = 1 << 2,
+    ImGuiTabBarFlags_NoTabListPopupButton = 1 << 3,
+    ImGuiTabBarFlags_NoTabListScrollingButtons = 1 << 4,
+    ImGuiTabBarFlags_NoTooltip = 1 << 5,
+    ImGuiTabBarFlags_FittingPolicyResizeDown = 1 << 6,
+    ImGuiTabBarFlags_FittingPolicyScroll = 1 << 7,
+    ImGuiTabBarFlags_FittingPolicyMask_ = ImGuiTabBarFlags_FittingPolicyResizeDown | ImGuiTabBarFlags_FittingPolicyScroll,
+    ImGuiTabBarFlags_FittingPolicyDefault_ = ImGuiTabBarFlags_FittingPolicyResizeDown
+};
+enum ImGuiTabItemFlags_
+{
+    ImGuiTabItemFlags_None = 0,
+    ImGuiTabItemFlags_UnsavedDocument = 1 << 0,
+    ImGuiTabItemFlags_SetSelected = 1 << 1,
+    ImGuiTabItemFlags_NoCloseWithMiddleMouseButton = 1 << 2,
+    ImGuiTabItemFlags_NoPushId = 1 << 3
 };
 enum ImGuiFocusedFlags_
 {
@@ -346,6 +373,11 @@ enum ImGuiCol_
     ImGuiCol_ResizeGrip,
     ImGuiCol_ResizeGripHovered,
     ImGuiCol_ResizeGripActive,
+    ImGuiCol_Tab,
+    ImGuiCol_TabHovered,
+    ImGuiCol_TabActive,
+    ImGuiCol_TabUnfocused,
+    ImGuiCol_TabUnfocusedActive,
     ImGuiCol_PlotLines,
     ImGuiCol_PlotLinesHovered,
     ImGuiCol_PlotHistogram,
@@ -380,6 +412,7 @@ enum ImGuiStyleVar_
     ImGuiStyleVar_ScrollbarRounding,
     ImGuiStyleVar_GrabMinSize,
     ImGuiStyleVar_GrabRounding,
+    ImGuiStyleVar_TabRounding,
     ImGuiStyleVar_ButtonTextAlign,
     ImGuiStyleVar_COUNT
 };
@@ -431,6 +464,24 @@ enum ImGuiCond_
     ImGuiCond_FirstUseEver = 1 << 2,
     ImGuiCond_Appearing = 1 << 3
 };
+typedef struct ImVector{int Size;int Capacity;void* Data;} ImVector;
+typedef struct ImVector_float {int Size;int Capacity;float* Data;} ImVector_float;
+typedef struct ImVector_ImWchar {int Size;int Capacity;ImWchar* Data;} ImVector_ImWchar;
+typedef struct ImVector_ImFontConfig {int Size;int Capacity;ImFontConfig* Data;} ImVector_ImFontConfig;
+typedef struct ImVector_ImFontGlyph {int Size;int Capacity;ImFontGlyph* Data;} ImVector_ImFontGlyph;
+typedef struct ImVector_TextRange {int Size;int Capacity;TextRange* Data;} ImVector_TextRange;
+typedef struct ImVector_CustomRect {int Size;int Capacity;CustomRect* Data;} ImVector_CustomRect;
+typedef struct ImVector_ImDrawChannel {int Size;int Capacity;ImDrawChannel* Data;} ImVector_ImDrawChannel;
+typedef struct ImVector_char {int Size;int Capacity;char* Data;} ImVector_char;
+typedef struct ImVector_ImTextureID {int Size;int Capacity;ImTextureID* Data;} ImVector_ImTextureID;
+typedef struct ImVector_ImDrawVert {int Size;int Capacity;ImDrawVert* Data;} ImVector_ImDrawVert;
+typedef struct ImVector_int {int Size;int Capacity;int* Data;} ImVector_int;
+typedef struct ImVector_Pair {int Size;int Capacity;Pair* Data;} ImVector_Pair;
+typedef struct ImVector_ImFontPtr {int Size;int Capacity;ImFont** Data;} ImVector_ImFontPtr;
+typedef struct ImVector_ImVec4 {int Size;int Capacity;ImVec4* Data;} ImVector_ImVec4;
+typedef struct ImVector_ImDrawCmd {int Size;int Capacity;ImDrawCmd* Data;} ImVector_ImDrawCmd;
+typedef struct ImVector_ImDrawIdx {int Size;int Capacity;ImDrawIdx* Data;} ImVector_ImDrawIdx;
+typedef struct ImVector_ImVec2 {int Size;int Capacity;ImVec2* Data;} ImVector_ImVec2;
 struct ImGuiStyle
 {
     float Alpha;
@@ -455,6 +506,8 @@ struct ImGuiStyle
     float ScrollbarRounding;
     float GrabMinSize;
     float GrabRounding;
+    float TabRounding;
+    float TabBorderSize;
     ImVec2 ButtonTextAlign;
     ImVec2 DisplayWindowPadding;
     ImVec2 DisplaySafeAreaPadding;
@@ -480,7 +533,7 @@ struct ImGuiIO
     float KeyRepeatDelay;
     float KeyRepeatRate;
     void* UserData;
-    ImFontAtlas* Fonts;
+    ImFontAtlas*Fonts;
     float FontGlobalScale;
     _Bool FontAllowUserScaling;
     ImFont* FontDefault;
@@ -490,9 +543,13 @@ struct ImGuiIO
     _Bool MouseDrawCursor;
     _Bool ConfigMacOSXBehaviors;
     _Bool ConfigInputTextCursorBlink;
-    _Bool ConfigResizeWindowsFromEdges;
+    _Bool ConfigWindowsResizeFromEdges;
+    _Bool ConfigWindowsMoveFromTitleBarOnly;
     const char* BackendPlatformName;
     const char* BackendRendererName;
+    void* BackendPlatformUserData;
+    void* BackendRendererUserData;
+    void* BackendLanguageUserData;
     const char* (*GetClipboardTextFn)(void* user_data);
     void (*SetClipboardTextFn)(void* user_data, const char* text);
     void* ClipboardUserData;
@@ -508,7 +565,6 @@ struct ImGuiIO
     _Bool KeyAlt;
     _Bool KeySuper;
     _Bool KeysDown[512];
-    ImWchar InputCharacters[16+1];
     float NavInputs[ImGuiNavInput_COUNT];
     _Bool WantCaptureMouse;
     _Bool WantCaptureKeyboard;
@@ -539,6 +595,7 @@ struct ImGuiIO
     float KeysDownDurationPrev[512];
     float NavInputsDownDuration[ImGuiNavInput_COUNT];
     float NavInputsDownDurationPrev[ImGuiNavInput_COUNT];
+    ImVector_ImWchar InputQueueCharacters;
 };
 struct ImGuiInputTextCallbackData
 {
@@ -573,24 +630,6 @@ struct ImGuiPayload
     _Bool Preview;
     _Bool Delivery;
 };
-typedef struct ImVector{int Size;int Capacity;void* Data;} ImVector;
-typedef struct ImVector_float {int Size;int Capacity;float* Data;} ImVector_float;
-typedef struct ImVector_ImWchar {int Size;int Capacity;ImWchar* Data;} ImVector_ImWchar;
-typedef struct ImVector_ImFontConfig {int Size;int Capacity;ImFontConfig* Data;} ImVector_ImFontConfig;
-typedef struct ImVector_ImFontGlyph {int Size;int Capacity;ImFontGlyph* Data;} ImVector_ImFontGlyph;
-typedef struct ImVector_unsigned_char {int Size;int Capacity;unsigned char* Data;} ImVector_unsigned_char;
-typedef struct ImVector_Pair {int Size;int Capacity;Pair* Data;} ImVector_Pair;
-typedef struct ImVector_CustomRect {int Size;int Capacity;CustomRect* Data;} ImVector_CustomRect;
-typedef struct ImVector_ImDrawChannel {int Size;int Capacity;ImDrawChannel* Data;} ImVector_ImDrawChannel;
-typedef struct ImVector_char {int Size;int Capacity;char* Data;} ImVector_char;
-typedef struct ImVector_ImTextureID {int Size;int Capacity;ImTextureID* Data;} ImVector_ImTextureID;
-typedef struct ImVector_ImDrawVert {int Size;int Capacity;ImDrawVert* Data;} ImVector_ImDrawVert;
-typedef struct ImVector_ImDrawCmd {int Size;int Capacity;ImDrawCmd* Data;} ImVector_ImDrawCmd;
-typedef struct ImVector_ImFontPtr {int Size;int Capacity;ImFont** Data;} ImVector_ImFontPtr;
-typedef struct ImVector_TextRange {int Size;int Capacity;TextRange* Data;} ImVector_TextRange;
-typedef struct ImVector_ImVec4 {int Size;int Capacity;ImVec4* Data;} ImVector_ImVec4;
-typedef struct ImVector_ImDrawIdx {int Size;int Capacity;ImDrawIdx* Data;} ImVector_ImDrawIdx;
-typedef struct ImVector_ImVec2 {int Size;int Capacity;ImVec2* Data;} ImVector_ImVec2;
 struct ImGuiOnceUponAFrame
 {
      int RefFrame;
@@ -713,6 +752,10 @@ struct ImFontGlyph
     float X0, Y0, X1, Y1;
     float U0, V0, U1, V1;
 };
+struct ImFontGlyphRangesBuilder
+{
+    ImVector_int UsedChars;
+};
 enum ImFontAtlasFlags_
 {
     ImFontAtlasFlags_None = 0,
@@ -755,10 +798,6 @@ struct ImFont
     _Bool DirtyLookupTables;
     int MetricsTotalSurface;
 };
-    struct GlyphRangesBuilder
-    {
-        ImVector_unsigned_char UsedChars;
-    };
     struct CustomRect
     {
         unsigned int ID;
@@ -849,7 +888,7 @@ float igGetScrollMaxY(void);
 void igSetScrollX(float scroll_x);
 void igSetScrollY(float scroll_y);
 void igSetScrollHereY(float center_y_ratio);
-void igSetScrollFromPosY(float pos_y,float center_y_ratio);
+void igSetScrollFromPosY(float local_y,float center_y_ratio);
 void igPushFont(ImFont* font);
 void igPopFont(void);
 void igPushStyleColorU32(ImGuiCol idx,ImU32 col);
@@ -868,14 +907,14 @@ ImU32 igGetColorU32U32(ImU32 col);
 void igPushItemWidth(float item_width);
 void igPopItemWidth(void);
 float igCalcItemWidth(void);
-void igPushTextWrapPos(float wrap_pos_x);
+void igPushTextWrapPos(float wrap_local_pos_x);
 void igPopTextWrapPos(void);
 void igPushAllowKeyboardFocus(_Bool allow_keyboard_focus);
 void igPopAllowKeyboardFocus(void);
 void igPushButtonRepeat(_Bool repeat);
 void igPopButtonRepeat(void);
 void igSeparator(void);
-void igSameLine(float pos_x,float spacing_w);
+void igSameLine(float local_pos_x,float spacing_w);
 void igNewLine(void);
 void igSpacing(void);
 void igDummy(const ImVec2 size);
@@ -887,11 +926,11 @@ ImVec2 igGetCursorPos(void);
 float igGetCursorPosX(void);
 float igGetCursorPosY(void);
 void igSetCursorPos(const ImVec2 local_pos);
-void igSetCursorPosX(float x);
-void igSetCursorPosY(float y);
+void igSetCursorPosX(float local_x);
+void igSetCursorPosY(float local_y);
 ImVec2 igGetCursorStartPos(void);
 ImVec2 igGetCursorScreenPos(void);
-void igSetCursorScreenPos(const ImVec2 screen_pos);
+void igSetCursorScreenPos(const ImVec2 pos);
 void igAlignTextToFramePadding(void);
 float igGetTextLineHeight(void);
 float igGetTextLineHeightWithSpacing(void);
@@ -963,17 +1002,17 @@ _Bool igVSliderInt(const char* label,const ImVec2 size,int* v,int v_min,int v_ma
 _Bool igVSliderScalar(const char* label,const ImVec2 size,ImGuiDataType data_type,void* v,const void* v_min,const void* v_max,const char* format,float power);
 _Bool igInputText(const char* label,char* buf,size_t buf_size,ImGuiInputTextFlags flags,ImGuiInputTextCallback callback,void* user_data);
 _Bool igInputTextMultiline(const char* label,char* buf,size_t buf_size,const ImVec2 size,ImGuiInputTextFlags flags,ImGuiInputTextCallback callback,void* user_data);
-_Bool igInputFloat(const char* label,float* v,float step,float step_fast,const char* format,ImGuiInputTextFlags extra_flags);
-_Bool igInputFloat2(const char* label,float v[2],const char* format,ImGuiInputTextFlags extra_flags);
-_Bool igInputFloat3(const char* label,float v[3],const char* format,ImGuiInputTextFlags extra_flags);
-_Bool igInputFloat4(const char* label,float v[4],const char* format,ImGuiInputTextFlags extra_flags);
-_Bool igInputInt(const char* label,int* v,int step,int step_fast,ImGuiInputTextFlags extra_flags);
-_Bool igInputInt2(const char* label,int v[2],ImGuiInputTextFlags extra_flags);
-_Bool igInputInt3(const char* label,int v[3],ImGuiInputTextFlags extra_flags);
-_Bool igInputInt4(const char* label,int v[4],ImGuiInputTextFlags extra_flags);
-_Bool igInputDouble(const char* label,double* v,double step,double step_fast,const char* format,ImGuiInputTextFlags extra_flags);
-_Bool igInputScalar(const char* label,ImGuiDataType data_type,void* v,const void* step,const void* step_fast,const char* format,ImGuiInputTextFlags extra_flags);
-_Bool igInputScalarN(const char* label,ImGuiDataType data_type,void* v,int components,const void* step,const void* step_fast,const char* format,ImGuiInputTextFlags extra_flags);
+_Bool igInputFloat(const char* label,float* v,float step,float step_fast,const char* format,ImGuiInputTextFlags flags);
+_Bool igInputFloat2(const char* label,float v[2],const char* format,ImGuiInputTextFlags flags);
+_Bool igInputFloat3(const char* label,float v[3],const char* format,ImGuiInputTextFlags flags);
+_Bool igInputFloat4(const char* label,float v[4],const char* format,ImGuiInputTextFlags flags);
+_Bool igInputInt(const char* label,int* v,int step,int step_fast,ImGuiInputTextFlags flags);
+_Bool igInputInt2(const char* label,int v[2],ImGuiInputTextFlags flags);
+_Bool igInputInt3(const char* label,int v[3],ImGuiInputTextFlags flags);
+_Bool igInputInt4(const char* label,int v[4],ImGuiInputTextFlags flags);
+_Bool igInputDouble(const char* label,double* v,double step,double step_fast,const char* format,ImGuiInputTextFlags flags);
+_Bool igInputScalar(const char* label,ImGuiDataType data_type,void* v,const void* step,const void* step_fast,const char* format,ImGuiInputTextFlags flags);
+_Bool igInputScalarN(const char* label,ImGuiDataType data_type,void* v,int components,const void* step,const void* step_fast,const char* format,ImGuiInputTextFlags flags);
 _Bool igColorEdit3(const char* label,float col[3],ImGuiColorEditFlags flags);
 _Bool igColorEdit4(const char* label,float col[4],ImGuiColorEditFlags flags);
 _Bool igColorPicker3(const char* label,float col[3],ImGuiColorEditFlags flags);
@@ -1043,6 +1082,11 @@ void igSetColumnWidth(int column_index,float width);
 float igGetColumnOffset(int column_index);
 void igSetColumnOffset(int column_index,float offset_x);
 int igGetColumnsCount(void);
+_Bool igBeginTabBar(const char* str_id,ImGuiTabBarFlags flags);
+void igEndTabBar(void);
+_Bool igBeginTabItem(const char* label,_Bool* p_open,ImGuiTabItemFlags flags);
+void igEndTabItem(void);
+void igSetTabItemClosed(const char* tab_or_docked_window_label);
 void igLogToTTY(int max_depth);
 void igLogToFile(int max_depth,const char* filename);
 void igLogToClipboard(int max_depth);
@@ -1108,8 +1152,8 @@ ImVec2 igGetMouseDragDelta(int button,float lock_threshold);
 void igResetMouseDragDelta(int button);
 ImGuiMouseCursor igGetMouseCursor(void);
 void igSetMouseCursor(ImGuiMouseCursor type);
-void igCaptureKeyboardFromApp(_Bool capture);
-void igCaptureMouseFromApp(_Bool capture);
+void igCaptureKeyboardFromApp(_Bool want_capture_keyboard_value);
+void igCaptureMouseFromApp(_Bool want_capture_mouse_value);
 const char* igGetClipboardText(void);
 void igSetClipboardText(const char* text);
 void igLoadIniSettingsFromDisk(const char* ini_filename);
@@ -1123,7 +1167,7 @@ ImGuiStyle* ImGuiStyle_ImGuiStyle(void);
 void ImGuiStyle_destroy(ImGuiStyle* self);
 void ImGuiStyle_ScaleAllSizes(ImGuiStyle* self,float scale_factor);
 void ImGuiIO_AddInputCharacter(ImGuiIO* self,ImWchar c);
-void ImGuiIO_AddInputCharactersUTF8(ImGuiIO* self,const char* utf8_chars);
+void ImGuiIO_AddInputCharactersUTF8(ImGuiIO* self,const char* str);
 void ImGuiIO_ClearInputCharacters(ImGuiIO* self);
 ImGuiIO* ImGuiIO_ImGuiIO(void);
 void ImGuiIO_destroy(ImGuiIO* self);
@@ -1258,6 +1302,14 @@ void ImDrawData_DeIndexAllBuffers(ImDrawData* self);
 void ImDrawData_ScaleClipRects(ImDrawData* self,const ImVec2 sc);
 ImFontConfig* ImFontConfig_ImFontConfig(void);
 void ImFontConfig_destroy(ImFontConfig* self);
+ImFontGlyphRangesBuilder* ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder(void);
+void ImFontGlyphRangesBuilder_destroy(ImFontGlyphRangesBuilder* self);
+_Bool ImFontGlyphRangesBuilder_GetBit(ImFontGlyphRangesBuilder* self,int n);
+void ImFontGlyphRangesBuilder_SetBit(ImFontGlyphRangesBuilder* self,int n);
+void ImFontGlyphRangesBuilder_AddChar(ImFontGlyphRangesBuilder* self,ImWchar c);
+void ImFontGlyphRangesBuilder_AddText(ImFontGlyphRangesBuilder* self,const char* text,const char* text_end);
+void ImFontGlyphRangesBuilder_AddRanges(ImFontGlyphRangesBuilder* self,const ImWchar* ranges);
+void ImFontGlyphRangesBuilder_BuildRanges(ImFontGlyphRangesBuilder* self,ImVector_ImWchar* out_ranges);
 ImFontAtlas* ImFontAtlas_ImFontAtlas(void);
 void ImFontAtlas_destroy(ImFontAtlas* self);
 ImFont* ImFontAtlas_AddFont(ImFontAtlas* self,const ImFontConfig* font_cfg);
@@ -1271,9 +1323,9 @@ void ImFontAtlas_ClearTexData(ImFontAtlas* self);
 void ImFontAtlas_ClearFonts(ImFontAtlas* self);
 void ImFontAtlas_Clear(ImFontAtlas* self);
 _Bool ImFontAtlas_Build(ImFontAtlas* self);
-_Bool ImFontAtlas_IsBuilt(ImFontAtlas* self);
 void ImFontAtlas_GetTexDataAsAlpha8(ImFontAtlas* self,unsigned char** out_pixels,int* out_width,int* out_height,int* out_bytes_per_pixel);
 void ImFontAtlas_GetTexDataAsRGBA32(ImFontAtlas* self,unsigned char** out_pixels,int* out_width,int* out_height,int* out_bytes_per_pixel);
+_Bool ImFontAtlas_IsBuilt(ImFontAtlas* self);
 void ImFontAtlas_SetTexID(ImFontAtlas* self,ImTextureID id);
 const ImWchar* ImFontAtlas_GetGlyphRangesDefault(ImFontAtlas* self);
 const ImWchar* ImFontAtlas_GetGlyphRangesKorean(ImFontAtlas* self);
@@ -1282,14 +1334,6 @@ const ImWchar* ImFontAtlas_GetGlyphRangesChineseFull(ImFontAtlas* self);
 const ImWchar* ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon(ImFontAtlas* self);
 const ImWchar* ImFontAtlas_GetGlyphRangesCyrillic(ImFontAtlas* self);
 const ImWchar* ImFontAtlas_GetGlyphRangesThai(ImFontAtlas* self);
-GlyphRangesBuilder* GlyphRangesBuilder_GlyphRangesBuilder(void);
-void GlyphRangesBuilder_destroy(GlyphRangesBuilder* self);
-_Bool GlyphRangesBuilder_GetBit(GlyphRangesBuilder* self,int n);
-void GlyphRangesBuilder_SetBit(GlyphRangesBuilder* self,int n);
-void GlyphRangesBuilder_AddChar(GlyphRangesBuilder* self,ImWchar c);
-void GlyphRangesBuilder_AddText(GlyphRangesBuilder* self,const char* text,const char* text_end);
-void GlyphRangesBuilder_AddRanges(GlyphRangesBuilder* self,const ImWchar* ranges);
-void GlyphRangesBuilder_BuildRanges(GlyphRangesBuilder* self,ImVector_ImWchar* out_ranges);
 CustomRect* CustomRect_CustomRect(void);
 void CustomRect_destroy(CustomRect* self);
 _Bool CustomRect_IsPacked(CustomRect* self);
