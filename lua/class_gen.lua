@@ -16,6 +16,7 @@ for fun,defs in pairs(fundefs) do
 	table.insert(structs[stname],fun)
 end
 structs.ImVec4 = nil
+structs.ImVector = nil
 
 
 
