@@ -90,7 +90,7 @@ end
 local function make_function(method,def)
 	sanitize_reserved(def)	
 	local fname = def.ov_cimguiname or def.cimguiname --overloaded or original
-	local fname_m = method and fname:match("_(.*)") or fname:match("^ig(.*)") --drop struct name part
+	local fname_m = method and fname:match(def.stname.."_(.*)") or fname:match("^ig(.*)") --drop struct name part
 	fname_m = fname_m:match("(.*)_nonUDT$") or fname_m --drop "_nonUDT" suffix
 	if fname_m == "end" then fname_m = "_end" end
 	--dump function code
