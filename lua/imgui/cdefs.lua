@@ -215,8 +215,8 @@ enum ImGuiTabBarFlags_
     ImGuiTabBarFlags_None = 0,
     ImGuiTabBarFlags_Reorderable = 1 << 0,
     ImGuiTabBarFlags_AutoSelectNewTabs = 1 << 1,
-    ImGuiTabBarFlags_NoCloseWithMiddleMouseButton = 1 << 2,
-    ImGuiTabBarFlags_NoTabListPopupButton = 1 << 3,
+    ImGuiTabBarFlags_TabListPopupButton = 1 << 2,
+    ImGuiTabBarFlags_NoCloseWithMiddleMouseButton = 1 << 3,
     ImGuiTabBarFlags_NoTabListScrollingButtons = 1 << 4,
     ImGuiTabBarFlags_NoTooltip = 1 << 5,
     ImGuiTabBarFlags_FittingPolicyResizeDown = 1 << 6,
@@ -432,6 +432,7 @@ enum ImGuiStyleVar_
     ImGuiStyleVar_GrabRounding,
     ImGuiStyleVar_TabRounding,
     ImGuiStyleVar_ButtonTextAlign,
+    ImGuiStyleVar_SelectableTextAlign,
     ImGuiStyleVar_COUNT
 };
 enum ImGuiColorEditFlags_
@@ -509,6 +510,7 @@ struct ImGuiStyle
     float TabRounding;
     float TabBorderSize;
     ImVec2 ButtonTextAlign;
+    ImVec2 SelectableTextAlign;
     ImVec2 DisplayWindowPadding;
     ImVec2 DisplaySafeAreaPadding;
     float MouseCursorScale;
@@ -538,8 +540,6 @@ struct ImGuiIO
     _Bool FontAllowUserScaling;
     ImFont* FontDefault;
     ImVec2 DisplayFramebufferScale;
-    ImVec2 DisplayVisibleMin;
-    ImVec2 DisplayVisibleMax;
     _Bool MouseDrawCursor;
     _Bool ConfigMacOSXBehaviors;
     _Bool ConfigInputTextCursorBlink;
@@ -722,6 +722,7 @@ struct ImDrawData
     int TotalVtxCount;
     ImVec2 DisplayPos;
     ImVec2 DisplaySize;
+    ImVec2 FramebufferScale;
 };
 struct ImFontConfig
 {
@@ -781,21 +782,21 @@ struct ImFontAtlas
 };
 struct ImFont
 {
-    float FontSize;
-    float Scale;
-    ImVec2 DisplayOffset;
-    ImVector_ImFontGlyph Glyphs;
     ImVector_float IndexAdvanceX;
-    ImVector_ImWchar IndexLookup;
-    const ImFontGlyph* FallbackGlyph;
     float FallbackAdvanceX;
-    ImWchar FallbackChar;
-    short ConfigDataCount;
-    ImFontConfig* ConfigData;
+    float FontSize;
+    ImVector_ImWchar IndexLookup;
+    ImVector_ImFontGlyph Glyphs;
+    const ImFontGlyph* FallbackGlyph;
+    ImVec2 DisplayOffset;
     ImFontAtlas* ContainerAtlas;
+    const ImFontConfig* ConfigData;
+    short ConfigDataCount;
+    ImWchar FallbackChar;
+    float Scale;
     float Ascent, Descent;
-    _Bool DirtyLookupTables;
     int MetricsTotalSurface;
+    _Bool DirtyLookupTables;
 };
     struct TextRange
     {
@@ -1108,6 +1109,7 @@ _Bool igIsItemFocused(void);
 _Bool igIsItemClicked(int mouse_button);
 _Bool igIsItemVisible(void);
 _Bool igIsItemEdited(void);
+_Bool igIsItemActivated(void);
 _Bool igIsItemDeactivated(void);
 _Bool igIsItemDeactivatedAfterEdit(void);
 _Bool igIsAnyItemHovered(void);
@@ -1206,6 +1208,7 @@ _Bool ImGuiTextBuffer_empty(ImGuiTextBuffer* self);
 void ImGuiTextBuffer_clear(ImGuiTextBuffer* self);
 void ImGuiTextBuffer_reserve(ImGuiTextBuffer* self,int capacity);
 const char* ImGuiTextBuffer_c_str(ImGuiTextBuffer* self);
+void ImGuiTextBuffer_append(ImGuiTextBuffer* self,const char* str,const char* str_end);
 void ImGuiTextBuffer_appendfv(ImGuiTextBuffer* self,const char* fmt,va_list args);
 Pair* Pair_PairInt(ImGuiID _key,int _val_i);
 void Pair_destroy(Pair* self);
@@ -1298,7 +1301,7 @@ ImDrawData* ImDrawData_ImDrawData(void);
 void ImDrawData_destroy(ImDrawData* self);
 void ImDrawData_Clear(ImDrawData* self);
 void ImDrawData_DeIndexAllBuffers(ImDrawData* self);
-void ImDrawData_ScaleClipRects(ImDrawData* self,const ImVec2 sc);
+void ImDrawData_ScaleClipRects(ImDrawData* self,const ImVec2 fb_scale);
 ImFontConfig* ImFontConfig_ImFontConfig(void);
 void ImFontConfig_destroy(ImFontConfig* self);
 ImFontGlyphRangesBuilder* ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder(void);
@@ -1343,11 +1346,8 @@ void ImFontAtlas_CalcCustomRectUV(ImFontAtlas* self,const CustomRect* rect,ImVec
 _Bool ImFontAtlas_GetMouseCursorTexData(ImFontAtlas* self,ImGuiMouseCursor cursor,ImVec2* out_offset,ImVec2* out_size,ImVec2 out_uv_border[2],ImVec2 out_uv_fill[2]);
 ImFont* ImFont_ImFont(void);
 void ImFont_destroy(ImFont* self);
-void ImFont_ClearOutputData(ImFont* self);
-void ImFont_BuildLookupTable(ImFont* self);
 const ImFontGlyph* ImFont_FindGlyph(ImFont* self,ImWchar c);
 const ImFontGlyph* ImFont_FindGlyphNoFallback(ImFont* self,ImWchar c);
-void ImFont_SetFallbackChar(ImFont* self,ImWchar c);
 float ImFont_GetCharAdvance(ImFont* self,ImWchar c);
 _Bool ImFont_IsLoaded(ImFont* self);
 const char* ImFont_GetDebugName(ImFont* self);
@@ -1355,9 +1355,12 @@ ImVec2 ImFont_CalcTextSizeA(ImFont* self,float size,float max_width,float wrap_w
 const char* ImFont_CalcWordWrapPositionA(ImFont* self,float scale,const char* text,const char* text_end,float wrap_width);
 void ImFont_RenderChar(ImFont* self,ImDrawList* draw_list,float size,ImVec2 pos,ImU32 col,ImWchar c);
 void ImFont_RenderText(ImFont* self,ImDrawList* draw_list,float size,ImVec2 pos,ImU32 col,const ImVec4 clip_rect,const char* text_begin,const char* text_end,float wrap_width,_Bool cpu_fine_clip);
+void ImFont_BuildLookupTable(ImFont* self);
+void ImFont_ClearOutputData(ImFont* self);
 void ImFont_GrowIndex(ImFont* self,int new_size);
 void ImFont_AddGlyph(ImFont* self,ImWchar c,float x0,float y0,float x1,float y1,float u0,float v0,float u1,float v1,float advance_x);
 void ImFont_AddRemapChar(ImFont* self,ImWchar dst,ImWchar src,_Bool overwrite_dst);
+void ImFont_SetFallbackChar(ImFont* self,ImWchar c);
 void igGetWindowPos_nonUDT(ImVec2 *pOut);
 ImVec2_Simple igGetWindowPos_nonUDT2(void);
 void igGetWindowSize_nonUDT(ImVec2 *pOut);
