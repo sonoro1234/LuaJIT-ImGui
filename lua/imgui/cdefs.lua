@@ -85,6 +85,10 @@ typedef int ImGuiTreeNodeFlags;
 typedef int ImGuiWindowFlags;
 typedef int (*ImGuiInputTextCallback)(ImGuiInputTextCallbackData *data);
 typedef void (*ImGuiSizeCallback)(ImGuiSizeCallbackData* data);
+typedef signed char ImS8;
+typedef unsigned char ImU8;
+typedef signed short ImS16;
+typedef unsigned short ImU16;
 typedef signed int ImS32;
 typedef unsigned int ImU32;
 typedef int64_t ImS64;
@@ -269,6 +273,10 @@ enum ImGuiDragDropFlags_
 };
 enum ImGuiDataType_
 {
+    ImGuiDataType_S8,
+    ImGuiDataType_U8,
+    ImGuiDataType_S16,
+    ImGuiDataType_U16,
     ImGuiDataType_S32,
     ImGuiDataType_U32,
     ImGuiDataType_S64,
@@ -330,6 +338,7 @@ enum ImGuiNavInput_
     ImGuiNavInput_TweakSlow,
     ImGuiNavInput_TweakFast,
     ImGuiNavInput_KeyMenu_,
+    ImGuiNavInput_KeyTab_,
     ImGuiNavInput_KeyLeft_,
     ImGuiNavInput_KeyRight_,
     ImGuiNavInput_KeyUp_,
@@ -451,17 +460,20 @@ enum ImGuiColorEditFlags_
     ImGuiColorEditFlags_AlphaPreview = 1 << 17,
     ImGuiColorEditFlags_AlphaPreviewHalf= 1 << 18,
     ImGuiColorEditFlags_HDR = 1 << 19,
-    ImGuiColorEditFlags_RGB = 1 << 20,
-    ImGuiColorEditFlags_HSV = 1 << 21,
-    ImGuiColorEditFlags_HEX = 1 << 22,
+    ImGuiColorEditFlags_DisplayRGB = 1 << 20,
+    ImGuiColorEditFlags_DisplayHSV = 1 << 21,
+    ImGuiColorEditFlags_DisplayHex = 1 << 22,
     ImGuiColorEditFlags_Uint8 = 1 << 23,
     ImGuiColorEditFlags_Float = 1 << 24,
     ImGuiColorEditFlags_PickerHueBar = 1 << 25,
     ImGuiColorEditFlags_PickerHueWheel = 1 << 26,
-    ImGuiColorEditFlags__InputsMask = ImGuiColorEditFlags_RGB|ImGuiColorEditFlags_HSV|ImGuiColorEditFlags_HEX,
+    ImGuiColorEditFlags_InputRGB = 1 << 27,
+    ImGuiColorEditFlags_InputHSV = 1 << 28,
+    ImGuiColorEditFlags__OptionsDefault = ImGuiColorEditFlags_Uint8|ImGuiColorEditFlags_DisplayRGB|ImGuiColorEditFlags_InputRGB|ImGuiColorEditFlags_PickerHueBar,
+    ImGuiColorEditFlags__DisplayMask = ImGuiColorEditFlags_DisplayRGB|ImGuiColorEditFlags_DisplayHSV|ImGuiColorEditFlags_DisplayHex,
     ImGuiColorEditFlags__DataTypeMask = ImGuiColorEditFlags_Uint8|ImGuiColorEditFlags_Float,
     ImGuiColorEditFlags__PickerMask = ImGuiColorEditFlags_PickerHueWheel|ImGuiColorEditFlags_PickerHueBar,
-    ImGuiColorEditFlags__OptionsDefault = ImGuiColorEditFlags_Uint8|ImGuiColorEditFlags_RGB|ImGuiColorEditFlags_PickerHueBar
+    ImGuiColorEditFlags__InputMask = ImGuiColorEditFlags_InputRGB|ImGuiColorEditFlags_InputHSV
 };
 enum ImGuiMouseCursor_
 {
@@ -1002,6 +1014,7 @@ _Bool igVSliderInt(const char* label,const ImVec2 size,int* v,int v_min,int v_ma
 _Bool igVSliderScalar(const char* label,const ImVec2 size,ImGuiDataType data_type,void* v,const void* v_min,const void* v_max,const char* format,float power);
 _Bool igInputText(const char* label,char* buf,size_t buf_size,ImGuiInputTextFlags flags,ImGuiInputTextCallback callback,void* user_data);
 _Bool igInputTextMultiline(const char* label,char* buf,size_t buf_size,const ImVec2 size,ImGuiInputTextFlags flags,ImGuiInputTextCallback callback,void* user_data);
+_Bool igInputTextWithHint(const char* label,const char* hint,char* buf,size_t buf_size,ImGuiInputTextFlags flags,ImGuiInputTextCallback callback,void* user_data);
 _Bool igInputFloat(const char* label,float* v,float step,float step_fast,const char* format,ImGuiInputTextFlags flags);
 _Bool igInputFloat2(const char* label,float v[2],const char* format,ImGuiInputTextFlags flags);
 _Bool igInputFloat3(const char* label,float v[3],const char* format,ImGuiInputTextFlags flags);
@@ -1087,13 +1100,13 @@ void igEndTabBar(void);
 _Bool igBeginTabItem(const char* label,_Bool* p_open,ImGuiTabItemFlags flags);
 void igEndTabItem(void);
 void igSetTabItemClosed(const char* tab_or_docked_window_label);
-void igLogToTTY(int max_depth);
-void igLogToFile(int max_depth,const char* filename);
-void igLogToClipboard(int max_depth);
+void igLogToTTY(int auto_open_depth);
+void igLogToFile(int auto_open_depth,const char* filename);
+void igLogToClipboard(int auto_open_depth);
 void igLogFinish(void);
 void igLogButtons(void);
 _Bool igBeginDragDropSource(ImGuiDragDropFlags flags);
-_Bool igSetDragDropPayload(const char* type,const void* data,size_t size,ImGuiCond cond);
+_Bool igSetDragDropPayload(const char* type,const void* data,size_t sz,ImGuiCond cond);
 void igEndDragDropSource(void);
 _Bool igBeginDragDropTarget(void);
 const ImGuiPayload* igAcceptDragDropPayload(const char* type,ImGuiDragDropFlags flags);
@@ -1123,7 +1136,8 @@ _Bool igIsRectVisible(const ImVec2 size);
 _Bool igIsRectVisibleVec2(const ImVec2 rect_min,const ImVec2 rect_max);
 double igGetTime(void);
 int igGetFrameCount(void);
-ImDrawList* igGetOverlayDrawList(void);
+ImDrawList* igGetBackgroundDrawList(void);
+ImDrawList* igGetForegroundDrawList(void);
 ImDrawListSharedData* igGetDrawListSharedData(void);
 const char* igGetStyleColorName(ImGuiCol idx);
 void igSetStateStorage(ImGuiStorage* storage);
@@ -1268,8 +1282,8 @@ void ImDrawList_AddTextFontPtr(ImDrawList* self,const ImFont* font,float font_si
 void ImDrawList_AddImage(ImDrawList* self,ImTextureID user_texture_id,const ImVec2 a,const ImVec2 b,const ImVec2 uv_a,const ImVec2 uv_b,ImU32 col);
 void ImDrawList_AddImageQuad(ImDrawList* self,ImTextureID user_texture_id,const ImVec2 a,const ImVec2 b,const ImVec2 c,const ImVec2 d,const ImVec2 uv_a,const ImVec2 uv_b,const ImVec2 uv_c,const ImVec2 uv_d,ImU32 col);
 void ImDrawList_AddImageRounded(ImDrawList* self,ImTextureID user_texture_id,const ImVec2 a,const ImVec2 b,const ImVec2 uv_a,const ImVec2 uv_b,ImU32 col,float rounding,int rounding_corners);
-void ImDrawList_AddPolyline(ImDrawList* self,const ImVec2* points,const int num_points,ImU32 col,_Bool closed,float thickness);
-void ImDrawList_AddConvexPolyFilled(ImDrawList* self,const ImVec2* points,const int num_points,ImU32 col);
+void ImDrawList_AddPolyline(ImDrawList* self,const ImVec2* points,int num_points,ImU32 col,_Bool closed,float thickness);
+void ImDrawList_AddConvexPolyFilled(ImDrawList* self,const ImVec2* points,int num_points,ImU32 col);
 void ImDrawList_AddBezierCurve(ImDrawList* self,const ImVec2 pos0,const ImVec2 cp0,const ImVec2 cp1,const ImVec2 pos1,ImU32 col,float thickness,int num_segments);
 void ImDrawList_PathClear(ImDrawList* self);
 void ImDrawList_PathLineTo(ImDrawList* self,const ImVec2 pos);
@@ -1336,6 +1350,7 @@ const ImWchar* ImFontAtlas_GetGlyphRangesChineseFull(ImFontAtlas* self);
 const ImWchar* ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon(ImFontAtlas* self);
 const ImWchar* ImFontAtlas_GetGlyphRangesCyrillic(ImFontAtlas* self);
 const ImWchar* ImFontAtlas_GetGlyphRangesThai(ImFontAtlas* self);
+const ImWchar* ImFontAtlas_GetGlyphRangesVietnamese(ImFontAtlas* self);
 CustomRect* CustomRect_CustomRect(void);
 void CustomRect_destroy(CustomRect* self);
 _Bool CustomRect_IsPacked(CustomRect* self);

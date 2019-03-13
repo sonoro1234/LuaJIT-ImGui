@@ -779,41 +779,41 @@ end
 ImGuiListClipper.End = lib.ImGuiListClipper_End
 ImGuiListClipper.Step = lib.ImGuiListClipper_Step
 M.ImGuiListClipper = ffi.metatype("ImGuiListClipper",ImGuiListClipper)
---------------------------ImVector_CustomRect----------------------------
-local ImVector_CustomRect= {}
-ImVector_CustomRect.__index = ImVector_CustomRect
-function ImVector_CustomRect.__new()
-    local ptr = lib.ImVector_CustomRect_ImVector_CustomRect()
-    ffi.gc(ptr,lib.ImVector_CustomRect_destroy)
+--------------------------ImVector_Pair----------------------------
+local ImVector_Pair= {}
+ImVector_Pair.__index = ImVector_Pair
+function ImVector_Pair.__new()
+    local ptr = lib.ImVector_Pair_ImVector_Pair()
+    ffi.gc(ptr,lib.ImVector_Pair_destroy)
     return ptr
 end
-ImVector_CustomRect._grow_capacity = lib.ImVector_CustomRect__grow_capacity
-ImVector_CustomRect.back = lib.ImVector_CustomRect_back
-ImVector_CustomRect.back_const = lib.ImVector_CustomRect_back_const
-ImVector_CustomRect.begin = lib.ImVector_CustomRect_begin
-ImVector_CustomRect.begin_const = lib.ImVector_CustomRect_begin_const
-ImVector_CustomRect.capacity = lib.ImVector_CustomRect_capacity
-ImVector_CustomRect.clear = lib.ImVector_CustomRect_clear
-ImVector_CustomRect.empty = lib.ImVector_CustomRect_empty
-ImVector_CustomRect._end = lib.ImVector_CustomRect_end
-ImVector_CustomRect.end_const = lib.ImVector_CustomRect_end_const
-ImVector_CustomRect.erase = lib.ImVector_CustomRect_erase
-ImVector_CustomRect.eraseTPtr = lib.ImVector_CustomRect_eraseTPtr
-ImVector_CustomRect.erase_unsorted = lib.ImVector_CustomRect_erase_unsorted
-ImVector_CustomRect.front = lib.ImVector_CustomRect_front
-ImVector_CustomRect.front_const = lib.ImVector_CustomRect_front_const
-ImVector_CustomRect.index_from_ptr = lib.ImVector_CustomRect_index_from_ptr
-ImVector_CustomRect.insert = lib.ImVector_CustomRect_insert
-ImVector_CustomRect.pop_back = lib.ImVector_CustomRect_pop_back
-ImVector_CustomRect.push_back = lib.ImVector_CustomRect_push_back
-ImVector_CustomRect.push_front = lib.ImVector_CustomRect_push_front
-ImVector_CustomRect.reserve = lib.ImVector_CustomRect_reserve
-ImVector_CustomRect.resize = lib.ImVector_CustomRect_resize
-ImVector_CustomRect.resizeT = lib.ImVector_CustomRect_resizeT
-ImVector_CustomRect.size = lib.ImVector_CustomRect_size
-ImVector_CustomRect.size_in_bytes = lib.ImVector_CustomRect_size_in_bytes
-ImVector_CustomRect.swap = lib.ImVector_CustomRect_swap
-M.ImVector_CustomRect = ffi.metatype("ImVector_CustomRect",ImVector_CustomRect)
+ImVector_Pair._grow_capacity = lib.ImVector_Pair__grow_capacity
+ImVector_Pair.back = lib.ImVector_Pair_back
+ImVector_Pair.back_const = lib.ImVector_Pair_back_const
+ImVector_Pair.begin = lib.ImVector_Pair_begin
+ImVector_Pair.begin_const = lib.ImVector_Pair_begin_const
+ImVector_Pair.capacity = lib.ImVector_Pair_capacity
+ImVector_Pair.clear = lib.ImVector_Pair_clear
+ImVector_Pair.empty = lib.ImVector_Pair_empty
+ImVector_Pair._end = lib.ImVector_Pair_end
+ImVector_Pair.end_const = lib.ImVector_Pair_end_const
+ImVector_Pair.erase = lib.ImVector_Pair_erase
+ImVector_Pair.eraseTPtr = lib.ImVector_Pair_eraseTPtr
+ImVector_Pair.erase_unsorted = lib.ImVector_Pair_erase_unsorted
+ImVector_Pair.front = lib.ImVector_Pair_front
+ImVector_Pair.front_const = lib.ImVector_Pair_front_const
+ImVector_Pair.index_from_ptr = lib.ImVector_Pair_index_from_ptr
+ImVector_Pair.insert = lib.ImVector_Pair_insert
+ImVector_Pair.pop_back = lib.ImVector_Pair_pop_back
+ImVector_Pair.push_back = lib.ImVector_Pair_push_back
+ImVector_Pair.push_front = lib.ImVector_Pair_push_front
+ImVector_Pair.reserve = lib.ImVector_Pair_reserve
+ImVector_Pair.resize = lib.ImVector_Pair_resize
+ImVector_Pair.resizeT = lib.ImVector_Pair_resizeT
+ImVector_Pair.size = lib.ImVector_Pair_size
+ImVector_Pair.size_in_bytes = lib.ImVector_Pair_size_in_bytes
+ImVector_Pair.swap = lib.ImVector_Pair_swap
+M.ImVector_Pair = ffi.metatype("ImVector_Pair",ImVector_Pair)
 --------------------------ImVector_ImTextureID----------------------------
 local ImVector_ImTextureID= {}
 ImVector_ImTextureID.__index = ImVector_ImTextureID
@@ -1019,15 +1019,41 @@ function ImFont:RenderText(draw_list,size,pos,col,clip_rect,text_begin,text_end,
 end
 ImFont.SetFallbackChar = lib.ImFont_SetFallbackChar
 M.ImFont = ffi.metatype("ImFont",ImFont)
---------------------------ImGuiOnceUponAFrame----------------------------
-local ImGuiOnceUponAFrame= {}
-ImGuiOnceUponAFrame.__index = ImGuiOnceUponAFrame
-function ImGuiOnceUponAFrame.__new()
-    local ptr = lib.ImGuiOnceUponAFrame_ImGuiOnceUponAFrame()
-    ffi.gc(ptr,lib.ImGuiOnceUponAFrame_destroy)
+--------------------------ImVector_CustomRect----------------------------
+local ImVector_CustomRect= {}
+ImVector_CustomRect.__index = ImVector_CustomRect
+function ImVector_CustomRect.__new()
+    local ptr = lib.ImVector_CustomRect_ImVector_CustomRect()
+    ffi.gc(ptr,lib.ImVector_CustomRect_destroy)
     return ptr
 end
-M.ImGuiOnceUponAFrame = ffi.metatype("ImGuiOnceUponAFrame",ImGuiOnceUponAFrame)
+ImVector_CustomRect._grow_capacity = lib.ImVector_CustomRect__grow_capacity
+ImVector_CustomRect.back = lib.ImVector_CustomRect_back
+ImVector_CustomRect.back_const = lib.ImVector_CustomRect_back_const
+ImVector_CustomRect.begin = lib.ImVector_CustomRect_begin
+ImVector_CustomRect.begin_const = lib.ImVector_CustomRect_begin_const
+ImVector_CustomRect.capacity = lib.ImVector_CustomRect_capacity
+ImVector_CustomRect.clear = lib.ImVector_CustomRect_clear
+ImVector_CustomRect.empty = lib.ImVector_CustomRect_empty
+ImVector_CustomRect._end = lib.ImVector_CustomRect_end
+ImVector_CustomRect.end_const = lib.ImVector_CustomRect_end_const
+ImVector_CustomRect.erase = lib.ImVector_CustomRect_erase
+ImVector_CustomRect.eraseTPtr = lib.ImVector_CustomRect_eraseTPtr
+ImVector_CustomRect.erase_unsorted = lib.ImVector_CustomRect_erase_unsorted
+ImVector_CustomRect.front = lib.ImVector_CustomRect_front
+ImVector_CustomRect.front_const = lib.ImVector_CustomRect_front_const
+ImVector_CustomRect.index_from_ptr = lib.ImVector_CustomRect_index_from_ptr
+ImVector_CustomRect.insert = lib.ImVector_CustomRect_insert
+ImVector_CustomRect.pop_back = lib.ImVector_CustomRect_pop_back
+ImVector_CustomRect.push_back = lib.ImVector_CustomRect_push_back
+ImVector_CustomRect.push_front = lib.ImVector_CustomRect_push_front
+ImVector_CustomRect.reserve = lib.ImVector_CustomRect_reserve
+ImVector_CustomRect.resize = lib.ImVector_CustomRect_resize
+ImVector_CustomRect.resizeT = lib.ImVector_CustomRect_resizeT
+ImVector_CustomRect.size = lib.ImVector_CustomRect_size
+ImVector_CustomRect.size_in_bytes = lib.ImVector_CustomRect_size_in_bytes
+ImVector_CustomRect.swap = lib.ImVector_CustomRect_swap
+M.ImVector_CustomRect = ffi.metatype("ImVector_CustomRect",ImVector_CustomRect)
 --------------------------ImVector_ImVec4----------------------------
 local ImVector_ImVec4= {}
 ImVector_ImVec4.__index = ImVector_ImVec4
@@ -1098,41 +1124,15 @@ ImVector_ImDrawCmd.size = lib.ImVector_ImDrawCmd_size
 ImVector_ImDrawCmd.size_in_bytes = lib.ImVector_ImDrawCmd_size_in_bytes
 ImVector_ImDrawCmd.swap = lib.ImVector_ImDrawCmd_swap
 M.ImVector_ImDrawCmd = ffi.metatype("ImVector_ImDrawCmd",ImVector_ImDrawCmd)
---------------------------ImVector_Pair----------------------------
-local ImVector_Pair= {}
-ImVector_Pair.__index = ImVector_Pair
-function ImVector_Pair.__new()
-    local ptr = lib.ImVector_Pair_ImVector_Pair()
-    ffi.gc(ptr,lib.ImVector_Pair_destroy)
+--------------------------ImGuiOnceUponAFrame----------------------------
+local ImGuiOnceUponAFrame= {}
+ImGuiOnceUponAFrame.__index = ImGuiOnceUponAFrame
+function ImGuiOnceUponAFrame.__new()
+    local ptr = lib.ImGuiOnceUponAFrame_ImGuiOnceUponAFrame()
+    ffi.gc(ptr,lib.ImGuiOnceUponAFrame_destroy)
     return ptr
 end
-ImVector_Pair._grow_capacity = lib.ImVector_Pair__grow_capacity
-ImVector_Pair.back = lib.ImVector_Pair_back
-ImVector_Pair.back_const = lib.ImVector_Pair_back_const
-ImVector_Pair.begin = lib.ImVector_Pair_begin
-ImVector_Pair.begin_const = lib.ImVector_Pair_begin_const
-ImVector_Pair.capacity = lib.ImVector_Pair_capacity
-ImVector_Pair.clear = lib.ImVector_Pair_clear
-ImVector_Pair.empty = lib.ImVector_Pair_empty
-ImVector_Pair._end = lib.ImVector_Pair_end
-ImVector_Pair.end_const = lib.ImVector_Pair_end_const
-ImVector_Pair.erase = lib.ImVector_Pair_erase
-ImVector_Pair.eraseTPtr = lib.ImVector_Pair_eraseTPtr
-ImVector_Pair.erase_unsorted = lib.ImVector_Pair_erase_unsorted
-ImVector_Pair.front = lib.ImVector_Pair_front
-ImVector_Pair.front_const = lib.ImVector_Pair_front_const
-ImVector_Pair.index_from_ptr = lib.ImVector_Pair_index_from_ptr
-ImVector_Pair.insert = lib.ImVector_Pair_insert
-ImVector_Pair.pop_back = lib.ImVector_Pair_pop_back
-ImVector_Pair.push_back = lib.ImVector_Pair_push_back
-ImVector_Pair.push_front = lib.ImVector_Pair_push_front
-ImVector_Pair.reserve = lib.ImVector_Pair_reserve
-ImVector_Pair.resize = lib.ImVector_Pair_resize
-ImVector_Pair.resizeT = lib.ImVector_Pair_resizeT
-ImVector_Pair.size = lib.ImVector_Pair_size
-ImVector_Pair.size_in_bytes = lib.ImVector_Pair_size_in_bytes
-ImVector_Pair.swap = lib.ImVector_Pair_swap
-M.ImVector_Pair = ffi.metatype("ImVector_Pair",ImVector_Pair)
+M.ImGuiOnceUponAFrame = ffi.metatype("ImGuiOnceUponAFrame",ImGuiOnceUponAFrame)
 --------------------------ImVector_float----------------------------
 local ImVector_float= {}
 ImVector_float.__index = ImVector_float
@@ -1169,43 +1169,6 @@ ImVector_float.size = lib.ImVector_float_size
 ImVector_float.size_in_bytes = lib.ImVector_float_size_in_bytes
 ImVector_float.swap = lib.ImVector_float_swap
 M.ImVector_float = ffi.metatype("ImVector_float",ImVector_float)
---------------------------ImGuiInputTextCallbackData----------------------------
-local ImGuiInputTextCallbackData= {}
-ImGuiInputTextCallbackData.__index = ImGuiInputTextCallbackData
-ImGuiInputTextCallbackData.DeleteChars = lib.ImGuiInputTextCallbackData_DeleteChars
-ImGuiInputTextCallbackData.HasSelection = lib.ImGuiInputTextCallbackData_HasSelection
-function ImGuiInputTextCallbackData.__new()
-    local ptr = lib.ImGuiInputTextCallbackData_ImGuiInputTextCallbackData()
-    ffi.gc(ptr,lib.ImGuiInputTextCallbackData_destroy)
-    return ptr
-end
-function ImGuiInputTextCallbackData:InsertChars(pos,text,text_end)
-    text_end = text_end or nil
-    return lib.ImGuiInputTextCallbackData_InsertChars(self,pos,text,text_end)
-end
-M.ImGuiInputTextCallbackData = ffi.metatype("ImGuiInputTextCallbackData",ImGuiInputTextCallbackData)
---------------------------ImGuiPayload----------------------------
-local ImGuiPayload= {}
-ImGuiPayload.__index = ImGuiPayload
-ImGuiPayload.Clear = lib.ImGuiPayload_Clear
-function ImGuiPayload.__new()
-    local ptr = lib.ImGuiPayload_ImGuiPayload()
-    ffi.gc(ptr,lib.ImGuiPayload_destroy)
-    return ptr
-end
-ImGuiPayload.IsDataType = lib.ImGuiPayload_IsDataType
-ImGuiPayload.IsDelivery = lib.ImGuiPayload_IsDelivery
-ImGuiPayload.IsPreview = lib.ImGuiPayload_IsPreview
-M.ImGuiPayload = ffi.metatype("ImGuiPayload",ImGuiPayload)
---------------------------ImDrawCmd----------------------------
-local ImDrawCmd= {}
-ImDrawCmd.__index = ImDrawCmd
-function ImDrawCmd.__new()
-    local ptr = lib.ImDrawCmd_ImDrawCmd()
-    ffi.gc(ptr,lib.ImDrawCmd_destroy)
-    return ptr
-end
-M.ImDrawCmd = ffi.metatype("ImDrawCmd",ImDrawCmd)
 --------------------------ImVector_ImFontConfig----------------------------
 local ImVector_ImFontConfig= {}
 ImVector_ImFontConfig.__index = ImVector_ImFontConfig
@@ -1241,6 +1204,43 @@ ImVector_ImFontConfig.size = lib.ImVector_ImFontConfig_size
 ImVector_ImFontConfig.size_in_bytes = lib.ImVector_ImFontConfig_size_in_bytes
 ImVector_ImFontConfig.swap = lib.ImVector_ImFontConfig_swap
 M.ImVector_ImFontConfig = ffi.metatype("ImVector_ImFontConfig",ImVector_ImFontConfig)
+--------------------------ImGuiPayload----------------------------
+local ImGuiPayload= {}
+ImGuiPayload.__index = ImGuiPayload
+ImGuiPayload.Clear = lib.ImGuiPayload_Clear
+function ImGuiPayload.__new()
+    local ptr = lib.ImGuiPayload_ImGuiPayload()
+    ffi.gc(ptr,lib.ImGuiPayload_destroy)
+    return ptr
+end
+ImGuiPayload.IsDataType = lib.ImGuiPayload_IsDataType
+ImGuiPayload.IsDelivery = lib.ImGuiPayload_IsDelivery
+ImGuiPayload.IsPreview = lib.ImGuiPayload_IsPreview
+M.ImGuiPayload = ffi.metatype("ImGuiPayload",ImGuiPayload)
+--------------------------ImDrawCmd----------------------------
+local ImDrawCmd= {}
+ImDrawCmd.__index = ImDrawCmd
+function ImDrawCmd.__new()
+    local ptr = lib.ImDrawCmd_ImDrawCmd()
+    ffi.gc(ptr,lib.ImDrawCmd_destroy)
+    return ptr
+end
+M.ImDrawCmd = ffi.metatype("ImDrawCmd",ImDrawCmd)
+--------------------------ImGuiInputTextCallbackData----------------------------
+local ImGuiInputTextCallbackData= {}
+ImGuiInputTextCallbackData.__index = ImGuiInputTextCallbackData
+ImGuiInputTextCallbackData.DeleteChars = lib.ImGuiInputTextCallbackData_DeleteChars
+ImGuiInputTextCallbackData.HasSelection = lib.ImGuiInputTextCallbackData_HasSelection
+function ImGuiInputTextCallbackData.__new()
+    local ptr = lib.ImGuiInputTextCallbackData_ImGuiInputTextCallbackData()
+    ffi.gc(ptr,lib.ImGuiInputTextCallbackData_destroy)
+    return ptr
+end
+function ImGuiInputTextCallbackData:InsertChars(pos,text,text_end)
+    text_end = text_end or nil
+    return lib.ImGuiInputTextCallbackData_InsertChars(self,pos,text,text_end)
+end
+M.ImGuiInputTextCallbackData = ffi.metatype("ImGuiInputTextCallbackData",ImGuiInputTextCallbackData)
 --------------------------ImGuiTextFilter----------------------------
 local ImGuiTextFilter= {}
 ImGuiTextFilter.__index = ImGuiTextFilter
@@ -1339,6 +1339,7 @@ ImFontAtlas.GetGlyphRangesDefault = lib.ImFontAtlas_GetGlyphRangesDefault
 ImFontAtlas.GetGlyphRangesJapanese = lib.ImFontAtlas_GetGlyphRangesJapanese
 ImFontAtlas.GetGlyphRangesKorean = lib.ImFontAtlas_GetGlyphRangesKorean
 ImFontAtlas.GetGlyphRangesThai = lib.ImFontAtlas_GetGlyphRangesThai
+ImFontAtlas.GetGlyphRangesVietnamese = lib.ImFontAtlas_GetGlyphRangesVietnamese
 ImFontAtlas.GetMouseCursorTexData = lib.ImFontAtlas_GetMouseCursorTexData
 function ImFontAtlas:GetTexDataAsAlpha8(out_pixels,out_width,out_height,out_bytes_per_pixel)
     out_bytes_per_pixel = out_bytes_per_pixel or nil
@@ -1642,6 +1643,7 @@ M.EndPopup = lib.igEndPopup
 M.EndTabBar = lib.igEndTabBar
 M.EndTabItem = lib.igEndTabItem
 M.EndTooltip = lib.igEndTooltip
+M.GetBackgroundDrawList = lib.igGetBackgroundDrawList
 M.GetClipboardText = lib.igGetClipboardText
 function M.GetColorU32(idx,alpha_mul)
     alpha_mul = alpha_mul or 1.0
@@ -1704,6 +1706,7 @@ function M.GetFontTexUvWhitePixel()
     return nonUDT_out[0]
 end
 M.GetFontTexUvWhitePixel_nonUDT2 = lib.igGetFontTexUvWhitePixel_nonUDT2
+M.GetForegroundDrawList = lib.igGetForegroundDrawList
 M.GetFrameCount = lib.igGetFrameCount
 M.GetFrameHeight = lib.igGetFrameHeight
 M.GetFrameHeightWithSpacing = lib.igGetFrameHeightWithSpacing
@@ -1756,7 +1759,6 @@ function M.GetMousePosOnOpeningCurrentPopup()
     return nonUDT_out[0]
 end
 M.GetMousePosOnOpeningCurrentPopup_nonUDT2 = lib.igGetMousePosOnOpeningCurrentPopup_nonUDT2
-M.GetOverlayDrawList = lib.igGetOverlayDrawList
 M.GetScrollMaxX = lib.igGetScrollMaxX
 M.GetScrollMaxY = lib.igGetScrollMaxY
 M.GetScrollX = lib.igGetScrollX
@@ -1891,6 +1893,12 @@ function M.InputTextMultiline(label,buf,buf_size,size,flags,callback,user_data)
     flags = flags or 0
     return lib.igInputTextMultiline(label,buf,buf_size,size,flags,callback,user_data)
 end
+function M.InputTextWithHint(label,hint,buf,buf_size,flags,callback,user_data)
+    callback = callback or nil
+    user_data = user_data or nil
+    flags = flags or 0
+    return lib.igInputTextWithHint(label,hint,buf,buf_size,flags,callback,user_data)
+end
 M.InvisibleButton = lib.igInvisibleButton
 M.IsAnyItemActive = lib.igIsAnyItemActive
 M.IsAnyItemFocused = lib.igIsAnyItemFocused
@@ -1977,18 +1985,18 @@ end
 M.LogButtons = lib.igLogButtons
 M.LogFinish = lib.igLogFinish
 M.LogText = lib.igLogText
-function M.LogToClipboard(max_depth)
-    max_depth = max_depth or -1
-    return lib.igLogToClipboard(max_depth)
+function M.LogToClipboard(auto_open_depth)
+    auto_open_depth = auto_open_depth or -1
+    return lib.igLogToClipboard(auto_open_depth)
 end
-function M.LogToFile(max_depth,filename)
+function M.LogToFile(auto_open_depth,filename)
+    auto_open_depth = auto_open_depth or -1
     filename = filename or nil
-    max_depth = max_depth or -1
-    return lib.igLogToFile(max_depth,filename)
+    return lib.igLogToFile(auto_open_depth,filename)
 end
-function M.LogToTTY(max_depth)
-    max_depth = max_depth or -1
-    return lib.igLogToTTY(max_depth)
+function M.LogToTTY(auto_open_depth)
+    auto_open_depth = auto_open_depth or -1
+    return lib.igLogToTTY(auto_open_depth)
 end
 M.MemAlloc = lib.igMemAlloc
 M.MemFree = lib.igMemFree
@@ -2124,9 +2132,9 @@ M.SetCursorPos = lib.igSetCursorPos
 M.SetCursorPosX = lib.igSetCursorPosX
 M.SetCursorPosY = lib.igSetCursorPosY
 M.SetCursorScreenPos = lib.igSetCursorScreenPos
-function M.SetDragDropPayload(type,data,size,cond)
+function M.SetDragDropPayload(type,data,sz,cond)
     cond = cond or 0
-    return lib.igSetDragDropPayload(type,data,size,cond)
+    return lib.igSetDragDropPayload(type,data,sz,cond)
 end
 M.SetItemAllowOverlap = lib.igSetItemAllowOverlap
 M.SetItemDefaultFocus = lib.igSetItemDefaultFocus
