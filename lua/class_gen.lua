@@ -109,7 +109,11 @@ local function make_function(method,def)
 		table.insert(code,"function "..fname_lua..def.call_args)
 		--set defaults
 		for k,v in pairs(def.defaults) do
-			table.insert(code,"    "..k.." = "..k.." or "..v)
+			if v == 'true' then
+				table.insert(code,"    if "..k.." == nil then "..k.." = "..v.." end")
+			else
+				table.insert(code,"    "..k.." = "..k.." or "..v)
+			end
 		end
 		if def.nonUDT == 1 then
 			--allocate variable for return value

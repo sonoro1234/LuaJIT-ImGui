@@ -982,7 +982,7 @@ local ImFont= {}
 ImFont.__index = ImFont
 ImFont.AddGlyph = lib.ImFont_AddGlyph
 function ImFont:AddRemapChar(dst,src,overwrite_dst)
-    overwrite_dst = overwrite_dst or true
+    if overwrite_dst == nil then overwrite_dst = true end
     return lib.ImFont_AddRemapChar(self,dst,src,overwrite_dst)
 end
 ImFont.BuildLookupTable = lib.ImFont_BuildLookupTable
@@ -1397,7 +1397,7 @@ M.BeginDragDropTarget = lib.igBeginDragDropTarget
 M.BeginGroup = lib.igBeginGroup
 M.BeginMainMenuBar = lib.igBeginMainMenuBar
 function M.BeginMenu(label,enabled)
-    enabled = enabled or true
+    if enabled == nil then enabled = true end
     return lib.igBeginMenu(label,enabled)
 end
 M.BeginMenuBar = lib.igBeginMenuBar
@@ -1416,7 +1416,7 @@ function M.BeginPopupContextVoid(str_id,mouse_button)
     return lib.igBeginPopupContextVoid(str_id,mouse_button)
 end
 function M.BeginPopupContextWindow(str_id,mouse_button,also_over_items)
-    also_over_items = also_over_items or true
+    if also_over_items == nil then also_over_items = true end
     mouse_button = mouse_button or 1
     str_id = str_id or nil
     return lib.igBeginPopupContextWindow(str_id,mouse_button,also_over_items)
@@ -1460,11 +1460,11 @@ function M.CalcTextSize_nonUDT2(text,text_end,hide_text_after_double_hash,wrap_w
     return lib.igCalcTextSize_nonUDT2(text,text_end,hide_text_after_double_hash,wrap_width)
 end
 function M.CaptureKeyboardFromApp(want_capture_keyboard_value)
-    want_capture_keyboard_value = want_capture_keyboard_value or true
+    if want_capture_keyboard_value == nil then want_capture_keyboard_value = true end
     return lib.igCaptureKeyboardFromApp(want_capture_keyboard_value)
 end
 function M.CaptureMouseFromApp(want_capture_mouse_value)
-    want_capture_mouse_value = want_capture_mouse_value or true
+    if want_capture_mouse_value == nil then want_capture_mouse_value = true end
     return lib.igCaptureMouseFromApp(want_capture_mouse_value)
 end
 M.Checkbox = lib.igCheckbox
@@ -1510,7 +1510,7 @@ function M.ColorPicker4(label,col,flags,ref_col)
     return lib.igColorPicker4(label,col,flags,ref_col)
 end
 function M.Columns(count,id,border)
-    border = border or true
+    if border == nil then border = true end
     count = count or 1
     id = id or nil
     return lib.igColumns(count,id,border)
@@ -1921,7 +1921,7 @@ end
 M.IsItemVisible = lib.igIsItemVisible
 M.IsKeyDown = lib.igIsKeyDown
 function M.IsKeyPressed(user_key_index,_repeat)
-    _repeat = _repeat or true
+    if _repeat == nil then _repeat = true end
     return lib.igIsKeyPressed(user_key_index,_repeat)
 end
 M.IsKeyReleased = lib.igIsKeyReleased
@@ -1937,7 +1937,7 @@ function M.IsMouseDragging(button,lock_threshold)
     return lib.igIsMouseDragging(button,lock_threshold)
 end
 function M.IsMouseHoveringRect(r_min,r_max,clip)
-    clip = clip or true
+    if clip == nil then clip = true end
     return lib.igIsMouseHoveringRect(r_min,r_max,clip)
 end
 function M.IsMousePosValid(mouse_pos)
@@ -2001,13 +2001,13 @@ end
 M.MemAlloc = lib.igMemAlloc
 M.MemFree = lib.igMemFree
 function M.MenuItemBool(label,shortcut,selected,enabled)
-    enabled = enabled or true
+    if enabled == nil then enabled = true end
     shortcut = shortcut or nil
     selected = selected or false
     return lib.igMenuItemBool(label,shortcut,selected,enabled)
 end
 function M.MenuItemBoolPtr(label,shortcut,p_selected,enabled)
-    enabled = enabled or true
+    if enabled == nil then enabled = true end
     return lib.igMenuItemBoolPtr(label,shortcut,p_selected,enabled)
 end
 M.NewFrame = lib.igNewFrame
