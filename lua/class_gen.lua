@@ -88,7 +88,7 @@ function sanitize_reserved(def)
 end
 
 local function make_function(method,def)
-	sanitize_reserved(def)	
+	sanitize_reserved(def)
 	local fname = def.ov_cimguiname or def.cimguiname --overloaded or original
 	local fname_m = method and fname:match(def.stname.."_(.*)") or fname:match("^ig(.*)") --drop struct name part
 	fname_m = fname_m:match("(.*)_nonUDT$") or fname_m --drop "_nonUDT" suffix
@@ -134,6 +134,27 @@ local function make_function(method,def)
 	return (method and def.stname or "M").."."..fname_m.." = lib."..fname
 end
 
+--struct constructor generator
+local function constructor_gen(code,def)
+	sanitize_reserved(def)
+	--dump function code
+	if def.cimguiname == def.ov_cimguiname then --default constructor
+		local args = (def.call_args == "()") and "(ctype)" or "(ctype,"..def.call_args:sub(2)
+		table.insert(code,"function "..def.stname..".__new"..args)
+	else
+		local name = def.ov_cimguiname:match(def.stname.."_(.*)") --drop struct name part
+		table.insert(code,"function "..def.stname.."."..name..def.call_args)
+	end
+	--set defaults
+	for k,v in pairs(def.defaults) do
+		table.insert(code,"    if "..k.." == nil then "..k.." = "..v.." end")
+	end
+	local fname = def.ov_cimguiname or def.cimguiname
+	table.insert(code,"    local ptr = lib."..fname..def.call_args)
+	table.insert(code,"    return ffi.gc(ptr,lib."..def.stname.."_destroy)")
+	table.insert(code,"end")
+end
+
 --struct function generator
 local function struct_function_gen(code,def)
 	table.insert(code,make_function(true,def))
@@ -168,22 +189,14 @@ local function code_for_struct(st)
 		local defs = fundefs[f]
 		for _,def in ipairs(defs) do
 			if not def.destructor then
-				if def.ret then --avoid constructors and destructors
+				if def.constructor then
+					constructor_gen(code,def)
+				else
 					if def.nonUDT ~= 1 then
 						local fname = def.ov_cimguiname or def.cimguiname
 						--prefer nonUDT1 defs
 						local nonudt_def = find_nonudt_def(defs,fname)
 						struct_function_gen(code,nonudt_def or def)
-					end
-				else --constructors
-					local empty = def.args:match("^%(%)") --no args
-					if not def.funcname:match("~") and empty then
-						local fname = def.ov_cimguiname or def.cimguiname --overloaded or original
-						table.insert(code,"function "..st..".__new()")
-						table.insert(code,"    local ptr = lib."..fname..def.call_args)
-						table.insert(code,"    ffi.gc(ptr,lib."..st.."_destroy)")
-						table.insert(code,"    return ptr")
-						table.insert(code,"end")
 					end
 				end
 			end
