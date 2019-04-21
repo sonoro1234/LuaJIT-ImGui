@@ -277,10 +277,13 @@ end
 --------------------------ImVector_ImDrawVert----------------------------
 local ImVector_ImDrawVert= {}
 ImVector_ImDrawVert.__index = ImVector_ImDrawVert
-function ImVector_ImDrawVert.__new()
+function ImVector_ImDrawVert.__new(ctype)
     local ptr = lib.ImVector_ImDrawVert_ImVector_ImDrawVert()
-    ffi.gc(ptr,lib.ImVector_ImDrawVert_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_ImDrawVert_destroy)
+end
+function ImVector_ImDrawVert.ImVector_ImDrawVertVector(src)
+    local ptr = lib.ImVector_ImDrawVert_ImVector_ImDrawVertVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImDrawVert_destroy)
 end
 ImVector_ImDrawVert._grow_capacity = lib.ImVector_ImDrawVert__grow_capacity
 ImVector_ImDrawVert.back = lib.ImVector_ImDrawVert_back
@@ -312,19 +315,21 @@ M.ImVector_ImDrawVert = ffi.metatype("ImVector_ImDrawVert",ImVector_ImDrawVert)
 --------------------------ImFontConfig----------------------------
 local ImFontConfig= {}
 ImFontConfig.__index = ImFontConfig
-function ImFontConfig.__new()
+function ImFontConfig.__new(ctype)
     local ptr = lib.ImFontConfig_ImFontConfig()
-    ffi.gc(ptr,lib.ImFontConfig_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImFontConfig_destroy)
 end
 M.ImFontConfig = ffi.metatype("ImFontConfig",ImFontConfig)
 --------------------------ImVector_TextRange----------------------------
 local ImVector_TextRange= {}
 ImVector_TextRange.__index = ImVector_TextRange
-function ImVector_TextRange.__new()
+function ImVector_TextRange.__new(ctype)
     local ptr = lib.ImVector_TextRange_ImVector_TextRange()
-    ffi.gc(ptr,lib.ImVector_TextRange_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_TextRange_destroy)
+end
+function ImVector_TextRange.ImVector_TextRangeVector(src)
+    local ptr = lib.ImVector_TextRange_ImVector_TextRangeVector(src)
+    return ffi.gc(ptr,lib.ImVector_TextRange_destroy)
 end
 ImVector_TextRange._grow_capacity = lib.ImVector_TextRange__grow_capacity
 ImVector_TextRange.back = lib.ImVector_TextRange_back
@@ -364,30 +369,31 @@ function ImFontGlyphRangesBuilder:AddText(text,text_end)
 end
 ImFontGlyphRangesBuilder.BuildRanges = lib.ImFontGlyphRangesBuilder_BuildRanges
 ImFontGlyphRangesBuilder.GetBit = lib.ImFontGlyphRangesBuilder_GetBit
-function ImFontGlyphRangesBuilder.__new()
+function ImFontGlyphRangesBuilder.__new(ctype)
     local ptr = lib.ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder()
-    ffi.gc(ptr,lib.ImFontGlyphRangesBuilder_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImFontGlyphRangesBuilder_destroy)
 end
 ImFontGlyphRangesBuilder.SetBit = lib.ImFontGlyphRangesBuilder_SetBit
 M.ImFontGlyphRangesBuilder = ffi.metatype("ImFontGlyphRangesBuilder",ImFontGlyphRangesBuilder)
 --------------------------CustomRect----------------------------
 local CustomRect= {}
 CustomRect.__index = CustomRect
-function CustomRect.__new()
+function CustomRect.__new(ctype)
     local ptr = lib.CustomRect_CustomRect()
-    ffi.gc(ptr,lib.CustomRect_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.CustomRect_destroy)
 end
 CustomRect.IsPacked = lib.CustomRect_IsPacked
 M.CustomRect = ffi.metatype("CustomRect",CustomRect)
 --------------------------ImVector_ImFontPtr----------------------------
 local ImVector_ImFontPtr= {}
 ImVector_ImFontPtr.__index = ImVector_ImFontPtr
-function ImVector_ImFontPtr.__new()
+function ImVector_ImFontPtr.__new(ctype)
     local ptr = lib.ImVector_ImFontPtr_ImVector_ImFontPtr()
-    ffi.gc(ptr,lib.ImVector_ImFontPtr_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_ImFontPtr_destroy)
+end
+function ImVector_ImFontPtr.ImVector_ImFontPtrVector(src)
+    local ptr = lib.ImVector_ImFontPtr_ImVector_ImFontPtrVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImFontPtr_destroy)
 end
 ImVector_ImFontPtr._grow_capacity = lib.ImVector_ImFontPtr__grow_capacity
 ImVector_ImFontPtr.back = lib.ImVector_ImFontPtr_back
@@ -419,10 +425,9 @@ M.ImVector_ImFontPtr = ffi.metatype("ImVector_ImFontPtr",ImVector_ImFontPtr)
 --------------------------ImGuiTextBuffer----------------------------
 local ImGuiTextBuffer= {}
 ImGuiTextBuffer.__index = ImGuiTextBuffer
-function ImGuiTextBuffer.__new()
+function ImGuiTextBuffer.__new(ctype)
     local ptr = lib.ImGuiTextBuffer_ImGuiTextBuffer()
-    ffi.gc(ptr,lib.ImGuiTextBuffer_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImGuiTextBuffer_destroy)
 end
 function ImGuiTextBuffer:append(str,str_end)
     str_end = str_end or nil
@@ -441,10 +446,9 @@ M.ImGuiTextBuffer = ffi.metatype("ImGuiTextBuffer",ImGuiTextBuffer)
 --------------------------ImGuiStyle----------------------------
 local ImGuiStyle= {}
 ImGuiStyle.__index = ImGuiStyle
-function ImGuiStyle.__new()
+function ImGuiStyle.__new(ctype)
     local ptr = lib.ImGuiStyle_ImGuiStyle()
-    ffi.gc(ptr,lib.ImGuiStyle_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImGuiStyle_destroy)
 end
 ImGuiStyle.ScaleAllSizes = lib.ImGuiStyle_ScaleAllSizes
 M.ImGuiStyle = ffi.metatype("ImGuiStyle",ImGuiStyle)
@@ -453,20 +457,22 @@ local ImDrawData= {}
 ImDrawData.__index = ImDrawData
 ImDrawData.Clear = lib.ImDrawData_Clear
 ImDrawData.DeIndexAllBuffers = lib.ImDrawData_DeIndexAllBuffers
-function ImDrawData.__new()
+function ImDrawData.__new(ctype)
     local ptr = lib.ImDrawData_ImDrawData()
-    ffi.gc(ptr,lib.ImDrawData_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImDrawData_destroy)
 end
 ImDrawData.ScaleClipRects = lib.ImDrawData_ScaleClipRects
 M.ImDrawData = ffi.metatype("ImDrawData",ImDrawData)
 --------------------------ImVector_ImVec2----------------------------
 local ImVector_ImVec2= {}
 ImVector_ImVec2.__index = ImVector_ImVec2
-function ImVector_ImVec2.__new()
+function ImVector_ImVec2.__new(ctype)
     local ptr = lib.ImVector_ImVec2_ImVector_ImVec2()
-    ffi.gc(ptr,lib.ImVector_ImVec2_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_ImVec2_destroy)
+end
+function ImVector_ImVec2.ImVector_ImVec2Vector(src)
+    local ptr = lib.ImVector_ImVec2_ImVector_ImVec2Vector(src)
+    return ffi.gc(ptr,lib.ImVector_ImVec2_destroy)
 end
 ImVector_ImVec2._grow_capacity = lib.ImVector_ImVec2__grow_capacity
 ImVector_ImVec2.back = lib.ImVector_ImVec2_back
@@ -508,10 +514,27 @@ function ImColor:HSV_nonUDT2(h,s,v,a)
     a = a or 1.0
     return lib.ImColor_HSV_nonUDT2(self,h,s,v,a)
 end
-function ImColor.__new()
+function ImColor.__new(ctype)
     local ptr = lib.ImColor_ImColor()
-    ffi.gc(ptr,lib.ImColor_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor.ImColorInt(r,g,b,a)
+    if a == nil then a = 255 end
+    local ptr = lib.ImColor_ImColorInt(r,g,b,a)
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor.ImColorU32(rgba)
+    local ptr = lib.ImColor_ImColorU32(rgba)
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor.ImColorFloat(r,g,b,a)
+    if a == nil then a = 1.0 end
+    local ptr = lib.ImColor_ImColorFloat(r,g,b,a)
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor.ImColorVec4(col)
+    local ptr = lib.ImColor_ImColorVec4(col)
+    return ffi.gc(ptr,lib.ImColor_destroy)
 end
 function ImColor:SetHSV(h,s,v,a)
     a = a or 1.0
@@ -521,10 +544,13 @@ M.ImColor = ffi.metatype("ImColor",ImColor)
 --------------------------ImVector_ImDrawChannel----------------------------
 local ImVector_ImDrawChannel= {}
 ImVector_ImDrawChannel.__index = ImVector_ImDrawChannel
-function ImVector_ImDrawChannel.__new()
+function ImVector_ImDrawChannel.__new(ctype)
     local ptr = lib.ImVector_ImDrawChannel_ImVector_ImDrawChannel()
-    ffi.gc(ptr,lib.ImVector_ImDrawChannel_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_ImDrawChannel_destroy)
+end
+function ImVector_ImDrawChannel.ImVector_ImDrawChannelVector(src)
+    local ptr = lib.ImVector_ImDrawChannel_ImVector_ImDrawChannelVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImDrawChannel_destroy)
 end
 ImVector_ImDrawChannel._grow_capacity = lib.ImVector_ImDrawChannel__grow_capacity
 ImVector_ImDrawChannel.back = lib.ImVector_ImDrawChannel_back
@@ -556,10 +582,13 @@ M.ImVector_ImDrawChannel = ffi.metatype("ImVector_ImDrawChannel",ImVector_ImDraw
 --------------------------ImVector_int----------------------------
 local ImVector_int= {}
 ImVector_int.__index = ImVector_int
-function ImVector_int.__new()
+function ImVector_int.__new(ctype)
     local ptr = lib.ImVector_int_ImVector_int()
-    ffi.gc(ptr,lib.ImVector_int_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_int_destroy)
+end
+function ImVector_int.ImVector_intVector(src)
+    local ptr = lib.ImVector_int_ImVector_intVector(src)
+    return ffi.gc(ptr,lib.ImVector_int_destroy)
 end
 ImVector_int._grow_capacity = lib.ImVector_int__grow_capacity
 ImVector_int.back = lib.ImVector_int_back
@@ -681,6 +710,10 @@ function ImDrawList:GetClipRectMin()
     return nonUDT_out[0]
 end
 ImDrawList.GetClipRectMin_nonUDT2 = lib.ImDrawList_GetClipRectMin_nonUDT2
+function ImDrawList.__new(ctype,shared_data)
+    local ptr = lib.ImDrawList_ImDrawList(shared_data)
+    return ffi.gc(ptr,lib.ImDrawList_destroy)
+end
 function ImDrawList:PathArcTo(centre,radius,a_min,a_max,num_segments)
     num_segments = num_segments or 10
     return lib.ImDrawList_PathArcTo(self,centre,radius,a_min,a_max,num_segments)
@@ -724,10 +757,13 @@ M.ImDrawList = ffi.metatype("ImDrawList",ImDrawList)
 --------------------------ImVector_ImFontGlyph----------------------------
 local ImVector_ImFontGlyph= {}
 ImVector_ImFontGlyph.__index = ImVector_ImFontGlyph
-function ImVector_ImFontGlyph.__new()
+function ImVector_ImFontGlyph.__new(ctype)
     local ptr = lib.ImVector_ImFontGlyph_ImVector_ImFontGlyph()
-    ffi.gc(ptr,lib.ImVector_ImFontGlyph_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_ImFontGlyph_destroy)
+end
+function ImVector_ImFontGlyph.ImVector_ImFontGlyphVector(src)
+    local ptr = lib.ImVector_ImFontGlyph_ImVector_ImFontGlyphVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImFontGlyph_destroy)
 end
 ImVector_ImFontGlyph._grow_capacity = lib.ImVector_ImFontGlyph__grow_capacity
 ImVector_ImFontGlyph.back = lib.ImVector_ImFontGlyph_back
@@ -759,10 +795,13 @@ M.ImVector_ImFontGlyph = ffi.metatype("ImVector_ImFontGlyph",ImVector_ImFontGlyp
 --------------------------TextRange----------------------------
 local TextRange= {}
 TextRange.__index = TextRange
-function TextRange.__new()
+function TextRange.__new(ctype)
     local ptr = lib.TextRange_TextRange()
-    ffi.gc(ptr,lib.TextRange_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.TextRange_destroy)
+end
+function TextRange.TextRangeStr(_b,_e)
+    local ptr = lib.TextRange_TextRangeStr(_b,_e)
+    return ffi.gc(ptr,lib.TextRange_destroy)
 end
 TextRange.begin = lib.TextRange_begin
 TextRange.empty = lib.TextRange_empty
@@ -777,15 +816,24 @@ function ImGuiListClipper:Begin(items_count,items_height)
     return lib.ImGuiListClipper_Begin(self,items_count,items_height)
 end
 ImGuiListClipper.End = lib.ImGuiListClipper_End
+function ImGuiListClipper.__new(ctype,items_count,items_height)
+    if items_height == nil then items_height = -1.0 end
+    if items_count == nil then items_count = -1 end
+    local ptr = lib.ImGuiListClipper_ImGuiListClipper(items_count,items_height)
+    return ffi.gc(ptr,lib.ImGuiListClipper_destroy)
+end
 ImGuiListClipper.Step = lib.ImGuiListClipper_Step
 M.ImGuiListClipper = ffi.metatype("ImGuiListClipper",ImGuiListClipper)
 --------------------------ImVector_Pair----------------------------
 local ImVector_Pair= {}
 ImVector_Pair.__index = ImVector_Pair
-function ImVector_Pair.__new()
+function ImVector_Pair.__new(ctype)
     local ptr = lib.ImVector_Pair_ImVector_Pair()
-    ffi.gc(ptr,lib.ImVector_Pair_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_Pair_destroy)
+end
+function ImVector_Pair.ImVector_PairVector(src)
+    local ptr = lib.ImVector_Pair_ImVector_PairVector(src)
+    return ffi.gc(ptr,lib.ImVector_Pair_destroy)
 end
 ImVector_Pair._grow_capacity = lib.ImVector_Pair__grow_capacity
 ImVector_Pair.back = lib.ImVector_Pair_back
@@ -817,10 +865,13 @@ M.ImVector_Pair = ffi.metatype("ImVector_Pair",ImVector_Pair)
 --------------------------ImVector_ImTextureID----------------------------
 local ImVector_ImTextureID= {}
 ImVector_ImTextureID.__index = ImVector_ImTextureID
-function ImVector_ImTextureID.__new()
+function ImVector_ImTextureID.__new(ctype)
     local ptr = lib.ImVector_ImTextureID_ImVector_ImTextureID()
-    ffi.gc(ptr,lib.ImVector_ImTextureID_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_ImTextureID_destroy)
+end
+function ImVector_ImTextureID.ImVector_ImTextureIDVector(src)
+    local ptr = lib.ImVector_ImTextureID_ImVector_ImTextureIDVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImTextureID_destroy)
 end
 ImVector_ImTextureID._grow_capacity = lib.ImVector_ImTextureID__grow_capacity
 ImVector_ImTextureID.back = lib.ImVector_ImTextureID_back
@@ -892,14 +943,29 @@ M.ImGuiStorage = ffi.metatype("ImGuiStorage",ImGuiStorage)
 --------------------------Pair----------------------------
 local Pair= {}
 Pair.__index = Pair
+function Pair.PairInt(_key,_val_i)
+    local ptr = lib.Pair_PairInt(_key,_val_i)
+    return ffi.gc(ptr,lib.Pair_destroy)
+end
+function Pair.PairFloat(_key,_val_f)
+    local ptr = lib.Pair_PairFloat(_key,_val_f)
+    return ffi.gc(ptr,lib.Pair_destroy)
+end
+function Pair.PairPtr(_key,_val_p)
+    local ptr = lib.Pair_PairPtr(_key,_val_p)
+    return ffi.gc(ptr,lib.Pair_destroy)
+end
 M.Pair = ffi.metatype("Pair",Pair)
 --------------------------ImVector_ImWchar----------------------------
 local ImVector_ImWchar= {}
 ImVector_ImWchar.__index = ImVector_ImWchar
-function ImVector_ImWchar.__new()
+function ImVector_ImWchar.__new(ctype)
     local ptr = lib.ImVector_ImWchar_ImVector_ImWchar()
-    ffi.gc(ptr,lib.ImVector_ImWchar_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_ImWchar_destroy)
+end
+function ImVector_ImWchar.ImVector_ImWcharVector(src)
+    local ptr = lib.ImVector_ImWchar_ImVector_ImWcharVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImWchar_destroy)
 end
 ImVector_ImWchar._grow_capacity = lib.ImVector_ImWchar__grow_capacity
 ImVector_ImWchar.back = lib.ImVector_ImWchar_back
@@ -932,10 +998,13 @@ M.ImVector_ImWchar = ffi.metatype("ImVector_ImWchar",ImVector_ImWchar)
 --------------------------ImVector_char----------------------------
 local ImVector_char= {}
 ImVector_char.__index = ImVector_char
-function ImVector_char.__new()
+function ImVector_char.__new(ctype)
     local ptr = lib.ImVector_char_ImVector_char()
-    ffi.gc(ptr,lib.ImVector_char_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_char_destroy)
+end
+function ImVector_char.ImVector_charVector(src)
+    local ptr = lib.ImVector_char_ImVector_charVector(src)
+    return ffi.gc(ptr,lib.ImVector_char_destroy)
 end
 ImVector_char._grow_capacity = lib.ImVector_char__grow_capacity
 ImVector_char.back = lib.ImVector_char_back
@@ -971,10 +1040,9 @@ ImGuiIO.__index = ImGuiIO
 ImGuiIO.AddInputCharacter = lib.ImGuiIO_AddInputCharacter
 ImGuiIO.AddInputCharactersUTF8 = lib.ImGuiIO_AddInputCharactersUTF8
 ImGuiIO.ClearInputCharacters = lib.ImGuiIO_ClearInputCharacters
-function ImGuiIO.__new()
+function ImGuiIO.__new(ctype)
     local ptr = lib.ImGuiIO_ImGuiIO()
-    ffi.gc(ptr,lib.ImGuiIO_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImGuiIO_destroy)
 end
 M.ImGuiIO = ffi.metatype("ImGuiIO",ImGuiIO)
 --------------------------ImFont----------------------------
@@ -1005,10 +1073,9 @@ ImFont.FindGlyphNoFallback = lib.ImFont_FindGlyphNoFallback
 ImFont.GetCharAdvance = lib.ImFont_GetCharAdvance
 ImFont.GetDebugName = lib.ImFont_GetDebugName
 ImFont.GrowIndex = lib.ImFont_GrowIndex
-function ImFont.__new()
+function ImFont.__new(ctype)
     local ptr = lib.ImFont_ImFont()
-    ffi.gc(ptr,lib.ImFont_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImFont_destroy)
 end
 ImFont.IsLoaded = lib.ImFont_IsLoaded
 ImFont.RenderChar = lib.ImFont_RenderChar
@@ -1022,10 +1089,13 @@ M.ImFont = ffi.metatype("ImFont",ImFont)
 --------------------------ImVector_CustomRect----------------------------
 local ImVector_CustomRect= {}
 ImVector_CustomRect.__index = ImVector_CustomRect
-function ImVector_CustomRect.__new()
+function ImVector_CustomRect.__new(ctype)
     local ptr = lib.ImVector_CustomRect_ImVector_CustomRect()
-    ffi.gc(ptr,lib.ImVector_CustomRect_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_CustomRect_destroy)
+end
+function ImVector_CustomRect.ImVector_CustomRectVector(src)
+    local ptr = lib.ImVector_CustomRect_ImVector_CustomRectVector(src)
+    return ffi.gc(ptr,lib.ImVector_CustomRect_destroy)
 end
 ImVector_CustomRect._grow_capacity = lib.ImVector_CustomRect__grow_capacity
 ImVector_CustomRect.back = lib.ImVector_CustomRect_back
@@ -1057,10 +1127,13 @@ M.ImVector_CustomRect = ffi.metatype("ImVector_CustomRect",ImVector_CustomRect)
 --------------------------ImVector_ImVec4----------------------------
 local ImVector_ImVec4= {}
 ImVector_ImVec4.__index = ImVector_ImVec4
-function ImVector_ImVec4.__new()
+function ImVector_ImVec4.__new(ctype)
     local ptr = lib.ImVector_ImVec4_ImVector_ImVec4()
-    ffi.gc(ptr,lib.ImVector_ImVec4_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_ImVec4_destroy)
+end
+function ImVector_ImVec4.ImVector_ImVec4Vector(src)
+    local ptr = lib.ImVector_ImVec4_ImVector_ImVec4Vector(src)
+    return ffi.gc(ptr,lib.ImVector_ImVec4_destroy)
 end
 ImVector_ImVec4._grow_capacity = lib.ImVector_ImVec4__grow_capacity
 ImVector_ImVec4.back = lib.ImVector_ImVec4_back
@@ -1092,10 +1165,13 @@ M.ImVector_ImVec4 = ffi.metatype("ImVector_ImVec4",ImVector_ImVec4)
 --------------------------ImVector_ImDrawCmd----------------------------
 local ImVector_ImDrawCmd= {}
 ImVector_ImDrawCmd.__index = ImVector_ImDrawCmd
-function ImVector_ImDrawCmd.__new()
+function ImVector_ImDrawCmd.__new(ctype)
     local ptr = lib.ImVector_ImDrawCmd_ImVector_ImDrawCmd()
-    ffi.gc(ptr,lib.ImVector_ImDrawCmd_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_ImDrawCmd_destroy)
+end
+function ImVector_ImDrawCmd.ImVector_ImDrawCmdVector(src)
+    local ptr = lib.ImVector_ImDrawCmd_ImVector_ImDrawCmdVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImDrawCmd_destroy)
 end
 ImVector_ImDrawCmd._grow_capacity = lib.ImVector_ImDrawCmd__grow_capacity
 ImVector_ImDrawCmd.back = lib.ImVector_ImDrawCmd_back
@@ -1127,19 +1203,21 @@ M.ImVector_ImDrawCmd = ffi.metatype("ImVector_ImDrawCmd",ImVector_ImDrawCmd)
 --------------------------ImGuiOnceUponAFrame----------------------------
 local ImGuiOnceUponAFrame= {}
 ImGuiOnceUponAFrame.__index = ImGuiOnceUponAFrame
-function ImGuiOnceUponAFrame.__new()
+function ImGuiOnceUponAFrame.__new(ctype)
     local ptr = lib.ImGuiOnceUponAFrame_ImGuiOnceUponAFrame()
-    ffi.gc(ptr,lib.ImGuiOnceUponAFrame_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImGuiOnceUponAFrame_destroy)
 end
 M.ImGuiOnceUponAFrame = ffi.metatype("ImGuiOnceUponAFrame",ImGuiOnceUponAFrame)
 --------------------------ImVector_float----------------------------
 local ImVector_float= {}
 ImVector_float.__index = ImVector_float
-function ImVector_float.__new()
+function ImVector_float.__new(ctype)
     local ptr = lib.ImVector_float_ImVector_float()
-    ffi.gc(ptr,lib.ImVector_float_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_float_destroy)
+end
+function ImVector_float.ImVector_floatVector(src)
+    local ptr = lib.ImVector_float_ImVector_floatVector(src)
+    return ffi.gc(ptr,lib.ImVector_float_destroy)
 end
 ImVector_float._grow_capacity = lib.ImVector_float__grow_capacity
 ImVector_float.back = lib.ImVector_float_back
@@ -1172,10 +1250,13 @@ M.ImVector_float = ffi.metatype("ImVector_float",ImVector_float)
 --------------------------ImVector_ImFontConfig----------------------------
 local ImVector_ImFontConfig= {}
 ImVector_ImFontConfig.__index = ImVector_ImFontConfig
-function ImVector_ImFontConfig.__new()
+function ImVector_ImFontConfig.__new(ctype)
     local ptr = lib.ImVector_ImFontConfig_ImVector_ImFontConfig()
-    ffi.gc(ptr,lib.ImVector_ImFontConfig_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_ImFontConfig_destroy)
+end
+function ImVector_ImFontConfig.ImVector_ImFontConfigVector(src)
+    local ptr = lib.ImVector_ImFontConfig_ImVector_ImFontConfigVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImFontConfig_destroy)
 end
 ImVector_ImFontConfig._grow_capacity = lib.ImVector_ImFontConfig__grow_capacity
 ImVector_ImFontConfig.back = lib.ImVector_ImFontConfig_back
@@ -1208,10 +1289,9 @@ M.ImVector_ImFontConfig = ffi.metatype("ImVector_ImFontConfig",ImVector_ImFontCo
 local ImGuiPayload= {}
 ImGuiPayload.__index = ImGuiPayload
 ImGuiPayload.Clear = lib.ImGuiPayload_Clear
-function ImGuiPayload.__new()
+function ImGuiPayload.__new(ctype)
     local ptr = lib.ImGuiPayload_ImGuiPayload()
-    ffi.gc(ptr,lib.ImGuiPayload_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImGuiPayload_destroy)
 end
 ImGuiPayload.IsDataType = lib.ImGuiPayload_IsDataType
 ImGuiPayload.IsDelivery = lib.ImGuiPayload_IsDelivery
@@ -1220,10 +1300,9 @@ M.ImGuiPayload = ffi.metatype("ImGuiPayload",ImGuiPayload)
 --------------------------ImDrawCmd----------------------------
 local ImDrawCmd= {}
 ImDrawCmd.__index = ImDrawCmd
-function ImDrawCmd.__new()
+function ImDrawCmd.__new(ctype)
     local ptr = lib.ImDrawCmd_ImDrawCmd()
-    ffi.gc(ptr,lib.ImDrawCmd_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImDrawCmd_destroy)
 end
 M.ImDrawCmd = ffi.metatype("ImDrawCmd",ImDrawCmd)
 --------------------------ImGuiInputTextCallbackData----------------------------
@@ -1231,10 +1310,9 @@ local ImGuiInputTextCallbackData= {}
 ImGuiInputTextCallbackData.__index = ImGuiInputTextCallbackData
 ImGuiInputTextCallbackData.DeleteChars = lib.ImGuiInputTextCallbackData_DeleteChars
 ImGuiInputTextCallbackData.HasSelection = lib.ImGuiInputTextCallbackData_HasSelection
-function ImGuiInputTextCallbackData.__new()
+function ImGuiInputTextCallbackData.__new(ctype)
     local ptr = lib.ImGuiInputTextCallbackData_ImGuiInputTextCallbackData()
-    ffi.gc(ptr,lib.ImGuiInputTextCallbackData_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImGuiInputTextCallbackData_destroy)
 end
 function ImGuiInputTextCallbackData:InsertChars(pos,text,text_end)
     text_end = text_end or nil
@@ -1251,6 +1329,11 @@ function ImGuiTextFilter:Draw(label,width)
     width = width or 0.0
     return lib.ImGuiTextFilter_Draw(self,label,width)
 end
+function ImGuiTextFilter.__new(ctype,default_filter)
+    if default_filter == nil then default_filter = "" end
+    local ptr = lib.ImGuiTextFilter_ImGuiTextFilter(default_filter)
+    return ffi.gc(ptr,lib.ImGuiTextFilter_destroy)
+end
 ImGuiTextFilter.IsActive = lib.ImGuiTextFilter_IsActive
 function ImGuiTextFilter:PassFilter(text,text_end)
     text_end = text_end or nil
@@ -1260,10 +1343,13 @@ M.ImGuiTextFilter = ffi.metatype("ImGuiTextFilter",ImGuiTextFilter)
 --------------------------ImVector_ImDrawIdx----------------------------
 local ImVector_ImDrawIdx= {}
 ImVector_ImDrawIdx.__index = ImVector_ImDrawIdx
-function ImVector_ImDrawIdx.__new()
+function ImVector_ImDrawIdx.__new(ctype)
     local ptr = lib.ImVector_ImDrawIdx_ImVector_ImDrawIdx()
-    ffi.gc(ptr,lib.ImVector_ImDrawIdx_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImVector_ImDrawIdx_destroy)
+end
+function ImVector_ImDrawIdx.ImVector_ImDrawIdxVector(src)
+    local ptr = lib.ImVector_ImDrawIdx_ImVector_ImDrawIdxVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImDrawIdx_destroy)
 end
 ImVector_ImDrawIdx._grow_capacity = lib.ImVector_ImDrawIdx__grow_capacity
 ImVector_ImDrawIdx.back = lib.ImVector_ImDrawIdx_back
@@ -1349,10 +1435,9 @@ function ImFontAtlas:GetTexDataAsRGBA32(out_pixels,out_width,out_height,out_byte
     out_bytes_per_pixel = out_bytes_per_pixel or nil
     return lib.ImFontAtlas_GetTexDataAsRGBA32(self,out_pixels,out_width,out_height,out_bytes_per_pixel)
 end
-function ImFontAtlas.__new()
+function ImFontAtlas.__new(ctype)
     local ptr = lib.ImFontAtlas_ImFontAtlas()
-    ffi.gc(ptr,lib.ImFontAtlas_destroy)
-    return ptr
+    return ffi.gc(ptr,lib.ImFontAtlas_destroy)
 end
 ImFontAtlas.IsBuilt = lib.ImFontAtlas_IsBuilt
 ImFontAtlas.SetTexID = lib.ImFontAtlas_SetTexID
