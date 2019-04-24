@@ -30,12 +30,20 @@ if(IMPL_OPENGL3)
     ./cimgui/imgui/examples/libs/gl3w/GL/gl3w.c)
     list(APPEND IMGUI_SOURCES ./extras/cimgui_extras.cpp)
     include_directories(cimgui/imgui/examples/libs/gl3w)
-    list(APPEND IMGUI_LIBRARIES opengl32)
+	if(WIN32)
+        list(APPEND IMGUI_LIBRARIES opengl32)
+	else(WIN32)#Unix
+        list(APPEND IMGUI_LIBRARIES GL)
+	endif(WIN32)
 endif(IMPL_OPENGL3)
 
 if(IMPL_OPENGL2)
     list(APPEND IMGUI_SOURCES ./cimgui/imgui/examples/imgui_impl_opengl2.cpp)
-    list(APPEND IMGUI_LIBRARIES opengl32)
+    if(WIN32)
+        list(APPEND IMGUI_LIBRARIES opengl32)
+	else(WIN32)#Unix
+        list(APPEND IMGUI_LIBRARIES GL)
+	endif(WIN32)
 endif(IMPL_OPENGL2)
 
 if(IMPL_EXTRAS)
