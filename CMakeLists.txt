@@ -1,6 +1,8 @@
 Project(cimgui)
 cmake_minimum_required(VERSION 2.8)
+if(WIN32) #to mingw work as all the others
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
+endif(WIN32)
 #general settings
 include_directories(cimgui/imgui)
 add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
