@@ -144,6 +144,37 @@ function Imgui_Impl_SDL_opengl3:Render()
     lib.ImGui_ImplOpenGL3_RenderDrawData(lib.igGetDrawData());
 end
 M.Imgui_Impl_SDL_opengl3 = setmetatable({},Imgui_Impl_SDL_opengl3)
+-----------------------Imgui_Impl_SDL_opengl2
+local Imgui_Impl_SDL_opengl2 = {}
+Imgui_Impl_SDL_opengl2.__index = Imgui_Impl_SDL_opengl2
+
+function Imgui_Impl_SDL_opengl2.__call()
+    return setmetatable({ctx = lib.igCreateContext(nil)},Imgui_Impl_SDL_opengl2)
+end
+
+function Imgui_Impl_SDL_opengl2:Init(window, gl_context)
+    self.window = window
+    lib.ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
+    lib.ImGui_ImplOpenGL2_Init();
+end
+
+function Imgui_Impl_SDL_opengl2:destroy()
+    lib.ImGui_ImplOpenGL2_Shutdown();
+    lib.ImGui_ImplSDL2_Shutdown();
+    lib.igDestroyContext(self.ctx);
+end
+
+function Imgui_Impl_SDL_opengl2:NewFrame()
+    lib.ImGui_ImplOpenGL2_NewFrame();
+    lib.ImGui_ImplSDL2_NewFrame(self.window);
+    lib.igNewFrame();
+end
+
+function Imgui_Impl_SDL_opengl2:Render()
+    lib.igRender()
+    lib.ImGui_ImplOpenGL2_RenderDrawData(lib.igGetDrawData());
+end
+M.Imgui_Impl_SDL_opengl2 = setmetatable({},Imgui_Impl_SDL_opengl2)
 -----------------------Imgui_Impl_glfw_opengl3
 local Imgui_Impl_glfw_opengl3 = {}
 Imgui_Impl_glfw_opengl3.__index = Imgui_Impl_glfw_opengl3
