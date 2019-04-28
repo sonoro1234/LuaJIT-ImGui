@@ -122,10 +122,11 @@ function Imgui_Impl_SDL_opengl3.__call()
     return setmetatable({ctx = lib.igCreateContext(nil)},Imgui_Impl_SDL_opengl3)
 end
 
-function Imgui_Impl_SDL_opengl3:Init(window, gl_context)
+function Imgui_Impl_SDL_opengl3:Init(window, gl_context, glsl_version)
     self.window = window
+	glsl_version = glsl_version or "#version 150"
     lib.ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
-    lib.ImGui_ImplOpenGL3_Init("#version 150");
+    lib.ImGui_ImplOpenGL3_Init(glsl_version);
 end
 
 function Imgui_Impl_SDL_opengl3:destroy()
@@ -188,9 +189,10 @@ function Imgui_Impl_glfw_opengl3.__call()
     return setmetatable({ctx = lib.igCreateContext(nil)},Imgui_Impl_glfw_opengl3)
 end
 
-function Imgui_Impl_glfw_opengl3:Init(window, install_callbacks)
+function Imgui_Impl_glfw_opengl3:Init(window, install_callbacks,glsl_version)
+	glsl_version = glsl_version or "#version 150"
     lib.ImGui_ImplGlfw_InitForOpenGL(window, install_callbacks);
-    lib.ImGui_ImplOpenGL3_Init("#version 150");
+    lib.ImGui_ImplOpenGL3_Init(glsl_version);
 end
 
 function Imgui_Impl_glfw_opengl3:destroy()
