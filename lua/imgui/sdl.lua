@@ -673,13 +673,13 @@ ImDrawList.AddDrawCmd = lib.ImDrawList_AddDrawCmd
 function ImDrawList:AddImage(user_texture_id,a,b,uv_a,uv_b,col)
     uv_b = uv_b or ImVec2(1,1)
     uv_a = uv_a or ImVec2(0,0)
-    col = col or 0xFFFFFFFF
+    col = col or 4294967295
     return lib.ImDrawList_AddImage(self,user_texture_id,a,b,uv_a,uv_b,col)
 end
 function ImDrawList:AddImageQuad(user_texture_id,a,b,c,d,uv_a,uv_b,uv_c,uv_d,col)
     uv_c = uv_c or ImVec2(1,1)
     uv_a = uv_a or ImVec2(0,0)
-    col = col or 0xFFFFFFFF
+    col = col or 4294967295
     uv_b = uv_b or ImVec2(1,0)
     uv_d = uv_d or ImVec2(0,1)
     return lib.ImDrawList_AddImageQuad(self,user_texture_id,a,b,c,d,uv_a,uv_b,uv_c,uv_d,col)
@@ -1785,7 +1785,6 @@ function M.GetContentRegionAvail()
     return nonUDT_out[0]
 end
 M.GetContentRegionAvail_nonUDT2 = lib.igGetContentRegionAvail_nonUDT2
-M.GetContentRegionAvailWidth = lib.igGetContentRegionAvailWidth
 function M.GetContentRegionMax()
     local nonUDT_out = ffi.new("ImVec2[1]")
     lib.igGetContentRegionMax_nonUDT(nonUDT_out)
@@ -2215,10 +2214,10 @@ function M.ResetMouseDragDelta(button)
     button = button or 0
     return lib.igResetMouseDragDelta(button)
 end
-function M.SameLine(local_pos_x,spacing_w)
-    local_pos_x = local_pos_x or 0.0
-    spacing_w = spacing_w or -1.0
-    return lib.igSameLine(local_pos_x,spacing_w)
+function M.SameLine(offset_from_start_x,spacing)
+    spacing = spacing or -1.0
+    offset_from_start_x = offset_from_start_x or 0.0
+    return lib.igSameLine(offset_from_start_x,spacing)
 end
 M.SaveIniSettingsToDisk = lib.igSaveIniSettingsToDisk
 function M.SaveIniSettingsToMemory(out_ini_size)
@@ -2261,6 +2260,7 @@ function M.SetKeyboardFocusHere(offset)
     return lib.igSetKeyboardFocusHere(offset)
 end
 M.SetMouseCursor = lib.igSetMouseCursor
+M.SetNextItemWidth = lib.igSetNextItemWidth
 function M.SetNextTreeNodeOpen(is_open,cond)
     cond = cond or 0
     return lib.igSetNextTreeNodeOpen(is_open,cond)
