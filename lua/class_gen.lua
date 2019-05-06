@@ -3,7 +3,54 @@
 -- expects lua 5.1 or luajit
 -- expects "../cimgui/generator/definitions.lua" to be generated in cimgui (master_auto2 branch)
 -----------------------------------------------
-
+--utility functions
+function strsplit(str, pat)
+    local t = {} 
+    local fpat = "(.-)" .. pat
+    local last_end = 1
+    local s, e, cap = str:find(fpat, 1)
+    while s do
+        table.insert(t,cap)
+        last_end = e+1
+        s, e, cap = str:find(fpat, last_end)
+    end
+    if last_end <= #str then
+        cap = str:sub(last_end)
+        table.insert(t, cap)
+    elseif str:sub(-1)==pat then
+        table.insert(t, "")
+    end
+    return t
+end
+function deleteOuterPars(def)
+	local w = def:match("^%b()$")
+	if w then
+		w = w:gsub("^%((.+)%)$","%1")
+		return w
+	else 
+		return def 
+	end
+end
+function CleanImU32(def)
+	def = def:gsub("%(ImU32%)","")
+	--quitar () de numeros
+	def = def:gsub("%((%d+)%)","%1")
+	def = deleteOuterPars(def)
+	local bb=strsplit(def,"|")
+	for i=1,#bb do
+		local val = deleteOuterPars(bb[i])
+		if val:match"<<" then
+			local v1,v2 = val:match("(%d+)%s*<<%s*(%d+)")
+			val = v1*2^v2
+			bb[i] = val
+		end
+		assert(type(bb[i])=="number")
+	end
+	local res = 0 
+	for i=1,#bb do res = res + bb[i] end 
+	return res
+end
+-------------------------------------------------
 --load function definitions
 local dir = [[../cimgui/generator/output/]]
 local fundefs = dofile(dir..[[definitions.lua]])
@@ -49,7 +96,8 @@ local function testcode(codestr,code)
 		for i=-2,2 do
 			print("error on:",linenum+i,code[linenum+i])
 		end
-		error(err)
+		print("error is ",err)
+		error("error in testcode",2)
 	end
 end
 
@@ -83,6 +131,9 @@ function sanitize_reserved(def)
 			def.defaults[k] = def.defaults[k]:gsub("ImDrawCornerFlags_All","lib.ImDrawCornerFlags_All")
 			def.defaults[k] = def.defaults[k]:gsub("sizeof%((%w+)%)",[[ffi.sizeof("%1")]])
 			def.defaults[k] = def.defaults[k]:gsub("%(%(void%s*%*%)0%)","nil")
+			if def.defaults[k]:match"%(ImU32%)" then
+				def.defaults[k] = CleanImU32(def.defaults[k])
+			end
 		end
 	end
 end
