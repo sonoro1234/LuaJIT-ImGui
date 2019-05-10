@@ -1,4 +1,4 @@
-local cimguimodule = 'cimgui_glfw' --set imgui directory location 
+local cimguimodule = 'cimgui_glfw' --set imgui directory location
 local ffi = require"ffi"
 local cdecl = require"imgui.cdefs"
 
