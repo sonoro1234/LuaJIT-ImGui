@@ -169,13 +169,13 @@ local function make_function(method,def)
 		end
 		if def.nonUDT == 1 then
 			--allocate variable for return value
-			local out_type = def.argsT[1].type:gsub("*", "[1]")
-			table.insert(code,'    local nonUDT_out = ffi.new(\"'..out_type..'")')
+			local out_type = def.argsT[1].type:gsub("*", "")
+			table.insert(code,'    local nonUDT_out = ffi.new("'..out_type..'")')
 			--prepend nonUDT_out to args
 			args = args:gsub("%(", "(nonUDT_out" .. (empty and "" or ","), 1)
 			--call cimgui and return value of out variable
 			table.insert(code,"    lib."..fname..args)
-			table.insert(code,"    return nonUDT_out[0]")
+			table.insert(code,"    return nonUDT_out")
 		else
 			--call cimgui
 			table.insert(code,"    return lib."..fname..args)
