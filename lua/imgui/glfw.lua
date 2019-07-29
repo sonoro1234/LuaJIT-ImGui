@@ -353,44 +353,6 @@ function ImFontConfig.__new(ctype)
     return ffi.gc(ptr,lib.ImFontConfig_destroy)
 end
 M.ImFontConfig = ffi.metatype("ImFontConfig",ImFontConfig)
---------------------------ImVector_TextRange----------------------------
-local ImVector_TextRange= {}
-ImVector_TextRange.__index = ImVector_TextRange
-function ImVector_TextRange.__new(ctype)
-    local ptr = lib.ImVector_TextRange_ImVector_TextRange()
-    return ffi.gc(ptr,lib.ImVector_TextRange_destroy)
-end
-function ImVector_TextRange.ImVector_TextRangeVector(src)
-    local ptr = lib.ImVector_TextRange_ImVector_TextRangeVector(src)
-    return ffi.gc(ptr,lib.ImVector_TextRange_destroy)
-end
-ImVector_TextRange._grow_capacity = lib.ImVector_TextRange__grow_capacity
-ImVector_TextRange.back = lib.ImVector_TextRange_back
-ImVector_TextRange.back_const = lib.ImVector_TextRange_back_const
-ImVector_TextRange.begin = lib.ImVector_TextRange_begin
-ImVector_TextRange.begin_const = lib.ImVector_TextRange_begin_const
-ImVector_TextRange.capacity = lib.ImVector_TextRange_capacity
-ImVector_TextRange.clear = lib.ImVector_TextRange_clear
-ImVector_TextRange.empty = lib.ImVector_TextRange_empty
-ImVector_TextRange._end = lib.ImVector_TextRange_end
-ImVector_TextRange.end_const = lib.ImVector_TextRange_end_const
-ImVector_TextRange.erase = lib.ImVector_TextRange_erase
-ImVector_TextRange.eraseTPtr = lib.ImVector_TextRange_eraseTPtr
-ImVector_TextRange.erase_unsorted = lib.ImVector_TextRange_erase_unsorted
-ImVector_TextRange.front = lib.ImVector_TextRange_front
-ImVector_TextRange.front_const = lib.ImVector_TextRange_front_const
-ImVector_TextRange.index_from_ptr = lib.ImVector_TextRange_index_from_ptr
-ImVector_TextRange.insert = lib.ImVector_TextRange_insert
-ImVector_TextRange.pop_back = lib.ImVector_TextRange_pop_back
-ImVector_TextRange.push_back = lib.ImVector_TextRange_push_back
-ImVector_TextRange.push_front = lib.ImVector_TextRange_push_front
-ImVector_TextRange.reserve = lib.ImVector_TextRange_reserve
-ImVector_TextRange.resize = lib.ImVector_TextRange_resize
-ImVector_TextRange.resizeT = lib.ImVector_TextRange_resizeT
-ImVector_TextRange.size = lib.ImVector_TextRange_size
-ImVector_TextRange.size_in_bytes = lib.ImVector_TextRange_size_in_bytes
-ImVector_TextRange.swap = lib.ImVector_TextRange_swap
-M.ImVector_TextRange = ffi.metatype("ImVector_TextRange",ImVector_TextRange)
 --------------------------ImFontGlyphRangesBuilder----------------------------
 local ImFontGlyphRangesBuilder= {}
 ImFontGlyphRangesBuilder.__index = ImFontGlyphRangesBuilder
@@ -409,15 +371,19 @@ function ImFontGlyphRangesBuilder.__new(ctype)
 end
 ImFontGlyphRangesBuilder.SetBit = lib.ImFontGlyphRangesBuilder_SetBit
 M.ImFontGlyphRangesBuilder = ffi.metatype("ImFontGlyphRangesBuilder",ImFontGlyphRangesBuilder)
---------------------------CustomRect----------------------------
-local CustomRect= {}
-CustomRect.__index = CustomRect
-function CustomRect.__new(ctype)
-    local ptr = lib.CustomRect_CustomRect()
-    return ffi.gc(ptr,lib.CustomRect_destroy)
+--------------------------ImDrawListSplitter----------------------------
+local ImDrawListSplitter= {}
+ImDrawListSplitter.__index = ImDrawListSplitter
+ImDrawListSplitter.Clear = lib.ImDrawListSplitter_Clear
+ImDrawListSplitter.ClearFreeMemory = lib.ImDrawListSplitter_ClearFreeMemory
+function ImDrawListSplitter.__new(ctype)
+    local ptr = lib.ImDrawListSplitter_ImDrawListSplitter()
+    return ffi.gc(ptr,lib.ImDrawListSplitter_destroy)
 end
-CustomRect.IsPacked = lib.CustomRect_IsPacked
-M.CustomRect = ffi.metatype("CustomRect",CustomRect)
+ImDrawListSplitter.Merge = lib.ImDrawListSplitter_Merge
+ImDrawListSplitter.SetCurrentChannel = lib.ImDrawListSplitter_SetCurrentChannel
+ImDrawListSplitter.Split = lib.ImDrawListSplitter_Split
+M.ImDrawListSplitter = ffi.metatype("ImDrawListSplitter",ImDrawListSplitter)
 --------------------------ImVector_ImFontPtr----------------------------
 local ImVector_ImFontPtr= {}
 ImVector_ImFontPtr.__index = ImVector_ImFontPtr
@@ -535,6 +501,44 @@ ImVector_ImVec2.size = lib.ImVector_ImVec2_size
 ImVector_ImVec2.size_in_bytes = lib.ImVector_ImVec2_size_in_bytes
 ImVector_ImVec2.swap = lib.ImVector_ImVec2_swap
 M.ImVector_ImVec2 = ffi.metatype("ImVector_ImVec2",ImVector_ImVec2)
+--------------------------ImVector_ImFontAtlasCustomRect----------------------------
+local ImVector_ImFontAtlasCustomRect= {}
+ImVector_ImFontAtlasCustomRect.__index = ImVector_ImFontAtlasCustomRect
+function ImVector_ImFontAtlasCustomRect.__new(ctype)
+    local ptr = lib.ImVector_ImFontAtlasCustomRect_ImVector_ImFontAtlasCustomRect()
+    return ffi.gc(ptr,lib.ImVector_ImFontAtlasCustomRect_destroy)
+end
+function ImVector_ImFontAtlasCustomRect.ImVector_ImFontAtlasCustomRectVector(src)
+    local ptr = lib.ImVector_ImFontAtlasCustomRect_ImVector_ImFontAtlasCustomRectVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImFontAtlasCustomRect_destroy)
+end
+ImVector_ImFontAtlasCustomRect._grow_capacity = lib.ImVector_ImFontAtlasCustomRect__grow_capacity
+ImVector_ImFontAtlasCustomRect.back = lib.ImVector_ImFontAtlasCustomRect_back
+ImVector_ImFontAtlasCustomRect.back_const = lib.ImVector_ImFontAtlasCustomRect_back_const
+ImVector_ImFontAtlasCustomRect.begin = lib.ImVector_ImFontAtlasCustomRect_begin
+ImVector_ImFontAtlasCustomRect.begin_const = lib.ImVector_ImFontAtlasCustomRect_begin_const
+ImVector_ImFontAtlasCustomRect.capacity = lib.ImVector_ImFontAtlasCustomRect_capacity
+ImVector_ImFontAtlasCustomRect.clear = lib.ImVector_ImFontAtlasCustomRect_clear
+ImVector_ImFontAtlasCustomRect.empty = lib.ImVector_ImFontAtlasCustomRect_empty
+ImVector_ImFontAtlasCustomRect._end = lib.ImVector_ImFontAtlasCustomRect_end
+ImVector_ImFontAtlasCustomRect.end_const = lib.ImVector_ImFontAtlasCustomRect_end_const
+ImVector_ImFontAtlasCustomRect.erase = lib.ImVector_ImFontAtlasCustomRect_erase
+ImVector_ImFontAtlasCustomRect.eraseTPtr = lib.ImVector_ImFontAtlasCustomRect_eraseTPtr
+ImVector_ImFontAtlasCustomRect.erase_unsorted = lib.ImVector_ImFontAtlasCustomRect_erase_unsorted
+ImVector_ImFontAtlasCustomRect.front = lib.ImVector_ImFontAtlasCustomRect_front
+ImVector_ImFontAtlasCustomRect.front_const = lib.ImVector_ImFontAtlasCustomRect_front_const
+ImVector_ImFontAtlasCustomRect.index_from_ptr = lib.ImVector_ImFontAtlasCustomRect_index_from_ptr
+ImVector_ImFontAtlasCustomRect.insert = lib.ImVector_ImFontAtlasCustomRect_insert
+ImVector_ImFontAtlasCustomRect.pop_back = lib.ImVector_ImFontAtlasCustomRect_pop_back
+ImVector_ImFontAtlasCustomRect.push_back = lib.ImVector_ImFontAtlasCustomRect_push_back
+ImVector_ImFontAtlasCustomRect.push_front = lib.ImVector_ImFontAtlasCustomRect_push_front
+ImVector_ImFontAtlasCustomRect.reserve = lib.ImVector_ImFontAtlasCustomRect_reserve
+ImVector_ImFontAtlasCustomRect.resize = lib.ImVector_ImFontAtlasCustomRect_resize
+ImVector_ImFontAtlasCustomRect.resizeT = lib.ImVector_ImFontAtlasCustomRect_resizeT
+ImVector_ImFontAtlasCustomRect.size = lib.ImVector_ImFontAtlasCustomRect_size
+ImVector_ImFontAtlasCustomRect.size_in_bytes = lib.ImVector_ImFontAtlasCustomRect_size_in_bytes
+ImVector_ImFontAtlasCustomRect.swap = lib.ImVector_ImFontAtlasCustomRect_swap
+M.ImVector_ImFontAtlasCustomRect = ffi.metatype("ImVector_ImFontAtlasCustomRect",ImVector_ImFontAtlasCustomRect)
 --------------------------ImColor----------------------------
 local ImColor= {}
 ImColor.__index = ImColor
@@ -660,16 +664,16 @@ function ImDrawList:AddQuad(a,b,c,d,col,thickness)
     return lib.ImDrawList_AddQuad(self,a,b,c,d,col,thickness)
 end
 ImDrawList.AddQuadFilled = lib.ImDrawList_AddQuadFilled
-function ImDrawList:AddRect(a,b,col,rounding,rounding_corners_flags,thickness)
+function ImDrawList:AddRect(a,b,col,rounding,rounding_corners,thickness)
     rounding = rounding or 0.0
     thickness = thickness or 1.0
-    rounding_corners_flags = rounding_corners_flags or lib.ImDrawCornerFlags_All
-    return lib.ImDrawList_AddRect(self,a,b,col,rounding,rounding_corners_flags,thickness)
+    rounding_corners = rounding_corners or lib.ImDrawCornerFlags_All
+    return lib.ImDrawList_AddRect(self,a,b,col,rounding,rounding_corners,thickness)
 end
-function ImDrawList:AddRectFilled(a,b,col,rounding,rounding_corners_flags)
+function ImDrawList:AddRectFilled(a,b,col,rounding,rounding_corners)
     rounding = rounding or 0.0
-    rounding_corners_flags = rounding_corners_flags or lib.ImDrawCornerFlags_All
-    return lib.ImDrawList_AddRectFilled(self,a,b,col,rounding,rounding_corners_flags)
+    rounding_corners = rounding_corners or lib.ImDrawCornerFlags_All
+    return lib.ImDrawList_AddRectFilled(self,a,b,col,rounding,rounding_corners)
 end
 ImDrawList.AddRectFilledMultiColor = lib.ImDrawList_AddRectFilledMultiColor
 function ImDrawList:AddText(pos,col,text_begin,text_end)
@@ -722,10 +726,10 @@ ImDrawList.PathClear = lib.ImDrawList_PathClear
 ImDrawList.PathFillConvex = lib.ImDrawList_PathFillConvex
 ImDrawList.PathLineTo = lib.ImDrawList_PathLineTo
 ImDrawList.PathLineToMergeDuplicate = lib.ImDrawList_PathLineToMergeDuplicate
-function ImDrawList:PathRect(rect_min,rect_max,rounding,rounding_corners_flags)
+function ImDrawList:PathRect(rect_min,rect_max,rounding,rounding_corners)
     rounding = rounding or 0.0
-    rounding_corners_flags = rounding_corners_flags or lib.ImDrawCornerFlags_All
-    return lib.ImDrawList_PathRect(self,rect_min,rect_max,rounding,rounding_corners_flags)
+    rounding_corners = rounding_corners or lib.ImDrawCornerFlags_All
+    return lib.ImDrawList_PathRect(self,rect_min,rect_max,rounding,rounding_corners)
 end
 function ImDrawList:PathStroke(col,closed,thickness)
     thickness = thickness or 1.0
@@ -749,60 +753,58 @@ ImDrawList.PushTextureID = lib.ImDrawList_PushTextureID
 ImDrawList.UpdateClipRect = lib.ImDrawList_UpdateClipRect
 ImDrawList.UpdateTextureID = lib.ImDrawList_UpdateTextureID
 M.ImDrawList = ffi.metatype("ImDrawList",ImDrawList)
---------------------------ImVector_ImFontGlyph----------------------------
-local ImVector_ImFontGlyph= {}
-ImVector_ImFontGlyph.__index = ImVector_ImFontGlyph
-function ImVector_ImFontGlyph.__new(ctype)
-    local ptr = lib.ImVector_ImFontGlyph_ImVector_ImFontGlyph()
-    return ffi.gc(ptr,lib.ImVector_ImFontGlyph_destroy)
+--------------------------ImGuiTextRange----------------------------
+local ImGuiTextRange= {}
+ImGuiTextRange.__index = ImGuiTextRange
+function ImGuiTextRange.__new(ctype)
+    local ptr = lib.ImGuiTextRange_ImGuiTextRange()
+    return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
 end
-function ImVector_ImFontGlyph.ImVector_ImFontGlyphVector(src)
-    local ptr = lib.ImVector_ImFontGlyph_ImVector_ImFontGlyphVector(src)
-    return ffi.gc(ptr,lib.ImVector_ImFontGlyph_destroy)
+function ImGuiTextRange.ImGuiTextRangeStr(_b,_e)
+    local ptr = lib.ImGuiTextRange_ImGuiTextRangeStr(_b,_e)
+    return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
 end
-ImVector_ImFontGlyph._grow_capacity = lib.ImVector_ImFontGlyph__grow_capacity
-ImVector_ImFontGlyph.back = lib.ImVector_ImFontGlyph_back
-ImVector_ImFontGlyph.back_const = lib.ImVector_ImFontGlyph_back_const
-ImVector_ImFontGlyph.begin = lib.ImVector_ImFontGlyph_begin
-ImVector_ImFontGlyph.begin_const = lib.ImVector_ImFontGlyph_begin_const
-ImVector_ImFontGlyph.capacity = lib.ImVector_ImFontGlyph_capacity
-ImVector_ImFontGlyph.clear = lib.ImVector_ImFontGlyph_clear
-ImVector_ImFontGlyph.empty = lib.ImVector_ImFontGlyph_empty
-ImVector_ImFontGlyph._end = lib.ImVector_ImFontGlyph_end
-ImVector_ImFontGlyph.end_const = lib.ImVector_ImFontGlyph_end_const
-ImVector_ImFontGlyph.erase = lib.ImVector_ImFontGlyph_erase
-ImVector_ImFontGlyph.eraseTPtr = lib.ImVector_ImFontGlyph_eraseTPtr
-ImVector_ImFontGlyph.erase_unsorted = lib.ImVector_ImFontGlyph_erase_unsorted
-ImVector_ImFontGlyph.front = lib.ImVector_ImFontGlyph_front
-ImVector_ImFontGlyph.front_const = lib.ImVector_ImFontGlyph_front_const
-ImVector_ImFontGlyph.index_from_ptr = lib.ImVector_ImFontGlyph_index_from_ptr
-ImVector_ImFontGlyph.insert = lib.ImVector_ImFontGlyph_insert
-ImVector_ImFontGlyph.pop_back = lib.ImVector_ImFontGlyph_pop_back
-ImVector_ImFontGlyph.push_back = lib.ImVector_ImFontGlyph_push_back
-ImVector_ImFontGlyph.push_front = lib.ImVector_ImFontGlyph_push_front
-ImVector_ImFontGlyph.reserve = lib.ImVector_ImFontGlyph_reserve
-ImVector_ImFontGlyph.resize = lib.ImVector_ImFontGlyph_resize
-ImVector_ImFontGlyph.resizeT = lib.ImVector_ImFontGlyph_resizeT
-ImVector_ImFontGlyph.size = lib.ImVector_ImFontGlyph_size
-ImVector_ImFontGlyph.size_in_bytes = lib.ImVector_ImFontGlyph_size_in_bytes
-ImVector_ImFontGlyph.swap = lib.ImVector_ImFontGlyph_swap
-M.ImVector_ImFontGlyph = ffi.metatype("ImVector_ImFontGlyph",ImVector_ImFontGlyph)
---------------------------TextRange----------------------------
-local TextRange= {}
-TextRange.__index = TextRange
-function TextRange.__new(ctype)
-    local ptr = lib.TextRange_TextRange()
-    return ffi.gc(ptr,lib.TextRange_destroy)
+ImGuiTextRange.empty = lib.ImGuiTextRange_empty
+ImGuiTextRange.split = lib.ImGuiTextRange_split
+M.ImGuiTextRange = ffi.metatype("ImGuiTextRange",ImGuiTextRange)
+--------------------------ImVector_ImFontConfig----------------------------
+local ImVector_ImFontConfig= {}
+ImVector_ImFontConfig.__index = ImVector_ImFontConfig
+function ImVector_ImFontConfig.__new(ctype)
+    local ptr = lib.ImVector_ImFontConfig_ImVector_ImFontConfig()
+    return ffi.gc(ptr,lib.ImVector_ImFontConfig_destroy)
 end
-function TextRange.TextRangeStr(_b,_e)
-    local ptr = lib.TextRange_TextRangeStr(_b,_e)
-    return ffi.gc(ptr,lib.TextRange_destroy)
+function ImVector_ImFontConfig.ImVector_ImFontConfigVector(src)
+    local ptr = lib.ImVector_ImFontConfig_ImVector_ImFontConfigVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImFontConfig_destroy)
 end
-TextRange.begin = lib.TextRange_begin
-TextRange.empty = lib.TextRange_empty
-TextRange._end = lib.TextRange_end
-TextRange.split = lib.TextRange_split
-M.TextRange = ffi.metatype("TextRange",TextRange)
+ImVector_ImFontConfig._grow_capacity = lib.ImVector_ImFontConfig__grow_capacity
+ImVector_ImFontConfig.back = lib.ImVector_ImFontConfig_back
+ImVector_ImFontConfig.back_const = lib.ImVector_ImFontConfig_back_const
+ImVector_ImFontConfig.begin = lib.ImVector_ImFontConfig_begin
+ImVector_ImFontConfig.begin_const = lib.ImVector_ImFontConfig_begin_const
+ImVector_ImFontConfig.capacity = lib.ImVector_ImFontConfig_capacity
+ImVector_ImFontConfig.clear = lib.ImVector_ImFontConfig_clear
+ImVector_ImFontConfig.empty = lib.ImVector_ImFontConfig_empty
+ImVector_ImFontConfig._end = lib.ImVector_ImFontConfig_end
+ImVector_ImFontConfig.end_const = lib.ImVector_ImFontConfig_end_const
+ImVector_ImFontConfig.erase = lib.ImVector_ImFontConfig_erase
+ImVector_ImFontConfig.eraseTPtr = lib.ImVector_ImFontConfig_eraseTPtr
+ImVector_ImFontConfig.erase_unsorted = lib.ImVector_ImFontConfig_erase_unsorted
+ImVector_ImFontConfig.front = lib.ImVector_ImFontConfig_front
+ImVector_ImFontConfig.front_const = lib.ImVector_ImFontConfig_front_const
+ImVector_ImFontConfig.index_from_ptr = lib.ImVector_ImFontConfig_index_from_ptr
+ImVector_ImFontConfig.insert = lib.ImVector_ImFontConfig_insert
+ImVector_ImFontConfig.pop_back = lib.ImVector_ImFontConfig_pop_back
+ImVector_ImFontConfig.push_back = lib.ImVector_ImFontConfig_push_back
+ImVector_ImFontConfig.push_front = lib.ImVector_ImFontConfig_push_front
+ImVector_ImFontConfig.reserve = lib.ImVector_ImFontConfig_reserve
+ImVector_ImFontConfig.resize = lib.ImVector_ImFontConfig_resize
+ImVector_ImFontConfig.resizeT = lib.ImVector_ImFontConfig_resizeT
+ImVector_ImFontConfig.size = lib.ImVector_ImFontConfig_size
+ImVector_ImFontConfig.size_in_bytes = lib.ImVector_ImFontConfig_size_in_bytes
+ImVector_ImFontConfig.swap = lib.ImVector_ImFontConfig_swap
+M.ImVector_ImFontConfig = ffi.metatype("ImVector_ImFontConfig",ImVector_ImFontConfig)
 --------------------------ImVector_ImU32----------------------------
 local ImVector_ImU32= {}
 ImVector_ImU32.__index = ImVector_ImU32
@@ -857,44 +859,17 @@ function ImGuiListClipper.__new(ctype,items_count,items_height)
 end
 ImGuiListClipper.Step = lib.ImGuiListClipper_Step
 M.ImGuiListClipper = ffi.metatype("ImGuiListClipper",ImGuiListClipper)
---------------------------ImVector_Pair----------------------------
-local ImVector_Pair= {}
-ImVector_Pair.__index = ImVector_Pair
-function ImVector_Pair.__new(ctype)
-    local ptr = lib.ImVector_Pair_ImVector_Pair()
-    return ffi.gc(ptr,lib.ImVector_Pair_destroy)
+--------------------------ImGuiIO----------------------------
+local ImGuiIO= {}
+ImGuiIO.__index = ImGuiIO
+ImGuiIO.AddInputCharacter = lib.ImGuiIO_AddInputCharacter
+ImGuiIO.AddInputCharactersUTF8 = lib.ImGuiIO_AddInputCharactersUTF8
+ImGuiIO.ClearInputCharacters = lib.ImGuiIO_ClearInputCharacters
+function ImGuiIO.__new(ctype)
+    local ptr = lib.ImGuiIO_ImGuiIO()
+    return ffi.gc(ptr,lib.ImGuiIO_destroy)
 end
-function ImVector_Pair.ImVector_PairVector(src)
-    local ptr = lib.ImVector_Pair_ImVector_PairVector(src)
-    return ffi.gc(ptr,lib.ImVector_Pair_destroy)
-end
-ImVector_Pair._grow_capacity = lib.ImVector_Pair__grow_capacity
-ImVector_Pair.back = lib.ImVector_Pair_back
-ImVector_Pair.back_const = lib.ImVector_Pair_back_const
-ImVector_Pair.begin = lib.ImVector_Pair_begin
-ImVector_Pair.begin_const = lib.ImVector_Pair_begin_const
-ImVector_Pair.capacity = lib.ImVector_Pair_capacity
-ImVector_Pair.clear = lib.ImVector_Pair_clear
-ImVector_Pair.empty = lib.ImVector_Pair_empty
-ImVector_Pair._end = lib.ImVector_Pair_end
-ImVector_Pair.end_const = lib.ImVector_Pair_end_const
-ImVector_Pair.erase = lib.ImVector_Pair_erase
-ImVector_Pair.eraseTPtr = lib.ImVector_Pair_eraseTPtr
-ImVector_Pair.erase_unsorted = lib.ImVector_Pair_erase_unsorted
-ImVector_Pair.front = lib.ImVector_Pair_front
-ImVector_Pair.front_const = lib.ImVector_Pair_front_const
-ImVector_Pair.index_from_ptr = lib.ImVector_Pair_index_from_ptr
-ImVector_Pair.insert = lib.ImVector_Pair_insert
-ImVector_Pair.pop_back = lib.ImVector_Pair_pop_back
-ImVector_Pair.push_back = lib.ImVector_Pair_push_back
-ImVector_Pair.push_front = lib.ImVector_Pair_push_front
-ImVector_Pair.reserve = lib.ImVector_Pair_reserve
-ImVector_Pair.resize = lib.ImVector_Pair_resize
-ImVector_Pair.resizeT = lib.ImVector_Pair_resizeT
-ImVector_Pair.size = lib.ImVector_Pair_size
-ImVector_Pair.size_in_bytes = lib.ImVector_Pair_size_in_bytes
-ImVector_Pair.swap = lib.ImVector_Pair_swap
-M.ImVector_Pair = ffi.metatype("ImVector_Pair",ImVector_Pair)
+M.ImGuiIO = ffi.metatype("ImGuiIO",ImGuiIO)
 --------------------------ImVector_ImTextureID----------------------------
 local ImVector_ImTextureID= {}
 ImVector_ImTextureID.__index = ImVector_ImTextureID
@@ -933,22 +908,44 @@ ImVector_ImTextureID.size = lib.ImVector_ImTextureID_size
 ImVector_ImTextureID.size_in_bytes = lib.ImVector_ImTextureID_size_in_bytes
 ImVector_ImTextureID.swap = lib.ImVector_ImTextureID_swap
 M.ImVector_ImTextureID = ffi.metatype("ImVector_ImTextureID",ImVector_ImTextureID)
---------------------------Pair----------------------------
-local Pair= {}
-Pair.__index = Pair
-function Pair.PairInt(_key,_val_i)
-    local ptr = lib.Pair_PairInt(_key,_val_i)
-    return ffi.gc(ptr,lib.Pair_destroy)
+--------------------------ImVector_ImDrawCmd----------------------------
+local ImVector_ImDrawCmd= {}
+ImVector_ImDrawCmd.__index = ImVector_ImDrawCmd
+function ImVector_ImDrawCmd.__new(ctype)
+    local ptr = lib.ImVector_ImDrawCmd_ImVector_ImDrawCmd()
+    return ffi.gc(ptr,lib.ImVector_ImDrawCmd_destroy)
 end
-function Pair.PairFloat(_key,_val_f)
-    local ptr = lib.Pair_PairFloat(_key,_val_f)
-    return ffi.gc(ptr,lib.Pair_destroy)
+function ImVector_ImDrawCmd.ImVector_ImDrawCmdVector(src)
+    local ptr = lib.ImVector_ImDrawCmd_ImVector_ImDrawCmdVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImDrawCmd_destroy)
 end
-function Pair.PairPtr(_key,_val_p)
-    local ptr = lib.Pair_PairPtr(_key,_val_p)
-    return ffi.gc(ptr,lib.Pair_destroy)
-end
-M.Pair = ffi.metatype("Pair",Pair)
+ImVector_ImDrawCmd._grow_capacity = lib.ImVector_ImDrawCmd__grow_capacity
+ImVector_ImDrawCmd.back = lib.ImVector_ImDrawCmd_back
+ImVector_ImDrawCmd.back_const = lib.ImVector_ImDrawCmd_back_const
+ImVector_ImDrawCmd.begin = lib.ImVector_ImDrawCmd_begin
+ImVector_ImDrawCmd.begin_const = lib.ImVector_ImDrawCmd_begin_const
+ImVector_ImDrawCmd.capacity = lib.ImVector_ImDrawCmd_capacity
+ImVector_ImDrawCmd.clear = lib.ImVector_ImDrawCmd_clear
+ImVector_ImDrawCmd.empty = lib.ImVector_ImDrawCmd_empty
+ImVector_ImDrawCmd._end = lib.ImVector_ImDrawCmd_end
+ImVector_ImDrawCmd.end_const = lib.ImVector_ImDrawCmd_end_const
+ImVector_ImDrawCmd.erase = lib.ImVector_ImDrawCmd_erase
+ImVector_ImDrawCmd.eraseTPtr = lib.ImVector_ImDrawCmd_eraseTPtr
+ImVector_ImDrawCmd.erase_unsorted = lib.ImVector_ImDrawCmd_erase_unsorted
+ImVector_ImDrawCmd.front = lib.ImVector_ImDrawCmd_front
+ImVector_ImDrawCmd.front_const = lib.ImVector_ImDrawCmd_front_const
+ImVector_ImDrawCmd.index_from_ptr = lib.ImVector_ImDrawCmd_index_from_ptr
+ImVector_ImDrawCmd.insert = lib.ImVector_ImDrawCmd_insert
+ImVector_ImDrawCmd.pop_back = lib.ImVector_ImDrawCmd_pop_back
+ImVector_ImDrawCmd.push_back = lib.ImVector_ImDrawCmd_push_back
+ImVector_ImDrawCmd.push_front = lib.ImVector_ImDrawCmd_push_front
+ImVector_ImDrawCmd.reserve = lib.ImVector_ImDrawCmd_reserve
+ImVector_ImDrawCmd.resize = lib.ImVector_ImDrawCmd_resize
+ImVector_ImDrawCmd.resizeT = lib.ImVector_ImDrawCmd_resizeT
+ImVector_ImDrawCmd.size = lib.ImVector_ImDrawCmd_size
+ImVector_ImDrawCmd.size_in_bytes = lib.ImVector_ImDrawCmd_size_in_bytes
+ImVector_ImDrawCmd.swap = lib.ImVector_ImDrawCmd_swap
+M.ImVector_ImDrawCmd = ffi.metatype("ImVector_ImDrawCmd",ImVector_ImDrawCmd)
 --------------------------ImGuiStorage----------------------------
 local ImGuiStorage= {}
 ImGuiStorage.__index = ImGuiStorage
@@ -989,17 +986,15 @@ ImGuiStorage.SetFloat = lib.ImGuiStorage_SetFloat
 ImGuiStorage.SetInt = lib.ImGuiStorage_SetInt
 ImGuiStorage.SetVoidPtr = lib.ImGuiStorage_SetVoidPtr
 M.ImGuiStorage = ffi.metatype("ImGuiStorage",ImGuiStorage)
---------------------------ImGuiIO----------------------------
-local ImGuiIO= {}
-ImGuiIO.__index = ImGuiIO
-ImGuiIO.AddInputCharacter = lib.ImGuiIO_AddInputCharacter
-ImGuiIO.AddInputCharactersUTF8 = lib.ImGuiIO_AddInputCharactersUTF8
-ImGuiIO.ClearInputCharacters = lib.ImGuiIO_ClearInputCharacters
-function ImGuiIO.__new(ctype)
-    local ptr = lib.ImGuiIO_ImGuiIO()
-    return ffi.gc(ptr,lib.ImGuiIO_destroy)
+--------------------------ImFontAtlasCustomRect----------------------------
+local ImFontAtlasCustomRect= {}
+ImFontAtlasCustomRect.__index = ImFontAtlasCustomRect
+function ImFontAtlasCustomRect.__new(ctype)
+    local ptr = lib.ImFontAtlasCustomRect_ImFontAtlasCustomRect()
+    return ffi.gc(ptr,lib.ImFontAtlasCustomRect_destroy)
 end
-M.ImGuiIO = ffi.metatype("ImGuiIO",ImGuiIO)
+ImFontAtlasCustomRect.IsPacked = lib.ImFontAtlasCustomRect_IsPacked
+M.ImFontAtlasCustomRect = ffi.metatype("ImFontAtlasCustomRect",ImFontAtlasCustomRect)
 --------------------------ImVector_ImWchar----------------------------
 local ImVector_ImWchar= {}
 ImVector_ImWchar.__index = ImVector_ImWchar
@@ -1078,14 +1073,22 @@ ImVector_char.size = lib.ImVector_char_size
 ImVector_char.size_in_bytes = lib.ImVector_char_size_in_bytes
 ImVector_char.swap = lib.ImVector_char_swap
 M.ImVector_char = ffi.metatype("ImVector_char",ImVector_char)
---------------------------ImGuiOnceUponAFrame----------------------------
-local ImGuiOnceUponAFrame= {}
-ImGuiOnceUponAFrame.__index = ImGuiOnceUponAFrame
-function ImGuiOnceUponAFrame.__new(ctype)
-    local ptr = lib.ImGuiOnceUponAFrame_ImGuiOnceUponAFrame()
-    return ffi.gc(ptr,lib.ImGuiOnceUponAFrame_destroy)
+--------------------------ImGuiStoragePair----------------------------
+local ImGuiStoragePair= {}
+ImGuiStoragePair.__index = ImGuiStoragePair
+function ImGuiStoragePair.ImGuiStoragePairInt(_key,_val_i)
+    local ptr = lib.ImGuiStoragePair_ImGuiStoragePairInt(_key,_val_i)
+    return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
 end
-M.ImGuiOnceUponAFrame = ffi.metatype("ImGuiOnceUponAFrame",ImGuiOnceUponAFrame)
+function ImGuiStoragePair.ImGuiStoragePairFloat(_key,_val_f)
+    local ptr = lib.ImGuiStoragePair_ImGuiStoragePairFloat(_key,_val_f)
+    return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
+end
+function ImGuiStoragePair.ImGuiStoragePairPtr(_key,_val_p)
+    local ptr = lib.ImGuiStoragePair_ImGuiStoragePairPtr(_key,_val_p)
+    return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
+end
+M.ImGuiStoragePair = ffi.metatype("ImGuiStoragePair",ImGuiStoragePair)
 --------------------------ImFont----------------------------
 local ImFont= {}
 ImFont.__index = ImFont
@@ -1127,19 +1130,14 @@ function ImFont:RenderText(draw_list,size,pos,col,clip_rect,text_begin,text_end,
 end
 ImFont.SetFallbackChar = lib.ImFont_SetFallbackChar
 M.ImFont = ffi.metatype("ImFont",ImFont)
---------------------------ImDrawListSplitter----------------------------
-local ImDrawListSplitter= {}
-ImDrawListSplitter.__index = ImDrawListSplitter
-ImDrawListSplitter.Clear = lib.ImDrawListSplitter_Clear
-ImDrawListSplitter.ClearFreeMemory = lib.ImDrawListSplitter_ClearFreeMemory
-function ImDrawListSplitter.__new(ctype)
-    local ptr = lib.ImDrawListSplitter_ImDrawListSplitter()
-    return ffi.gc(ptr,lib.ImDrawListSplitter_destroy)
+--------------------------ImGuiOnceUponAFrame----------------------------
+local ImGuiOnceUponAFrame= {}
+ImGuiOnceUponAFrame.__index = ImGuiOnceUponAFrame
+function ImGuiOnceUponAFrame.__new(ctype)
+    local ptr = lib.ImGuiOnceUponAFrame_ImGuiOnceUponAFrame()
+    return ffi.gc(ptr,lib.ImGuiOnceUponAFrame_destroy)
 end
-ImDrawListSplitter.Merge = lib.ImDrawListSplitter_Merge
-ImDrawListSplitter.SetCurrentChannel = lib.ImDrawListSplitter_SetCurrentChannel
-ImDrawListSplitter.Split = lib.ImDrawListSplitter_Split
-M.ImDrawListSplitter = ffi.metatype("ImDrawListSplitter",ImDrawListSplitter)
+M.ImGuiOnceUponAFrame = ffi.metatype("ImGuiOnceUponAFrame",ImGuiOnceUponAFrame)
 --------------------------ImVector_ImVec4----------------------------
 local ImVector_ImVec4= {}
 ImVector_ImVec4.__index = ImVector_ImVec4
@@ -1178,82 +1176,82 @@ ImVector_ImVec4.size = lib.ImVector_ImVec4_size
 ImVector_ImVec4.size_in_bytes = lib.ImVector_ImVec4_size_in_bytes
 ImVector_ImVec4.swap = lib.ImVector_ImVec4_swap
 M.ImVector_ImVec4 = ffi.metatype("ImVector_ImVec4",ImVector_ImVec4)
---------------------------ImVector_ImFontConfig----------------------------
-local ImVector_ImFontConfig= {}
-ImVector_ImFontConfig.__index = ImVector_ImFontConfig
-function ImVector_ImFontConfig.__new(ctype)
-    local ptr = lib.ImVector_ImFontConfig_ImVector_ImFontConfig()
-    return ffi.gc(ptr,lib.ImVector_ImFontConfig_destroy)
+--------------------------ImVector_ImDrawIdx----------------------------
+local ImVector_ImDrawIdx= {}
+ImVector_ImDrawIdx.__index = ImVector_ImDrawIdx
+function ImVector_ImDrawIdx.__new(ctype)
+    local ptr = lib.ImVector_ImDrawIdx_ImVector_ImDrawIdx()
+    return ffi.gc(ptr,lib.ImVector_ImDrawIdx_destroy)
 end
-function ImVector_ImFontConfig.ImVector_ImFontConfigVector(src)
-    local ptr = lib.ImVector_ImFontConfig_ImVector_ImFontConfigVector(src)
-    return ffi.gc(ptr,lib.ImVector_ImFontConfig_destroy)
+function ImVector_ImDrawIdx.ImVector_ImDrawIdxVector(src)
+    local ptr = lib.ImVector_ImDrawIdx_ImVector_ImDrawIdxVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImDrawIdx_destroy)
 end
-ImVector_ImFontConfig._grow_capacity = lib.ImVector_ImFontConfig__grow_capacity
-ImVector_ImFontConfig.back = lib.ImVector_ImFontConfig_back
-ImVector_ImFontConfig.back_const = lib.ImVector_ImFontConfig_back_const
-ImVector_ImFontConfig.begin = lib.ImVector_ImFontConfig_begin
-ImVector_ImFontConfig.begin_const = lib.ImVector_ImFontConfig_begin_const
-ImVector_ImFontConfig.capacity = lib.ImVector_ImFontConfig_capacity
-ImVector_ImFontConfig.clear = lib.ImVector_ImFontConfig_clear
-ImVector_ImFontConfig.empty = lib.ImVector_ImFontConfig_empty
-ImVector_ImFontConfig._end = lib.ImVector_ImFontConfig_end
-ImVector_ImFontConfig.end_const = lib.ImVector_ImFontConfig_end_const
-ImVector_ImFontConfig.erase = lib.ImVector_ImFontConfig_erase
-ImVector_ImFontConfig.eraseTPtr = lib.ImVector_ImFontConfig_eraseTPtr
-ImVector_ImFontConfig.erase_unsorted = lib.ImVector_ImFontConfig_erase_unsorted
-ImVector_ImFontConfig.front = lib.ImVector_ImFontConfig_front
-ImVector_ImFontConfig.front_const = lib.ImVector_ImFontConfig_front_const
-ImVector_ImFontConfig.index_from_ptr = lib.ImVector_ImFontConfig_index_from_ptr
-ImVector_ImFontConfig.insert = lib.ImVector_ImFontConfig_insert
-ImVector_ImFontConfig.pop_back = lib.ImVector_ImFontConfig_pop_back
-ImVector_ImFontConfig.push_back = lib.ImVector_ImFontConfig_push_back
-ImVector_ImFontConfig.push_front = lib.ImVector_ImFontConfig_push_front
-ImVector_ImFontConfig.reserve = lib.ImVector_ImFontConfig_reserve
-ImVector_ImFontConfig.resize = lib.ImVector_ImFontConfig_resize
-ImVector_ImFontConfig.resizeT = lib.ImVector_ImFontConfig_resizeT
-ImVector_ImFontConfig.size = lib.ImVector_ImFontConfig_size
-ImVector_ImFontConfig.size_in_bytes = lib.ImVector_ImFontConfig_size_in_bytes
-ImVector_ImFontConfig.swap = lib.ImVector_ImFontConfig_swap
-M.ImVector_ImFontConfig = ffi.metatype("ImVector_ImFontConfig",ImVector_ImFontConfig)
---------------------------ImVector_ImDrawCmd----------------------------
-local ImVector_ImDrawCmd= {}
-ImVector_ImDrawCmd.__index = ImVector_ImDrawCmd
-function ImVector_ImDrawCmd.__new(ctype)
-    local ptr = lib.ImVector_ImDrawCmd_ImVector_ImDrawCmd()
-    return ffi.gc(ptr,lib.ImVector_ImDrawCmd_destroy)
+ImVector_ImDrawIdx._grow_capacity = lib.ImVector_ImDrawIdx__grow_capacity
+ImVector_ImDrawIdx.back = lib.ImVector_ImDrawIdx_back
+ImVector_ImDrawIdx.back_const = lib.ImVector_ImDrawIdx_back_const
+ImVector_ImDrawIdx.begin = lib.ImVector_ImDrawIdx_begin
+ImVector_ImDrawIdx.begin_const = lib.ImVector_ImDrawIdx_begin_const
+ImVector_ImDrawIdx.capacity = lib.ImVector_ImDrawIdx_capacity
+ImVector_ImDrawIdx.clear = lib.ImVector_ImDrawIdx_clear
+ImVector_ImDrawIdx.empty = lib.ImVector_ImDrawIdx_empty
+ImVector_ImDrawIdx._end = lib.ImVector_ImDrawIdx_end
+ImVector_ImDrawIdx.end_const = lib.ImVector_ImDrawIdx_end_const
+ImVector_ImDrawIdx.erase = lib.ImVector_ImDrawIdx_erase
+ImVector_ImDrawIdx.eraseTPtr = lib.ImVector_ImDrawIdx_eraseTPtr
+ImVector_ImDrawIdx.erase_unsorted = lib.ImVector_ImDrawIdx_erase_unsorted
+ImVector_ImDrawIdx.front = lib.ImVector_ImDrawIdx_front
+ImVector_ImDrawIdx.front_const = lib.ImVector_ImDrawIdx_front_const
+ImVector_ImDrawIdx.index_from_ptr = lib.ImVector_ImDrawIdx_index_from_ptr
+ImVector_ImDrawIdx.insert = lib.ImVector_ImDrawIdx_insert
+ImVector_ImDrawIdx.pop_back = lib.ImVector_ImDrawIdx_pop_back
+ImVector_ImDrawIdx.push_back = lib.ImVector_ImDrawIdx_push_back
+ImVector_ImDrawIdx.push_front = lib.ImVector_ImDrawIdx_push_front
+ImVector_ImDrawIdx.reserve = lib.ImVector_ImDrawIdx_reserve
+ImVector_ImDrawIdx.resize = lib.ImVector_ImDrawIdx_resize
+ImVector_ImDrawIdx.resizeT = lib.ImVector_ImDrawIdx_resizeT
+ImVector_ImDrawIdx.size = lib.ImVector_ImDrawIdx_size
+ImVector_ImDrawIdx.size_in_bytes = lib.ImVector_ImDrawIdx_size_in_bytes
+ImVector_ImDrawIdx.swap = lib.ImVector_ImDrawIdx_swap
+M.ImVector_ImDrawIdx = ffi.metatype("ImVector_ImDrawIdx",ImVector_ImDrawIdx)
+--------------------------ImVector_ImGuiTextRange----------------------------
+local ImVector_ImGuiTextRange= {}
+ImVector_ImGuiTextRange.__index = ImVector_ImGuiTextRange
+function ImVector_ImGuiTextRange.__new(ctype)
+    local ptr = lib.ImVector_ImGuiTextRange_ImVector_ImGuiTextRange()
+    return ffi.gc(ptr,lib.ImVector_ImGuiTextRange_destroy)
 end
-function ImVector_ImDrawCmd.ImVector_ImDrawCmdVector(src)
-    local ptr = lib.ImVector_ImDrawCmd_ImVector_ImDrawCmdVector(src)
-    return ffi.gc(ptr,lib.ImVector_ImDrawCmd_destroy)
+function ImVector_ImGuiTextRange.ImVector_ImGuiTextRangeVector(src)
+    local ptr = lib.ImVector_ImGuiTextRange_ImVector_ImGuiTextRangeVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImGuiTextRange_destroy)
 end
-ImVector_ImDrawCmd._grow_capacity = lib.ImVector_ImDrawCmd__grow_capacity
-ImVector_ImDrawCmd.back = lib.ImVector_ImDrawCmd_back
-ImVector_ImDrawCmd.back_const = lib.ImVector_ImDrawCmd_back_const
-ImVector_ImDrawCmd.begin = lib.ImVector_ImDrawCmd_begin
-ImVector_ImDrawCmd.begin_const = lib.ImVector_ImDrawCmd_begin_const
-ImVector_ImDrawCmd.capacity = lib.ImVector_ImDrawCmd_capacity
-ImVector_ImDrawCmd.clear = lib.ImVector_ImDrawCmd_clear
-ImVector_ImDrawCmd.empty = lib.ImVector_ImDrawCmd_empty
-ImVector_ImDrawCmd._end = lib.ImVector_ImDrawCmd_end
-ImVector_ImDrawCmd.end_const = lib.ImVector_ImDrawCmd_end_const
-ImVector_ImDrawCmd.erase = lib.ImVector_ImDrawCmd_erase
-ImVector_ImDrawCmd.eraseTPtr = lib.ImVector_ImDrawCmd_eraseTPtr
-ImVector_ImDrawCmd.erase_unsorted = lib.ImVector_ImDrawCmd_erase_unsorted
-ImVector_ImDrawCmd.front = lib.ImVector_ImDrawCmd_front
-ImVector_ImDrawCmd.front_const = lib.ImVector_ImDrawCmd_front_const
-ImVector_ImDrawCmd.index_from_ptr = lib.ImVector_ImDrawCmd_index_from_ptr
-ImVector_ImDrawCmd.insert = lib.ImVector_ImDrawCmd_insert
-ImVector_ImDrawCmd.pop_back = lib.ImVector_ImDrawCmd_pop_back
-ImVector_ImDrawCmd.push_back = lib.ImVector_ImDrawCmd_push_back
-ImVector_ImDrawCmd.push_front = lib.ImVector_ImDrawCmd_push_front
-ImVector_ImDrawCmd.reserve = lib.ImVector_ImDrawCmd_reserve
-ImVector_ImDrawCmd.resize = lib.ImVector_ImDrawCmd_resize
-ImVector_ImDrawCmd.resizeT = lib.ImVector_ImDrawCmd_resizeT
-ImVector_ImDrawCmd.size = lib.ImVector_ImDrawCmd_size
-ImVector_ImDrawCmd.size_in_bytes = lib.ImVector_ImDrawCmd_size_in_bytes
-ImVector_ImDrawCmd.swap = lib.ImVector_ImDrawCmd_swap
-M.ImVector_ImDrawCmd = ffi.metatype("ImVector_ImDrawCmd",ImVector_ImDrawCmd)
+ImVector_ImGuiTextRange._grow_capacity = lib.ImVector_ImGuiTextRange__grow_capacity
+ImVector_ImGuiTextRange.back = lib.ImVector_ImGuiTextRange_back
+ImVector_ImGuiTextRange.back_const = lib.ImVector_ImGuiTextRange_back_const
+ImVector_ImGuiTextRange.begin = lib.ImVector_ImGuiTextRange_begin
+ImVector_ImGuiTextRange.begin_const = lib.ImVector_ImGuiTextRange_begin_const
+ImVector_ImGuiTextRange.capacity = lib.ImVector_ImGuiTextRange_capacity
+ImVector_ImGuiTextRange.clear = lib.ImVector_ImGuiTextRange_clear
+ImVector_ImGuiTextRange.empty = lib.ImVector_ImGuiTextRange_empty
+ImVector_ImGuiTextRange._end = lib.ImVector_ImGuiTextRange_end
+ImVector_ImGuiTextRange.end_const = lib.ImVector_ImGuiTextRange_end_const
+ImVector_ImGuiTextRange.erase = lib.ImVector_ImGuiTextRange_erase
+ImVector_ImGuiTextRange.eraseTPtr = lib.ImVector_ImGuiTextRange_eraseTPtr
+ImVector_ImGuiTextRange.erase_unsorted = lib.ImVector_ImGuiTextRange_erase_unsorted
+ImVector_ImGuiTextRange.front = lib.ImVector_ImGuiTextRange_front
+ImVector_ImGuiTextRange.front_const = lib.ImVector_ImGuiTextRange_front_const
+ImVector_ImGuiTextRange.index_from_ptr = lib.ImVector_ImGuiTextRange_index_from_ptr
+ImVector_ImGuiTextRange.insert = lib.ImVector_ImGuiTextRange_insert
+ImVector_ImGuiTextRange.pop_back = lib.ImVector_ImGuiTextRange_pop_back
+ImVector_ImGuiTextRange.push_back = lib.ImVector_ImGuiTextRange_push_back
+ImVector_ImGuiTextRange.push_front = lib.ImVector_ImGuiTextRange_push_front
+ImVector_ImGuiTextRange.reserve = lib.ImVector_ImGuiTextRange_reserve
+ImVector_ImGuiTextRange.resize = lib.ImVector_ImGuiTextRange_resize
+ImVector_ImGuiTextRange.resizeT = lib.ImVector_ImGuiTextRange_resizeT
+ImVector_ImGuiTextRange.size = lib.ImVector_ImGuiTextRange_size
+ImVector_ImGuiTextRange.size_in_bytes = lib.ImVector_ImGuiTextRange_size_in_bytes
+ImVector_ImGuiTextRange.swap = lib.ImVector_ImGuiTextRange_swap
+M.ImVector_ImGuiTextRange = ffi.metatype("ImVector_ImGuiTextRange",ImVector_ImGuiTextRange)
 --------------------------ImVector_float----------------------------
 local ImVector_float= {}
 ImVector_float.__index = ImVector_float
@@ -1293,44 +1291,20 @@ ImVector_float.size = lib.ImVector_float_size
 ImVector_float.size_in_bytes = lib.ImVector_float_size_in_bytes
 ImVector_float.swap = lib.ImVector_float_swap
 M.ImVector_float = ffi.metatype("ImVector_float",ImVector_float)
---------------------------ImVector_CustomRect----------------------------
-local ImVector_CustomRect= {}
-ImVector_CustomRect.__index = ImVector_CustomRect
-function ImVector_CustomRect.__new(ctype)
-    local ptr = lib.ImVector_CustomRect_ImVector_CustomRect()
-    return ffi.gc(ptr,lib.ImVector_CustomRect_destroy)
+--------------------------ImGuiInputTextCallbackData----------------------------
+local ImGuiInputTextCallbackData= {}
+ImGuiInputTextCallbackData.__index = ImGuiInputTextCallbackData
+ImGuiInputTextCallbackData.DeleteChars = lib.ImGuiInputTextCallbackData_DeleteChars
+ImGuiInputTextCallbackData.HasSelection = lib.ImGuiInputTextCallbackData_HasSelection
+function ImGuiInputTextCallbackData.__new(ctype)
+    local ptr = lib.ImGuiInputTextCallbackData_ImGuiInputTextCallbackData()
+    return ffi.gc(ptr,lib.ImGuiInputTextCallbackData_destroy)
 end
-function ImVector_CustomRect.ImVector_CustomRectVector(src)
-    local ptr = lib.ImVector_CustomRect_ImVector_CustomRectVector(src)
-    return ffi.gc(ptr,lib.ImVector_CustomRect_destroy)
+function ImGuiInputTextCallbackData:InsertChars(pos,text,text_end)
+    text_end = text_end or nil
+    return lib.ImGuiInputTextCallbackData_InsertChars(self,pos,text,text_end)
 end
-ImVector_CustomRect._grow_capacity = lib.ImVector_CustomRect__grow_capacity
-ImVector_CustomRect.back = lib.ImVector_CustomRect_back
-ImVector_CustomRect.back_const = lib.ImVector_CustomRect_back_const
-ImVector_CustomRect.begin = lib.ImVector_CustomRect_begin
-ImVector_CustomRect.begin_const = lib.ImVector_CustomRect_begin_const
-ImVector_CustomRect.capacity = lib.ImVector_CustomRect_capacity
-ImVector_CustomRect.clear = lib.ImVector_CustomRect_clear
-ImVector_CustomRect.empty = lib.ImVector_CustomRect_empty
-ImVector_CustomRect._end = lib.ImVector_CustomRect_end
-ImVector_CustomRect.end_const = lib.ImVector_CustomRect_end_const
-ImVector_CustomRect.erase = lib.ImVector_CustomRect_erase
-ImVector_CustomRect.eraseTPtr = lib.ImVector_CustomRect_eraseTPtr
-ImVector_CustomRect.erase_unsorted = lib.ImVector_CustomRect_erase_unsorted
-ImVector_CustomRect.front = lib.ImVector_CustomRect_front
-ImVector_CustomRect.front_const = lib.ImVector_CustomRect_front_const
-ImVector_CustomRect.index_from_ptr = lib.ImVector_CustomRect_index_from_ptr
-ImVector_CustomRect.insert = lib.ImVector_CustomRect_insert
-ImVector_CustomRect.pop_back = lib.ImVector_CustomRect_pop_back
-ImVector_CustomRect.push_back = lib.ImVector_CustomRect_push_back
-ImVector_CustomRect.push_front = lib.ImVector_CustomRect_push_front
-ImVector_CustomRect.reserve = lib.ImVector_CustomRect_reserve
-ImVector_CustomRect.resize = lib.ImVector_CustomRect_resize
-ImVector_CustomRect.resizeT = lib.ImVector_CustomRect_resizeT
-ImVector_CustomRect.size = lib.ImVector_CustomRect_size
-ImVector_CustomRect.size_in_bytes = lib.ImVector_CustomRect_size_in_bytes
-ImVector_CustomRect.swap = lib.ImVector_CustomRect_swap
-M.ImVector_CustomRect = ffi.metatype("ImVector_CustomRect",ImVector_CustomRect)
+M.ImGuiInputTextCallbackData = ffi.metatype("ImGuiInputTextCallbackData",ImGuiInputTextCallbackData)
 --------------------------ImGuiPayload----------------------------
 local ImGuiPayload= {}
 ImGuiPayload.__index = ImGuiPayload
@@ -1351,20 +1325,44 @@ function ImDrawCmd.__new(ctype)
     return ffi.gc(ptr,lib.ImDrawCmd_destroy)
 end
 M.ImDrawCmd = ffi.metatype("ImDrawCmd",ImDrawCmd)
---------------------------ImGuiInputTextCallbackData----------------------------
-local ImGuiInputTextCallbackData= {}
-ImGuiInputTextCallbackData.__index = ImGuiInputTextCallbackData
-ImGuiInputTextCallbackData.DeleteChars = lib.ImGuiInputTextCallbackData_DeleteChars
-ImGuiInputTextCallbackData.HasSelection = lib.ImGuiInputTextCallbackData_HasSelection
-function ImGuiInputTextCallbackData.__new(ctype)
-    local ptr = lib.ImGuiInputTextCallbackData_ImGuiInputTextCallbackData()
-    return ffi.gc(ptr,lib.ImGuiInputTextCallbackData_destroy)
+--------------------------ImVector_ImFontGlyph----------------------------
+local ImVector_ImFontGlyph= {}
+ImVector_ImFontGlyph.__index = ImVector_ImFontGlyph
+function ImVector_ImFontGlyph.__new(ctype)
+    local ptr = lib.ImVector_ImFontGlyph_ImVector_ImFontGlyph()
+    return ffi.gc(ptr,lib.ImVector_ImFontGlyph_destroy)
 end
-function ImGuiInputTextCallbackData:InsertChars(pos,text,text_end)
-    text_end = text_end or nil
-    return lib.ImGuiInputTextCallbackData_InsertChars(self,pos,text,text_end)
+function ImVector_ImFontGlyph.ImVector_ImFontGlyphVector(src)
+    local ptr = lib.ImVector_ImFontGlyph_ImVector_ImFontGlyphVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImFontGlyph_destroy)
 end
-M.ImGuiInputTextCallbackData = ffi.metatype("ImGuiInputTextCallbackData",ImGuiInputTextCallbackData)
+ImVector_ImFontGlyph._grow_capacity = lib.ImVector_ImFontGlyph__grow_capacity
+ImVector_ImFontGlyph.back = lib.ImVector_ImFontGlyph_back
+ImVector_ImFontGlyph.back_const = lib.ImVector_ImFontGlyph_back_const
+ImVector_ImFontGlyph.begin = lib.ImVector_ImFontGlyph_begin
+ImVector_ImFontGlyph.begin_const = lib.ImVector_ImFontGlyph_begin_const
+ImVector_ImFontGlyph.capacity = lib.ImVector_ImFontGlyph_capacity
+ImVector_ImFontGlyph.clear = lib.ImVector_ImFontGlyph_clear
+ImVector_ImFontGlyph.empty = lib.ImVector_ImFontGlyph_empty
+ImVector_ImFontGlyph._end = lib.ImVector_ImFontGlyph_end
+ImVector_ImFontGlyph.end_const = lib.ImVector_ImFontGlyph_end_const
+ImVector_ImFontGlyph.erase = lib.ImVector_ImFontGlyph_erase
+ImVector_ImFontGlyph.eraseTPtr = lib.ImVector_ImFontGlyph_eraseTPtr
+ImVector_ImFontGlyph.erase_unsorted = lib.ImVector_ImFontGlyph_erase_unsorted
+ImVector_ImFontGlyph.front = lib.ImVector_ImFontGlyph_front
+ImVector_ImFontGlyph.front_const = lib.ImVector_ImFontGlyph_front_const
+ImVector_ImFontGlyph.index_from_ptr = lib.ImVector_ImFontGlyph_index_from_ptr
+ImVector_ImFontGlyph.insert = lib.ImVector_ImFontGlyph_insert
+ImVector_ImFontGlyph.pop_back = lib.ImVector_ImFontGlyph_pop_back
+ImVector_ImFontGlyph.push_back = lib.ImVector_ImFontGlyph_push_back
+ImVector_ImFontGlyph.push_front = lib.ImVector_ImFontGlyph_push_front
+ImVector_ImFontGlyph.reserve = lib.ImVector_ImFontGlyph_reserve
+ImVector_ImFontGlyph.resize = lib.ImVector_ImFontGlyph_resize
+ImVector_ImFontGlyph.resizeT = lib.ImVector_ImFontGlyph_resizeT
+ImVector_ImFontGlyph.size = lib.ImVector_ImFontGlyph_size
+ImVector_ImFontGlyph.size_in_bytes = lib.ImVector_ImFontGlyph_size_in_bytes
+ImVector_ImFontGlyph.swap = lib.ImVector_ImFontGlyph_swap
+M.ImVector_ImFontGlyph = ffi.metatype("ImVector_ImFontGlyph",ImVector_ImFontGlyph)
 --------------------------ImGuiTextFilter----------------------------
 local ImGuiTextFilter= {}
 ImGuiTextFilter.__index = ImGuiTextFilter
@@ -1386,44 +1384,44 @@ function ImGuiTextFilter:PassFilter(text,text_end)
     return lib.ImGuiTextFilter_PassFilter(self,text,text_end)
 end
 M.ImGuiTextFilter = ffi.metatype("ImGuiTextFilter",ImGuiTextFilter)
---------------------------ImVector_ImDrawIdx----------------------------
-local ImVector_ImDrawIdx= {}
-ImVector_ImDrawIdx.__index = ImVector_ImDrawIdx
-function ImVector_ImDrawIdx.__new(ctype)
-    local ptr = lib.ImVector_ImDrawIdx_ImVector_ImDrawIdx()
-    return ffi.gc(ptr,lib.ImVector_ImDrawIdx_destroy)
+--------------------------ImVector_ImGuiStoragePair----------------------------
+local ImVector_ImGuiStoragePair= {}
+ImVector_ImGuiStoragePair.__index = ImVector_ImGuiStoragePair
+function ImVector_ImGuiStoragePair.__new(ctype)
+    local ptr = lib.ImVector_ImGuiStoragePair_ImVector_ImGuiStoragePair()
+    return ffi.gc(ptr,lib.ImVector_ImGuiStoragePair_destroy)
 end
-function ImVector_ImDrawIdx.ImVector_ImDrawIdxVector(src)
-    local ptr = lib.ImVector_ImDrawIdx_ImVector_ImDrawIdxVector(src)
-    return ffi.gc(ptr,lib.ImVector_ImDrawIdx_destroy)
+function ImVector_ImGuiStoragePair.ImVector_ImGuiStoragePairVector(src)
+    local ptr = lib.ImVector_ImGuiStoragePair_ImVector_ImGuiStoragePairVector(src)
+    return ffi.gc(ptr,lib.ImVector_ImGuiStoragePair_destroy)
 end
-ImVector_ImDrawIdx._grow_capacity = lib.ImVector_ImDrawIdx__grow_capacity
-ImVector_ImDrawIdx.back = lib.ImVector_ImDrawIdx_back
-ImVector_ImDrawIdx.back_const = lib.ImVector_ImDrawIdx_back_const
-ImVector_ImDrawIdx.begin = lib.ImVector_ImDrawIdx_begin
-ImVector_ImDrawIdx.begin_const = lib.ImVector_ImDrawIdx_begin_const
-ImVector_ImDrawIdx.capacity = lib.ImVector_ImDrawIdx_capacity
-ImVector_ImDrawIdx.clear = lib.ImVector_ImDrawIdx_clear
-ImVector_ImDrawIdx.empty = lib.ImVector_ImDrawIdx_empty
-ImVector_ImDrawIdx._end = lib.ImVector_ImDrawIdx_end
-ImVector_ImDrawIdx.end_const = lib.ImVector_ImDrawIdx_end_const
-ImVector_ImDrawIdx.erase = lib.ImVector_ImDrawIdx_erase
-ImVector_ImDrawIdx.eraseTPtr = lib.ImVector_ImDrawIdx_eraseTPtr
-ImVector_ImDrawIdx.erase_unsorted = lib.ImVector_ImDrawIdx_erase_unsorted
-ImVector_ImDrawIdx.front = lib.ImVector_ImDrawIdx_front
-ImVector_ImDrawIdx.front_const = lib.ImVector_ImDrawIdx_front_const
-ImVector_ImDrawIdx.index_from_ptr = lib.ImVector_ImDrawIdx_index_from_ptr
-ImVector_ImDrawIdx.insert = lib.ImVector_ImDrawIdx_insert
-ImVector_ImDrawIdx.pop_back = lib.ImVector_ImDrawIdx_pop_back
-ImVector_ImDrawIdx.push_back = lib.ImVector_ImDrawIdx_push_back
-ImVector_ImDrawIdx.push_front = lib.ImVector_ImDrawIdx_push_front
-ImVector_ImDrawIdx.reserve = lib.ImVector_ImDrawIdx_reserve
-ImVector_ImDrawIdx.resize = lib.ImVector_ImDrawIdx_resize
-ImVector_ImDrawIdx.resizeT = lib.ImVector_ImDrawIdx_resizeT
-ImVector_ImDrawIdx.size = lib.ImVector_ImDrawIdx_size
-ImVector_ImDrawIdx.size_in_bytes = lib.ImVector_ImDrawIdx_size_in_bytes
-ImVector_ImDrawIdx.swap = lib.ImVector_ImDrawIdx_swap
-M.ImVector_ImDrawIdx = ffi.metatype("ImVector_ImDrawIdx",ImVector_ImDrawIdx)
+ImVector_ImGuiStoragePair._grow_capacity = lib.ImVector_ImGuiStoragePair__grow_capacity
+ImVector_ImGuiStoragePair.back = lib.ImVector_ImGuiStoragePair_back
+ImVector_ImGuiStoragePair.back_const = lib.ImVector_ImGuiStoragePair_back_const
+ImVector_ImGuiStoragePair.begin = lib.ImVector_ImGuiStoragePair_begin
+ImVector_ImGuiStoragePair.begin_const = lib.ImVector_ImGuiStoragePair_begin_const
+ImVector_ImGuiStoragePair.capacity = lib.ImVector_ImGuiStoragePair_capacity
+ImVector_ImGuiStoragePair.clear = lib.ImVector_ImGuiStoragePair_clear
+ImVector_ImGuiStoragePair.empty = lib.ImVector_ImGuiStoragePair_empty
+ImVector_ImGuiStoragePair._end = lib.ImVector_ImGuiStoragePair_end
+ImVector_ImGuiStoragePair.end_const = lib.ImVector_ImGuiStoragePair_end_const
+ImVector_ImGuiStoragePair.erase = lib.ImVector_ImGuiStoragePair_erase
+ImVector_ImGuiStoragePair.eraseTPtr = lib.ImVector_ImGuiStoragePair_eraseTPtr
+ImVector_ImGuiStoragePair.erase_unsorted = lib.ImVector_ImGuiStoragePair_erase_unsorted
+ImVector_ImGuiStoragePair.front = lib.ImVector_ImGuiStoragePair_front
+ImVector_ImGuiStoragePair.front_const = lib.ImVector_ImGuiStoragePair_front_const
+ImVector_ImGuiStoragePair.index_from_ptr = lib.ImVector_ImGuiStoragePair_index_from_ptr
+ImVector_ImGuiStoragePair.insert = lib.ImVector_ImGuiStoragePair_insert
+ImVector_ImGuiStoragePair.pop_back = lib.ImVector_ImGuiStoragePair_pop_back
+ImVector_ImGuiStoragePair.push_back = lib.ImVector_ImGuiStoragePair_push_back
+ImVector_ImGuiStoragePair.push_front = lib.ImVector_ImGuiStoragePair_push_front
+ImVector_ImGuiStoragePair.reserve = lib.ImVector_ImGuiStoragePair_reserve
+ImVector_ImGuiStoragePair.resize = lib.ImVector_ImGuiStoragePair_resize
+ImVector_ImGuiStoragePair.resizeT = lib.ImVector_ImGuiStoragePair_resizeT
+ImVector_ImGuiStoragePair.size = lib.ImVector_ImGuiStoragePair_size
+ImVector_ImGuiStoragePair.size_in_bytes = lib.ImVector_ImGuiStoragePair_size_in_bytes
+ImVector_ImGuiStoragePair.swap = lib.ImVector_ImGuiStoragePair_swap
+M.ImVector_ImGuiStoragePair = ffi.metatype("ImVector_ImGuiStoragePair",ImVector_ImGuiStoragePair)
 --------------------------ImFontAtlas----------------------------
 local ImFontAtlas= {}
 ImFontAtlas.__index = ImFontAtlas
@@ -2299,9 +2297,17 @@ function M.SetNextWindowSizeConstraints(size_min,size_max,custom_callback,custom
     custom_callback_data = custom_callback_data or nil
     return lib.igSetNextWindowSizeConstraints(size_min,size_max,custom_callback,custom_callback_data)
 end
+function M.SetScrollFromPosX(local_x,center_x_ratio)
+    center_x_ratio = center_x_ratio or 0.5
+    return lib.igSetScrollFromPosX(local_x,center_x_ratio)
+end
 function M.SetScrollFromPosY(local_y,center_y_ratio)
     center_y_ratio = center_y_ratio or 0.5
     return lib.igSetScrollFromPosY(local_y,center_y_ratio)
+end
+function M.SetScrollHereX(center_x_ratio)
+    center_x_ratio = center_x_ratio or 0.5
+    return lib.igSetScrollHereX(center_x_ratio)
 end
 function M.SetScrollHereY(center_y_ratio)
     center_y_ratio = center_y_ratio or 0.5
@@ -2437,7 +2443,6 @@ end
 M.TextV = lib.igTextV
 M.TextWrapped = lib.igTextWrapped
 M.TextWrappedV = lib.igTextWrappedV
-M.TreeAdvanceToLabelPos = lib.igTreeAdvanceToLabelPos
 M.TreeNodeStr = lib.igTreeNodeStr
 M.TreeNodeStrStr = lib.igTreeNodeStrStr
 M.TreeNodePtr = lib.igTreeNodePtr
