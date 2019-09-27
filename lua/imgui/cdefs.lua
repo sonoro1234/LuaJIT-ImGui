@@ -1454,6 +1454,7 @@ float igGET_FLT_MAX();
 void igColorConvertRGBtoHSV(float r,float g,float b,float *out_h,float *out_s,float *out_v);
 void igColorConvertHSVtoRGB(float h,float s,float v,float *out_r,float *out_g,float *out_b);
 ImVector_ImWchar* ImVector_ImWchar_create();
+void ImVector_ImWchar_destroy(ImVector_ImWchar* self)
 void ImVector_ImWchar_Init(ImVector_ImWchar* p);
 void ImVector_ImWchar_UnInit(ImVector_ImWchar* p);
 typedef struct SDL_Window SDL_Window;
