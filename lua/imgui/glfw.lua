@@ -499,70 +499,46 @@ function ImGuiListClipper.__new(ctype,items_count,items_height)
 end
 ImGuiListClipper.Step = lib.ImGuiListClipper_Step
 M.ImGuiListClipper = ffi.metatype("ImGuiListClipper",ImGuiListClipper)
---------------------------ImFontAtlas----------------------------
-local ImFontAtlas= {}
-ImFontAtlas.__index = ImFontAtlas
-function ImFontAtlas:AddCustomRectFontGlyph(font,id,width,height,advance_x,offset)
-    offset = offset or ImVec2(0,0)
-    return lib.ImFontAtlas_AddCustomRectFontGlyph(self,font,id,width,height,advance_x,offset)
+--------------------------ImGuiStorage----------------------------
+local ImGuiStorage= {}
+ImGuiStorage.__index = ImGuiStorage
+ImGuiStorage.BuildSortByKey = lib.ImGuiStorage_BuildSortByKey
+ImGuiStorage.Clear = lib.ImGuiStorage_Clear
+function ImGuiStorage:GetBool(key,default_val)
+    default_val = default_val or false
+    return lib.ImGuiStorage_GetBool(self,key,default_val)
 end
-ImFontAtlas.AddCustomRectRegular = lib.ImFontAtlas_AddCustomRectRegular
-ImFontAtlas.AddFont = lib.ImFontAtlas_AddFont
-function ImFontAtlas:AddFontDefault(font_cfg)
-    font_cfg = font_cfg or nil
-    return lib.ImFontAtlas_AddFontDefault(self,font_cfg)
+function ImGuiStorage:GetBoolRef(key,default_val)
+    default_val = default_val or false
+    return lib.ImGuiStorage_GetBoolRef(self,key,default_val)
 end
-function ImFontAtlas:AddFontFromFileTTF(filename,size_pixels,font_cfg,glyph_ranges)
-    glyph_ranges = glyph_ranges or nil
-    font_cfg = font_cfg or nil
-    return lib.ImFontAtlas_AddFontFromFileTTF(self,filename,size_pixels,font_cfg,glyph_ranges)
+function ImGuiStorage:GetFloat(key,default_val)
+    default_val = default_val or 0.0
+    return lib.ImGuiStorage_GetFloat(self,key,default_val)
 end
-function ImFontAtlas:AddFontFromMemoryCompressedBase85TTF(compressed_font_data_base85,size_pixels,font_cfg,glyph_ranges)
-    glyph_ranges = glyph_ranges or nil
-    font_cfg = font_cfg or nil
-    return lib.ImFontAtlas_AddFontFromMemoryCompressedBase85TTF(self,compressed_font_data_base85,size_pixels,font_cfg,glyph_ranges)
+function ImGuiStorage:GetFloatRef(key,default_val)
+    default_val = default_val or 0.0
+    return lib.ImGuiStorage_GetFloatRef(self,key,default_val)
 end
-function ImFontAtlas:AddFontFromMemoryCompressedTTF(compressed_font_data,compressed_font_size,size_pixels,font_cfg,glyph_ranges)
-    glyph_ranges = glyph_ranges or nil
-    font_cfg = font_cfg or nil
-    return lib.ImFontAtlas_AddFontFromMemoryCompressedTTF(self,compressed_font_data,compressed_font_size,size_pixels,font_cfg,glyph_ranges)
+function ImGuiStorage:GetInt(key,default_val)
+    default_val = default_val or 0
+    return lib.ImGuiStorage_GetInt(self,key,default_val)
 end
-function ImFontAtlas:AddFontFromMemoryTTF(font_data,font_size,size_pixels,font_cfg,glyph_ranges)
-    glyph_ranges = glyph_ranges or nil
-    font_cfg = font_cfg or nil
-    return lib.ImFontAtlas_AddFontFromMemoryTTF(self,font_data,font_size,size_pixels,font_cfg,glyph_ranges)
+function ImGuiStorage:GetIntRef(key,default_val)
+    default_val = default_val or 0
+    return lib.ImGuiStorage_GetIntRef(self,key,default_val)
 end
-ImFontAtlas.Build = lib.ImFontAtlas_Build
-ImFontAtlas.CalcCustomRectUV = lib.ImFontAtlas_CalcCustomRectUV
-ImFontAtlas.Clear = lib.ImFontAtlas_Clear
-ImFontAtlas.ClearFonts = lib.ImFontAtlas_ClearFonts
-ImFontAtlas.ClearInputData = lib.ImFontAtlas_ClearInputData
-ImFontAtlas.ClearTexData = lib.ImFontAtlas_ClearTexData
-ImFontAtlas.GetCustomRectByIndex = lib.ImFontAtlas_GetCustomRectByIndex
-ImFontAtlas.GetGlyphRangesChineseFull = lib.ImFontAtlas_GetGlyphRangesChineseFull
-ImFontAtlas.GetGlyphRangesChineseSimplifiedCommon = lib.ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon
-ImFontAtlas.GetGlyphRangesCyrillic = lib.ImFontAtlas_GetGlyphRangesCyrillic
-ImFontAtlas.GetGlyphRangesDefault = lib.ImFontAtlas_GetGlyphRangesDefault
-ImFontAtlas.GetGlyphRangesJapanese = lib.ImFontAtlas_GetGlyphRangesJapanese
-ImFontAtlas.GetGlyphRangesKorean = lib.ImFontAtlas_GetGlyphRangesKorean
-ImFontAtlas.GetGlyphRangesThai = lib.ImFontAtlas_GetGlyphRangesThai
-ImFontAtlas.GetGlyphRangesVietnamese = lib.ImFontAtlas_GetGlyphRangesVietnamese
-ImFontAtlas.GetMouseCursorTexData = lib.ImFontAtlas_GetMouseCursorTexData
-function ImFontAtlas:GetTexDataAsAlpha8(out_pixels,out_width,out_height,out_bytes_per_pixel)
-    out_bytes_per_pixel = out_bytes_per_pixel or nil
-    return lib.ImFontAtlas_GetTexDataAsAlpha8(self,out_pixels,out_width,out_height,out_bytes_per_pixel)
+ImGuiStorage.GetVoidPtr = lib.ImGuiStorage_GetVoidPtr
+function ImGuiStorage:GetVoidPtrRef(key,default_val)
+    default_val = default_val or nil
+    return lib.ImGuiStorage_GetVoidPtrRef(self,key,default_val)
 end
-function ImFontAtlas:GetTexDataAsRGBA32(out_pixels,out_width,out_height,out_bytes_per_pixel)
-    out_bytes_per_pixel = out_bytes_per_pixel or nil
-    return lib.ImFontAtlas_GetTexDataAsRGBA32(self,out_pixels,out_width,out_height,out_bytes_per_pixel)
-end
-function ImFontAtlas.__new(ctype)
-    local ptr = lib.ImFontAtlas_ImFontAtlas()
-    return ffi.gc(ptr,lib.ImFontAtlas_destroy)
-end
-ImFontAtlas.IsBuilt = lib.ImFontAtlas_IsBuilt
-ImFontAtlas.SetTexID = lib.ImFontAtlas_SetTexID
-M.ImFontAtlas = ffi.metatype("ImFontAtlas",ImFontAtlas)
+ImGuiStorage.SetAllInt = lib.ImGuiStorage_SetAllInt
+ImGuiStorage.SetBool = lib.ImGuiStorage_SetBool
+ImGuiStorage.SetFloat = lib.ImGuiStorage_SetFloat
+ImGuiStorage.SetInt = lib.ImGuiStorage_SetInt
+ImGuiStorage.SetVoidPtr = lib.ImGuiStorage_SetVoidPtr
+M.ImGuiStorage = ffi.metatype("ImGuiStorage",ImGuiStorage)
 --------------------------ImGuiStoragePair----------------------------
 local ImGuiStoragePair= {}
 ImGuiStoragePair.__index = ImGuiStoragePair
@@ -680,17 +656,6 @@ function ImGuiStyle.__new(ctype)
 end
 ImGuiStyle.ScaleAllSizes = lib.ImGuiStyle_ScaleAllSizes
 M.ImGuiStyle = ffi.metatype("ImGuiStyle",ImGuiStyle)
---------------------------ImGuiIO----------------------------
-local ImGuiIO= {}
-ImGuiIO.__index = ImGuiIO
-ImGuiIO.AddInputCharacter = lib.ImGuiIO_AddInputCharacter
-ImGuiIO.AddInputCharactersUTF8 = lib.ImGuiIO_AddInputCharactersUTF8
-ImGuiIO.ClearInputCharacters = lib.ImGuiIO_ClearInputCharacters
-function ImGuiIO.__new(ctype)
-    local ptr = lib.ImGuiIO_ImGuiIO()
-    return ffi.gc(ptr,lib.ImGuiIO_destroy)
-end
-M.ImGuiIO = ffi.metatype("ImGuiIO",ImGuiIO)
 --------------------------ImGuiTextBuffer----------------------------
 local ImGuiTextBuffer= {}
 ImGuiTextBuffer.__index = ImGuiTextBuffer
@@ -725,6 +690,17 @@ ImDrawListSplitter.Merge = lib.ImDrawListSplitter_Merge
 ImDrawListSplitter.SetCurrentChannel = lib.ImDrawListSplitter_SetCurrentChannel
 ImDrawListSplitter.Split = lib.ImDrawListSplitter_Split
 M.ImDrawListSplitter = ffi.metatype("ImDrawListSplitter",ImDrawListSplitter)
+--------------------------ImGuiIO----------------------------
+local ImGuiIO= {}
+ImGuiIO.__index = ImGuiIO
+ImGuiIO.AddInputCharacter = lib.ImGuiIO_AddInputCharacter
+ImGuiIO.AddInputCharactersUTF8 = lib.ImGuiIO_AddInputCharactersUTF8
+ImGuiIO.ClearInputCharacters = lib.ImGuiIO_ClearInputCharacters
+function ImGuiIO.__new(ctype)
+    local ptr = lib.ImGuiIO_ImGuiIO()
+    return ffi.gc(ptr,lib.ImGuiIO_destroy)
+end
+M.ImGuiIO = ffi.metatype("ImGuiIO",ImGuiIO)
 --------------------------ImGuiOnceUponAFrame----------------------------
 local ImGuiOnceUponAFrame= {}
 ImGuiOnceUponAFrame.__index = ImGuiOnceUponAFrame
@@ -762,46 +738,70 @@ function ImDrawCmd.__new(ctype)
     return ffi.gc(ptr,lib.ImDrawCmd_destroy)
 end
 M.ImDrawCmd = ffi.metatype("ImDrawCmd",ImDrawCmd)
---------------------------ImGuiStorage----------------------------
-local ImGuiStorage= {}
-ImGuiStorage.__index = ImGuiStorage
-ImGuiStorage.BuildSortByKey = lib.ImGuiStorage_BuildSortByKey
-ImGuiStorage.Clear = lib.ImGuiStorage_Clear
-function ImGuiStorage:GetBool(key,default_val)
-    default_val = default_val or false
-    return lib.ImGuiStorage_GetBool(self,key,default_val)
+--------------------------ImFontAtlas----------------------------
+local ImFontAtlas= {}
+ImFontAtlas.__index = ImFontAtlas
+function ImFontAtlas:AddCustomRectFontGlyph(font,id,width,height,advance_x,offset)
+    offset = offset or ImVec2(0,0)
+    return lib.ImFontAtlas_AddCustomRectFontGlyph(self,font,id,width,height,advance_x,offset)
 end
-function ImGuiStorage:GetBoolRef(key,default_val)
-    default_val = default_val or false
-    return lib.ImGuiStorage_GetBoolRef(self,key,default_val)
+ImFontAtlas.AddCustomRectRegular = lib.ImFontAtlas_AddCustomRectRegular
+ImFontAtlas.AddFont = lib.ImFontAtlas_AddFont
+function ImFontAtlas:AddFontDefault(font_cfg)
+    font_cfg = font_cfg or nil
+    return lib.ImFontAtlas_AddFontDefault(self,font_cfg)
 end
-function ImGuiStorage:GetFloat(key,default_val)
-    default_val = default_val or 0.0
-    return lib.ImGuiStorage_GetFloat(self,key,default_val)
+function ImFontAtlas:AddFontFromFileTTF(filename,size_pixels,font_cfg,glyph_ranges)
+    glyph_ranges = glyph_ranges or nil
+    font_cfg = font_cfg or nil
+    return lib.ImFontAtlas_AddFontFromFileTTF(self,filename,size_pixels,font_cfg,glyph_ranges)
 end
-function ImGuiStorage:GetFloatRef(key,default_val)
-    default_val = default_val or 0.0
-    return lib.ImGuiStorage_GetFloatRef(self,key,default_val)
+function ImFontAtlas:AddFontFromMemoryCompressedBase85TTF(compressed_font_data_base85,size_pixels,font_cfg,glyph_ranges)
+    glyph_ranges = glyph_ranges or nil
+    font_cfg = font_cfg or nil
+    return lib.ImFontAtlas_AddFontFromMemoryCompressedBase85TTF(self,compressed_font_data_base85,size_pixels,font_cfg,glyph_ranges)
 end
-function ImGuiStorage:GetInt(key,default_val)
-    default_val = default_val or 0
-    return lib.ImGuiStorage_GetInt(self,key,default_val)
+function ImFontAtlas:AddFontFromMemoryCompressedTTF(compressed_font_data,compressed_font_size,size_pixels,font_cfg,glyph_ranges)
+    glyph_ranges = glyph_ranges or nil
+    font_cfg = font_cfg or nil
+    return lib.ImFontAtlas_AddFontFromMemoryCompressedTTF(self,compressed_font_data,compressed_font_size,size_pixels,font_cfg,glyph_ranges)
 end
-function ImGuiStorage:GetIntRef(key,default_val)
-    default_val = default_val or 0
-    return lib.ImGuiStorage_GetIntRef(self,key,default_val)
+function ImFontAtlas:AddFontFromMemoryTTF(font_data,font_size,size_pixels,font_cfg,glyph_ranges)
+    glyph_ranges = glyph_ranges or nil
+    font_cfg = font_cfg or nil
+    return lib.ImFontAtlas_AddFontFromMemoryTTF(self,font_data,font_size,size_pixels,font_cfg,glyph_ranges)
 end
-ImGuiStorage.GetVoidPtr = lib.ImGuiStorage_GetVoidPtr
-function ImGuiStorage:GetVoidPtrRef(key,default_val)
-    default_val = default_val or nil
-    return lib.ImGuiStorage_GetVoidPtrRef(self,key,default_val)
+ImFontAtlas.Build = lib.ImFontAtlas_Build
+ImFontAtlas.CalcCustomRectUV = lib.ImFontAtlas_CalcCustomRectUV
+ImFontAtlas.Clear = lib.ImFontAtlas_Clear
+ImFontAtlas.ClearFonts = lib.ImFontAtlas_ClearFonts
+ImFontAtlas.ClearInputData = lib.ImFontAtlas_ClearInputData
+ImFontAtlas.ClearTexData = lib.ImFontAtlas_ClearTexData
+ImFontAtlas.GetCustomRectByIndex = lib.ImFontAtlas_GetCustomRectByIndex
+ImFontAtlas.GetGlyphRangesChineseFull = lib.ImFontAtlas_GetGlyphRangesChineseFull
+ImFontAtlas.GetGlyphRangesChineseSimplifiedCommon = lib.ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon
+ImFontAtlas.GetGlyphRangesCyrillic = lib.ImFontAtlas_GetGlyphRangesCyrillic
+ImFontAtlas.GetGlyphRangesDefault = lib.ImFontAtlas_GetGlyphRangesDefault
+ImFontAtlas.GetGlyphRangesJapanese = lib.ImFontAtlas_GetGlyphRangesJapanese
+ImFontAtlas.GetGlyphRangesKorean = lib.ImFontAtlas_GetGlyphRangesKorean
+ImFontAtlas.GetGlyphRangesThai = lib.ImFontAtlas_GetGlyphRangesThai
+ImFontAtlas.GetGlyphRangesVietnamese = lib.ImFontAtlas_GetGlyphRangesVietnamese
+ImFontAtlas.GetMouseCursorTexData = lib.ImFontAtlas_GetMouseCursorTexData
+function ImFontAtlas:GetTexDataAsAlpha8(out_pixels,out_width,out_height,out_bytes_per_pixel)
+    out_bytes_per_pixel = out_bytes_per_pixel or nil
+    return lib.ImFontAtlas_GetTexDataAsAlpha8(self,out_pixels,out_width,out_height,out_bytes_per_pixel)
 end
-ImGuiStorage.SetAllInt = lib.ImGuiStorage_SetAllInt
-ImGuiStorage.SetBool = lib.ImGuiStorage_SetBool
-ImGuiStorage.SetFloat = lib.ImGuiStorage_SetFloat
-ImGuiStorage.SetInt = lib.ImGuiStorage_SetInt
-ImGuiStorage.SetVoidPtr = lib.ImGuiStorage_SetVoidPtr
-M.ImGuiStorage = ffi.metatype("ImGuiStorage",ImGuiStorage)
+function ImFontAtlas:GetTexDataAsRGBA32(out_pixels,out_width,out_height,out_bytes_per_pixel)
+    out_bytes_per_pixel = out_bytes_per_pixel or nil
+    return lib.ImFontAtlas_GetTexDataAsRGBA32(self,out_pixels,out_width,out_height,out_bytes_per_pixel)
+end
+function ImFontAtlas.__new(ctype)
+    local ptr = lib.ImFontAtlas_ImFontAtlas()
+    return ffi.gc(ptr,lib.ImFontAtlas_destroy)
+end
+ImFontAtlas.IsBuilt = lib.ImFontAtlas_IsBuilt
+ImFontAtlas.SetTexID = lib.ImFontAtlas_SetTexID
+M.ImFontAtlas = ffi.metatype("ImFontAtlas",ImFontAtlas)
 --------------------------ImGuiTextFilter----------------------------
 local ImGuiTextFilter= {}
 ImGuiTextFilter.__index = ImGuiTextFilter
@@ -1093,19 +1093,19 @@ function M.DragIntRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,f
     v_min = v_min or 0
     return lib.igDragIntRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,format,format_max)
 end
-function M.DragScalar(label,data_type,v,v_speed,v_min,v_max,format,power)
-    v_max = v_max or nil
+function M.DragScalar(label,data_type,p_data,v_speed,p_min,p_max,format,power)
     format = format or nil
-    v_min = v_min or nil
+    p_max = p_max or nil
+    p_min = p_min or nil
     power = power or 1.0
-    return lib.igDragScalar(label,data_type,v,v_speed,v_min,v_max,format,power)
+    return lib.igDragScalar(label,data_type,p_data,v_speed,p_min,p_max,format,power)
 end
-function M.DragScalarN(label,data_type,v,components,v_speed,v_min,v_max,format,power)
-    v_max = v_max or nil
+function M.DragScalarN(label,data_type,p_data,components,v_speed,p_min,p_max,format,power)
     format = format or nil
-    v_min = v_min or nil
+    p_max = p_max or nil
+    p_min = p_min or nil
     power = power or 1.0
-    return lib.igDragScalarN(label,data_type,v,components,v_speed,v_min,v_max,format,power)
+    return lib.igDragScalarN(label,data_type,p_data,components,v_speed,p_min,p_max,format,power)
 end
 M.Dummy = lib.igDummy
 M.End = lib.igEnd
@@ -1345,19 +1345,19 @@ function M.InputInt4(label,v,flags)
     flags = flags or 0
     return lib.igInputInt4(label,v,flags)
 end
-function M.InputScalar(label,data_type,v,step,step_fast,format,flags)
-    step = step or nil
+function M.InputScalar(label,data_type,p_data,p_step,p_step_fast,format,flags)
+    p_step_fast = p_step_fast or nil
     format = format or nil
-    step_fast = step_fast or nil
+    p_step = p_step or nil
     flags = flags or 0
-    return lib.igInputScalar(label,data_type,v,step,step_fast,format,flags)
+    return lib.igInputScalar(label,data_type,p_data,p_step,p_step_fast,format,flags)
 end
-function M.InputScalarN(label,data_type,v,components,step,step_fast,format,flags)
-    step = step or nil
+function M.InputScalarN(label,data_type,p_data,components,p_step,p_step_fast,format,flags)
+    p_step_fast = p_step_fast or nil
     format = format or nil
-    step_fast = step_fast or nil
+    p_step = p_step or nil
     flags = flags or 0
-    return lib.igInputScalarN(label,data_type,v,components,step,step_fast,format,flags)
+    return lib.igInputScalarN(label,data_type,p_data,components,p_step,p_step_fast,format,flags)
 end
 function M.InputText(label,buf,buf_size,flags,callback,user_data)
     callback = callback or nil
@@ -1397,6 +1397,7 @@ function M.IsItemHovered(flags)
     flags = flags or 0
     return lib.igIsItemHovered(flags)
 end
+M.IsItemToggledOpen = lib.igIsItemToggledOpen
 M.IsItemVisible = lib.igIsItemVisible
 M.IsKeyDown = lib.igIsKeyDown
 function M.IsKeyPressed(user_key_index,_repeat)
@@ -1758,15 +1759,15 @@ function M.SliderInt4(label,v,v_min,v_max,format)
     format = format or "%d"
     return lib.igSliderInt4(label,v,v_min,v_max,format)
 end
-function M.SliderScalar(label,data_type,v,v_min,v_max,format,power)
+function M.SliderScalar(label,data_type,p_data,p_min,p_max,format,power)
     power = power or 1.0
     format = format or nil
-    return lib.igSliderScalar(label,data_type,v,v_min,v_max,format,power)
+    return lib.igSliderScalar(label,data_type,p_data,p_min,p_max,format,power)
 end
-function M.SliderScalarN(label,data_type,v,components,v_min,v_max,format,power)
+function M.SliderScalarN(label,data_type,p_data,components,p_min,p_max,format,power)
     power = power or 1.0
     format = format or nil
-    return lib.igSliderScalarN(label,data_type,v,components,v_min,v_max,format,power)
+    return lib.igSliderScalarN(label,data_type,p_data,components,p_min,p_max,format,power)
 end
 M.SmallButton = lib.igSmallButton
 M.Spacing = lib.igSpacing
@@ -1826,10 +1827,10 @@ function M.VSliderInt(label,size,v,v_min,v_max,format)
     format = format or "%d"
     return lib.igVSliderInt(label,size,v,v_min,v_max,format)
 end
-function M.VSliderScalar(label,size,data_type,v,v_min,v_max,format,power)
+function M.VSliderScalar(label,size,data_type,p_data,p_min,p_max,format,power)
     power = power or 1.0
     format = format or nil
-    return lib.igVSliderScalar(label,size,data_type,v,v_min,v_max,format,power)
+    return lib.igVSliderScalar(label,size,data_type,p_data,p_min,p_max,format,power)
 end
 M.ValueBool = lib.igValueBool
 M.ValueInt = lib.igValueInt

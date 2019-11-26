@@ -343,7 +343,6 @@ enum ImGuiNavInput_
     ImGuiNavInput_TweakSlow,
     ImGuiNavInput_TweakFast,
     ImGuiNavInput_KeyMenu_,
-    ImGuiNavInput_KeyTab_,
     ImGuiNavInput_KeyLeft_,
     ImGuiNavInput_KeyRight_,
     ImGuiNavInput_KeyUp_,
@@ -1019,8 +1018,8 @@ _Bool igDragInt2(const char* label,int v[2],float v_speed,int v_min,int v_max,co
 _Bool igDragInt3(const char* label,int v[3],float v_speed,int v_min,int v_max,const char* format);
 _Bool igDragInt4(const char* label,int v[4],float v_speed,int v_min,int v_max,const char* format);
 _Bool igDragIntRange2(const char* label,int* v_current_min,int* v_current_max,float v_speed,int v_min,int v_max,const char* format,const char* format_max);
-_Bool igDragScalar(const char* label,ImGuiDataType data_type,void* v,float v_speed,const void* v_min,const void* v_max,const char* format,float power);
-_Bool igDragScalarN(const char* label,ImGuiDataType data_type,void* v,int components,float v_speed,const void* v_min,const void* v_max,const char* format,float power);
+_Bool igDragScalar(const char* label,ImGuiDataType data_type,void* p_data,float v_speed,const void* p_min,const void* p_max,const char* format,float power);
+_Bool igDragScalarN(const char* label,ImGuiDataType data_type,void* p_data,int components,float v_speed,const void* p_min,const void* p_max,const char* format,float power);
 _Bool igSliderFloat(const char* label,float* v,float v_min,float v_max,const char* format,float power);
 _Bool igSliderFloat2(const char* label,float v[2],float v_min,float v_max,const char* format,float power);
 _Bool igSliderFloat3(const char* label,float v[3],float v_min,float v_max,const char* format,float power);
@@ -1030,11 +1029,11 @@ _Bool igSliderInt(const char* label,int* v,int v_min,int v_max,const char* forma
 _Bool igSliderInt2(const char* label,int v[2],int v_min,int v_max,const char* format);
 _Bool igSliderInt3(const char* label,int v[3],int v_min,int v_max,const char* format);
 _Bool igSliderInt4(const char* label,int v[4],int v_min,int v_max,const char* format);
-_Bool igSliderScalar(const char* label,ImGuiDataType data_type,void* v,const void* v_min,const void* v_max,const char* format,float power);
-_Bool igSliderScalarN(const char* label,ImGuiDataType data_type,void* v,int components,const void* v_min,const void* v_max,const char* format,float power);
+_Bool igSliderScalar(const char* label,ImGuiDataType data_type,void* p_data,const void* p_min,const void* p_max,const char* format,float power);
+_Bool igSliderScalarN(const char* label,ImGuiDataType data_type,void* p_data,int components,const void* p_min,const void* p_max,const char* format,float power);
 _Bool igVSliderFloat(const char* label,const ImVec2 size,float* v,float v_min,float v_max,const char* format,float power);
 _Bool igVSliderInt(const char* label,const ImVec2 size,int* v,int v_min,int v_max,const char* format);
-_Bool igVSliderScalar(const char* label,const ImVec2 size,ImGuiDataType data_type,void* v,const void* v_min,const void* v_max,const char* format,float power);
+_Bool igVSliderScalar(const char* label,const ImVec2 size,ImGuiDataType data_type,void* p_data,const void* p_min,const void* p_max,const char* format,float power);
 _Bool igInputText(const char* label,char* buf,size_t buf_size,ImGuiInputTextFlags flags,ImGuiInputTextCallback callback,void* user_data);
 _Bool igInputTextMultiline(const char* label,char* buf,size_t buf_size,const ImVec2 size,ImGuiInputTextFlags flags,ImGuiInputTextCallback callback,void* user_data);
 _Bool igInputTextWithHint(const char* label,const char* hint,char* buf,size_t buf_size,ImGuiInputTextFlags flags,ImGuiInputTextCallback callback,void* user_data);
@@ -1047,8 +1046,8 @@ _Bool igInputInt2(const char* label,int v[2],ImGuiInputTextFlags flags);
 _Bool igInputInt3(const char* label,int v[3],ImGuiInputTextFlags flags);
 _Bool igInputInt4(const char* label,int v[4],ImGuiInputTextFlags flags);
 _Bool igInputDouble(const char* label,double* v,double step,double step_fast,const char* format,ImGuiInputTextFlags flags);
-_Bool igInputScalar(const char* label,ImGuiDataType data_type,void* v,const void* step,const void* step_fast,const char* format,ImGuiInputTextFlags flags);
-_Bool igInputScalarN(const char* label,ImGuiDataType data_type,void* v,int components,const void* step,const void* step_fast,const char* format,ImGuiInputTextFlags flags);
+_Bool igInputScalar(const char* label,ImGuiDataType data_type,void* p_data,const void* p_step,const void* p_step_fast,const char* format,ImGuiInputTextFlags flags);
+_Bool igInputScalarN(const char* label,ImGuiDataType data_type,void* p_data,int components,const void* p_step,const void* p_step_fast,const char* format,ImGuiInputTextFlags flags);
 _Bool igColorEdit3(const char* label,float col[3],ImGuiColorEditFlags flags);
 _Bool igColorEdit4(const char* label,float col[4],ImGuiColorEditFlags flags);
 _Bool igColorPicker3(const char* label,float col[3],ImGuiColorEditFlags flags);
@@ -1087,10 +1086,10 @@ void igValueBool(const char* prefix,_Bool b);
 void igValueInt(const char* prefix,int v);
 void igValueUint(const char* prefix,unsigned int v);
 void igValueFloat(const char* prefix,float v,const char* float_format);
-_Bool igBeginMainMenuBar(void);
-void igEndMainMenuBar(void);
 _Bool igBeginMenuBar(void);
 void igEndMenuBar(void);
+_Bool igBeginMainMenuBar(void);
+void igEndMainMenuBar(void);
 _Bool igBeginMenu(const char* label,_Bool enabled);
 void igEndMenu(void);
 _Bool igMenuItemBool(const char* label,const char* shortcut,_Bool selected,_Bool enabled);
@@ -1147,6 +1146,7 @@ _Bool igIsItemEdited(void);
 _Bool igIsItemActivated(void);
 _Bool igIsItemDeactivated(void);
 _Bool igIsItemDeactivatedAfterEdit(void);
+_Bool igIsItemToggledOpen(void);
 _Bool igIsAnyItemHovered(void);
 _Bool igIsAnyItemActive(void);
 _Bool igIsAnyItemFocused(void);
