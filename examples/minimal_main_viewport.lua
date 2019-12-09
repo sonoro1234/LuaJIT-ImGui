@@ -4,7 +4,7 @@ local lj_glfw = require"glfw"
 local gllib = require"gl"
 gllib.set_loader(lj_glfw)
 local gl, glc, glu, glext = gllib.libraries()
-local ig = require"imgui_viewport"
+local ig = require"imgui.glfw"
 
 lj_glfw.setErrorCallback(function(error,description)
     print("GLFW error:",error,ffi.string(description or ""));
@@ -22,7 +22,7 @@ local ig_impl = ig.Imgui_Impl_glfw_opengl3() --standard imgui opengl3 example
 ---[[
 local igio = ig.GetIO()
 ig.GetIO().ConfigFlags = ig.lib.ImGuiConfigFlags_ViewportsEnable + igio.ConfigFlags
-igio.ConfigFlags = ig.lib.ImGuiConfigFlags_ViewportsNoTaskBarIcons + igio.ConfigFlags
+igio.ConfigFlags = ig.lib.ImGuiConfigFlags_DockingEnable + igio.ConfigFlags
 igio.ConfigFlags = ig.lib.ImGuiConfigFlags_NavEnableKeyboard + igio.ConfigFlags  -- Enable Keyboard Controls
 --io.ConfigFlags = ig.lib.ImGuiConfigFlags_ViewportsNoMerge + igio.ConfigFlags
 --io.ConfigFlags = ig.lib.ImGuiConfigFlags_NavEnableGamepad + igio.ConfigFlags   // Enable Gamepad Controls
