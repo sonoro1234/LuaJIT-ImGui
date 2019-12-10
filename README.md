@@ -19,6 +19,7 @@ Notes:
 
 * Remember you also need GLFW https://github.com/sonoro1234/LuaJIT-GLFW or SDL2 https://github.com/sonoro1234/LuaJIT-SDL2 .
 * You have some scripts on the examples folder.
+* New module imgui.window for simplified use. (see window_drag_drop.lua)
 * In case you are in a hurry, you can get all done in the releases (GLFW version only).
 * Releases are now done in https://github.com/sonoro1234/anima
 
