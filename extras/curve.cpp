@@ -689,7 +689,7 @@ namespace ImGui
 		CalcCurvesGimp(points, max, data, datalen);
 	}
 	
-    bool Curve(const char *label, const ImVec2& size, ImVec2 *points, const int maxpoints, float *data, int datalen)
+    bool Curve(const char *label, const ImVec2& size, ImVec2 *points, const int maxpoints, float *data, int datalen,bool pressed_on_modified)
     {
         bool modified = false;
         int i;
@@ -720,7 +720,9 @@ namespace ImGui
         if (!ItemAdd(bb, 0))
             return false;
 
-        const bool hovered = ItemHoverable(bb, id);
+        //const bool hovered = ItemHoverable(bb, id);
+		bool hovered, held;
+		bool pressed = ButtonBehavior(bb, id, &hovered, &held, 0);
 
 		int max = CurveGetMaxPoints(points,maxpoints,modified);
 
@@ -932,16 +934,18 @@ namespace ImGui
         RenderTextClipped(ImVec2(bb.Min.x, bb.Min.y + style.FramePadding.y), bb.Max, str, NULL, NULL);//, ImGuiAlign_Center);
 		if(combomodified){
 			CalcCurvesGimp(points, max, data, datalen);
-			modified = true;
+			pressed = true;
 		}
-        return modified;
+		if(pressed_on_modified)
+			pressed = modified;
+        return pressed;
     }
 
 };
 
-IMGUI_IMPL_API bool Curve(const char *label, const ImVec2& size, ImVec2 *points, const int maxpoints, float *data, int datalen)
+IMGUI_IMPL_API bool Curve(const char *label, const ImVec2& size, ImVec2 *points, const int maxpoints, float *data, int datalen,bool pressed_on_modified)
 {
-	return ImGui::Curve(label, size, points, maxpoints, data, datalen);
+	return ImGui::Curve(label, size, points, maxpoints, data, datalen,pressed_on_modified);
 }
 
 IMGUI_IMPL_API void CurveGetData(ImVec2 *points, const int maxpoints, float *data, int datalen)
