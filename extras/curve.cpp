@@ -722,7 +722,7 @@ namespace ImGui
 
         //const bool hovered = ItemHoverable(bb, id);
 		bool hovered, held;
-		bool pressed = ButtonBehavior(bb, id, &hovered, &held, 0);
+		bool pressed = ButtonBehavior(bb, id, &hovered, &held, ImGuiButtonFlags_PressedOnClickReleaseAnywhere );
 
 		int max = CurveGetMaxPoints(points,maxpoints,modified);
 
