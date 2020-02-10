@@ -318,9 +318,9 @@ M.ImFontConfig = ffi.metatype("ImFontConfig",ImFontConfig)
 --------------------------ImDrawList----------------------------
 local ImDrawList= {}
 ImDrawList.__index = ImDrawList
-function ImDrawList:AddBezierCurve(pos0,cp0,cp1,pos1,col,thickness,num_segments)
+function ImDrawList:AddBezierCurve(p1,p2,p3,p4,col,thickness,num_segments)
     num_segments = num_segments or 0
-    return lib.ImDrawList_AddBezierCurve(self,pos0,cp0,cp1,pos1,col,thickness,num_segments)
+    return lib.ImDrawList_AddBezierCurve(self,p1,p2,p3,p4,col,thickness,num_segments)
 end
 ImDrawList.AddCallback = lib.ImDrawList_AddCallback
 function ImDrawList:AddCircle(center,radius,col,num_segments,thickness)
@@ -356,6 +356,11 @@ function ImDrawList:AddLine(p1,p2,col,thickness)
     thickness = thickness or 1.0
     return lib.ImDrawList_AddLine(self,p1,p2,col,thickness)
 end
+function ImDrawList:AddNgon(center,radius,col,num_segments,thickness)
+    thickness = thickness or 1.0
+    return lib.ImDrawList_AddNgon(self,center,radius,col,num_segments,thickness)
+end
+ImDrawList.AddNgonFilled = lib.ImDrawList_AddNgonFilled
 ImDrawList.AddPolyline = lib.ImDrawList_AddPolyline
 function ImDrawList:AddQuad(p1,p2,p3,p4,col,thickness)
     thickness = thickness or 1.0
@@ -416,9 +421,9 @@ function ImDrawList:PathArcTo(center,radius,a_min,a_max,num_segments)
     return lib.ImDrawList_PathArcTo(self,center,radius,a_min,a_max,num_segments)
 end
 ImDrawList.PathArcToFast = lib.ImDrawList_PathArcToFast
-function ImDrawList:PathBezierCurveTo(p1,p2,p3,num_segments)
+function ImDrawList:PathBezierCurveTo(p2,p3,p4,num_segments)
     num_segments = num_segments or 0
-    return lib.ImDrawList_PathBezierCurveTo(self,p1,p2,p3,num_segments)
+    return lib.ImDrawList_PathBezierCurveTo(self,p2,p3,p4,num_segments)
 end
 ImDrawList.PathClear = lib.ImDrawList_PathClear
 ImDrawList.PathFillConvex = lib.ImDrawList_PathFillConvex
@@ -439,6 +444,7 @@ ImDrawList.PrimQuadUV = lib.ImDrawList_PrimQuadUV
 ImDrawList.PrimRect = lib.ImDrawList_PrimRect
 ImDrawList.PrimRectUV = lib.ImDrawList_PrimRectUV
 ImDrawList.PrimReserve = lib.ImDrawList_PrimReserve
+ImDrawList.PrimUnreserve = lib.ImDrawList_PrimUnreserve
 ImDrawList.PrimVtx = lib.ImDrawList_PrimVtx
 ImDrawList.PrimWriteIdx = lib.ImDrawList_PrimWriteIdx
 ImDrawList.PrimWriteVtx = lib.ImDrawList_PrimWriteVtx
@@ -499,245 +505,6 @@ function ImGuiListClipper.__new(ctype,items_count,items_height)
 end
 ImGuiListClipper.Step = lib.ImGuiListClipper_Step
 M.ImGuiListClipper = ffi.metatype("ImGuiListClipper",ImGuiListClipper)
---------------------------ImGuiStorage----------------------------
-local ImGuiStorage= {}
-ImGuiStorage.__index = ImGuiStorage
-ImGuiStorage.BuildSortByKey = lib.ImGuiStorage_BuildSortByKey
-ImGuiStorage.Clear = lib.ImGuiStorage_Clear
-function ImGuiStorage:GetBool(key,default_val)
-    default_val = default_val or false
-    return lib.ImGuiStorage_GetBool(self,key,default_val)
-end
-function ImGuiStorage:GetBoolRef(key,default_val)
-    default_val = default_val or false
-    return lib.ImGuiStorage_GetBoolRef(self,key,default_val)
-end
-function ImGuiStorage:GetFloat(key,default_val)
-    default_val = default_val or 0.0
-    return lib.ImGuiStorage_GetFloat(self,key,default_val)
-end
-function ImGuiStorage:GetFloatRef(key,default_val)
-    default_val = default_val or 0.0
-    return lib.ImGuiStorage_GetFloatRef(self,key,default_val)
-end
-function ImGuiStorage:GetInt(key,default_val)
-    default_val = default_val or 0
-    return lib.ImGuiStorage_GetInt(self,key,default_val)
-end
-function ImGuiStorage:GetIntRef(key,default_val)
-    default_val = default_val or 0
-    return lib.ImGuiStorage_GetIntRef(self,key,default_val)
-end
-ImGuiStorage.GetVoidPtr = lib.ImGuiStorage_GetVoidPtr
-function ImGuiStorage:GetVoidPtrRef(key,default_val)
-    default_val = default_val or nil
-    return lib.ImGuiStorage_GetVoidPtrRef(self,key,default_val)
-end
-ImGuiStorage.SetAllInt = lib.ImGuiStorage_SetAllInt
-ImGuiStorage.SetBool = lib.ImGuiStorage_SetBool
-ImGuiStorage.SetFloat = lib.ImGuiStorage_SetFloat
-ImGuiStorage.SetInt = lib.ImGuiStorage_SetInt
-ImGuiStorage.SetVoidPtr = lib.ImGuiStorage_SetVoidPtr
-M.ImGuiStorage = ffi.metatype("ImGuiStorage",ImGuiStorage)
---------------------------ImGuiStoragePair----------------------------
-local ImGuiStoragePair= {}
-ImGuiStoragePair.__index = ImGuiStoragePair
-function ImGuiStoragePair.ImGuiStoragePairInt(_key,_val_i)
-    local ptr = lib.ImGuiStoragePair_ImGuiStoragePairInt(_key,_val_i)
-    return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
-end
-function ImGuiStoragePair.ImGuiStoragePairFloat(_key,_val_f)
-    local ptr = lib.ImGuiStoragePair_ImGuiStoragePairFloat(_key,_val_f)
-    return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
-end
-function ImGuiStoragePair.ImGuiStoragePairPtr(_key,_val_p)
-    local ptr = lib.ImGuiStoragePair_ImGuiStoragePairPtr(_key,_val_p)
-    return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
-end
-M.ImGuiStoragePair = ffi.metatype("ImGuiStoragePair",ImGuiStoragePair)
---------------------------ImDrawData----------------------------
-local ImDrawData= {}
-ImDrawData.__index = ImDrawData
-ImDrawData.Clear = lib.ImDrawData_Clear
-ImDrawData.DeIndexAllBuffers = lib.ImDrawData_DeIndexAllBuffers
-function ImDrawData.__new(ctype)
-    local ptr = lib.ImDrawData_ImDrawData()
-    return ffi.gc(ptr,lib.ImDrawData_destroy)
-end
-ImDrawData.ScaleClipRects = lib.ImDrawData_ScaleClipRects
-M.ImDrawData = ffi.metatype("ImDrawData",ImDrawData)
---------------------------ImColor----------------------------
-local ImColor= {}
-ImColor.__index = ImColor
-function ImColor:HSV(h,s,v,a)
-    a = a or 1.0
-    local nonUDT_out = ffi.new("ImColor")
-    lib.ImColor_HSV_nonUDT(nonUDT_out,self,h,s,v,a)
-    return nonUDT_out
-end
-function ImColor:HSV_nonUDT2(h,s,v,a)
-    a = a or 1.0
-    return lib.ImColor_HSV_nonUDT2(self,h,s,v,a)
-end
-function ImColor.__new(ctype)
-    local ptr = lib.ImColor_ImColor()
-    return ffi.gc(ptr,lib.ImColor_destroy)
-end
-function ImColor.ImColorInt(r,g,b,a)
-    if a == nil then a = 255 end
-    local ptr = lib.ImColor_ImColorInt(r,g,b,a)
-    return ffi.gc(ptr,lib.ImColor_destroy)
-end
-function ImColor.ImColorU32(rgba)
-    local ptr = lib.ImColor_ImColorU32(rgba)
-    return ffi.gc(ptr,lib.ImColor_destroy)
-end
-function ImColor.ImColorFloat(r,g,b,a)
-    if a == nil then a = 1.0 end
-    local ptr = lib.ImColor_ImColorFloat(r,g,b,a)
-    return ffi.gc(ptr,lib.ImColor_destroy)
-end
-function ImColor.ImColorVec4(col)
-    local ptr = lib.ImColor_ImColorVec4(col)
-    return ffi.gc(ptr,lib.ImColor_destroy)
-end
-function ImColor:SetHSV(h,s,v,a)
-    a = a or 1.0
-    return lib.ImColor_SetHSV(self,h,s,v,a)
-end
-M.ImColor = ffi.metatype("ImColor",ImColor)
---------------------------ImFont----------------------------
-local ImFont= {}
-ImFont.__index = ImFont
-ImFont.AddGlyph = lib.ImFont_AddGlyph
-function ImFont:AddRemapChar(dst,src,overwrite_dst)
-    if overwrite_dst == nil then overwrite_dst = true end
-    return lib.ImFont_AddRemapChar(self,dst,src,overwrite_dst)
-end
-ImFont.BuildLookupTable = lib.ImFont_BuildLookupTable
-function ImFont:CalcTextSizeA(size,max_width,wrap_width,text_begin,text_end,remaining)
-    text_end = text_end or nil
-    remaining = remaining or nil
-    local nonUDT_out = ffi.new("ImVec2")
-    lib.ImFont_CalcTextSizeA_nonUDT(nonUDT_out,self,size,max_width,wrap_width,text_begin,text_end,remaining)
-    return nonUDT_out
-end
-function ImFont:CalcTextSizeA_nonUDT2(size,max_width,wrap_width,text_begin,text_end,remaining)
-    text_end = text_end or nil
-    remaining = remaining or nil
-    return lib.ImFont_CalcTextSizeA_nonUDT2(self,size,max_width,wrap_width,text_begin,text_end,remaining)
-end
-ImFont.CalcWordWrapPositionA = lib.ImFont_CalcWordWrapPositionA
-ImFont.ClearOutputData = lib.ImFont_ClearOutputData
-ImFont.FindGlyph = lib.ImFont_FindGlyph
-ImFont.FindGlyphNoFallback = lib.ImFont_FindGlyphNoFallback
-ImFont.GetCharAdvance = lib.ImFont_GetCharAdvance
-ImFont.GetDebugName = lib.ImFont_GetDebugName
-ImFont.GrowIndex = lib.ImFont_GrowIndex
-function ImFont.__new(ctype)
-    local ptr = lib.ImFont_ImFont()
-    return ffi.gc(ptr,lib.ImFont_destroy)
-end
-ImFont.IsLoaded = lib.ImFont_IsLoaded
-ImFont.RenderChar = lib.ImFont_RenderChar
-function ImFont:RenderText(draw_list,size,pos,col,clip_rect,text_begin,text_end,wrap_width,cpu_fine_clip)
-    wrap_width = wrap_width or 0.0
-    cpu_fine_clip = cpu_fine_clip or false
-    return lib.ImFont_RenderText(self,draw_list,size,pos,col,clip_rect,text_begin,text_end,wrap_width,cpu_fine_clip)
-end
-ImFont.SetFallbackChar = lib.ImFont_SetFallbackChar
-M.ImFont = ffi.metatype("ImFont",ImFont)
---------------------------ImGuiStyle----------------------------
-local ImGuiStyle= {}
-ImGuiStyle.__index = ImGuiStyle
-function ImGuiStyle.__new(ctype)
-    local ptr = lib.ImGuiStyle_ImGuiStyle()
-    return ffi.gc(ptr,lib.ImGuiStyle_destroy)
-end
-ImGuiStyle.ScaleAllSizes = lib.ImGuiStyle_ScaleAllSizes
-M.ImGuiStyle = ffi.metatype("ImGuiStyle",ImGuiStyle)
---------------------------ImGuiTextBuffer----------------------------
-local ImGuiTextBuffer= {}
-ImGuiTextBuffer.__index = ImGuiTextBuffer
-function ImGuiTextBuffer.__new(ctype)
-    local ptr = lib.ImGuiTextBuffer_ImGuiTextBuffer()
-    return ffi.gc(ptr,lib.ImGuiTextBuffer_destroy)
-end
-function ImGuiTextBuffer:append(str,str_end)
-    str_end = str_end or nil
-    return lib.ImGuiTextBuffer_append(self,str,str_end)
-end
-ImGuiTextBuffer.appendf = lib.ImGuiTextBuffer_appendf
-ImGuiTextBuffer.appendfv = lib.ImGuiTextBuffer_appendfv
-ImGuiTextBuffer.begin = lib.ImGuiTextBuffer_begin
-ImGuiTextBuffer.c_str = lib.ImGuiTextBuffer_c_str
-ImGuiTextBuffer.clear = lib.ImGuiTextBuffer_clear
-ImGuiTextBuffer.empty = lib.ImGuiTextBuffer_empty
-ImGuiTextBuffer._end = lib.ImGuiTextBuffer_end
-ImGuiTextBuffer.reserve = lib.ImGuiTextBuffer_reserve
-ImGuiTextBuffer.size = lib.ImGuiTextBuffer_size
-M.ImGuiTextBuffer = ffi.metatype("ImGuiTextBuffer",ImGuiTextBuffer)
---------------------------ImDrawListSplitter----------------------------
-local ImDrawListSplitter= {}
-ImDrawListSplitter.__index = ImDrawListSplitter
-ImDrawListSplitter.Clear = lib.ImDrawListSplitter_Clear
-ImDrawListSplitter.ClearFreeMemory = lib.ImDrawListSplitter_ClearFreeMemory
-function ImDrawListSplitter.__new(ctype)
-    local ptr = lib.ImDrawListSplitter_ImDrawListSplitter()
-    return ffi.gc(ptr,lib.ImDrawListSplitter_destroy)
-end
-ImDrawListSplitter.Merge = lib.ImDrawListSplitter_Merge
-ImDrawListSplitter.SetCurrentChannel = lib.ImDrawListSplitter_SetCurrentChannel
-ImDrawListSplitter.Split = lib.ImDrawListSplitter_Split
-M.ImDrawListSplitter = ffi.metatype("ImDrawListSplitter",ImDrawListSplitter)
---------------------------ImGuiIO----------------------------
-local ImGuiIO= {}
-ImGuiIO.__index = ImGuiIO
-ImGuiIO.AddInputCharacter = lib.ImGuiIO_AddInputCharacter
-ImGuiIO.AddInputCharactersUTF8 = lib.ImGuiIO_AddInputCharactersUTF8
-ImGuiIO.ClearInputCharacters = lib.ImGuiIO_ClearInputCharacters
-function ImGuiIO.__new(ctype)
-    local ptr = lib.ImGuiIO_ImGuiIO()
-    return ffi.gc(ptr,lib.ImGuiIO_destroy)
-end
-M.ImGuiIO = ffi.metatype("ImGuiIO",ImGuiIO)
---------------------------ImGuiOnceUponAFrame----------------------------
-local ImGuiOnceUponAFrame= {}
-ImGuiOnceUponAFrame.__index = ImGuiOnceUponAFrame
-function ImGuiOnceUponAFrame.__new(ctype)
-    local ptr = lib.ImGuiOnceUponAFrame_ImGuiOnceUponAFrame()
-    return ffi.gc(ptr,lib.ImGuiOnceUponAFrame_destroy)
-end
-M.ImGuiOnceUponAFrame = ffi.metatype("ImGuiOnceUponAFrame",ImGuiOnceUponAFrame)
---------------------------ImFontAtlasCustomRect----------------------------
-local ImFontAtlasCustomRect= {}
-ImFontAtlasCustomRect.__index = ImFontAtlasCustomRect
-function ImFontAtlasCustomRect.__new(ctype)
-    local ptr = lib.ImFontAtlasCustomRect_ImFontAtlasCustomRect()
-    return ffi.gc(ptr,lib.ImFontAtlasCustomRect_destroy)
-end
-ImFontAtlasCustomRect.IsPacked = lib.ImFontAtlasCustomRect_IsPacked
-M.ImFontAtlasCustomRect = ffi.metatype("ImFontAtlasCustomRect",ImFontAtlasCustomRect)
---------------------------ImGuiPayload----------------------------
-local ImGuiPayload= {}
-ImGuiPayload.__index = ImGuiPayload
-ImGuiPayload.Clear = lib.ImGuiPayload_Clear
-function ImGuiPayload.__new(ctype)
-    local ptr = lib.ImGuiPayload_ImGuiPayload()
-    return ffi.gc(ptr,lib.ImGuiPayload_destroy)
-end
-ImGuiPayload.IsDataType = lib.ImGuiPayload_IsDataType
-ImGuiPayload.IsDelivery = lib.ImGuiPayload_IsDelivery
-ImGuiPayload.IsPreview = lib.ImGuiPayload_IsPreview
-M.ImGuiPayload = ffi.metatype("ImGuiPayload",ImGuiPayload)
---------------------------ImDrawCmd----------------------------
-local ImDrawCmd= {}
-ImDrawCmd.__index = ImDrawCmd
-function ImDrawCmd.__new(ctype)
-    local ptr = lib.ImDrawCmd_ImDrawCmd()
-    return ffi.gc(ptr,lib.ImDrawCmd_destroy)
-end
-M.ImDrawCmd = ffi.metatype("ImDrawCmd",ImDrawCmd)
 --------------------------ImFontAtlas----------------------------
 local ImFontAtlas= {}
 ImFontAtlas.__index = ImFontAtlas
@@ -802,6 +569,245 @@ end
 ImFontAtlas.IsBuilt = lib.ImFontAtlas_IsBuilt
 ImFontAtlas.SetTexID = lib.ImFontAtlas_SetTexID
 M.ImFontAtlas = ffi.metatype("ImFontAtlas",ImFontAtlas)
+--------------------------ImGuiStoragePair----------------------------
+local ImGuiStoragePair= {}
+ImGuiStoragePair.__index = ImGuiStoragePair
+function ImGuiStoragePair.ImGuiStoragePairInt(_key,_val_i)
+    local ptr = lib.ImGuiStoragePair_ImGuiStoragePairInt(_key,_val_i)
+    return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
+end
+function ImGuiStoragePair.ImGuiStoragePairFloat(_key,_val_f)
+    local ptr = lib.ImGuiStoragePair_ImGuiStoragePairFloat(_key,_val_f)
+    return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
+end
+function ImGuiStoragePair.ImGuiStoragePairPtr(_key,_val_p)
+    local ptr = lib.ImGuiStoragePair_ImGuiStoragePairPtr(_key,_val_p)
+    return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
+end
+M.ImGuiStoragePair = ffi.metatype("ImGuiStoragePair",ImGuiStoragePair)
+--------------------------ImDrawData----------------------------
+local ImDrawData= {}
+ImDrawData.__index = ImDrawData
+ImDrawData.Clear = lib.ImDrawData_Clear
+ImDrawData.DeIndexAllBuffers = lib.ImDrawData_DeIndexAllBuffers
+function ImDrawData.__new(ctype)
+    local ptr = lib.ImDrawData_ImDrawData()
+    return ffi.gc(ptr,lib.ImDrawData_destroy)
+end
+ImDrawData.ScaleClipRects = lib.ImDrawData_ScaleClipRects
+M.ImDrawData = ffi.metatype("ImDrawData",ImDrawData)
+--------------------------ImGuiIO----------------------------
+local ImGuiIO= {}
+ImGuiIO.__index = ImGuiIO
+ImGuiIO.AddInputCharacter = lib.ImGuiIO_AddInputCharacter
+ImGuiIO.AddInputCharactersUTF8 = lib.ImGuiIO_AddInputCharactersUTF8
+ImGuiIO.ClearInputCharacters = lib.ImGuiIO_ClearInputCharacters
+function ImGuiIO.__new(ctype)
+    local ptr = lib.ImGuiIO_ImGuiIO()
+    return ffi.gc(ptr,lib.ImGuiIO_destroy)
+end
+M.ImGuiIO = ffi.metatype("ImGuiIO",ImGuiIO)
+--------------------------ImFont----------------------------
+local ImFont= {}
+ImFont.__index = ImFont
+ImFont.AddGlyph = lib.ImFont_AddGlyph
+function ImFont:AddRemapChar(dst,src,overwrite_dst)
+    if overwrite_dst == nil then overwrite_dst = true end
+    return lib.ImFont_AddRemapChar(self,dst,src,overwrite_dst)
+end
+ImFont.BuildLookupTable = lib.ImFont_BuildLookupTable
+function ImFont:CalcTextSizeA(size,max_width,wrap_width,text_begin,text_end,remaining)
+    text_end = text_end or nil
+    remaining = remaining or nil
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.ImFont_CalcTextSizeA_nonUDT(nonUDT_out,self,size,max_width,wrap_width,text_begin,text_end,remaining)
+    return nonUDT_out
+end
+function ImFont:CalcTextSizeA_nonUDT2(size,max_width,wrap_width,text_begin,text_end,remaining)
+    text_end = text_end or nil
+    remaining = remaining or nil
+    return lib.ImFont_CalcTextSizeA_nonUDT2(self,size,max_width,wrap_width,text_begin,text_end,remaining)
+end
+ImFont.CalcWordWrapPositionA = lib.ImFont_CalcWordWrapPositionA
+ImFont.ClearOutputData = lib.ImFont_ClearOutputData
+ImFont.FindGlyph = lib.ImFont_FindGlyph
+ImFont.FindGlyphNoFallback = lib.ImFont_FindGlyphNoFallback
+ImFont.GetCharAdvance = lib.ImFont_GetCharAdvance
+ImFont.GetDebugName = lib.ImFont_GetDebugName
+ImFont.GrowIndex = lib.ImFont_GrowIndex
+function ImFont.__new(ctype)
+    local ptr = lib.ImFont_ImFont()
+    return ffi.gc(ptr,lib.ImFont_destroy)
+end
+ImFont.IsLoaded = lib.ImFont_IsLoaded
+ImFont.RenderChar = lib.ImFont_RenderChar
+function ImFont:RenderText(draw_list,size,pos,col,clip_rect,text_begin,text_end,wrap_width,cpu_fine_clip)
+    wrap_width = wrap_width or 0.0
+    cpu_fine_clip = cpu_fine_clip or false
+    return lib.ImFont_RenderText(self,draw_list,size,pos,col,clip_rect,text_begin,text_end,wrap_width,cpu_fine_clip)
+end
+ImFont.SetFallbackChar = lib.ImFont_SetFallbackChar
+M.ImFont = ffi.metatype("ImFont",ImFont)
+--------------------------ImGuiStyle----------------------------
+local ImGuiStyle= {}
+ImGuiStyle.__index = ImGuiStyle
+function ImGuiStyle.__new(ctype)
+    local ptr = lib.ImGuiStyle_ImGuiStyle()
+    return ffi.gc(ptr,lib.ImGuiStyle_destroy)
+end
+ImGuiStyle.ScaleAllSizes = lib.ImGuiStyle_ScaleAllSizes
+M.ImGuiStyle = ffi.metatype("ImGuiStyle",ImGuiStyle)
+--------------------------ImColor----------------------------
+local ImColor= {}
+ImColor.__index = ImColor
+function ImColor:HSV(h,s,v,a)
+    a = a or 1.0
+    local nonUDT_out = ffi.new("ImColor")
+    lib.ImColor_HSV_nonUDT(nonUDT_out,self,h,s,v,a)
+    return nonUDT_out
+end
+function ImColor:HSV_nonUDT2(h,s,v,a)
+    a = a or 1.0
+    return lib.ImColor_HSV_nonUDT2(self,h,s,v,a)
+end
+function ImColor.__new(ctype)
+    local ptr = lib.ImColor_ImColor()
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor.ImColorInt(r,g,b,a)
+    if a == nil then a = 255 end
+    local ptr = lib.ImColor_ImColorInt(r,g,b,a)
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor.ImColorU32(rgba)
+    local ptr = lib.ImColor_ImColorU32(rgba)
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor.ImColorFloat(r,g,b,a)
+    if a == nil then a = 1.0 end
+    local ptr = lib.ImColor_ImColorFloat(r,g,b,a)
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor.ImColorVec4(col)
+    local ptr = lib.ImColor_ImColorVec4(col)
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor:SetHSV(h,s,v,a)
+    a = a or 1.0
+    return lib.ImColor_SetHSV(self,h,s,v,a)
+end
+M.ImColor = ffi.metatype("ImColor",ImColor)
+--------------------------ImGuiStorage----------------------------
+local ImGuiStorage= {}
+ImGuiStorage.__index = ImGuiStorage
+ImGuiStorage.BuildSortByKey = lib.ImGuiStorage_BuildSortByKey
+ImGuiStorage.Clear = lib.ImGuiStorage_Clear
+function ImGuiStorage:GetBool(key,default_val)
+    default_val = default_val or false
+    return lib.ImGuiStorage_GetBool(self,key,default_val)
+end
+function ImGuiStorage:GetBoolRef(key,default_val)
+    default_val = default_val or false
+    return lib.ImGuiStorage_GetBoolRef(self,key,default_val)
+end
+function ImGuiStorage:GetFloat(key,default_val)
+    default_val = default_val or 0.0
+    return lib.ImGuiStorage_GetFloat(self,key,default_val)
+end
+function ImGuiStorage:GetFloatRef(key,default_val)
+    default_val = default_val or 0.0
+    return lib.ImGuiStorage_GetFloatRef(self,key,default_val)
+end
+function ImGuiStorage:GetInt(key,default_val)
+    default_val = default_val or 0
+    return lib.ImGuiStorage_GetInt(self,key,default_val)
+end
+function ImGuiStorage:GetIntRef(key,default_val)
+    default_val = default_val or 0
+    return lib.ImGuiStorage_GetIntRef(self,key,default_val)
+end
+ImGuiStorage.GetVoidPtr = lib.ImGuiStorage_GetVoidPtr
+function ImGuiStorage:GetVoidPtrRef(key,default_val)
+    default_val = default_val or nil
+    return lib.ImGuiStorage_GetVoidPtrRef(self,key,default_val)
+end
+ImGuiStorage.SetAllInt = lib.ImGuiStorage_SetAllInt
+ImGuiStorage.SetBool = lib.ImGuiStorage_SetBool
+ImGuiStorage.SetFloat = lib.ImGuiStorage_SetFloat
+ImGuiStorage.SetInt = lib.ImGuiStorage_SetInt
+ImGuiStorage.SetVoidPtr = lib.ImGuiStorage_SetVoidPtr
+M.ImGuiStorage = ffi.metatype("ImGuiStorage",ImGuiStorage)
+--------------------------ImDrawListSplitter----------------------------
+local ImDrawListSplitter= {}
+ImDrawListSplitter.__index = ImDrawListSplitter
+ImDrawListSplitter.Clear = lib.ImDrawListSplitter_Clear
+ImDrawListSplitter.ClearFreeMemory = lib.ImDrawListSplitter_ClearFreeMemory
+function ImDrawListSplitter.__new(ctype)
+    local ptr = lib.ImDrawListSplitter_ImDrawListSplitter()
+    return ffi.gc(ptr,lib.ImDrawListSplitter_destroy)
+end
+ImDrawListSplitter.Merge = lib.ImDrawListSplitter_Merge
+ImDrawListSplitter.SetCurrentChannel = lib.ImDrawListSplitter_SetCurrentChannel
+ImDrawListSplitter.Split = lib.ImDrawListSplitter_Split
+M.ImDrawListSplitter = ffi.metatype("ImDrawListSplitter",ImDrawListSplitter)
+--------------------------ImGuiOnceUponAFrame----------------------------
+local ImGuiOnceUponAFrame= {}
+ImGuiOnceUponAFrame.__index = ImGuiOnceUponAFrame
+function ImGuiOnceUponAFrame.__new(ctype)
+    local ptr = lib.ImGuiOnceUponAFrame_ImGuiOnceUponAFrame()
+    return ffi.gc(ptr,lib.ImGuiOnceUponAFrame_destroy)
+end
+M.ImGuiOnceUponAFrame = ffi.metatype("ImGuiOnceUponAFrame",ImGuiOnceUponAFrame)
+--------------------------ImGuiTextBuffer----------------------------
+local ImGuiTextBuffer= {}
+ImGuiTextBuffer.__index = ImGuiTextBuffer
+function ImGuiTextBuffer.__new(ctype)
+    local ptr = lib.ImGuiTextBuffer_ImGuiTextBuffer()
+    return ffi.gc(ptr,lib.ImGuiTextBuffer_destroy)
+end
+function ImGuiTextBuffer:append(str,str_end)
+    str_end = str_end or nil
+    return lib.ImGuiTextBuffer_append(self,str,str_end)
+end
+ImGuiTextBuffer.appendf = lib.ImGuiTextBuffer_appendf
+ImGuiTextBuffer.appendfv = lib.ImGuiTextBuffer_appendfv
+ImGuiTextBuffer.begin = lib.ImGuiTextBuffer_begin
+ImGuiTextBuffer.c_str = lib.ImGuiTextBuffer_c_str
+ImGuiTextBuffer.clear = lib.ImGuiTextBuffer_clear
+ImGuiTextBuffer.empty = lib.ImGuiTextBuffer_empty
+ImGuiTextBuffer._end = lib.ImGuiTextBuffer_end
+ImGuiTextBuffer.reserve = lib.ImGuiTextBuffer_reserve
+ImGuiTextBuffer.size = lib.ImGuiTextBuffer_size
+M.ImGuiTextBuffer = ffi.metatype("ImGuiTextBuffer",ImGuiTextBuffer)
+--------------------------ImGuiPayload----------------------------
+local ImGuiPayload= {}
+ImGuiPayload.__index = ImGuiPayload
+ImGuiPayload.Clear = lib.ImGuiPayload_Clear
+function ImGuiPayload.__new(ctype)
+    local ptr = lib.ImGuiPayload_ImGuiPayload()
+    return ffi.gc(ptr,lib.ImGuiPayload_destroy)
+end
+ImGuiPayload.IsDataType = lib.ImGuiPayload_IsDataType
+ImGuiPayload.IsDelivery = lib.ImGuiPayload_IsDelivery
+ImGuiPayload.IsPreview = lib.ImGuiPayload_IsPreview
+M.ImGuiPayload = ffi.metatype("ImGuiPayload",ImGuiPayload)
+--------------------------ImDrawCmd----------------------------
+local ImDrawCmd= {}
+ImDrawCmd.__index = ImDrawCmd
+function ImDrawCmd.__new(ctype)
+    local ptr = lib.ImDrawCmd_ImDrawCmd()
+    return ffi.gc(ptr,lib.ImDrawCmd_destroy)
+end
+M.ImDrawCmd = ffi.metatype("ImDrawCmd",ImDrawCmd)
+--------------------------ImFontAtlasCustomRect----------------------------
+local ImFontAtlasCustomRect= {}
+ImFontAtlasCustomRect.__index = ImFontAtlasCustomRect
+function ImFontAtlasCustomRect.__new(ctype)
+    local ptr = lib.ImFontAtlasCustomRect_ImFontAtlasCustomRect()
+    return ffi.gc(ptr,lib.ImFontAtlasCustomRect_destroy)
+end
+ImFontAtlasCustomRect.IsPacked = lib.ImFontAtlasCustomRect_IsPacked
+M.ImFontAtlasCustomRect = ffi.metatype("ImFontAtlasCustomRect",ImFontAtlasCustomRect)
 --------------------------ImGuiTextFilter----------------------------
 local ImGuiTextFilter= {}
 ImGuiTextFilter.__index = ImGuiTextFilter
@@ -1413,7 +1419,6 @@ M.IsMouseDoubleClicked = lib.igIsMouseDoubleClicked
 M.IsMouseDown = lib.igIsMouseDown
 function M.IsMouseDragging(button,lock_threshold)
     lock_threshold = lock_threshold or -1.0
-    button = button or 0
     return lib.igIsMouseDragging(button,lock_threshold)
 end
 function M.IsMouseHoveringRect(r_min,r_max,clip)
