@@ -935,6 +935,7 @@ namespace ImGui
 		if(combomodified){
 			CalcCurvesGimp(points, max, data, datalen);
 			pressed = true;
+			return true;
 		}
 		if(pressed_on_modified)
 			pressed = modified;
