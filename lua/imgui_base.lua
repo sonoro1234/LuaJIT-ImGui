@@ -295,13 +295,19 @@ M.Log = ffi.metatype("Log",Log)
 ------------convenience function
 function M.U32(a,b,c,d) return lib.igGetColorU32Vec4(ImVec4(a,b,c,d or 1)) end
 
----------------for using nonUDT2 versions
-function M.use_nonUDT2()
-    for k,v in pairs(M) do
-        if M[k.."_nonUDT2"] then
-            M[k] = M[k.."_nonUDT2"]
-        end
-    end
+---------------ImGuizmo
+function M.zmoManipulate(view, projection, operation, mode, objectMatrix, deltaMatrix, snap, localBounds, boundsSnap)
+	lib.igzmoManipulate(view, projection, operation, mode, objectMatrix, deltaMatrix or nil, snap or nil ,localBounds or nil , boundsSnap or nil )
 end
+M.zmoSetDrawlist = lib.igzmoSetDrawlist
+M.zmoBeginFrame = lib.igzmoBeginFrame
+M.zmoIsOver = lib.igzmoIsOver
+M.zmoIsUsing = lib.igzmoIsUsing
+M.zmoEnable = lib.igzmoEnable
+M.zmoSetOrthographic = lib.igzmoSetOrthographic
+M.zmoSetRect = lib.igzmoSetRect
+M.zmoDrawCube = lib.igzmoDrawCube
+M.zmoDrawGrid = lib.igzmoDrawGrid
+M.zmoViewManipulate = lib.igzmoViewManipulate
 
 

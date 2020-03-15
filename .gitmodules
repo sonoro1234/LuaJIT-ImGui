@@ -1,3 +1,6 @@
 [submodule "cimgui"]
 	path = cimgui
 	url = https://github.com/cimgui/cimgui.git
+[submodule "ImGuizmo"]
+	path = extras/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo
