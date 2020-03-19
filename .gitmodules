@@ -4,3 +4,6 @@
 [submodule "ImGuizmo"]
 	path = extras/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo
+[submodule "imGuIZMO.quat"]
+	path = extras/imGuIZMO.quat
+	url = https://github.com/BrutPitt/imGuIZMO.quat
