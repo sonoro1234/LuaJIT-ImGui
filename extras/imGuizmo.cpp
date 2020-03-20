@@ -1,6 +1,6 @@
 #include "imgui.h"
 #include "imgui_internal.h"
-#include "imGuizmo.h"
+#include "ImGuizmo.h"
 
 typedef ImGuizmo::OPERATION OPERATION;
 typedef ImGuizmo::MODE MODE;

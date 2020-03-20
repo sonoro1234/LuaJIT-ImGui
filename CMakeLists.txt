@@ -53,7 +53,7 @@ if(IMPL_EXTRAS)
     list(APPEND IMGUI_SOURCES ./extras/knob.cpp  ./extras/curve.cpp)
 	include_directories(extras/imGuIZMO.quat/imGuIZMO.quat/)
 	list(APPEND IMGUI_SOURCES ./extras/imGuIZMO.quat/imGuIZMO.quat/imGuIZMOquat.cpp  ./extras/imGuIZMO.quat.cpp)
-	include_directories(extras/imGuizmo/)
+	include_directories(extras/ImGuizmo/)
 	list(APPEND IMGUI_SOURCES ./extras/ImGuizmo/ImGuizmo.cpp ./extras/imGuizmo.cpp)
 endif(IMPL_EXTRAS)
 
