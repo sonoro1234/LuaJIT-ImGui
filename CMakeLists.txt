@@ -54,7 +54,7 @@ if(IMPL_EXTRAS)
 	include_directories(extras/imGuIZMO.quat/imGuIZMO.quat/)
 	list(APPEND IMGUI_SOURCES ./extras/imGuIZMO.quat/imGuIZMO.quat/imGuIZMOquat.cpp  ./extras/imGuIZMO.quat.cpp)
 	include_directories(extras/imGuizmo/)
-	list(APPEND IMGUI_SOURCES ./extras/imGuizmo/imGuizmo.cpp ./extras/imGuizmo.cpp)
+	list(APPEND IMGUI_SOURCES ./extras/ImGuizmo/ImGuizmo.cpp ./extras/imGuizmo.cpp)
 endif(IMPL_EXTRAS)
 
 if(IMPL_GLFW)
