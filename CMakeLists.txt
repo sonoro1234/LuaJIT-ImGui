@@ -20,6 +20,8 @@ else(WIN32)
     add_definitions("-DIMGUI_IMPL_API=extern \"C\" ")
 endif(WIN32)
 
+add_compile_definitions("IMGUI_IMPL_OPENGL_LOADER_GL3W")
+
 #optional adding implementations
 option(IMPL_GLFW "add GLFW implementation" OFF)
 option(IMPL_SDL "add SDL implementation" OFF)
