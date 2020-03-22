@@ -51,6 +51,7 @@ typedef struct{
 }Vec4;
 typedef struct{
 	union {
+		float f[16];
         Vec4 v[4];
         struct {      float m00, m01, m02, m03,
                         m10, m11, m12, m13,
