@@ -62,8 +62,11 @@ for fun,defs in pairs(fundefs) do
 	structs[stname] = structs[stname] or {}
 	table.insert(structs[stname],fun)
 end
+--delete templated
 structs.ImVec4 = nil
 structs.ImVector = nil
+structs.ImChunkStream = nil
+structs.ImPool = nil
 
 
 
