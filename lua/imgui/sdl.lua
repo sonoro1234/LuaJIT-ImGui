@@ -665,8 +665,8 @@ M.ImDrawList = ffi.metatype("ImDrawList",ImDrawList)
 --------------------------ImGuiTextRange----------------------------
 local ImGuiTextRange= {}
 ImGuiTextRange.__index = ImGuiTextRange
-function ImGuiTextRange.__new(ctype)
-    local ptr = lib.ImGuiTextRange_ImGuiTextRange()
+function ImGuiTextRange.ImGuiTextRangeNil()
+    local ptr = lib.ImGuiTextRange_ImGuiTextRangeNil()
     return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
 end
 function ImGuiTextRange.ImGuiTextRangeStr(_b,_e)
@@ -674,7 +674,7 @@ function ImGuiTextRange.ImGuiTextRangeStr(_b,_e)
     return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
 end
 function ImGuiTextRange:ImGuiTextRange(a2) -- generic version
-    if a1==nil then return self:ImGuiTextRange() end
+    if a1==nil then return self:ImGuiTextRangeNil() end
     if (ffi.istype('const char*',a1) or type(a1)=='string') then return self:ImGuiTextRangeStr(a2) end
     print(a2)
     error'ImGuiTextRange:ImGuiTextRange could not find overloaded'
@@ -879,8 +879,8 @@ function ImColor:HSV(h,s,v,a)
     lib.ImColor_HSV(nonUDT_out,self,h,s,v,a)
     return nonUDT_out
 end
-function ImColor.__new(ctype)
-    local ptr = lib.ImColor_ImColor()
+function ImColor.ImColorNil()
+    local ptr = lib.ImColor_ImColorNil()
     return ffi.gc(ptr,lib.ImColor_destroy)
 end
 function ImColor.ImColorInt(r,g,b,a)
@@ -902,7 +902,7 @@ function ImColor.ImColorVec4(col)
     return ffi.gc(ptr,lib.ImColor_destroy)
 end
 function ImColor:ImColor(a2,a3,a4) -- generic version
-    if a1==nil then return self:ImColor() end
+    if a1==nil then return self:ImColorNil() end
     if (ffi.istype('int',a1) or type(a1)=='number') then return self:ImColorInt(a2,a3,a4) end
     if ffi.istype('ImU32',a1) then return self:ImColorU32() end
     if (ffi.istype('float',a1) or type(a1)=='number') then return self:ImColorFloat(a2,a3,a4) end
@@ -1655,10 +1655,10 @@ function M.IsMousePosValid(mouse_pos)
 end
 M.IsMouseReleased = lib.igIsMouseReleased
 M.IsPopupOpen = lib.igIsPopupOpen
-M.IsRectVisible = lib.igIsRectVisible
+M.IsRectVisibleNil = lib.igIsRectVisibleNil
 M.IsRectVisibleVec2 = lib.igIsRectVisibleVec2
 function M.IsRectVisible(a1,a2) -- generic version
-    if a2==nil then return M.IsRectVisible(a1) end
+    if a2==nil then return M.IsRectVisibleNil(a1) end
     if ffi.istype('const ImVec2',a2) then return M.IsRectVisibleVec2(a1,a2) end
     print(a1,a2)
     error'M.IsRectVisible could not find overloaded'
@@ -1982,10 +1982,10 @@ function M.SetWindowCollapsed(a1,a2,a3) -- generic version
     print(a1,a2,a3)
     error'M.SetWindowCollapsed could not find overloaded'
 end
-M.SetWindowFocus = lib.igSetWindowFocus
+M.SetWindowFocusNil = lib.igSetWindowFocusNil
 M.SetWindowFocusStr = lib.igSetWindowFocusStr
 function M.SetWindowFocus(a1) -- generic version
-    if a1==nil then return M.SetWindowFocus() end
+    if a1==nil then return M.SetWindowFocusNil() end
     if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.SetWindowFocusStr(a1) end
     print(a1)
     error'M.SetWindowFocus could not find overloaded'
