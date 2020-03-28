@@ -83,6 +83,7 @@ local pipe,err = io.popen([[gcc -E -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS ../cimgui/c
 if not pipe then error("could not execute gcc "..err) end
 
 local cdefs = {}
+cdefs[1] = "typedef void FILE;"
 for line in location(pipe,{"cimgui"}) do
 	line = line:gsub("extern __attribute__%(%(dllexport%)%)%s*","")
 	line = line:gsub("extern __declspec%(dllexport%)%s*","")
