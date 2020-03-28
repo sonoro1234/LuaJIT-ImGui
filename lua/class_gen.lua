@@ -186,6 +186,7 @@ local function make_function(method,def)
 		table.insert(code,"end")
 		return table.concat(code,"\n")
 	end
+	--for no nonUDT and no defaults
 	return (method and def.stname or "M").."."..fname_m.." = lib."..fname
 end
 
@@ -220,15 +221,138 @@ local function function_gen(code,def)
 	table.insert(code,make_function(false,def))
 end
 
-local function find_nonudt_def(defs,name)
-	for _,def in ipairs(defs) do
-		if def.nonUDT == 1 then
-			local fname = def.ov_cimguiname or def.cimguiname
-			if fname:sub(1,#name) == name then
-				return def
+local cdefs = dofile("./imgui/cdefs.lua")
+local ffi = require"ffi"
+ffi.cdef(cdefs)
+local function checktype(typ,va)
+	if ffi.typeof(typ)==ffi.typeof"int" or 
+		ffi.typeof(typ)==ffi.typeof"float" or
+		ffi.typeof(typ)==ffi.typeof"double" then
+		return "(ffi.istype('"..typ.."',"..va..") or type("..va..")=='number')"
+	elseif ffi.typeof(typ)==ffi.typeof"bool" then
+		return "(ffi.istype('"..typ.."',"..va..") or type("..va..")=='boolean')"
+	elseif ffi.typeof(typ)==ffi.typeof"const char*" then
+		return "(ffi.istype('"..typ.."',"..va..") or type("..va..")=='string')"
+	else
+		return "ffi.istype('"..typ.."',"..va..")"
+	end
+end
+
+local function gen_args(method,n)
+	local args = "" 
+	if method then
+		for i=2,n do
+			args = args.."a"..i..","
+		end
+	else
+		for i=1,n do
+			args = args.."a"..i..","
+		end
+	end
+	args = args:sub(1,-2) --drop last 
+	return args
+end
+
+--require"anima.utils" --gives us prtable
+local function create_generic(code,defs,method)
+	--find max number of arguments
+	local maxnargs = -1
+	for i,def in ipairs(defs) do
+		maxnargs = maxnargs < #def.argsT and #def.argsT or maxnargs
+	end
+	--print("maxnargs",defs[1].cimguiname,maxnargs)
+	--[[
+	for i,def in ipairs(defs) do
+		io.write(def.ov_cimguiname," , ")
+	end
+	print()
+	for i=1,maxnargs do
+		io.write(i," ")
+		for j,def in ipairs(defs) do
+			io.write(def.argsT[i] and def.argsT[i].type or "nil")
+			io.write", "
+		end 
+		print()
+	end
+	--]]
+	--find first different arg
+	local keys = {}
+	local done = {}
+	local check = {}
+	for i=1,maxnargs do
+		keys[i] = {}
+		for j=1,#defs do
+			if not done[j] then
+				local tt = defs[j].argsT[i] and defs[j].argsT[i].type or "nil"
+				keys[i][tt] = (keys[i][tt] or 0) + 1
+			end
+		end
+		local keycount = 0
+		for k,v in pairs(keys[i]) do keycount = keycount + 1 end
+		--print("keycount",i,keycount,#defs)
+		for j=1,#defs do
+			if not done[j] then
+				local tt = defs[j].argsT[i] and defs[j].argsT[i].type or "nil"
+				if keycount > 1 then
+					check[j] = check[j] or {}
+					check[j][i]=tt
+				end
+				if keys[i][tt] == 1 then 
+					done[j]= true;
+					--print(defs[j].ov_cimguiname,"done") 
+				end
 			end
 		end
 	end
+	--prtable(check)
+	--do generic--------------
+	local code2 = {}
+	--create args
+	local args = "" --method and "self," or ""
+	if method then
+		for i=2,maxnargs do
+			args = args.."a"..i..","
+		end
+	else
+		for i=1,maxnargs do
+			args = args.."a"..i..","
+		end
+	end
+	args = args:sub(1,-2) --drop last ,
+	
+	local fname = defs[1].cimguiname 
+	local fname_e = method and fname:match(defs[1].stname.."_(.*)") or fname:match("^ig(.*)") --drop struct name part
+	fname = method and defs[1].stname..":"..fname_e or "M."..fname_e
+
+	table.insert(code2, "function "..fname.."("..args..") -- generic version")
+	
+	for i=1,#check do
+		local chk = check[i]
+		table.insert(code2,"\n    if ")
+		local addand = false
+		for k,v in pairs(chk) do
+			if addand then table.insert(code2," and ") end
+			if v=="nil" then
+				table.insert(code2,"a"..k.."==nil")
+			else
+				local strcode = checktype(v,"a"..k)
+				table.insert(code2 , strcode)
+				---table.insert(code2,"ffi.istype('"..v.."',a"..k..")")
+			end
+			addand = true
+		end
+		local fname2 = defs[i].ov_cimguiname 
+		local fname2_e = method and fname2:match(defs[1].stname.."_(.*)") or fname2:match("^ig(.*)") --drop struct name part
+		fname2 = method and "self:"..fname2_e or "M."..fname2_e
+		table.insert(code2," then return "..fname2.."("..gen_args(method,#defs[i].argsT)..") end")
+		if fname_e == fname2_e then
+			print("--------error cimguiname equals ov_cimguiname in overloaded function",fname)
+			--error"cimguiname equals ov_cimguiname"
+		end
+	end
+	table.insert(code2,"\n    print("..args..")")
+	table.insert(code2,"\n    error'"..fname.." could not find overloaded'\nend")
+	table.insert(code, table.concat(code2))
 end
 
 --struct code generator
@@ -247,14 +371,12 @@ local function code_for_struct(st)
 				if def.constructor then
 					constructor_gen(code,def)
 				else
-					if def.nonUDT ~= 1 then
-						local fname = def.ov_cimguiname or def.cimguiname
-						--prefer nonUDT1 defs
-						local nonudt_def = find_nonudt_def(defs,fname)
-						struct_function_gen(code,nonudt_def or def)
-					end
+					struct_function_gen(code,def)
 				end
 			end
+		end
+		if #defs > 1 then
+			create_generic(code,defs,true)
 		end
 	end
 	table.insert(code,[[M.]]..st..[[ = ffi.metatype("]]..st..[[",]]..st..")")
@@ -263,6 +385,9 @@ local function code_for_struct(st)
 	testcode(codestr)
 	return codestr
 end
+
+
+
 
 --ImGui namespace generator
 local function code_for_imguifuns(st)
@@ -274,13 +399,12 @@ local function code_for_imguifuns(st)
 	for _,f in ipairs(funs) do
 		local defs = fundefs[f]
 		for _,def in ipairs(defs) do
-			if def.nonUDT ~= 1 then
-				def.stname = "M"
-				local fname = def.ov_cimguiname or def.cimguiname
-				--prefer nonUDT1 defs
-				local nonudt_def = find_nonudt_def(defs,fname)
-				function_gen(code,nonudt_def or def)
-			end
+			def.stname = "M"
+			function_gen(code,def)
+		end
+		--if has overloading create the generic
+		if #defs > 1 then
+			create_generic(code, defs)
 		end
 	end
 	local codestr = table.concat(code,"\n")

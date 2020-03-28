@@ -580,15 +580,21 @@ function ImDrawList:AddRectFilled(p_min,p_max,col,rounding,rounding_corners)
     return lib.ImDrawList_AddRectFilled(self,p_min,p_max,col,rounding,rounding_corners)
 end
 ImDrawList.AddRectFilledMultiColor = lib.ImDrawList_AddRectFilledMultiColor
-function ImDrawList:AddText(pos,col,text_begin,text_end)
+function ImDrawList:AddTextVec2(pos,col,text_begin,text_end)
     text_end = text_end or nil
-    return lib.ImDrawList_AddText(self,pos,col,text_begin,text_end)
+    return lib.ImDrawList_AddTextVec2(self,pos,col,text_begin,text_end)
 end
 function ImDrawList:AddTextFontPtr(font,font_size,pos,col,text_begin,text_end,wrap_width,cpu_fine_clip_rect)
     text_end = text_end or nil
     cpu_fine_clip_rect = cpu_fine_clip_rect or nil
     wrap_width = wrap_width or 0.0
     return lib.ImDrawList_AddTextFontPtr(self,font,font_size,pos,col,text_begin,text_end,wrap_width,cpu_fine_clip_rect)
+end
+function ImDrawList:AddText(a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
+    if ffi.istype('const ImVec2',a2) then return self:AddTextVec2(a2,a3,a4,a5) end
+    if ffi.istype('const ImFont*',a2) then return self:AddTextFontPtr(a2,a3,a4,a5,a6,a7,a8,a9) end
+    print(a2,a3,a4,a5,a6,a7,a8,a9)
+    error'ImDrawList:AddText could not find overloaded'
 end
 function ImDrawList:AddTriangle(p1,p2,p3,col,thickness)
     thickness = thickness or 1.0
@@ -603,16 +609,14 @@ ImDrawList.ClearFreeMemory = lib.ImDrawList_ClearFreeMemory
 ImDrawList.CloneOutput = lib.ImDrawList_CloneOutput
 function ImDrawList:GetClipRectMax()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.ImDrawList_GetClipRectMax_nonUDT(nonUDT_out,self)
+    lib.ImDrawList_GetClipRectMax(nonUDT_out,self)
     return nonUDT_out
 end
-ImDrawList.GetClipRectMax_nonUDT2 = lib.ImDrawList_GetClipRectMax_nonUDT2
 function ImDrawList:GetClipRectMin()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.ImDrawList_GetClipRectMin_nonUDT(nonUDT_out,self)
+    lib.ImDrawList_GetClipRectMin(nonUDT_out,self)
     return nonUDT_out
 end
-ImDrawList.GetClipRectMin_nonUDT2 = lib.ImDrawList_GetClipRectMin_nonUDT2
 function ImDrawList.__new(ctype,shared_data)
     local ptr = lib.ImDrawList_ImDrawList(shared_data)
     return ffi.gc(ptr,lib.ImDrawList_destroy)
@@ -668,6 +672,12 @@ end
 function ImGuiTextRange.ImGuiTextRangeStr(_b,_e)
     local ptr = lib.ImGuiTextRange_ImGuiTextRangeStr(_b,_e)
     return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
+end
+function ImGuiTextRange:ImGuiTextRange(a2) -- generic version
+    if a1==nil then return self:ImGuiTextRange() end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') then return self:ImGuiTextRangeStr(a2) end
+    print(a2)
+    error'ImGuiTextRange:ImGuiTextRange could not find overloaded'
 end
 ImGuiTextRange.empty = lib.ImGuiTextRange_empty
 ImGuiTextRange.split = lib.ImGuiTextRange_split
@@ -785,6 +795,13 @@ function ImGuiStoragePair.ImGuiStoragePairPtr(_key,_val_p)
     local ptr = lib.ImGuiStoragePair_ImGuiStoragePairPtr(_key,_val_p)
     return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
 end
+function ImGuiStoragePair:ImGuiStoragePair(a2) -- generic version
+    if (ffi.istype('int',a2) or type(a2)=='number') then return self:ImGuiStoragePairInt(a2) end
+    if (ffi.istype('float',a2) or type(a2)=='number') then return self:ImGuiStoragePairFloat(a2) end
+    if ffi.istype('void*',a2) then return self:ImGuiStoragePairPtr(a2) end
+    print(a2)
+    error'ImGuiStoragePair:ImGuiStoragePair could not find overloaded'
+end
 M.ImGuiStoragePair = ffi.metatype("ImGuiStoragePair",ImGuiStoragePair)
 --------------------------ImDrawData----------------------------
 local ImDrawData= {}
@@ -821,13 +838,8 @@ function ImFont:CalcTextSizeA(size,max_width,wrap_width,text_begin,text_end,rema
     text_end = text_end or nil
     remaining = remaining or nil
     local nonUDT_out = ffi.new("ImVec2")
-    lib.ImFont_CalcTextSizeA_nonUDT(nonUDT_out,self,size,max_width,wrap_width,text_begin,text_end,remaining)
+    lib.ImFont_CalcTextSizeA(nonUDT_out,self,size,max_width,wrap_width,text_begin,text_end,remaining)
     return nonUDT_out
-end
-function ImFont:CalcTextSizeA_nonUDT2(size,max_width,wrap_width,text_begin,text_end,remaining)
-    text_end = text_end or nil
-    remaining = remaining or nil
-    return lib.ImFont_CalcTextSizeA_nonUDT2(self,size,max_width,wrap_width,text_begin,text_end,remaining)
 end
 ImFont.CalcWordWrapPositionA = lib.ImFont_CalcWordWrapPositionA
 ImFont.ClearOutputData = lib.ImFont_ClearOutputData
@@ -864,12 +876,8 @@ ImColor.__index = ImColor
 function ImColor:HSV(h,s,v,a)
     a = a or 1.0
     local nonUDT_out = ffi.new("ImColor")
-    lib.ImColor_HSV_nonUDT(nonUDT_out,self,h,s,v,a)
+    lib.ImColor_HSV(nonUDT_out,self,h,s,v,a)
     return nonUDT_out
-end
-function ImColor:HSV_nonUDT2(h,s,v,a)
-    a = a or 1.0
-    return lib.ImColor_HSV_nonUDT2(self,h,s,v,a)
 end
 function ImColor.__new(ctype)
     local ptr = lib.ImColor_ImColor()
@@ -892,6 +900,15 @@ end
 function ImColor.ImColorVec4(col)
     local ptr = lib.ImColor_ImColorVec4(col)
     return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor:ImColor(a2,a3,a4) -- generic version
+    if a1==nil then return self:ImColor() end
+    if (ffi.istype('int',a1) or type(a1)=='number') then return self:ImColorInt(a2,a3,a4) end
+    if ffi.istype('ImU32',a1) then return self:ImColorU32() end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return self:ImColorFloat(a2,a3,a4) end
+    if ffi.istype('const ImVec4',a1) then return self:ImColorVec4() end
+    print(a2,a3,a4)
+    error'ImColor:ImColor could not find overloaded'
 end
 function ImColor:SetHSV(h,s,v,a)
     a = a or 1.0
@@ -1056,17 +1073,23 @@ function M.Begin(name,p_open,flags)
     flags = flags or 0
     return lib.igBegin(name,p_open,flags)
 end
-function M.BeginChild(str_id,size,border,flags)
+function M.BeginChildStr(str_id,size,border,flags)
     border = border or false
     size = size or ImVec2(0,0)
     flags = flags or 0
-    return lib.igBeginChild(str_id,size,border,flags)
+    return lib.igBeginChildStr(str_id,size,border,flags)
 end
 function M.BeginChildID(id,size,border,flags)
     border = border or false
     size = size or ImVec2(0,0)
     flags = flags or 0
     return lib.igBeginChildID(id,size,border,flags)
+end
+function M.BeginChild(a1,a2,a3,a4) -- generic version
+    if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.BeginChildStr(a1,a2,a3,a4) end
+    if ffi.istype('ImGuiID',a1) then return M.BeginChildID(a1,a2,a3,a4) end
+    print(a1,a2,a3,a4)
+    error'M.BeginChild could not find overloaded'
 end
 function M.BeginChildFrame(id,size,flags)
     flags = flags or 0
@@ -1137,14 +1160,8 @@ function M.CalcTextSize(text,text_end,hide_text_after_double_hash,wrap_width)
     wrap_width = wrap_width or -1.0
     hide_text_after_double_hash = hide_text_after_double_hash or false
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igCalcTextSize_nonUDT(nonUDT_out,text,text_end,hide_text_after_double_hash,wrap_width)
+    lib.igCalcTextSize(nonUDT_out,text,text_end,hide_text_after_double_hash,wrap_width)
     return nonUDT_out
-end
-function M.CalcTextSize_nonUDT2(text,text_end,hide_text_after_double_hash,wrap_width)
-    text_end = text_end or nil
-    wrap_width = wrap_width or -1.0
-    hide_text_after_double_hash = hide_text_after_double_hash or false
-    return lib.igCalcTextSize_nonUDT2(text,text_end,hide_text_after_double_hash,wrap_width)
 end
 function M.CaptureKeyboardFromApp(want_capture_keyboard_value)
     if want_capture_keyboard_value == nil then want_capture_keyboard_value = true end
@@ -1157,13 +1174,19 @@ end
 M.Checkbox = lib.igCheckbox
 M.CheckboxFlags = lib.igCheckboxFlags
 M.CloseCurrentPopup = lib.igCloseCurrentPopup
-function M.CollapsingHeader(label,flags)
+function M.CollapsingHeaderTreeNodeFlags(label,flags)
     flags = flags or 0
-    return lib.igCollapsingHeader(label,flags)
+    return lib.igCollapsingHeaderTreeNodeFlags(label,flags)
 end
 function M.CollapsingHeaderBoolPtr(label,p_open,flags)
     flags = flags or 0
     return lib.igCollapsingHeaderBoolPtr(label,p_open,flags)
+end
+function M.CollapsingHeader(a1,a2,a3) -- generic version
+    if (ffi.istype('ImGuiTreeNodeFlags',a2) or type(a2)=='number') then return M.CollapsingHeaderTreeNodeFlags(a1,a2) end
+    if ffi.istype('bool*',a2) then return M.CollapsingHeaderBoolPtr(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.CollapsingHeader could not find overloaded'
 end
 function M.ColorButton(desc_id,col,flags,size)
     size = size or ImVec2(0,0)
@@ -1175,10 +1198,9 @@ M.ColorConvertHSVtoRGB = lib.igColorConvertHSVtoRGB
 M.ColorConvertRGBtoHSV = lib.igColorConvertRGBtoHSV
 function M.ColorConvertU32ToFloat4(_in)
     local nonUDT_out = ffi.new("ImVec4")
-    lib.igColorConvertU32ToFloat4_nonUDT(nonUDT_out,_in)
+    lib.igColorConvertU32ToFloat4(nonUDT_out,_in)
     return nonUDT_out
 end
-M.ColorConvertU32ToFloat4_nonUDT2 = lib.igColorConvertU32ToFloat4_nonUDT2
 function M.ColorEdit3(label,col,flags)
     flags = flags or 0
     return lib.igColorEdit3(label,col,flags)
@@ -1202,9 +1224,9 @@ function M.Columns(count,id,border)
     id = id or nil
     return lib.igColumns(count,id,border)
 end
-function M.Combo(label,current_item,items,items_count,popup_max_height_in_items)
+function M.ComboStr_arr(label,current_item,items,items_count,popup_max_height_in_items)
     popup_max_height_in_items = popup_max_height_in_items or -1
-    return lib.igCombo(label,current_item,items,items_count,popup_max_height_in_items)
+    return lib.igComboStr_arr(label,current_item,items,items_count,popup_max_height_in_items)
 end
 function M.ComboStr(label,current_item,items_separated_by_zeros,popup_max_height_in_items)
     popup_max_height_in_items = popup_max_height_in_items or -1
@@ -1213,6 +1235,13 @@ end
 function M.ComboFnPtr(label,current_item,items_getter,data,items_count,popup_max_height_in_items)
     popup_max_height_in_items = popup_max_height_in_items or -1
     return lib.igComboFnPtr(label,current_item,items_getter,data,items_count,popup_max_height_in_items)
+end
+function M.Combo(a1,a2,a3,a4,a5,a6) -- generic version
+    if ffi.istype('const char* const[]',a3) then return M.ComboStr_arr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const char*',a3) or type(a3)=='string') then return M.ComboStr(a1,a2,a3,a4) end
+    if ffi.istype('bool(*)(void* data,int idx,const char** out_text)',a3) then return M.ComboFnPtr(a1,a2,a3,a4,a5,a6) end
+    print(a1,a2,a3,a4,a5,a6)
+    error'M.Combo could not find overloaded'
 end
 function M.CreateContext(shared_font_atlas)
     shared_font_atlas = shared_font_atlas or nil
@@ -1332,12 +1361,19 @@ M.EndTabItem = lib.igEndTabItem
 M.EndTooltip = lib.igEndTooltip
 M.GetBackgroundDrawList = lib.igGetBackgroundDrawList
 M.GetClipboardText = lib.igGetClipboardText
-function M.GetColorU32(idx,alpha_mul)
+function M.GetColorU32Col(idx,alpha_mul)
     alpha_mul = alpha_mul or 1.0
-    return lib.igGetColorU32(idx,alpha_mul)
+    return lib.igGetColorU32Col(idx,alpha_mul)
 end
 M.GetColorU32Vec4 = lib.igGetColorU32Vec4
 M.GetColorU32U32 = lib.igGetColorU32U32
+function M.GetColorU32(a1,a2) -- generic version
+    if (ffi.istype('ImGuiCol',a1) or type(a1)=='number') then return M.GetColorU32Col(a1,a2) end
+    if ffi.istype('const ImVec4',a1) then return M.GetColorU32Vec4(a1) end
+    if ffi.istype('ImU32',a1) then return M.GetColorU32U32(a1) end
+    print(a1,a2)
+    error'M.GetColorU32 could not find overloaded'
+end
 M.GetColumnIndex = lib.igGetColumnIndex
 function M.GetColumnOffset(column_index)
     column_index = column_index or -1
@@ -1350,37 +1386,32 @@ end
 M.GetColumnsCount = lib.igGetColumnsCount
 function M.GetContentRegionAvail()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetContentRegionAvail_nonUDT(nonUDT_out)
+    lib.igGetContentRegionAvail(nonUDT_out)
     return nonUDT_out
 end
-M.GetContentRegionAvail_nonUDT2 = lib.igGetContentRegionAvail_nonUDT2
 function M.GetContentRegionMax()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetContentRegionMax_nonUDT(nonUDT_out)
+    lib.igGetContentRegionMax(nonUDT_out)
     return nonUDT_out
 end
-M.GetContentRegionMax_nonUDT2 = lib.igGetContentRegionMax_nonUDT2
 M.GetCurrentContext = lib.igGetCurrentContext
 function M.GetCursorPos()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetCursorPos_nonUDT(nonUDT_out)
+    lib.igGetCursorPos(nonUDT_out)
     return nonUDT_out
 end
-M.GetCursorPos_nonUDT2 = lib.igGetCursorPos_nonUDT2
 M.GetCursorPosX = lib.igGetCursorPosX
 M.GetCursorPosY = lib.igGetCursorPosY
 function M.GetCursorScreenPos()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetCursorScreenPos_nonUDT(nonUDT_out)
+    lib.igGetCursorScreenPos(nonUDT_out)
     return nonUDT_out
 end
-M.GetCursorScreenPos_nonUDT2 = lib.igGetCursorScreenPos_nonUDT2
 function M.GetCursorStartPos()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetCursorStartPos_nonUDT(nonUDT_out)
+    lib.igGetCursorStartPos(nonUDT_out)
     return nonUDT_out
 end
-M.GetCursorStartPos_nonUDT2 = lib.igGetCursorStartPos_nonUDT2
 M.GetDragDropPayload = lib.igGetDragDropPayload
 M.GetDrawData = lib.igGetDrawData
 M.GetDrawListSharedData = lib.igGetDrawListSharedData
@@ -1388,36 +1419,39 @@ M.GetFont = lib.igGetFont
 M.GetFontSize = lib.igGetFontSize
 function M.GetFontTexUvWhitePixel()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetFontTexUvWhitePixel_nonUDT(nonUDT_out)
+    lib.igGetFontTexUvWhitePixel(nonUDT_out)
     return nonUDT_out
 end
-M.GetFontTexUvWhitePixel_nonUDT2 = lib.igGetFontTexUvWhitePixel_nonUDT2
 M.GetForegroundDrawList = lib.igGetForegroundDrawList
 M.GetFrameCount = lib.igGetFrameCount
 M.GetFrameHeight = lib.igGetFrameHeight
 M.GetFrameHeightWithSpacing = lib.igGetFrameHeightWithSpacing
 M.GetIDStr = lib.igGetIDStr
-M.GetIDRange = lib.igGetIDRange
+M.GetIDStrStr = lib.igGetIDStrStr
 M.GetIDPtr = lib.igGetIDPtr
+function M.GetID(a1,a2) -- generic version
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and a2==nil then return M.GetIDStr(a1) end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and (ffi.istype('const char*',a2) or type(a2)=='string') then return M.GetIDStrStr(a1,a2) end
+    if ffi.istype('const void*',a1) then return M.GetIDPtr(a1) end
+    print(a1,a2)
+    error'M.GetID could not find overloaded'
+end
 M.GetIO = lib.igGetIO
 function M.GetItemRectMax()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetItemRectMax_nonUDT(nonUDT_out)
+    lib.igGetItemRectMax(nonUDT_out)
     return nonUDT_out
 end
-M.GetItemRectMax_nonUDT2 = lib.igGetItemRectMax_nonUDT2
 function M.GetItemRectMin()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetItemRectMin_nonUDT(nonUDT_out)
+    lib.igGetItemRectMin(nonUDT_out)
     return nonUDT_out
 end
-M.GetItemRectMin_nonUDT2 = lib.igGetItemRectMin_nonUDT2
 function M.GetItemRectSize()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetItemRectSize_nonUDT(nonUDT_out)
+    lib.igGetItemRectSize(nonUDT_out)
     return nonUDT_out
 end
-M.GetItemRectSize_nonUDT2 = lib.igGetItemRectSize_nonUDT2
 M.GetKeyIndex = lib.igGetKeyIndex
 M.GetKeyPressedAmount = lib.igGetKeyPressedAmount
 M.GetMouseCursor = lib.igGetMouseCursor
@@ -1425,26 +1459,19 @@ function M.GetMouseDragDelta(button,lock_threshold)
     lock_threshold = lock_threshold or -1.0
     button = button or 0
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetMouseDragDelta_nonUDT(nonUDT_out,button,lock_threshold)
+    lib.igGetMouseDragDelta(nonUDT_out,button,lock_threshold)
     return nonUDT_out
-end
-function M.GetMouseDragDelta_nonUDT2(button,lock_threshold)
-    lock_threshold = lock_threshold or -1.0
-    button = button or 0
-    return lib.igGetMouseDragDelta_nonUDT2(button,lock_threshold)
 end
 function M.GetMousePos()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetMousePos_nonUDT(nonUDT_out)
+    lib.igGetMousePos(nonUDT_out)
     return nonUDT_out
 end
-M.GetMousePos_nonUDT2 = lib.igGetMousePos_nonUDT2
 function M.GetMousePosOnOpeningCurrentPopup()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetMousePosOnOpeningCurrentPopup_nonUDT(nonUDT_out)
+    lib.igGetMousePosOnOpeningCurrentPopup(nonUDT_out)
     return nonUDT_out
 end
-M.GetMousePosOnOpeningCurrentPopup_nonUDT2 = lib.igGetMousePosOnOpeningCurrentPopup_nonUDT2
 M.GetScrollMaxX = lib.igGetScrollMaxX
 M.GetScrollMaxY = lib.igGetScrollMaxY
 M.GetScrollX = lib.igGetScrollX
@@ -1460,31 +1487,27 @@ M.GetTreeNodeToLabelSpacing = lib.igGetTreeNodeToLabelSpacing
 M.GetVersion = lib.igGetVersion
 function M.GetWindowContentRegionMax()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetWindowContentRegionMax_nonUDT(nonUDT_out)
+    lib.igGetWindowContentRegionMax(nonUDT_out)
     return nonUDT_out
 end
-M.GetWindowContentRegionMax_nonUDT2 = lib.igGetWindowContentRegionMax_nonUDT2
 function M.GetWindowContentRegionMin()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetWindowContentRegionMin_nonUDT(nonUDT_out)
+    lib.igGetWindowContentRegionMin(nonUDT_out)
     return nonUDT_out
 end
-M.GetWindowContentRegionMin_nonUDT2 = lib.igGetWindowContentRegionMin_nonUDT2
 M.GetWindowContentRegionWidth = lib.igGetWindowContentRegionWidth
 M.GetWindowDrawList = lib.igGetWindowDrawList
 M.GetWindowHeight = lib.igGetWindowHeight
 function M.GetWindowPos()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetWindowPos_nonUDT(nonUDT_out)
+    lib.igGetWindowPos(nonUDT_out)
     return nonUDT_out
 end
-M.GetWindowPos_nonUDT2 = lib.igGetWindowPos_nonUDT2
 function M.GetWindowSize()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetWindowSize_nonUDT(nonUDT_out)
+    lib.igGetWindowSize(nonUDT_out)
     return nonUDT_out
 end
-M.GetWindowSize_nonUDT2 = lib.igGetWindowSize_nonUDT2
 M.GetWindowWidth = lib.igGetWindowWidth
 function M.Image(user_texture_id,size,uv0,uv1,tint_col,border_col)
     border_col = border_col or ImVec4(0,0,0,0)
@@ -1634,6 +1657,12 @@ M.IsMouseReleased = lib.igIsMouseReleased
 M.IsPopupOpen = lib.igIsPopupOpen
 M.IsRectVisible = lib.igIsRectVisible
 M.IsRectVisibleVec2 = lib.igIsRectVisibleVec2
+function M.IsRectVisible(a1,a2) -- generic version
+    if a2==nil then return M.IsRectVisible(a1) end
+    if ffi.istype('const ImVec2',a2) then return M.IsRectVisibleVec2(a1,a2) end
+    print(a1,a2)
+    error'M.IsRectVisible could not find overloaded'
+end
 M.IsWindowAppearing = lib.igIsWindowAppearing
 M.IsWindowCollapsed = lib.igIsWindowCollapsed
 function M.IsWindowFocused(flags)
@@ -1654,6 +1683,12 @@ function M.ListBoxFnPtr(label,current_item,items_getter,data,items_count,height_
     height_in_items = height_in_items or -1
     return lib.igListBoxFnPtr(label,current_item,items_getter,data,items_count,height_in_items)
 end
+function M.ListBox(a1,a2,a3,a4,a5,a6) -- generic version
+    if ffi.istype('const char* const[]',a3) then return M.ListBoxStr_arr(a1,a2,a3,a4,a5) end
+    if ffi.istype('bool(*)(void* data,int idx,const char** out_text)',a3) then return M.ListBoxFnPtr(a1,a2,a3,a4,a5,a6) end
+    print(a1,a2,a3,a4,a5,a6)
+    error'M.ListBox could not find overloaded'
+end
 M.ListBoxFooter = lib.igListBoxFooter
 function M.ListBoxHeaderVec2(label,size)
     size = size or ImVec2(0,0)
@@ -1662,6 +1697,12 @@ end
 function M.ListBoxHeaderInt(label,items_count,height_in_items)
     height_in_items = height_in_items or -1
     return lib.igListBoxHeaderInt(label,items_count,height_in_items)
+end
+function M.ListBoxHeader(a1,a2,a3) -- generic version
+    if ffi.istype('const ImVec2',a2) then return M.ListBoxHeaderVec2(a1,a2) end
+    if (ffi.istype('int',a2) or type(a2)=='number') then return M.ListBoxHeaderInt(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.ListBoxHeader could not find overloaded'
 end
 M.LoadIniSettingsFromDisk = lib.igLoadIniSettingsFromDisk
 function M.LoadIniSettingsFromMemory(ini_data,ini_size)
@@ -1696,6 +1737,12 @@ function M.MenuItemBoolPtr(label,shortcut,p_selected,enabled)
     if enabled == nil then enabled = true end
     return lib.igMenuItemBoolPtr(label,shortcut,p_selected,enabled)
 end
+function M.MenuItem(a1,a2,a3,a4) -- generic version
+    if (ffi.istype('bool',a3) or type(a3)=='boolean') then return M.MenuItemBool(a1,a2,a3,a4) end
+    if ffi.istype('bool*',a3) then return M.MenuItemBoolPtr(a1,a2,a3,a4) end
+    print(a1,a2,a3,a4)
+    error'M.MenuItem could not find overloaded'
+end
 M.NewFrame = lib.igNewFrame
 M.NewLine = lib.igNewLine
 M.NextColumn = lib.igNextColumn
@@ -1722,14 +1769,20 @@ function M.PlotHistogramFnPtr(label,values_getter,data,values_count,values_offse
     overlay_text = overlay_text or nil
     return lib.igPlotHistogramFnPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
 end
-function M.PlotLines(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
+function M.PlotHistogram(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
+    if ffi.istype('const float*',a2) then return M.PlotHistogramFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.istype('float(*)(void* data,int idx)',a2) then return M.PlotHistogramFnPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
+    error'M.PlotHistogram could not find overloaded'
+end
+function M.PlotLinesFloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
     graph_size = graph_size or ImVec2(0,0)
     values_offset = values_offset or 0
     scale_max = scale_max or M.FLT_MAX
     scale_min = scale_min or M.FLT_MAX
     stride = stride or ffi.sizeof("float")
     overlay_text = overlay_text or nil
-    return lib.igPlotLines(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
+    return lib.igPlotLinesFloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
 end
 function M.PlotLinesFnPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
     graph_size = graph_size or ImVec2(0,0)
@@ -1738,6 +1791,12 @@ function M.PlotLinesFnPtr(label,values_getter,data,values_count,values_offset,ov
     scale_min = scale_min or M.FLT_MAX
     overlay_text = overlay_text or nil
     return lib.igPlotLinesFnPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
+end
+function M.PlotLines(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
+    if ffi.istype('const float*',a2) then return M.PlotLinesFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.istype('float(*)(void* data,int idx)',a2) then return M.PlotLinesFnPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
+    error'M.PlotLines could not find overloaded'
 end
 M.PopAllowKeyboardFocus = lib.igPopAllowKeyboardFocus
 M.PopButtonRepeat = lib.igPopButtonRepeat
@@ -1764,20 +1823,46 @@ M.PushButtonRepeat = lib.igPushButtonRepeat
 M.PushClipRect = lib.igPushClipRect
 M.PushFont = lib.igPushFont
 M.PushIDStr = lib.igPushIDStr
-M.PushIDRange = lib.igPushIDRange
+M.PushIDStrStr = lib.igPushIDStrStr
 M.PushIDPtr = lib.igPushIDPtr
 M.PushIDInt = lib.igPushIDInt
+function M.PushID(a1,a2) -- generic version
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and a2==nil then return M.PushIDStr(a1) end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and (ffi.istype('const char*',a2) or type(a2)=='string') then return M.PushIDStrStr(a1,a2) end
+    if ffi.istype('const void*',a1) then return M.PushIDPtr(a1) end
+    if (ffi.istype('int',a1) or type(a1)=='number') then return M.PushIDInt(a1) end
+    print(a1,a2)
+    error'M.PushID could not find overloaded'
+end
 M.PushItemWidth = lib.igPushItemWidth
 M.PushStyleColorU32 = lib.igPushStyleColorU32
-M.PushStyleColor = lib.igPushStyleColor
+M.PushStyleColorVec4 = lib.igPushStyleColorVec4
+function M.PushStyleColor(a1,a2) -- generic version
+    if ffi.istype('ImU32',a2) then return M.PushStyleColorU32(a1,a2) end
+    if ffi.istype('const ImVec4',a2) then return M.PushStyleColorVec4(a1,a2) end
+    print(a1,a2)
+    error'M.PushStyleColor could not find overloaded'
+end
 M.PushStyleVarFloat = lib.igPushStyleVarFloat
 M.PushStyleVarVec2 = lib.igPushStyleVarVec2
+function M.PushStyleVar(a1,a2) -- generic version
+    if (ffi.istype('float',a2) or type(a2)=='number') then return M.PushStyleVarFloat(a1,a2) end
+    if ffi.istype('const ImVec2',a2) then return M.PushStyleVarVec2(a1,a2) end
+    print(a1,a2)
+    error'M.PushStyleVar could not find overloaded'
+end
 function M.PushTextWrapPos(wrap_local_pos_x)
     wrap_local_pos_x = wrap_local_pos_x or 0.0
     return lib.igPushTextWrapPos(wrap_local_pos_x)
 end
 M.RadioButtonBool = lib.igRadioButtonBool
 M.RadioButtonIntPtr = lib.igRadioButtonIntPtr
+function M.RadioButton(a1,a2,a3) -- generic version
+    if (ffi.istype('bool',a2) or type(a2)=='boolean') then return M.RadioButtonBool(a1,a2) end
+    if ffi.istype('int*',a2) then return M.RadioButtonIntPtr(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.RadioButton could not find overloaded'
+end
 M.Render = lib.igRender
 function M.ResetMouseDragDelta(button)
     button = button or 0
@@ -1793,16 +1878,22 @@ function M.SaveIniSettingsToMemory(out_ini_size)
     out_ini_size = out_ini_size or nil
     return lib.igSaveIniSettingsToMemory(out_ini_size)
 end
-function M.Selectable(label,selected,flags,size)
+function M.SelectableBool(label,selected,flags,size)
     flags = flags or 0
     size = size or ImVec2(0,0)
     selected = selected or false
-    return lib.igSelectable(label,selected,flags,size)
+    return lib.igSelectableBool(label,selected,flags,size)
 end
 function M.SelectableBoolPtr(label,p_selected,flags,size)
     size = size or ImVec2(0,0)
     flags = flags or 0
     return lib.igSelectableBoolPtr(label,p_selected,flags,size)
+end
+function M.Selectable(a1,a2,a3,a4) -- generic version
+    if (ffi.istype('bool',a2) or type(a2)=='boolean') then return M.SelectableBool(a1,a2,a3,a4) end
+    if ffi.istype('bool*',a2) then return M.SelectableBoolPtr(a1,a2,a3,a4) end
+    print(a1,a2,a3,a4)
+    error'M.Selectable could not find overloaded'
 end
 M.Separator = lib.igSeparator
 function M.SetAllocatorFunctions(alloc_func,free_func,user_data)
@@ -1885,8 +1976,20 @@ function M.SetWindowCollapsedStr(name,collapsed,cond)
     cond = cond or 0
     return lib.igSetWindowCollapsedStr(name,collapsed,cond)
 end
+function M.SetWindowCollapsed(a1,a2,a3) -- generic version
+    if (ffi.istype('bool',a1) or type(a1)=='boolean') then return M.SetWindowCollapsedBool(a1,a2) end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.SetWindowCollapsedStr(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.SetWindowCollapsed could not find overloaded'
+end
 M.SetWindowFocus = lib.igSetWindowFocus
 M.SetWindowFocusStr = lib.igSetWindowFocusStr
+function M.SetWindowFocus(a1) -- generic version
+    if a1==nil then return M.SetWindowFocus() end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.SetWindowFocusStr(a1) end
+    print(a1)
+    error'M.SetWindowFocus could not find overloaded'
+end
 M.SetWindowFontScale = lib.igSetWindowFontScale
 function M.SetWindowPosVec2(pos,cond)
     cond = cond or 0
@@ -1896,6 +1999,12 @@ function M.SetWindowPosStr(name,pos,cond)
     cond = cond or 0
     return lib.igSetWindowPosStr(name,pos,cond)
 end
+function M.SetWindowPos(a1,a2,a3) -- generic version
+    if ffi.istype('const ImVec2',a1) then return M.SetWindowPosVec2(a1,a2) end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.SetWindowPosStr(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.SetWindowPos could not find overloaded'
+end
 function M.SetWindowSizeVec2(size,cond)
     cond = cond or 0
     return lib.igSetWindowSizeVec2(size,cond)
@@ -1903,6 +2012,12 @@ end
 function M.SetWindowSizeStr(name,size,cond)
     cond = cond or 0
     return lib.igSetWindowSizeStr(name,size,cond)
+end
+function M.SetWindowSize(a1,a2,a3) -- generic version
+    if ffi.istype('const ImVec2',a1) then return M.SetWindowSizeVec2(a1,a2) end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.SetWindowSizeStr(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.SetWindowSize could not find overloaded'
 end
 function M.ShowAboutWindow(p_open)
     p_open = p_open or nil
@@ -2004,21 +2119,53 @@ M.TextWrappedV = lib.igTextWrappedV
 M.TreeNodeStr = lib.igTreeNodeStr
 M.TreeNodeStrStr = lib.igTreeNodeStrStr
 M.TreeNodePtr = lib.igTreeNodePtr
+function M.TreeNode(a1,a2,a3) -- generic version
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and a2==nil then return M.TreeNodeStr(a1) end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and (ffi.istype('const char*',a2) or type(a2)=='string') then return M.TreeNodeStrStr(a1,a2,a3) end
+    if ffi.istype('const void*',a1) then return M.TreeNodePtr(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.TreeNode could not find overloaded'
+end
 function M.TreeNodeExStr(label,flags)
     flags = flags or 0
     return lib.igTreeNodeExStr(label,flags)
 end
 M.TreeNodeExStrStr = lib.igTreeNodeExStrStr
 M.TreeNodeExPtr = lib.igTreeNodeExPtr
+function M.TreeNodeEx(a1,a2,a3,a4) -- generic version
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and a3==nil then return M.TreeNodeExStr(a1,a2) end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and (ffi.istype('const char*',a3) or type(a3)=='string') then return M.TreeNodeExStrStr(a1,a2,a3,a4) end
+    if ffi.istype('const void*',a1) then return M.TreeNodeExPtr(a1,a2,a3,a4) end
+    print(a1,a2,a3,a4)
+    error'M.TreeNodeEx could not find overloaded'
+end
 M.TreeNodeExVStr = lib.igTreeNodeExVStr
 M.TreeNodeExVPtr = lib.igTreeNodeExVPtr
+function M.TreeNodeExV(a1,a2,a3,a4) -- generic version
+    if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.TreeNodeExVStr(a1,a2,a3,a4) end
+    if ffi.istype('const void*',a1) then return M.TreeNodeExVPtr(a1,a2,a3,a4) end
+    print(a1,a2,a3,a4)
+    error'M.TreeNodeExV could not find overloaded'
+end
 M.TreeNodeVStr = lib.igTreeNodeVStr
 M.TreeNodeVPtr = lib.igTreeNodeVPtr
+function M.TreeNodeV(a1,a2,a3) -- generic version
+    if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.TreeNodeVStr(a1,a2,a3) end
+    if ffi.istype('const void*',a1) then return M.TreeNodeVPtr(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.TreeNodeV could not find overloaded'
+end
 M.TreePop = lib.igTreePop
 M.TreePushStr = lib.igTreePushStr
 function M.TreePushPtr(ptr_id)
     ptr_id = ptr_id or nil
     return lib.igTreePushPtr(ptr_id)
+end
+function M.TreePush(a1) -- generic version
+    if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.TreePushStr(a1) end
+    if ffi.istype('const void*',a1) then return M.TreePushPtr(a1) end
+    print(a1)
+    error'M.TreePush could not find overloaded'
 end
 function M.Unindent(indent_w)
     indent_w = indent_w or 0.0
@@ -2044,6 +2191,14 @@ M.ValueUint = lib.igValueUint
 function M.ValueFloat(prefix,v,float_format)
     float_format = float_format or nil
     return lib.igValueFloat(prefix,v,float_format)
+end
+function M.Value(a1,a2,a3) -- generic version
+    if (ffi.istype('bool',a2) or type(a2)=='boolean') then return M.ValueBool(a1,a2) end
+    if (ffi.istype('int',a2) or type(a2)=='number') then return M.ValueInt(a1,a2) end
+    if ffi.istype('unsigned int',a2) then return M.ValueUint(a1,a2) end
+    if (ffi.istype('float',a2) or type(a2)=='number') then return M.ValueFloat(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.Value could not find overloaded'
 end
 return M
 ----------END_AUTOGENERATED_LUA-----------------------------
