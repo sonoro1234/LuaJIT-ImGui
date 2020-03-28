@@ -233,6 +233,8 @@ local function checktype(typ,va)
 		return "(ffi.istype('"..typ.."',"..va..") or type("..va..")=='boolean')"
 	elseif ffi.typeof(typ)==ffi.typeof"const char*" then
 		return "(ffi.istype('"..typ.."',"..va..") or type("..va..")=='string')"
+	elseif ffi.typeof(typ)==ffi.typeof"const float*" then
+		return "(ffi.istype('"..typ.."',"..va..") or ffi.istype('float[]',"..va.."))"
 	else
 		return "ffi.istype('"..typ.."',"..va..")"
 	end
