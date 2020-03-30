@@ -33,6 +33,9 @@ ImVec2 = ffi.metatype("ImVec2",{
         return ImVec2(a.x * b, a.y * b) end
         return ImVec2(a * b.x, a * b.y)
     end,
+	__index = function(a,i)
+		if i=="norm" then return math.sqrt(a.x*a.x+a.y*a.y) end
+	end,
     __tostring = function(v) return 'ImVec2<'..v.x..','..v.y..'>' end
 })
 local ImVec4= {}

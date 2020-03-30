@@ -338,6 +338,11 @@ local function create_generic(code,defs,method)
 				table.insert(code2,"a"..k.."==nil")
 			else
 				local strcode = checktype(v,"a"..k)
+				--if has a default take nil as valid check
+				--print("defs[i].defaults[k]",defs[i].ov_cimguiname,defs[i].defaults[defs[i].argsT[k].name])
+				if defs[i].defaults[defs[i].argsT[k].name]~=nil then
+					strcode = "("..strcode.." or type(a"..k..")=='nil')"
+				end
 				table.insert(code2 , strcode)
 				---table.insert(code2,"ffi.istype('"..v.."',a"..k..")")
 			end

@@ -34,6 +34,9 @@ ImVec2 = ffi.metatype("ImVec2",{
         return ImVec2(a.x * b, a.y * b) end
         return ImVec2(a * b.x, a * b.y)
     end,
+	__index = function(a,i)
+		if i=="norm" then return math.sqrt(a.x*a.x+a.y*a.y) end
+	end,
     __tostring = function(v) return 'ImVec2<'..v.x..','..v.y..'>' end
 })
 local ImVec4= {}
@@ -1183,7 +1186,7 @@ function M.CollapsingHeaderBoolPtr(label,p_open,flags)
     return lib.igCollapsingHeaderBoolPtr(label,p_open,flags)
 end
 function M.CollapsingHeader(a1,a2,a3) -- generic version
-    if (ffi.istype('ImGuiTreeNodeFlags',a2) or type(a2)=='number') then return M.CollapsingHeaderTreeNodeFlags(a1,a2) end
+    if ((ffi.istype('ImGuiTreeNodeFlags',a2) or type(a2)=='number') or type(a2)=='nil') then return M.CollapsingHeaderTreeNodeFlags(a1,a2) end
     if ffi.istype('bool*',a2) then return M.CollapsingHeaderBoolPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.CollapsingHeader could not find overloaded'
@@ -1699,7 +1702,7 @@ function M.ListBoxHeaderInt(label,items_count,height_in_items)
     return lib.igListBoxHeaderInt(label,items_count,height_in_items)
 end
 function M.ListBoxHeader(a1,a2,a3) -- generic version
-    if ffi.istype('const ImVec2',a2) then return M.ListBoxHeaderVec2(a1,a2) end
+    if (ffi.istype('const ImVec2',a2) or type(a2)=='nil') then return M.ListBoxHeaderVec2(a1,a2) end
     if (ffi.istype('int',a2) or type(a2)=='number') then return M.ListBoxHeaderInt(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.ListBoxHeader could not find overloaded'
@@ -1738,7 +1741,7 @@ function M.MenuItemBoolPtr(label,shortcut,p_selected,enabled)
     return lib.igMenuItemBoolPtr(label,shortcut,p_selected,enabled)
 end
 function M.MenuItem(a1,a2,a3,a4) -- generic version
-    if (ffi.istype('bool',a3) or type(a3)=='boolean') then return M.MenuItemBool(a1,a2,a3,a4) end
+    if ((ffi.istype('bool',a3) or type(a3)=='boolean') or type(a3)=='nil') then return M.MenuItemBool(a1,a2,a3,a4) end
     if ffi.istype('bool*',a3) then return M.MenuItemBoolPtr(a1,a2,a3,a4) end
     print(a1,a2,a3,a4)
     error'M.MenuItem could not find overloaded'
@@ -1890,7 +1893,7 @@ function M.SelectableBoolPtr(label,p_selected,flags,size)
     return lib.igSelectableBoolPtr(label,p_selected,flags,size)
 end
 function M.Selectable(a1,a2,a3,a4) -- generic version
-    if (ffi.istype('bool',a2) or type(a2)=='boolean') then return M.SelectableBool(a1,a2,a3,a4) end
+    if ((ffi.istype('bool',a2) or type(a2)=='boolean') or type(a2)=='nil') then return M.SelectableBool(a1,a2,a3,a4) end
     if ffi.istype('bool*',a2) then return M.SelectableBoolPtr(a1,a2,a3,a4) end
     print(a1,a2,a3,a4)
     error'M.Selectable could not find overloaded'
@@ -2163,7 +2166,7 @@ function M.TreePushPtr(ptr_id)
 end
 function M.TreePush(a1) -- generic version
     if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.TreePushStr(a1) end
-    if ffi.istype('const void*',a1) then return M.TreePushPtr(a1) end
+    if (ffi.istype('const void*',a1) or type(a1)=='nil') then return M.TreePushPtr(a1) end
     print(a1)
     error'M.TreePush could not find overloaded'
 end
