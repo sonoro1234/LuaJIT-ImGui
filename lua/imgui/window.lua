@@ -1,7 +1,7 @@
 
 local M = {}
 
-local function start(W)
+local function startGLFW(W)
 	local window = W.window
 	while not window:shouldClose() do
 	
@@ -9,6 +9,7 @@ local function start(W)
 		
 		W.gllib.gl.glClear(W.gllib.glc.GL_COLOR_BUFFER_BIT)
 		
+		if W.preimgui then W.preimgui() end
 		W.ig_impl:NewFrame()
 		
 		W:draw(W.ig)
@@ -47,7 +48,7 @@ function M:GLFW(w,h,title)
 	igio.ConfigFlags = W.ig.lib.ImGuiConfigFlags_NavEnableKeyboard + igio.ConfigFlags
 
 	W.window = window
-	W.start = start
+	W.start = startGLFW
 	return W
 end
 
@@ -76,6 +77,8 @@ local function startSDL(W)
         sdl.gL_MakeCurrent(window, W.gl_context);
         gl.glViewport(0, 0, igio.DisplaySize.x, igio.DisplaySize.y);
         gl.glClear(glc.GL_COLOR_BUFFER_BIT)
+        
+        if W.preimgui then W.preimgui() end
 
         W.ig_Impl:NewFrame()
 
