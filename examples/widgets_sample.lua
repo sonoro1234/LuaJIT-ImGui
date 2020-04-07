@@ -9,7 +9,7 @@ local padval = ffi.new("float[2]")
 local curve = win.ig.Curve("mycurve",12,100)
 local Quat = ffi.new("quat",{1,0,0,0})
 local v3 = ffi.new("float[3]",{1,0,0})
-local mat4 = win.ig.mat4_cast(Quat).f
+local mat4 = win.ig.mat4_cast(Quat)
 
 function win:draw(ig)
 
@@ -38,15 +38,15 @@ function win:draw(ig)
 		if ig.TreeNode"gizmoquat" then
 
 			if ig.Guizmo3D("###guizmo0",Quat,150,ig.lib.mode3Axes + ig.lib.cubeAtOrigin) then
-				mat4 = ig.mat4_cast(Quat).f
-				print(mat4)
+				mat4 = ig.mat4_cast(Quat)
 			end
+			
 			ig.SameLine()
 			ig.BeginGroup()
-			ig.InputFloat4("##1",mat4, nil, ig.lib.ImGuiInputTextFlags_ReadOnly)
-			ig.InputFloat4("##2",mat4+4, nil, ig.lib.ImGuiInputTextFlags_ReadOnly)
-			ig.InputFloat4("##3",mat4+8, nil, ig.lib.ImGuiInputTextFlags_ReadOnly)
-			ig.InputFloat4("##4",mat4+12, nil, ig.lib.ImGuiInputTextFlags_ReadOnly)
+			ig.InputFloat4("##1",mat4.f, nil, ig.lib.ImGuiInputTextFlags_ReadOnly)
+			ig.InputFloat4("##2",mat4.f+4, nil, ig.lib.ImGuiInputTextFlags_ReadOnly)
+			ig.InputFloat4("##3",mat4.f+8, nil, ig.lib.ImGuiInputTextFlags_ReadOnly)
+			ig.InputFloat4("##4",mat4.f+12, nil, ig.lib.ImGuiInputTextFlags_ReadOnly)
 			ig.EndGroup()
 			ig.setDirectionColor(ig.ImVec4(1,0,0,1))
 			ig.Guizmo3Dvec3("guizmo3",v3,150,ig.lib.modeDirection)
