@@ -97,8 +97,8 @@ function gui.FileBrowser(filename_p, args, funcOK)
     
     args = args or {}
     args.key = args.key or "filechooser"
-    local pattern_ed = ffi.new"char[32]"
-    ffi.copy(pattern_ed, args.pattern or "" )
+    local pattern_ed = ffi.new("char[32]",args.pattern or "" )
+    --ffi.copy(pattern_ed, args.pattern or "" )
     local pathut = M --require"anima.path"
     local curr_dir = args.curr_dir or pathut.this_script_path() 
     local curr_dir_ed = ffi.new("char[256]")
@@ -131,7 +131,7 @@ function gui.FileBrowser(filename_p, args, funcOK)
     local function filechooser()
     
         
-        if (ig.BeginPopupModal(args.key, nil, 0)) then 
+        if (ig.BeginPopupModal(args.key, nil, ffi.C.ImGuiWindowFlags_AlwaysAutoResize)) then
 
             local tsize = ig.CalcTextSize(curr_dir_ed, nil,false, -1.0);
             ig.PushItemWidth(tsize.x + ig.GetStyle().ItemInnerSpacing.x * 2)

@@ -1,7 +1,7 @@
 
 local igwin = require"imgui.window"
-local win = igwin:SDL(800,400, "drag and drop")
---local win = igwin:GLFW(800,400, "drag and drop")
+--local win = igwin:SDL(800,400, "drag and drop")
+local win = igwin:GLFW(800,400, "drag and drop")
 
 local butnum = {} 
 for i=1,16 do butnum[i] = i end
