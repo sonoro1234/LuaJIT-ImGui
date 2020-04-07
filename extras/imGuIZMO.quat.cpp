@@ -23,9 +23,9 @@ IMGUI_IMPL_API void restoreDirectionColor()
 	imguiGizmo::restoreDirectionColor();
 }
 
-IMGUI_IMPL_API Mat4 mat4_cast( quat *q)
+IMGUI_IMPL_API void mat4_cast( quat *q,Mat4* mat)
 {
-	return mat4_cast(*q);
+	*mat = mat4_cast(*q);
 }
 
 struct m16 {
@@ -39,7 +39,7 @@ struct m16 {
 };
 
 //https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
-IMGUI_IMPL_API quat quat_cast(float f[16])
+IMGUI_IMPL_API void quat_cast(float f[16], quat *qq)
 {
 	m16 m = *(m16*)f;
 	float qw, qx, qy, qz;
@@ -70,7 +70,7 @@ IMGUI_IMPL_API quat quat_cast(float f[16])
 	qy = (m.m12 + m.m21) / S;
 	qz = 0.25f * S;
 	}
-	return quat(qw, qx, qy, qz);
+	*qq = quat(qw, qx, qy, qz);
 }
 
 IMGUI_IMPL_API bool ImGuizmo3D(const char* label, quat *q, float size, const int mode)

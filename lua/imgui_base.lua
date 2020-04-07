@@ -318,8 +318,18 @@ M.setDirectionColor = lib.setDirectionColor
 M.restoreDirectionColor = lib.restoreDirectionColor
 M.resizeAxesOf = lib.resizeAxesOf
 M.restoreAxesSize = lib.restoreAxesSize
-M.mat4_cast = lib.mat4_cast
-M.quat_cast = lib.quat_cast
+
+function M.mat4_cast(q)
+	local nonUDT_out = ffi.new("Mat4")
+	lib.mat4_cast(q,nonUDT_out)
+	return nonUDT_out
+end
+function M.quad_cast(f)
+	local nonUDT_out = ffi.new("quat")
+	lib.quad_cast(f,nonUDT_out)
+	return nonUDT_out
+end
+
 M.Guizmo3D = lib.ImGuizmo3D
 M.Guizmo3Dquat = lib.ImGuizmo3Dquat
 M.Guizmo3Dvec4 = lib.ImGuizmo3Dvec4
