@@ -1,4 +1,11 @@
-
+local function MainDockSpace(W)
+    local ig = W.ig
+    if not W.has_imgui_viewport then return end
+    if (bit.band(ig.GetIO().ConfigFlags , ig.lib.ImGuiConfigFlags_DockingEnable)==0) then return end
+    
+    local dockspace_flags = bit.bor(ig.lib.ImGuiDockNodeFlags_NoDockingInCentralNode, ig.lib.ImGuiDockNodeFlags_AutoHideTabBar, ig.lib.ImGuiDockNodeFlags_PassthruCentralNode, ig.lib.ImGuiDockNodeFlags_NoTabBar, ig.lib.ImGuiDockNodeFlags_HiddenTabBar) --ImGuiDockNodeFlags_NoSplit
+    ig.DockSpaceOverViewport(nil, dockspace_flags);
+end
 local M = {}
 
 local function startGLFW(W)
@@ -16,6 +23,7 @@ local function startGLFW(W)
         
         W.ig_impl:NewFrame()
         
+        MainDockSpace(W)
         W:draw(ig)
         
         W.ig_impl:Render()
@@ -108,6 +116,7 @@ local function startSDL(W)
 
         W.ig_Impl:NewFrame()
 
+        MainDockSpace(W)
         W:draw(ig)
         
         W.ig_Impl:Render()
