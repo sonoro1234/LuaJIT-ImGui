@@ -325,9 +325,9 @@ function M.mat4_cast(q)
 	lib.mat4_cast(q,nonUDT_out)
 	return nonUDT_out
 end
-function M.quad_cast(f)
+function M.quat_cast(f)
 	local nonUDT_out = ffi.new("quat")
-	lib.quad_cast(f,nonUDT_out)
+	lib.quat_cast(f,nonUDT_out)
 	return nonUDT_out
 end
 
