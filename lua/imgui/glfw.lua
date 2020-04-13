@@ -2192,6 +2192,11 @@ function M.GetWindowPos()
 end
 M.GetWindowResizeID = lib.igGetWindowResizeID
 M.GetWindowScrollbarID = lib.igGetWindowScrollbarID
+function M.GetWindowScrollbarRect(window,axis)
+    local nonUDT_out = ffi.new("ImRect")
+    lib.igGetWindowScrollbarRect(nonUDT_out,window,axis)
+    return nonUDT_out
+end
 function M.GetWindowSize()
     local nonUDT_out = ffi.new("ImVec2")
     lib.igGetWindowSize(nonUDT_out)

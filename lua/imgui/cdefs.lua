@@ -1708,7 +1708,7 @@ struct ImGuiContext
     float DragSpeedDefaultRatio;
     float ScrollbarClickDeltaToGrabCenter;
     int TooltipOverrideCount;
-    ImVector_char PrivateClipboard;
+    ImVector_char ClipboardHandlerData;
     ImVector_ImGuiID MenusIdSubmittedThisFrame;
     ImVec2 PlatformImePos;
     ImVec2 PlatformImeLastPos;
@@ -2924,6 +2924,7 @@ _Bool                igCollapseButton(ImGuiID id,const ImVec2 pos,ImGuiDockNode*
 _Bool                igArrowButtonEx(const char* str_id,ImGuiDir dir,ImVec2 size_arg,ImGuiButtonFlags flags);
 void igScrollbar(ImGuiAxis axis);
 _Bool                igScrollbarEx(const ImRect bb,ImGuiID id,ImGuiAxis axis,float* p_scroll_v,float avail_v,float contents_v,ImDrawCornerFlags rounding_corners);
+void igGetWindowScrollbarRect(ImRect *pOut,ImGuiWindow* window,ImGuiAxis axis);
 ImGuiID igGetWindowScrollbarID(ImGuiWindow* window,ImGuiAxis axis);
 ImGuiID igGetWindowResizeID(ImGuiWindow* window,int n);
 void igSeparatorEx(ImGuiSeparatorFlags flags);
@@ -2946,7 +2947,7 @@ ImGuiInputTextState* igGetInputTextState(ImGuiID id);
 void igColorTooltip(const char* text,const float* col,ImGuiColorEditFlags flags);
 void igColorEditOptionsPopup(const float* col,ImGuiColorEditFlags flags);
 void igColorPickerOptionsPopup(const float* ref_col,ImGuiColorEditFlags flags);
-void igPlotEx(ImGuiPlotType plot_type,const char* label,float(*values_getter)(void* data,int idx),void* data,int values_count,int values_offset,const char* overlay_text,float scale_min,float scale_max,ImVec2 frame_size);
+int igPlotEx(ImGuiPlotType plot_type,const char* label,float(*values_getter)(void* data,int idx),void* data,int values_count,int values_offset,const char* overlay_text,float scale_min,float scale_max,ImVec2 frame_size);
 void igShadeVertsLinearColorGradientKeepAlpha(ImDrawList* draw_list,int vert_start_idx,int vert_end_idx,ImVec2 gradient_p0,ImVec2 gradient_p1,ImU32 col0,ImU32 col1);
 void igShadeVertsLinearUV(ImDrawList* draw_list,int vert_start_idx,int vert_end_idx,const ImVec2 a,const ImVec2 b,const ImVec2 uv_a,const ImVec2 uv_b,                                                                                                                                                                _Bool                                                                                                                                                                      clamp);
 void igGcCompactTransientWindowBuffers(ImGuiWindow* window);
