@@ -2658,7 +2658,7 @@ M.RadioButtonBool = lib.igRadioButtonBool
 M.RadioButtonIntPtr = lib.igRadioButtonIntPtr
 function M.RadioButton(a1,a2,a3) -- generic version
     if (ffi.istype('bool',a2) or type(a2)=='boolean') then return M.RadioButtonBool(a1,a2) end
-    if ffi.istype('int*',a2) then return M.RadioButtonIntPtr(a1,a2,a3) end
+    if (ffi.istype('int*',a2) or ffi.istype('int[]',a2)) then return M.RadioButtonIntPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.RadioButton could not find overloaded'
 end
