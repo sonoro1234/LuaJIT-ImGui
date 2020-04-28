@@ -51,10 +51,23 @@ function CleanImU32(def)
 	return res
 end
 -------------------------------------------------
+--make enumvalues table
+local enumsvalues = {}
+local standenu = dofile([[../cimplot/generator/output/structs_and_enums.lua]])
+for k,enu in pairs(standenu.enums) do
+	for i,v in ipairs(enu) do
+		assert(v.calc_value)
+		enumsvalues[v.name] = v.calc_value
+	end
+end
 --load function definitions
 local dir = [[../cimgui/generator/output/]]
 local fundefs = dofile(dir..[[definitions.lua]])
-
+local fundefspl = dofile([[../cimplot/generator/output/definitions.lua]])
+--merge funcdefs and fundefspl
+for fun,defs in pairs(fundefspl) do
+	fundefs[fun] = defs
+end
 --group them by structs
 local structs = {}
 for fun,defs in pairs(fundefs) do
@@ -126,17 +139,21 @@ function sanitize_reserved(def)
 		--do only if not a c string
 		local is_cstring = v:sub(1,1)=='"' and v:sub(-1,-1) =='"'
 		if not is_cstring then
-			--numbers without f in the end
-			def.defaults[k] = v:gsub("([%d%.%-]+)f","%1")
-			--+ in front of numbers
-			def.defaults[k] = def.defaults[k]:gsub("^%+([%d%.%-]+)","%1")
-			--FLT_MAX
-			def.defaults[k] = def.defaults[k]:gsub("FLT_MAX","M.FLT_MAX")
-			def.defaults[k] = def.defaults[k]:gsub("ImDrawCornerFlags_All","lib.ImDrawCornerFlags_All")
-			def.defaults[k] = def.defaults[k]:gsub("sizeof%((%w+)%)",[[ffi.sizeof("%1")]])
-			def.defaults[k] = def.defaults[k]:gsub("%(%(void%s*%*%)0%)","nil")
-			if def.defaults[k]:match"%(ImU32%)" then
-				def.defaults[k] = CleanImU32(def.defaults[k])
+			if enumsvalues[v] then
+				def.defaults[k] = enumsvalues[v]
+			else
+				--numbers without f in the end
+				def.defaults[k] = v:gsub("([%d%.%-]+)f","%1")
+				--+ in front of numbers
+				def.defaults[k] = def.defaults[k]:gsub("^%+([%d%.%-]+)","%1")
+				--FLT_MAX
+				def.defaults[k] = def.defaults[k]:gsub("FLT_MAX","M.FLT_MAX")
+				def.defaults[k] = def.defaults[k]:gsub("ImDrawCornerFlags_All","lib.ImDrawCornerFlags_All")
+				def.defaults[k] = def.defaults[k]:gsub("sizeof%((%w+)%)",[[ffi.sizeof("%1")]])
+				def.defaults[k] = def.defaults[k]:gsub("%(%(void%s*%*%)0%)","nil")
+				if def.defaults[k]:match"%(ImU32%)" then
+					def.defaults[k] = CleanImU32(def.defaults[k])
+				end
 			end
 		end
 	end

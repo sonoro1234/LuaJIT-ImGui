@@ -1276,6 +1276,11 @@ struct ImGuiDataTypeInfo
     const char* PrintFmt;
     const char* ScanFmt;
 };
+typedef enum {
+    ImGuiDataType_String = ImGuiDataType_COUNT + 1,
+    ImGuiDataType_Pointer,
+    ImGuiDataType_ID
+}ImGuiDataTypePrivate_;
 struct ImGuiColorMod
 {
     ImGuiCol Col;
@@ -1435,9 +1440,10 @@ typedef enum {
     ImGuiNextWindowDataFlags_HasSizeConstraint = 1 << 4,
     ImGuiNextWindowDataFlags_HasFocus = 1 << 5,
     ImGuiNextWindowDataFlags_HasBgAlpha = 1 << 6,
-    ImGuiNextWindowDataFlags_HasViewport = 1 << 7,
-    ImGuiNextWindowDataFlags_HasDock = 1 << 8,
-    ImGuiNextWindowDataFlags_HasWindowClass = 1 << 9
+    ImGuiNextWindowDataFlags_HasScroll = 1 << 7,
+    ImGuiNextWindowDataFlags_HasViewport = 1 << 8,
+    ImGuiNextWindowDataFlags_HasDock = 1 << 9,
+    ImGuiNextWindowDataFlags_HasWindowClass = 1 << 10
 }ImGuiNextWindowDataFlags_;
 struct ImGuiNextWindowData
 {
@@ -1450,6 +1456,7 @@ struct ImGuiNextWindowData
     ImVec2 PosPivotVal;
     ImVec2 SizeVal;
     ImVec2 ContentSizeVal;
+    ImVec2 ScrollVal;
        _Bool         PosUndock;
        _Bool         CollapsedVal;
     ImRect SizeConstraintRect;
@@ -1569,6 +1576,9 @@ struct ImGuiContext
        _Bool         WithinFrameScope;
        _Bool         WithinFrameScopeWithImplicitWindow;
        _Bool         WithinEndChild;
+       _Bool         TestEngineHookItems;
+    ImGuiID TestEngineHookIdInfo;
+    void* TestEngine;
     ImVector_ImGuiWindowPtr Windows;
     ImVector_ImGuiWindowPtr WindowsFocusOrder;
     ImVector_ImGuiWindowPtr WindowsTempSortBuffer;
@@ -1688,6 +1698,7 @@ struct ImGuiContext
     ImGuiID DragDropAcceptIdCurr;
     ImGuiID DragDropAcceptIdPrev;
     int DragDropAcceptFrameCount;
+    ImGuiID DragDropHoldJustPressedId;
     ImVector_unsigned_char DragDropPayloadBufHeap;
     unsigned char DragDropPayloadBufLocal[16];
     ImGuiTabBar* CurrentTabBar;
@@ -2777,6 +2788,7 @@ ImGuiWindowSettings* igCreateNewWindowSettings(const char* name);
 ImGuiWindowSettings* igFindWindowSettings(ImGuiID id);
 ImGuiWindowSettings* igFindOrCreateWindowSettings(const char* name);
 ImGuiSettingsHandler* igFindSettingsHandler(const char* type_name);
+void igSetNextWindowScroll(const ImVec2 scroll);
 void igSetScrollXWindowPtr(ImGuiWindow* window,float new_scroll_x);
 void igSetScrollYWindowPtr(ImGuiWindow* window,float new_scroll_y);
 void igSetScrollFromPosXWindowPtr(ImGuiWindow* window,float local_x,float center_x_ratio);
@@ -2970,6 +2982,125 @@ ImVector_ImWchar* ImVector_ImWchar_create();
 void ImVector_ImWchar_destroy(ImVector_ImWchar* self);
 void ImVector_ImWchar_Init(ImVector_ImWchar* p);
 void ImVector_ImWchar_UnInit(ImVector_ImWchar* p);
+typedef struct ImPlotStyle ImPlotStyle;
+typedef struct ImPlotRange ImPlotRange;
+typedef int ImPlotFlags;
+typedef int ImAxisFlags;
+typedef int ImPlotCol;
+typedef int ImPlotStyleVar;
+typedef int ImMarker;
+typedef enum {
+    ImPlotFlags_MousePos = 1 << 0,
+    ImPlotFlags_Legend = 1 << 1,
+    ImPlotFlags_Highlight = 1 << 2,
+    ImPlotFlags_Selection = 1 << 3,
+    ImPlotFlags_ContextMenu = 1 << 4,
+    ImPlotFlags_Crosshairs = 1 << 5,
+    ImPlotFlags_CullData = 1 << 6,
+    ImPlotFlags_AntiAliased = 1 << 7,
+    ImPlotFlags_Default = ImPlotFlags_MousePos | ImPlotFlags_Legend | ImPlotFlags_Highlight | ImPlotFlags_Selection | ImPlotFlags_ContextMenu | ImPlotFlags_CullData
+}ImPlotFlags_;
+typedef enum {
+    ImAxisFlags_GridLines = 1 << 0,
+    ImAxisFlags_TickMarks = 1 << 1,
+    ImAxisFlags_TickLabels = 1 << 2,
+    ImAxisFlags_Invert = 1 << 3,
+    ImAxisFlags_LockMin = 1 << 4,
+    ImAxisFlags_LockMax = 1 << 5,
+    ImAxisFlags_Adaptive = 1 << 6,
+    ImAxisFlags_LogScale = 1 << 7,
+    ImAxisFlags_Scientific = 1 << 8,
+    ImAxisFlags_Default = ImAxisFlags_GridLines | ImAxisFlags_TickMarks | ImAxisFlags_TickLabels | ImAxisFlags_Adaptive
+}ImAxisFlags_;
+typedef enum {
+    ImPlotCol_Line,
+    ImPlotCol_Fill,
+    ImPlotCol_MarkerOutline,
+    ImPlotCol_MarkerFill,
+    ImPlotCol_ErrorBar,
+    ImPlotCol_FrameBg,
+    ImPlotCol_PlotBg,
+    ImPlotCol_PlotBorder,
+    ImPlotCol_XAxis,
+    ImPlotCol_YAxis,
+    ImPlotCol_Selection,
+    ImPlotCol_Query,
+    ImPlotCol_COUNT
+}ImPlotCol_;
+typedef enum {
+    ImPlotStyleVar_LineWeight,
+    ImPlotStyleVar_Marker,
+    ImPlotStyleVar_MarkerSize,
+    ImPlotStyleVar_MarkerWeight,
+    ImPlotStyleVar_ErrorBarSize,
+    ImPlotStyleVar_ErrorBarWeight,
+    ImPlotStyleVar_COUNT
+}ImPlotStyleVar_;
+typedef enum {
+    ImMarker_None = 1 << 0,
+    ImMarker_Circle = 1 << 1,
+    ImMarker_Square = 1 << 2,
+    ImMarker_Diamond = 1 << 3,
+    ImMarker_Up = 1 << 4,
+    ImMarker_Down = 1 << 5,
+    ImMarker_Left = 1 << 6,
+    ImMarker_Right = 1 << 7,
+    ImMarker_Cross = 1 << 8,
+    ImMarker_Plus = 1 << 9,
+    ImMarker_Asterisk = 1 << 10,
+}ImMarker_;
+struct ImPlotRange
+{
+    float XMin, XMax, YMin, YMax;
+};
+struct ImPlotStyle
+{
+    float LineWeight;
+    ImMarker Marker;
+    float MarkerSize;
+    float MarkerWeight;
+    float ErrorBarSize;
+    float ErrorBarWeight;
+    ImVec4 Colors[ImPlotCol_COUNT];
+};
+ImPlotRange* ImPlotRange_ImPlotRange(void);
+void ImPlotRange_destroy(ImPlotRange* self);
+_Bool                ImPlotRange_Contains(ImPlotRange* self,const ImVec2 p);
+ImPlotStyle* ImPlotStyle_ImPlotStyle(void);
+void ImPlotStyle_destroy(ImPlotStyle* self);
+_Bool                igBeginPlot(const char* title_id,const char* x_label,const char* y_label,const ImVec2 size,ImPlotFlags flags,ImAxisFlags x_flags,ImAxisFlags y_flags);
+void igEndPlot(void);
+void igSetNextPlotRange(float x_min,float x_max,float y_min,float y_max,ImGuiCond cond);
+void igSetNextPlotRangeX(float x_min,float x_max,ImGuiCond cond);
+void igSetNextPlotRangeY(float y_min,float y_max,ImGuiCond cond);
+_Bool                igIsPlotHovered(void);
+void igGetPlotMousePos(ImVec2 *pOut);
+ImPlotRange igGetPlotRange(void);
+_Bool                igIsPlotQueried(void);
+ImPlotRange igGetPlotQuery(void);
+void igPlotFloatPtrInt(const char* label_id,const float* values,int count,int offset,int stride);
+void igPlotFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,int offset,int stride);
+void igPlotFnPtr(const char* label_id,ImVec2(*getter)(void* data,int idx),void* data,int count,int offset);
+void igPlotBarFloatPtrInt(const char* label_id,const float* values,int count,float width,float shift,int offset,int stride);
+void igPlotBarFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,float width,int offset,int stride);
+void igPlotBarFnPtr(const char* label_id,ImVec2(*getter)(void* data,int idx),void* data,int count,float width,int offset);
+void igPlotBarHFloatPtrInt(const char* label_id,const float* values,int count,float height,float shift,int offset,int stride);
+void igPlotBarHFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,float height,int offset,int stride);
+void igPlotBarHFnPtr(const char* label_id,ImVec2(*getter)(void* data,int idx),void* data,int count,float height,int offset);
+void igPlotErrorBarsFloatPtrInt(const char* label_id,const float* xs,const float* ys,const float* err,int count,int offset,int stride);
+void igPlotErrorBarsFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,const float* neg,const float* pos,int count,int offset,int stride);
+void igPlotErrorBarsFnPtr(const char* label_id,ImVec4(*getter)(void* data,int idx),void* data,int count,int offset);
+void igPlotLabel(const char* text,float x,float y,                                                            _Bool                                                                  vertical,const ImVec2 pixel_offset);
+ImPlotStyle* igGetPlotStyle(void);
+void igSetPlotPalette(const ImVec4* colors,int num_colors);
+void igRestorePlotPalette(void);
+void igPushPlotColorU32(ImPlotCol idx,ImU32 col);
+void igPushPlotColorVec4(ImPlotCol idx,const ImVec4 col);
+void igPopPlotColor(int count);
+void igPushPlotStyleVarFloat(ImPlotStyleVar idx,float val);
+void igPushPlotStyleVarInt(ImPlotStyleVar idx,int val);
+void igPopPlotStyleVar(int count);
+void igShowImPlotDemoWindow(                                      _Bool                                          * p_open);
 typedef struct SDL_Window SDL_Window;
 typedef struct GLFWmonitor GLFWmonitor;
 typedef struct GLFWwindow GLFWwindow;
