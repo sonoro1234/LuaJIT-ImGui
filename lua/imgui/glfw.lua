@@ -536,12 +536,12 @@ function ImVec2ih.ImVec2ihVec2(rhs)
     local ptr = lib.ImVec2ih_ImVec2ihVec2(rhs)
     return ffi.gc(ptr,lib.ImVec2ih_destroy)
 end
-function ImVec2ih:ImVec2ih(a2) -- generic version
-    if a1==nil then return self:ImVec2ihNil() end
-    if ffi.istype('short',a1) then return self:ImVec2ihshort(a2) end
-    if ffi.istype('const ImVec2',a1) then return self:ImVec2ihVec2() end
-    print(a2)
-    error'ImVec2ih:ImVec2ih could not find overloaded'
+function ImVec2ih.__new(ctype,a1,a2) -- generic version
+    if a1==nil then return ImVec2ih.ImVec2ihNil() end
+    if ffi.istype('short',a1) then return ImVec2ih.ImVec2ihshort(a1,a2) end
+    if ffi.istype('const ImVec2',a1) then return ImVec2ih.ImVec2ihVec2(a1) end
+    print(ctype,a1,a2)
+    error'ImVec2ih.__new could not find overloaded'
 end
 M.ImVec2ih = ffi.metatype("ImVec2ih",ImVec2ih)
 --------------------------ImFontConfig----------------------------
@@ -788,13 +788,13 @@ function ImRect.ImRectFloat(x1,y1,x2,y2)
     local ptr = lib.ImRect_ImRectFloat(x1,y1,x2,y2)
     return ffi.gc(ptr,lib.ImRect_destroy)
 end
-function ImRect:ImRect(a2,a3,a4) -- generic version
-    if a1==nil then return self:ImRectNil() end
-    if ffi.istype('const ImVec2',a1) then return self:ImRectVec2(a2) end
-    if ffi.istype('const ImVec4',a1) then return self:ImRectVec4() end
-    if (ffi.istype('float',a1) or type(a1)=='number') then return self:ImRectFloat(a2,a3,a4) end
-    print(a2,a3,a4)
-    error'ImRect:ImRect could not find overloaded'
+function ImRect.__new(ctype,a1,a2,a3,a4) -- generic version
+    if a1==nil then return ImRect.ImRectNil() end
+    if ffi.istype('const ImVec2',a1) then return ImRect.ImRectVec2(a1,a2) end
+    if ffi.istype('const ImVec4',a1) then return ImRect.ImRectVec4(a1) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return ImRect.ImRectFloat(a1,a2,a3,a4) end
+    print(ctype,a1,a2,a3,a4)
+    error'ImRect.__new could not find overloaded'
 end
 ImRect.IsInverted = lib.ImRect_IsInverted
 ImRect.Overlaps = lib.ImRect_Overlaps
@@ -834,11 +834,11 @@ function ImGuiPtrOrIndex.ImGuiPtrOrIndexInt(index)
     local ptr = lib.ImGuiPtrOrIndex_ImGuiPtrOrIndexInt(index)
     return ffi.gc(ptr,lib.ImGuiPtrOrIndex_destroy)
 end
-function ImGuiPtrOrIndex:ImGuiPtrOrIndex() -- generic version
-    if ffi.istype('void*',a1) then return self:ImGuiPtrOrIndexPtr() end
-    if (ffi.istype('int',a1) or type(a1)=='number') then return self:ImGuiPtrOrIndexInt() end
-    print()
-    error'ImGuiPtrOrIndex:ImGuiPtrOrIndex could not find overloaded'
+function ImGuiPtrOrIndex.__new(ctype,a1) -- generic version
+    if ffi.istype('void*',a1) then return ImGuiPtrOrIndex.ImGuiPtrOrIndexPtr(a1) end
+    if (ffi.istype('int',a1) or type(a1)=='number') then return ImGuiPtrOrIndex.ImGuiPtrOrIndexInt(a1) end
+    print(ctype,a1)
+    error'ImGuiPtrOrIndex.__new could not find overloaded'
 end
 M.ImGuiPtrOrIndex = ffi.metatype("ImGuiPtrOrIndex",ImGuiPtrOrIndex)
 --------------------------ImGuiColumnData----------------------------
@@ -882,12 +882,12 @@ function ImGuiStyleMod.ImGuiStyleModVec2(idx,v)
     local ptr = lib.ImGuiStyleMod_ImGuiStyleModVec2(idx,v)
     return ffi.gc(ptr,lib.ImGuiStyleMod_destroy)
 end
-function ImGuiStyleMod:ImGuiStyleMod(a2) -- generic version
-    if (ffi.istype('int',a2) or type(a2)=='number') then return self:ImGuiStyleModInt(a2) end
-    if (ffi.istype('float',a2) or type(a2)=='number') then return self:ImGuiStyleModFloat(a2) end
-    if ffi.istype('ImVec2',a2) then return self:ImGuiStyleModVec2(a2) end
-    print(a2)
-    error'ImGuiStyleMod:ImGuiStyleMod could not find overloaded'
+function ImGuiStyleMod.__new(ctype,a1,a2) -- generic version
+    if (ffi.istype('int',a2) or type(a2)=='number') then return ImGuiStyleMod.ImGuiStyleModInt(a1,a2) end
+    if (ffi.istype('float',a2) or type(a2)=='number') then return ImGuiStyleMod.ImGuiStyleModFloat(a1,a2) end
+    if ffi.istype('ImVec2',a2) then return ImGuiStyleMod.ImGuiStyleModVec2(a1,a2) end
+    print(ctype,a1,a2)
+    error'ImGuiStyleMod.__new could not find overloaded'
 end
 M.ImGuiStyleMod = ffi.metatype("ImGuiStyleMod",ImGuiStyleMod)
 --------------------------ImGuiStorage----------------------------
@@ -1140,11 +1140,11 @@ function ImGuiTextRange.ImGuiTextRangeStr(_b,_e)
     local ptr = lib.ImGuiTextRange_ImGuiTextRangeStr(_b,_e)
     return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
 end
-function ImGuiTextRange:ImGuiTextRange(a2) -- generic version
-    if a1==nil then return self:ImGuiTextRangeNil() end
-    if (ffi.istype('const char*',a1) or type(a1)=='string') then return self:ImGuiTextRangeStr(a2) end
-    print(a2)
-    error'ImGuiTextRange:ImGuiTextRange could not find overloaded'
+function ImGuiTextRange.__new(ctype,a1,a2) -- generic version
+    if a1==nil then return ImGuiTextRange.ImGuiTextRangeNil() end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') then return ImGuiTextRange.ImGuiTextRangeStr(a1,a2) end
+    print(ctype,a1,a2)
+    error'ImGuiTextRange.__new could not find overloaded'
 end
 ImGuiTextRange.empty = lib.ImGuiTextRange_empty
 ImGuiTextRange.split = lib.ImGuiTextRange_split
@@ -1180,14 +1180,14 @@ function ImColor.ImColorVec4(col)
     local ptr = lib.ImColor_ImColorVec4(col)
     return ffi.gc(ptr,lib.ImColor_destroy)
 end
-function ImColor:ImColor(a2,a3,a4) -- generic version
-    if a1==nil then return self:ImColorNil() end
-    if (ffi.istype('int',a1) or type(a1)=='number') then return self:ImColorInt(a2,a3,a4) end
-    if ffi.istype('ImU32',a1) then return self:ImColorU32() end
-    if (ffi.istype('float',a1) or type(a1)=='number') then return self:ImColorFloat(a2,a3,a4) end
-    if ffi.istype('const ImVec4',a1) then return self:ImColorVec4() end
-    print(a2,a3,a4)
-    error'ImColor:ImColor could not find overloaded'
+function ImColor.__new(ctype,a1,a2,a3,a4) -- generic version
+    if a1==nil then return ImColor.ImColorNil() end
+    if (ffi.istype('int',a1) or type(a1)=='number') then return ImColor.ImColorInt(a1,a2,a3,a4) end
+    if ffi.istype('ImU32',a1) then return ImColor.ImColorU32(a1) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return ImColor.ImColorFloat(a1,a2,a3,a4) end
+    if ffi.istype('const ImVec4',a1) then return ImColor.ImColorVec4(a1) end
+    print(ctype,a1,a2,a3,a4)
+    error'ImColor.__new could not find overloaded'
 end
 function ImColor:SetHSV(h,s,v,a)
     a = a or 1.0
@@ -1223,12 +1223,12 @@ function ImGuiStoragePair.ImGuiStoragePairPtr(_key,_val_p)
     local ptr = lib.ImGuiStoragePair_ImGuiStoragePairPtr(_key,_val_p)
     return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
 end
-function ImGuiStoragePair:ImGuiStoragePair(a2) -- generic version
-    if (ffi.istype('int',a2) or type(a2)=='number') then return self:ImGuiStoragePairInt(a2) end
-    if (ffi.istype('float',a2) or type(a2)=='number') then return self:ImGuiStoragePairFloat(a2) end
-    if ffi.istype('void*',a2) then return self:ImGuiStoragePairPtr(a2) end
-    print(a2)
-    error'ImGuiStoragePair:ImGuiStoragePair could not find overloaded'
+function ImGuiStoragePair.__new(ctype,a1,a2) -- generic version
+    if (ffi.istype('int',a2) or type(a2)=='number') then return ImGuiStoragePair.ImGuiStoragePairInt(a1,a2) end
+    if (ffi.istype('float',a2) or type(a2)=='number') then return ImGuiStoragePair.ImGuiStoragePairFloat(a1,a2) end
+    if ffi.istype('void*',a2) then return ImGuiStoragePair.ImGuiStoragePairPtr(a1,a2) end
+    print(ctype,a1,a2)
+    error'ImGuiStoragePair.__new could not find overloaded'
 end
 M.ImGuiStoragePair = ffi.metatype("ImGuiStoragePair",ImGuiStoragePair)
 --------------------------ImGuiListClipper----------------------------
@@ -1359,11 +1359,11 @@ function ImVec1.ImVec1Float(_x)
     local ptr = lib.ImVec1_ImVec1Float(_x)
     return ffi.gc(ptr,lib.ImVec1_destroy)
 end
-function ImVec1:ImVec1() -- generic version
-    if a1==nil then return self:ImVec1Nil() end
-    if (ffi.istype('float',a1) or type(a1)=='number') then return self:ImVec1Float() end
-    print()
-    error'ImVec1:ImVec1 could not find overloaded'
+function ImVec1.__new(ctype,a1) -- generic version
+    if a1==nil then return ImVec1.ImVec1Nil() end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return ImVec1.ImVec1Float(a1) end
+    print(ctype,a1)
+    error'ImVec1.__new could not find overloaded'
 end
 M.ImVec1 = ffi.metatype("ImVec1",ImVec1)
 --------------------------ImGuiTextBuffer----------------------------

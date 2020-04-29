@@ -18,14 +18,16 @@ end
 
 
 function win:draw(ig)
-	ig.ShowImPlotDemoWindow()
-	if (ig.BeginPlot("Line Plot", "x", "f(x)", ig.ImVec2(-1,300))) then
+	--ig.ShowImPlotDemoWindow()
+	ig.Begin("Ploters")
+	if (ig.BeginPlot("Line Plot", "x", "f(x)", ig.ImVec2(-1,-1))) then
           ig.Plot("sin(50*x)", xs1, ys1, 1001);
           ig.PushPlotStyleVarInt(ig.lib.ImPlotStyleVar_Marker, ig.lib.ImMarker_Circle);
           ig.Plot("x^2", xs2, ys2, 11);
           ig.PopPlotStyleVar();
         ig.EndPlot();
     end
+	ig.End()
 end
 
 
