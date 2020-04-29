@@ -276,6 +276,7 @@ end
 
 --require"anima.utils" --gives us prtable
 local function create_generic(code,defs,method)
+	local methodnotconst = method and not defs[1].constructor
 	--find max number of arguments
 	local maxnargs = -1
 	for i,def in ipairs(defs) do
@@ -330,10 +331,13 @@ local function create_generic(code,defs,method)
 	local code2 = {}
 	--create args
 	local args = "" --method and "self," or ""
-	if method then
+	if methodnotconst then
 		for i=2,maxnargs do
 			args = args.."a"..i..","
 		end
+	elseif method then --constructor
+		args = maxnargs==0 and "ctype" or "ctype,"
+		for i=1,maxnargs do args = args.."a"..i.."," end
 	else
 		for i=1,maxnargs do
 			args = args.."a"..i..","
@@ -343,7 +347,7 @@ local function create_generic(code,defs,method)
 	
 	local fname = defs[1].cimguiname 
 	local fname_e = method and fname:match(defs[1].stname.."_(.*)") or fname:match("^ig(.*)") --drop struct name part
-	fname = method and defs[1].stname..":"..fname_e or "M."..fname_e
+	fname = method and (methodnotconst and defs[1].stname..":"..fname_e or defs[1].stname..".__new") or "M."..fname_e
 
 	table.insert(code2, "function "..fname.."("..args..") -- generic version")
 	
@@ -369,8 +373,8 @@ local function create_generic(code,defs,method)
 		end
 		local fname2 = defs[i].ov_cimguiname 
 		local fname2_e = method and fname2:match(defs[1].stname.."_(.*)") or fname2:match("^ig(.*)") --drop struct name part
-		fname2 = method and "self:"..fname2_e or "M."..fname2_e
-		table.insert(code2," then return "..fname2.."("..gen_args(method,#defs[i].argsT)..") end")
+		fname2 = method and (methodnotconst and "self:"..fname2_e or defs[1].stname.."."..fname2_e) or "M."..fname2_e
+		table.insert(code2," then return "..fname2.."("..gen_args(methodnotconst,#defs[i].argsT)..") end")
 		if fname_e == fname2_e then
 			print("--------error cimguiname equals ov_cimguiname in overloaded function",fname)
 			--error"cimguiname equals ov_cimguiname"
