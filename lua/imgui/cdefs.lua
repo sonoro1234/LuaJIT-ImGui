@@ -2994,10 +2994,11 @@ typedef enum {
     ImPlotFlags_Legend = 1 << 1,
     ImPlotFlags_Highlight = 1 << 2,
     ImPlotFlags_Selection = 1 << 3,
-    ImPlotFlags_ContextMenu = 1 << 4,
-    ImPlotFlags_Crosshairs = 1 << 5,
-    ImPlotFlags_CullData = 1 << 6,
-    ImPlotFlags_AntiAliased = 1 << 7,
+    ImPlotFlags_PixelQuery = 1 << 4,
+    ImPlotFlags_ContextMenu = 1 << 5,
+    ImPlotFlags_Crosshairs = 1 << 6,
+    ImPlotFlags_CullData = 1 << 7,
+    ImPlotFlags_AntiAliased = 1 << 8,
     ImPlotFlags_Default = ImPlotFlags_MousePos | ImPlotFlags_Legend | ImPlotFlags_Highlight | ImPlotFlags_Selection | ImPlotFlags_ContextMenu | ImPlotFlags_CullData
 }ImPlotFlags_;
 typedef enum {
@@ -3070,14 +3071,6 @@ ImPlotStyle* ImPlotStyle_ImPlotStyle(void);
 void ImPlotStyle_destroy(ImPlotStyle* self);
 _Bool                igBeginPlot(const char* title_id,const char* x_label,const char* y_label,const ImVec2 size,ImPlotFlags flags,ImAxisFlags x_flags,ImAxisFlags y_flags);
 void igEndPlot(void);
-void igSetNextPlotRange(float x_min,float x_max,float y_min,float y_max,ImGuiCond cond);
-void igSetNextPlotRangeX(float x_min,float x_max,ImGuiCond cond);
-void igSetNextPlotRangeY(float y_min,float y_max,ImGuiCond cond);
-_Bool                igIsPlotHovered(void);
-void igGetPlotMousePos(ImVec2 *pOut);
-ImPlotRange igGetPlotRange(void);
-_Bool                igIsPlotQueried(void);
-ImPlotRange igGetPlotQuery(void);
 void igPlotFloatPtrInt(const char* label_id,const float* values,int count,int offset,int stride);
 void igPlotFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,int offset,int stride);
 void igPlotFnPtr(const char* label_id,ImVec2(*getter)(void* data,int idx),void* data,int count,int offset);
@@ -3091,6 +3084,11 @@ void igPlotErrorBarsFloatPtrInt(const char* label_id,const float* xs,const float
 void igPlotErrorBarsFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,const float* neg,const float* pos,int count,int offset,int stride);
 void igPlotErrorBarsFnPtr(const char* label_id,ImVec4(*getter)(void* data,int idx),void* data,int count,int offset);
 void igPlotLabel(const char* text,float x,float y,                                                            _Bool                                                                  vertical,const ImVec2 pixel_offset);
+_Bool                igIsPlotHovered(void);
+void igGetPlotMousePos(ImVec2 *pOut);
+ImPlotRange igGetPlotRange(void);
+_Bool                igIsPlotQueried(void);
+ImPlotRange igGetPlotQuery(void);
 ImPlotStyle* igGetPlotStyle(void);
 void igSetPlotPalette(const ImVec4* colors,int num_colors);
 void igRestorePlotPalette(void);
@@ -3100,6 +3098,15 @@ void igPopPlotColor(int count);
 void igPushPlotStyleVarFloat(ImPlotStyleVar idx,float val);
 void igPushPlotStyleVarInt(ImPlotStyleVar idx,int val);
 void igPopPlotStyleVar(int count);
+void igSetNextPlotRange(float x_min,float x_max,float y_min,float y_max,ImGuiCond cond);
+void igSetNextPlotRangeX(float x_min,float x_max,ImGuiCond cond);
+void igSetNextPlotRangeY(float y_min,float y_max,ImGuiCond cond);
+void igGetPlotPos(ImVec2 *pOut);
+void igGetPlotSize(ImVec2 *pOut);
+void igPixelsToPlot(ImVec2 *pOut,const ImVec2 pix);
+void igPlotToPixels(ImVec2 *pOut,const ImVec2 plt);
+void igPushPlotClipRect(void);
+void igPopPlotClipRect(void);
 void igShowImPlotDemoWindow(                                      _Bool                                          * p_open);
 typedef struct SDL_Window SDL_Window;
 typedef struct GLFWmonitor GLFWmonitor;

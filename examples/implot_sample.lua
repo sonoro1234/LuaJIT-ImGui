@@ -1,6 +1,6 @@
 local igwin = require"imgui.window"
---local win = igwin:SDL(800,400, "widgets")
-local win = igwin:GLFW(800,400, "widgets")
+--local win = igwin:SDL(800,400, "widgets",{vsync=true})
+local win = igwin:GLFW(800,400, "widgets",{vsync=true})
 
 
 local ffi = require"ffi"
@@ -18,7 +18,7 @@ end
 
 
 function win:draw(ig)
-	--ig.ShowImPlotDemoWindow()
+	ig.ShowImPlotDemoWindow()
 	ig.Begin("Ploters")
 	if (ig.BeginPlot("Line Plot", "x", "f(x)", ig.ImVec2(-1,-1))) then
           ig.Plot("sin(50*x)", xs1, ys1, 1001);
