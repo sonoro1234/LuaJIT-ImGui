@@ -3085,7 +3085,7 @@ void igPlotBarHFnPtr(const char* label_id,ImVec2(*getter)(void* data,int idx),vo
 void igPlotErrorBarsFloatPtrInt(const char* label_id,const float* xs,const float* ys,const float* err,int count,int offset,int stride);
 void igPlotErrorBarsFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,const float* neg,const float* pos,int count,int offset,int stride);
 void igPlotErrorBarsFnPtr(const char* label_id,ImVec4(*getter)(void* data,int idx),void* data,int count,int offset);
-void igPlotPieChart(char** label_ids,float* values,int count,const ImVec2 center,float radius,                                                                                                        _Bool                                                                                                              show_percents,float angle0);
+void igPlotPieChart(const char** label_ids,float* values,int count,const ImVec2 center,float radius,                                                                                                              _Bool                                                                                                                    show_percents,float angle0);
 void igPlotLabel(const char* text,float x,float y,                                                            _Bool                                                                  vertical,const ImVec2 pixel_offset);
 _Bool                igIsPlotHovered(void);
 void igGetPlotMousePos(ImVec2 *pOut);
