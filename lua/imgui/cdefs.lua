@@ -2999,6 +2999,7 @@ typedef enum {
     ImPlotFlags_Crosshairs = 1 << 6,
     ImPlotFlags_CullData = 1 << 7,
     ImPlotFlags_AntiAliased = 1 << 8,
+    ImPlotFlags_NoChild = 1 << 9,
     ImPlotFlags_Default = ImPlotFlags_MousePos | ImPlotFlags_Legend | ImPlotFlags_Highlight | ImPlotFlags_Selection | ImPlotFlags_ContextMenu | ImPlotFlags_CullData
 }ImPlotFlags_;
 typedef enum {
@@ -3073,6 +3074,7 @@ _Bool                igBeginPlot(const char* title_id,const char* x_label,const 
 void igEndPlot(void);
 void igPlotFloatPtrInt(const char* label_id,const float* values,int count,int offset,int stride);
 void igPlotFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,int offset,int stride);
+void igPlotVec2Ptr(const char* label_id,const ImVec2* data,int count,int offset);
 void igPlotFnPtr(const char* label_id,ImVec2(*getter)(void* data,int idx),void* data,int count,int offset);
 void igPlotBarFloatPtrInt(const char* label_id,const float* values,int count,float width,float shift,int offset,int stride);
 void igPlotBarFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,float width,int offset,int stride);
@@ -3083,6 +3085,7 @@ void igPlotBarHFnPtr(const char* label_id,ImVec2(*getter)(void* data,int idx),vo
 void igPlotErrorBarsFloatPtrInt(const char* label_id,const float* xs,const float* ys,const float* err,int count,int offset,int stride);
 void igPlotErrorBarsFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,const float* neg,const float* pos,int count,int offset,int stride);
 void igPlotErrorBarsFnPtr(const char* label_id,ImVec4(*getter)(void* data,int idx),void* data,int count,int offset);
+void igPlotPieChart(char** label_ids,float* values,int count,const ImVec2 center,float radius,                                                                                                        _Bool                                                                                                              show_percents,float angle0);
 void igPlotLabel(const char* text,float x,float y,                                                            _Bool                                                                  vertical,const ImVec2 pixel_offset);
 _Bool                igIsPlotHovered(void);
 void igGetPlotMousePos(ImVec2 *pOut);

@@ -2756,6 +2756,10 @@ function M.PlotFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     return lib.igPlotFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
 end
+function M.PlotVec2Ptr(label_id,data,count,offset)
+    offset = offset or 0
+    return lib.igPlotVec2Ptr(label_id,data,count,offset)
+end
 function M.PlotFnPtr(label_id,getter,data,count,offset)
     offset = offset or 0
     return lib.igPlotFnPtr(label_id,getter,data,count,offset)
@@ -2763,6 +2767,7 @@ end
 function M.Plot(a1,a2,a3,a4,a5,a6) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.PlotFloatPtrInt(a1,a2,a3,a4,a5) end
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.PlotFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
+    if ffi.istype('const ImVec2*',a2) then return M.PlotVec2Ptr(a1,a2,a3,a4) end
     if ffi.istype('ImVec2(*)(void* data,int idx)',a2) then return M.PlotFnPtr(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.Plot could not find overloaded'
@@ -2885,6 +2890,11 @@ function M.PlotLines(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
     if ffi.istype('float(*)(void* data,int idx)',a2) then return M.PlotLinesFnPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
     print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
     error'M.PlotLines could not find overloaded'
+end
+function M.PlotPieChart(label_ids,values,count,center,radius,show_percents,angle0)
+    angle0 = angle0 or 90
+    if show_percents == nil then show_percents = true end
+    return lib.igPlotPieChart(label_ids,values,count,center,radius,show_percents,angle0)
 end
 function M.PlotToPixels(plt)
     local nonUDT_out = ffi.new("ImVec2")
