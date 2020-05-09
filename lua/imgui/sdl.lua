@@ -2818,6 +2818,21 @@ function M.PlotBarH(a1,a2,a3,a4,a5,a6,a7) -- generic version
     print(a1,a2,a3,a4,a5,a6,a7)
     error'M.PlotBarH could not find overloaded'
 end
+function M.PlotDigitalFloatPtr(label_id,xs,ys,count,offset,stride)
+    stride = stride or ffi.sizeof("float")
+    offset = offset or 0
+    return lib.igPlotDigitalFloatPtr(label_id,xs,ys,count,offset,stride)
+end
+function M.PlotDigitalFnPtr(label_id,getter,data,count,offset)
+    offset = offset or 0
+    return lib.igPlotDigitalFnPtr(label_id,getter,data,count,offset)
+end
+function M.PlotDigital(a1,a2,a3,a4,a5,a6) -- generic version
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.PlotDigitalFloatPtr(a1,a2,a3,a4,a5,a6) end
+    if ffi.istype('ImVec2(*)(void* data,int idx)',a2) then return M.PlotDigitalFnPtr(a1,a2,a3,a4,a5) end
+    print(a1,a2,a3,a4,a5,a6)
+    error'M.PlotDigital could not find overloaded'
+end
 function M.PlotErrorBarsFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
     stride = stride or ffi.sizeof("float")
     offset = offset or 0

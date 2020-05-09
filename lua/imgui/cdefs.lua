@@ -3036,6 +3036,7 @@ typedef enum {
     ImPlotStyleVar_MarkerWeight,
     ImPlotStyleVar_ErrorBarSize,
     ImPlotStyleVar_ErrorBarWeight,
+    ImPlotStyleVar_DigitalBitHeight,
     ImPlotStyleVar_COUNT
 }ImPlotStyleVar_;
 typedef enum {
@@ -3063,6 +3064,7 @@ struct ImPlotStyle
     float MarkerWeight;
     float ErrorBarSize;
     float ErrorBarWeight;
+    float DigitalBitHeight;
     ImVec4 Colors[ImPlotCol_COUNT];
 };
 ImPlotRange* ImPlotRange_ImPlotRange(void);
@@ -3087,6 +3089,8 @@ void igPlotErrorBarsFloatPtrFloatPtr(const char* label_id,const float* xs,const 
 void igPlotErrorBarsFnPtr(const char* label_id,ImVec4(*getter)(void* data,int idx),void* data,int count,int offset);
 void igPlotPieChart(const char** label_ids,float* values,int count,const ImVec2 center,float radius,                                                                                                              _Bool                                                                                                                    show_percents,float angle0);
 void igPlotLabel(const char* text,float x,float y,                                                            _Bool                                                                  vertical,const ImVec2 pixel_offset);
+void igPlotDigitalFloatPtr(const char* label_id,const float* xs,const float* ys,int count,int offset,int stride);
+void igPlotDigitalFnPtr(const char* label_id,ImVec2(*getter)(void* data,int idx),void* data,int count,int offset);
 _Bool                igIsPlotHovered(void);
 void igGetPlotMousePos(ImVec2 *pOut);
 ImPlotRange igGetPlotRange(void);
