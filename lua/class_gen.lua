@@ -162,7 +162,7 @@ end
 local function make_function(method,def)
 	sanitize_reserved(def)
 	local fname = def.ov_cimguiname or def.cimguiname --overloaded or original
-	local fname_m = method and fname:match(def.stname.."_(.*)") or fname:match("^ig(.*)") --drop struct name part
+	local fname_m = method and fname:match(def.stname.."_(.*)") or fname:match("^ig(.*)") or fname --drop struct name part
 	fname_m = fname_m:match("(.*)_nonUDT$") or fname_m --drop "_nonUDT" suffix
 	if fname_m == "end" then fname_m = "_end" end
 	--dump function code
@@ -346,7 +346,7 @@ local function create_generic(code,defs,method)
 	args = args:sub(1,-2) --drop last ,
 	
 	local fname = defs[1].cimguiname 
-	local fname_e = method and fname:match(defs[1].stname.."_(.*)") or fname:match("^ig(.*)") --drop struct name part
+	local fname_e = method and fname:match(defs[1].stname.."_(.*)") or fname:match("^ig(.*)") or fname--drop struct name part
 	fname = method and (methodnotconst and defs[1].stname..":"..fname_e or defs[1].stname..".__new") or "M."..fname_e
 
 	table.insert(code2, "function "..fname.."("..args..") -- generic version")
@@ -372,7 +372,7 @@ local function create_generic(code,defs,method)
 			addand = true
 		end
 		local fname2 = defs[i].ov_cimguiname 
-		local fname2_e = method and fname2:match(defs[1].stname.."_(.*)") or fname2:match("^ig(.*)") --drop struct name part
+		local fname2_e = method and fname2:match(defs[1].stname.."_(.*)") or fname2:match("^ig(.*)") or fname2 --drop struct name part
 		fname2 = method and (methodnotconst and "self:"..fname2_e or defs[1].stname.."."..fname2_e) or "M."..fname2_e
 		table.insert(code2," then return "..fname2.."("..gen_args(methodnotconst,#defs[i].argsT)..") end")
 		if fname_e == fname2_e then
