@@ -5,10 +5,11 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 endif(WIN32)
 #general settings
 include_directories(cimgui/imgui)
+include_directories(cimplot/implot)
 add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
 #set(IMGUI_SOURCES ./cimgui/cimgui.cpp ./cimgui/imgui/imgui.cpp ./cimgui/imgui/imgui_draw.cpp ./cimgui/imgui/imgui_demo.cpp)
 include_directories(cimgui)
-set(IMGUI_SOURCES ./cimgui/cimgui.cpp ./cimgui/imgui/imgui.cpp ./cimgui/imgui/imgui_draw.cpp ./cimgui/imgui/imgui_demo.cpp ./cimgui/imgui/imgui_widgets.cpp)
+set(IMGUI_SOURCES ./cimgui/cimgui.cpp ./cimgui/imgui/imgui.cpp ./cimgui/imgui/imgui_draw.cpp ./cimgui/imgui/imgui_demo.cpp ./cimgui/imgui/imgui_widgets.cpp ./cimplot/cimplot.cpp ./cimplot/implot/implot.cpp ./cimplot/implot/implot_demo.cpp)
 
 set(IMGUI_SOURCES_glfw)
 set(IMGUI_SOURCES_sdl)
