@@ -309,9 +309,10 @@ M.zmoIsUsing = lib.igzmoIsUsing
 M.zmoEnable = lib.igzmoEnable
 M.zmoSetOrthographic = lib.igzmoSetOrthographic
 M.zmoSetRect = lib.igzmoSetRect
-M.zmoDrawCube = lib.igzmoDrawCube
+M.zmoDrawCubes = lib.igzmoDrawCubes
 M.zmoDrawGrid = lib.igzmoDrawGrid
 M.zmoViewManipulate = lib.igzmoViewManipulate
+M.zmoSetID = lib.igzmoSetID
 
 -------------ImGuiZMO.quat
 M.setDirectionColor = lib.setDirectionColor

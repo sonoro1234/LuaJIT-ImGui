@@ -45,9 +45,9 @@ IMGUI_IMPL_API void igzmoSetRect(float x, float y, float width, float height)
 }
 
 
-IMGUI_IMPL_API void igzmoDrawCube(const float *view, const float *projection, const float *matrix)
+IMGUI_IMPL_API void igzmoDrawCubes(const float *view, const float *projection, const float *matrix, int matrixCount)
 {
-	ImGuizmo::DrawCube(view, projection, matrix);
+	ImGuizmo::DrawCubes(view, projection, matrix, matrixCount);
 }
 
 IMGUI_IMPL_API void igzmoDrawGrid(const float *view, const float *projection, const float *matrix , const float gridSize)
@@ -55,6 +55,10 @@ IMGUI_IMPL_API void igzmoDrawGrid(const float *view, const float *projection, co
 	ImGuizmo::DrawGrid(view, projection, matrix, gridSize);
 }
 
+IMGUI_IMPL_API void igzmoSetID(int id)
+{
+	ImGuizmo::SetID(id);
+}
 
 IMGUI_IMPL_API void igzmoManipulate(float cameraView[16], float cameraProjection[16],OPERATION operation, MODE mode, float objectMatrix[16],float deltaMatrix[16] , float snap[1] , float localBounds[6] , float boundsSnap[3] )
 {
