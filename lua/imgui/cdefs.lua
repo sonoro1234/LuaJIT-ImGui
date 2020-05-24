@@ -2924,11 +2924,12 @@ bool igzmoIsUsing();
 void igzmoEnable(bool enable);
 void igzmoSetOrthographic(bool isOrthographic);
 void igzmoSetRect(float x, float y, float width, float height);
-void igzmoDrawCube(const float *view, const float *projection, const float *matrix);
+void igzmoDrawCubes(const float *view, const float *projection, const float *matrix, int count);
 void igzmoDrawGrid(const float *view, const float *projection, const float *matrix , const float gridSize);
 void igzmoManipulate(float cameraView[16], float cameraProjection[16],OPERATION operation, MODE mode, float objectMatrix[16],float deltaMatrix[16] , float snap[1] , float localBounds[6] , float boundsSnap[3] );
 void igzmoViewManipulate(float cameraView[16], float camDistance, ImVec2 pos, ImVec2 size, ImU32 backgroundColor);
-                                
+void igzmoSetID(int id);
+
 //Log
 typedef struct Log Log;
 Log* Log_new();
