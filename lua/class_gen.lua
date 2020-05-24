@@ -51,10 +51,23 @@ function CleanImU32(def)
 	return res
 end
 -------------------------------------------------
+--make enumvalues table
+local enumsvalues = {}
+local standenu = dofile([[../cimplot/generator/output/structs_and_enums.lua]])
+for k,enu in pairs(standenu.enums) do
+	for i,v in ipairs(enu) do
+		assert(v.calc_value)
+		enumsvalues[v.name] = v.calc_value
+	end
+end
 --load function definitions
 local dir = [[../cimgui/generator/output/]]
 local fundefs = dofile(dir..[[definitions.lua]])
-
+local fundefspl = dofile([[../cimplot/generator/output/definitions.lua]])
+--merge funcdefs and fundefspl
+for fun,defs in pairs(fundefspl) do
+	fundefs[fun] = defs
+end
 --group them by structs
 local structs = {}
 for fun,defs in pairs(fundefs) do
@@ -126,17 +139,21 @@ function sanitize_reserved(def)
 		--do only if not a c string
 		local is_cstring = v:sub(1,1)=='"' and v:sub(-1,-1) =='"'
 		if not is_cstring then
-			--numbers without f in the end
-			def.defaults[k] = v:gsub("([%d%.%-]+)f","%1")
-			--+ in front of numbers
-			def.defaults[k] = def.defaults[k]:gsub("^%+([%d%.%-]+)","%1")
-			--FLT_MAX
-			def.defaults[k] = def.defaults[k]:gsub("FLT_MAX","M.FLT_MAX")
-			def.defaults[k] = def.defaults[k]:gsub("ImDrawCornerFlags_All","lib.ImDrawCornerFlags_All")
-			def.defaults[k] = def.defaults[k]:gsub("sizeof%((%w+)%)",[[ffi.sizeof("%1")]])
-			def.defaults[k] = def.defaults[k]:gsub("%(%(void%s*%*%)0%)","nil")
-			if def.defaults[k]:match"%(ImU32%)" then
-				def.defaults[k] = CleanImU32(def.defaults[k])
+			if enumsvalues[v] then
+				def.defaults[k] = enumsvalues[v]
+			else
+				--numbers without f in the end
+				def.defaults[k] = v:gsub("([%d%.%-]+)f","%1")
+				--+ in front of numbers
+				def.defaults[k] = def.defaults[k]:gsub("^%+([%d%.%-]+)","%1")
+				--FLT_MAX
+				def.defaults[k] = def.defaults[k]:gsub("FLT_MAX","M.FLT_MAX")
+				def.defaults[k] = def.defaults[k]:gsub("ImDrawCornerFlags_All","lib.ImDrawCornerFlags_All")
+				def.defaults[k] = def.defaults[k]:gsub("sizeof%((%w+)%)",[[ffi.sizeof("%1")]])
+				def.defaults[k] = def.defaults[k]:gsub("%(%(void%s*%*%)0%)","nil")
+				if def.defaults[k]:match"%(ImU32%)" then
+					def.defaults[k] = CleanImU32(def.defaults[k])
+				end
 			end
 		end
 	end
@@ -145,7 +162,7 @@ end
 local function make_function(method,def)
 	sanitize_reserved(def)
 	local fname = def.ov_cimguiname or def.cimguiname --overloaded or original
-	local fname_m = method and fname:match(def.stname.."_(.*)") or fname:match("^ig(.*)") --drop struct name part
+	local fname_m = method and fname:match(def.stname.."_(.*)") or fname:match("^ig(.*)") or fname --drop struct name part
 	fname_m = fname_m:match("(.*)_nonUDT$") or fname_m --drop "_nonUDT" suffix
 	if fname_m == "end" then fname_m = "_end" end
 	--dump function code
@@ -329,7 +346,7 @@ local function create_generic(code,defs,method)
 	args = args:sub(1,-2) --drop last ,
 	
 	local fname = defs[1].cimguiname 
-	local fname_e = method and fname:match(defs[1].stname.."_(.*)") or fname:match("^ig(.*)") --drop struct name part
+	local fname_e = method and fname:match(defs[1].stname.."_(.*)") or fname:match("^ig(.*)") or fname--drop struct name part
 	fname = method and (methodnotconst and defs[1].stname..":"..fname_e or defs[1].stname..".__new") or "M."..fname_e
 
 	table.insert(code2, "function "..fname.."("..args..") -- generic version")
@@ -355,7 +372,7 @@ local function create_generic(code,defs,method)
 			addand = true
 		end
 		local fname2 = defs[i].ov_cimguiname 
-		local fname2_e = method and fname2:match(defs[1].stname.."_(.*)") or fname2:match("^ig(.*)") --drop struct name part
+		local fname2_e = method and fname2:match(defs[1].stname.."_(.*)") or fname2:match("^ig(.*)") or fname2 --drop struct name part
 		fname2 = method and (methodnotconst and "self:"..fname2_e or defs[1].stname.."."..fname2_e) or "M."..fname2_e
 		table.insert(code2," then return "..fname2.."("..gen_args(methodnotconst,#defs[i].argsT)..") end")
 		if fname_e == fname2_e then
