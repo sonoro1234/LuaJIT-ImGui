@@ -21,9 +21,9 @@ function win:draw(ig)
 	ig.ImPlot_ShowDemoWindow()
 	ig.Begin("Ploters")
 	if (ig.ImPlot_BeginPlot("Line Plot", "x", "f(x)", ig.ImVec2(-1,-1))) then
-          ig.ImPlot_Plot("sin(50*x)", xs1, ys1, 1001);
+          ig.ImPlot_PlotLine("sin(50*x)", xs1, ys1, 1001);
           ig.ImPlot_PushStyleVarInt(ig.lib.ImPlotStyleVar_Marker, ig.lib.ImPlotMarker_Circle);
-          ig.ImPlot_Plot("x^2", xs2, ys2, 11);
+          ig.ImPlot_PlotLine("x^2", xs2, ys2, 11);
           ig.ImPlot_PopStyleVar();
         ig.ImPlot_EndPlot();
     end
