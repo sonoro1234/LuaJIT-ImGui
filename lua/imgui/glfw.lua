@@ -1327,7 +1327,14 @@ M.ImGuiPtrOrIndex = ffi.metatype("ImGuiPtrOrIndex",ImGuiPtrOrIndex)
 --------------------------ImPlotLimits----------------------------
 local ImPlotLimits= {}
 ImPlotLimits.__index = ImPlotLimits
-ImPlotLimits.Contains = lib.ImPlotLimits_Contains
+ImPlotLimits.ContainsPlotPoInt = lib.ImPlotLimits_ContainsPlotPoInt
+ImPlotLimits.Containsdouble = lib.ImPlotLimits_Containsdouble
+function ImPlotLimits:Contains(a2,a3) -- generic version
+    if ffi.istype('const ImPlotPoint',a2) then return self:ContainsPlotPoInt(a2) end
+    if (ffi.istype('double',a2) or type(a2)=='number') then return self:Containsdouble(a2,a3) end
+    print(a2,a3)
+    error'ImPlotLimits:Contains could not find overloaded'
+end
 function ImPlotLimits.__new(ctype)
     local ptr = lib.ImPlotLimits_ImPlotLimits()
     return ffi.gc(ptr,lib.ImPlotLimits_destroy)
@@ -1622,6 +1629,12 @@ function M.ImPlot_BeginPlot(title_id,x_label,y_label,size,flags,x_flags,y_flags,
     return lib.ImPlot_BeginPlot(title_id,x_label,y_label,size,flags,x_flags,y_flags,y2_flags,y3_flags)
 end
 M.ImPlot_EndPlot = lib.ImPlot_EndPlot
+function M.ImPlot_GetColormapColor(index)
+    local nonUDT_out = ffi.new("ImVec4")
+    lib.ImPlot_GetColormapColor(nonUDT_out,index)
+    return nonUDT_out
+end
+M.ImPlot_GetColormapSize = lib.ImPlot_GetColormapSize
 function M.ImPlot_GetPlotLimits(y_axis)
     y_axis = y_axis or -1
     return lib.ImPlot_GetPlotLimits(y_axis)
@@ -1647,6 +1660,11 @@ end
 M.ImPlot_GetStyle = lib.ImPlot_GetStyle
 M.ImPlot_IsPlotHovered = lib.ImPlot_IsPlotHovered
 M.ImPlot_IsPlotQueried = lib.ImPlot_IsPlotQueried
+function M.ImPlot_LerpColormap(t)
+    local nonUDT_out = ffi.new("ImVec4")
+    lib.ImPlot_LerpColormap(nonUDT_out,t)
+    return nonUDT_out
+end
 function M.ImPlot_PixelsToPlot(pix,y_axis)
     y_axis = y_axis or -1
     return lib.ImPlot_PixelsToPlot(pix,y_axis)
@@ -1658,21 +1676,17 @@ function M.ImPlot_PlotBarsFloatPtrIntFloat(label_id,values,count,width,shift,off
     offset = offset or 0
     return lib.ImPlot_PlotBarsFloatPtrIntFloat(label_id,values,count,width,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsFloatPtrFloatPtr(label_id,xs,ys,count,width,offset,stride)
-    stride = stride or ffi.sizeof("float")
-    offset = offset or 0
-    return lib.ImPlot_PlotBarsFloatPtrFloatPtr(label_id,xs,ys,count,width,offset,stride)
-end
-function M.ImPlot_PlotBarsFnVec2Ptr(label_id,getter,data,count,width,offset)
-    offset = offset or 0
-    return lib.ImPlot_PlotBarsFnVec2Ptr(label_id,getter,data,count,width,offset)
-end
 function M.ImPlot_PlotBarsdoublePtrIntdouble(label_id,values,count,width,shift,offset,stride)
     width = width or 0.67
     shift = shift or 0
     stride = stride or ffi.sizeof("double")
     offset = offset or 0
     return lib.ImPlot_PlotBarsdoublePtrIntdouble(label_id,values,count,width,shift,offset,stride)
+end
+function M.ImPlot_PlotBarsFloatPtrFloatPtr(label_id,xs,ys,count,width,offset,stride)
+    stride = stride or ffi.sizeof("float")
+    offset = offset or 0
+    return lib.ImPlot_PlotBarsFloatPtrFloatPtr(label_id,xs,ys,count,width,offset,stride)
 end
 function M.ImPlot_PlotBarsdoublePtrdoublePtr(label_id,xs,ys,count,width,offset,stride)
     stride = stride or ffi.sizeof("double")
@@ -1685,9 +1699,8 @@ function M.ImPlot_PlotBarsFnPlotPoIntPtr(label_id,getter,data,count,width,offset
 end
 function M.ImPlot_PlotBars(a1,a2,a3,a4,a5,a6,a7) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('float',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotBarsFloatPtrIntFloat(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotBarsFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
-    if ffi.istype('ImVec2(*)(void* data,int idx)',a2) then return M.ImPlot_PlotBarsFnVec2Ptr(a1,a2,a3,a4,a5,a6) end
     if ffi.istype('const double*',a2) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotBarsdoublePtrIntdouble(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotBarsFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
     if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) then return M.ImPlot_PlotBarsdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
     if ffi.istype('ImPlotPoint(*)(void* data,int idx)',a2) then return M.ImPlot_PlotBarsFnPlotPoIntPtr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6,a7)
@@ -1700,21 +1713,17 @@ function M.ImPlot_PlotBarsHFloatPtrIntFloat(label_id,values,count,height,shift,o
     shift = shift or 0
     return lib.ImPlot_PlotBarsHFloatPtrIntFloat(label_id,values,count,height,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsHFloatPtrFloatPtr(label_id,xs,ys,count,height,offset,stride)
-    stride = stride or ffi.sizeof("float")
-    offset = offset or 0
-    return lib.ImPlot_PlotBarsHFloatPtrFloatPtr(label_id,xs,ys,count,height,offset,stride)
-end
-function M.ImPlot_PlotBarsHFnVec2Ptr(label_id,getter,data,count,height,offset)
-    offset = offset or 0
-    return lib.ImPlot_PlotBarsHFnVec2Ptr(label_id,getter,data,count,height,offset)
-end
 function M.ImPlot_PlotBarsHdoublePtrIntdouble(label_id,values,count,height,shift,offset,stride)
     stride = stride or ffi.sizeof("double")
     offset = offset or 0
     height = height or 0.67
     shift = shift or 0
     return lib.ImPlot_PlotBarsHdoublePtrIntdouble(label_id,values,count,height,shift,offset,stride)
+end
+function M.ImPlot_PlotBarsHFloatPtrFloatPtr(label_id,xs,ys,count,height,offset,stride)
+    stride = stride or ffi.sizeof("float")
+    offset = offset or 0
+    return lib.ImPlot_PlotBarsHFloatPtrFloatPtr(label_id,xs,ys,count,height,offset,stride)
 end
 function M.ImPlot_PlotBarsHdoublePtrdoublePtr(label_id,xs,ys,count,height,offset,stride)
     stride = stride or ffi.sizeof("double")
@@ -1727,9 +1736,8 @@ function M.ImPlot_PlotBarsHFnPlotPoIntPtr(label_id,getter,data,count,height,offs
 end
 function M.ImPlot_PlotBarsH(a1,a2,a3,a4,a5,a6,a7) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('float',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotBarsHFloatPtrIntFloat(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotBarsHFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
-    if ffi.istype('ImVec2(*)(void* data,int idx)',a2) then return M.ImPlot_PlotBarsHFnVec2Ptr(a1,a2,a3,a4,a5,a6) end
     if ffi.istype('const double*',a2) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotBarsHdoublePtrIntdouble(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotBarsHFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
     if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) then return M.ImPlot_PlotBarsHdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
     if ffi.istype('ImPlotPoint(*)(void* data,int idx)',a2) then return M.ImPlot_PlotBarsHFnPlotPoIntPtr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6,a7)
@@ -1739,10 +1747,6 @@ function M.ImPlot_PlotDigitalFloatPtr(label_id,xs,ys,count,offset,stride)
     stride = stride or ffi.sizeof("float")
     offset = offset or 0
     return lib.ImPlot_PlotDigitalFloatPtr(label_id,xs,ys,count,offset,stride)
-end
-function M.ImPlot_PlotDigitalFnVec2Ptr(label_id,getter,data,count,offset)
-    offset = offset or 0
-    return lib.ImPlot_PlotDigitalFnVec2Ptr(label_id,getter,data,count,offset)
 end
 function M.ImPlot_PlotDigitaldoublePtr(label_id,xs,ys,count,offset,stride)
     stride = stride or ffi.sizeof("double")
@@ -1755,7 +1759,6 @@ function M.ImPlot_PlotDigitalFnPlotPoIntPtr(label_id,getter,data,count,offset)
 end
 function M.ImPlot_PlotDigital(a1,a2,a3,a4,a5,a6) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotDigitalFloatPtr(a1,a2,a3,a4,a5,a6) end
-    if ffi.istype('ImVec2(*)(void* data,int idx)',a2) then return M.ImPlot_PlotDigitalFnVec2Ptr(a1,a2,a3,a4,a5) end
     if ffi.istype('const double*',a2) then return M.ImPlot_PlotDigitaldoublePtr(a1,a2,a3,a4,a5,a6) end
     if ffi.istype('ImPlotPoint(*)(void* data,int idx)',a2) then return M.ImPlot_PlotDigitalFnPlotPoIntPtr(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5,a6)
@@ -1766,15 +1769,15 @@ function M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,co
     offset = offset or 0
     return lib.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
-    stride = stride or ffi.sizeof("float")
-    offset = offset or 0
-    return lib.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
-end
 function M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
     stride = stride or ffi.sizeof("double")
     offset = offset or 0
     return lib.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
+end
+function M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
+    stride = stride or ffi.sizeof("float")
+    offset = offset or 0
+    return lib.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
 function M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
     stride = stride or ffi.sizeof("double")
@@ -1783,39 +1786,81 @@ function M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,
 end
 function M.ImPlot_PlotErrorBars(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('const float*',a5) or ffi.istype('float[]',a5)) then return M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8) end
     if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) and ffi.istype('const double*',a4) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('const float*',a5) or ffi.istype('float[]',a5)) then return M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8) end
     if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) and ffi.istype('const double*',a4) and ffi.istype('const double*',a5) then return M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8) end
     print(a1,a2,a3,a4,a5,a6,a7,a8)
     error'M.ImPlot_PlotErrorBars could not find overloaded'
+end
+function M.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
+    stride = stride or ffi.sizeof("float")
+    offset = offset or 0
+    return lib.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
+end
+function M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
+    stride = stride or ffi.sizeof("double")
+    offset = offset or 0
+    return lib.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
+end
+function M.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
+    stride = stride or ffi.sizeof("float")
+    offset = offset or 0
+    return lib.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
+end
+function M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
+    stride = stride or ffi.sizeof("double")
+    offset = offset or 0
+    return lib.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
+end
+function M.ImPlot_PlotErrorBarsH(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) and ffi.istype('const double*',a4) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('const float*',a5) or ffi.istype('float[]',a5)) then return M.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) and ffi.istype('const double*',a4) and ffi.istype('const double*',a5) then return M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    print(a1,a2,a3,a4,a5,a6,a7,a8)
+    error'M.ImPlot_PlotErrorBarsH could not find overloaded'
+end
+function M.ImPlot_PlotHeatmapFloatPtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+    bounds_min = bounds_min or ImPlotPoint(0,0)
+    label_fmt = label_fmt or "%.1f"
+    bounds_max = bounds_max or ImPlotPoint(1,1)
+    return lib.ImPlot_PlotHeatmapFloatPtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+end
+function M.ImPlot_PlotHeatmapdoublePtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+    bounds_min = bounds_min or ImPlotPoint(0,0)
+    label_fmt = label_fmt or "%.1f"
+    bounds_max = bounds_max or ImPlotPoint(1,1)
+    return lib.ImPlot_PlotHeatmapdoublePtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+end
+function M.ImPlot_PlotHeatmap(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotHeatmapFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.istype('const double*',a2) then return M.ImPlot_PlotHeatmapdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
+    error'M.ImPlot_PlotHeatmap could not find overloaded'
 end
 function M.ImPlot_PlotLineFloatPtrInt(label_id,values,count,offset,stride)
     stride = stride or ffi.sizeof("float")
     offset = offset or 0
     return lib.ImPlot_PlotLineFloatPtrInt(label_id,values,count,offset,stride)
 end
-function M.ImPlot_PlotLineFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
-    stride = stride or ffi.sizeof("float")
-    offset = offset or 0
-    return lib.ImPlot_PlotLineFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
-end
-function M.ImPlot_PlotLineVec2Ptr(label_id,data,count,offset)
-    offset = offset or 0
-    return lib.ImPlot_PlotLineVec2Ptr(label_id,data,count,offset)
-end
-function M.ImPlot_PlotLineFnVec2Ptr(label_id,getter,data,count,offset)
-    offset = offset or 0
-    return lib.ImPlot_PlotLineFnVec2Ptr(label_id,getter,data,count,offset)
-end
 function M.ImPlot_PlotLinedoublePtrInt(label_id,values,count,offset,stride)
     stride = stride or ffi.sizeof("double")
     offset = offset or 0
     return lib.ImPlot_PlotLinedoublePtrInt(label_id,values,count,offset,stride)
 end
+function M.ImPlot_PlotLineFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
+    stride = stride or ffi.sizeof("float")
+    offset = offset or 0
+    return lib.ImPlot_PlotLineFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
+end
 function M.ImPlot_PlotLinedoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
     stride = stride or ffi.sizeof("double")
     offset = offset or 0
     return lib.ImPlot_PlotLinedoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotLineVec2Ptr(label_id,data,count,offset)
+    offset = offset or 0
+    return lib.ImPlot_PlotLineVec2Ptr(label_id,data,count,offset)
 end
 function M.ImPlot_PlotLinePlotPoIntPtr(label_id,data,count,offset)
     offset = offset or 0
@@ -1827,30 +1872,31 @@ function M.ImPlot_PlotLineFnPlotPoIntPtr(label_id,getter,data,count,offset)
 end
 function M.ImPlot_PlotLine(a1,a2,a3,a4,a5,a6) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLineFloatPtrInt(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotLineFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
-    if ffi.istype('const ImVec2*',a2) then return M.ImPlot_PlotLineVec2Ptr(a1,a2,a3,a4) end
-    if ffi.istype('ImVec2(*)(void* data,int idx)',a2) then return M.ImPlot_PlotLineFnVec2Ptr(a1,a2,a3,a4,a5) end
     if ffi.istype('const double*',a2) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLinedoublePtrInt(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotLineFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
     if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) then return M.ImPlot_PlotLinedoublePtrdoublePtr(a1,a2,a3,a4,a5,a6) end
+    if ffi.istype('const ImVec2*',a2) then return M.ImPlot_PlotLineVec2Ptr(a1,a2,a3,a4) end
     if ffi.istype('const ImPlotPoint*',a2) then return M.ImPlot_PlotLinePlotPoIntPtr(a1,a2,a3,a4) end
     if ffi.istype('ImPlotPoint(*)(void* data,int idx)',a2) then return M.ImPlot_PlotLineFnPlotPoIntPtr(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.ImPlot_PlotLine could not find overloaded'
 end
-function M.ImPlot_PlotPieChartFloatPtr(label_ids,values,count,x,y,radius,show_percents,angle0)
+function M.ImPlot_PlotPieChartFloatPtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
     angle0 = angle0 or 90
-    if show_percents == nil then show_percents = true end
-    return lib.ImPlot_PlotPieChartFloatPtr(label_ids,values,count,x,y,radius,show_percents,angle0)
+    label_fmt = label_fmt or "%.1f"
+    normalize = normalize or false
+    return lib.ImPlot_PlotPieChartFloatPtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
-function M.ImPlot_PlotPieChartdoublePtr(label_ids,values,count,x,y,radius,show_percents,angle0)
+function M.ImPlot_PlotPieChartdoublePtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
     angle0 = angle0 or 90
-    if show_percents == nil then show_percents = true end
-    return lib.ImPlot_PlotPieChartdoublePtr(label_ids,values,count,x,y,radius,show_percents,angle0)
+    label_fmt = label_fmt or "%.1f"
+    normalize = normalize or false
+    return lib.ImPlot_PlotPieChartdoublePtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
-function M.ImPlot_PlotPieChart(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
-    if ffi.istype('float*',a2) then return M.ImPlot_PlotPieChartFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if ffi.istype('double*',a2) then return M.ImPlot_PlotPieChartdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    print(a1,a2,a3,a4,a5,a6,a7,a8)
+function M.ImPlot_PlotPieChart(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotPieChartFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.istype('const double*',a2) then return M.ImPlot_PlotPieChartdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
     error'M.ImPlot_PlotPieChart could not find overloaded'
 end
 function M.ImPlot_PlotScatterFloatPtrInt(label_id,values,count,offset,stride)
@@ -1858,28 +1904,24 @@ function M.ImPlot_PlotScatterFloatPtrInt(label_id,values,count,offset,stride)
     offset = offset or 0
     return lib.ImPlot_PlotScatterFloatPtrInt(label_id,values,count,offset,stride)
 end
-function M.ImPlot_PlotScatterFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
-    stride = stride or ffi.sizeof("float")
-    offset = offset or 0
-    return lib.ImPlot_PlotScatterFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
-end
-function M.ImPlot_PlotScatterVec2Ptr(label_id,data,count,offset)
-    offset = offset or 0
-    return lib.ImPlot_PlotScatterVec2Ptr(label_id,data,count,offset)
-end
-function M.ImPlot_PlotScatterFnVec2Ptr(label_id,getter,data,count,offset)
-    offset = offset or 0
-    return lib.ImPlot_PlotScatterFnVec2Ptr(label_id,getter,data,count,offset)
-end
 function M.ImPlot_PlotScatterdoublePtrInt(label_id,values,count,offset,stride)
     stride = stride or ffi.sizeof("double")
     offset = offset or 0
     return lib.ImPlot_PlotScatterdoublePtrInt(label_id,values,count,offset,stride)
 end
+function M.ImPlot_PlotScatterFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
+    stride = stride or ffi.sizeof("float")
+    offset = offset or 0
+    return lib.ImPlot_PlotScatterFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
+end
 function M.ImPlot_PlotScatterdoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
     stride = stride or ffi.sizeof("double")
     offset = offset or 0
     return lib.ImPlot_PlotScatterdoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotScatterVec2Ptr(label_id,data,count,offset)
+    offset = offset or 0
+    return lib.ImPlot_PlotScatterVec2Ptr(label_id,data,count,offset)
 end
 function M.ImPlot_PlotScatterPlotPoIntPtr(label_id,data,count,offset)
     offset = offset or 0
@@ -1891,11 +1933,10 @@ function M.ImPlot_PlotScatterFnPlotPoIntPtr(label_id,getter,data,count,offset)
 end
 function M.ImPlot_PlotScatter(a1,a2,a3,a4,a5,a6) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterFloatPtrInt(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotScatterFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
-    if ffi.istype('const ImVec2*',a2) then return M.ImPlot_PlotScatterVec2Ptr(a1,a2,a3,a4) end
-    if ffi.istype('ImVec2(*)(void* data,int idx)',a2) then return M.ImPlot_PlotScatterFnVec2Ptr(a1,a2,a3,a4,a5) end
     if ffi.istype('const double*',a2) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterdoublePtrInt(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotScatterFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
     if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) then return M.ImPlot_PlotScatterdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6) end
+    if ffi.istype('const ImVec2*',a2) then return M.ImPlot_PlotScatterVec2Ptr(a1,a2,a3,a4) end
     if ffi.istype('const ImPlotPoint*',a2) then return M.ImPlot_PlotScatterPlotPoIntPtr(a1,a2,a3,a4) end
     if ffi.istype('ImPlotPoint(*)(void* data,int idx)',a2) then return M.ImPlot_PlotScatterFnPlotPoIntPtr(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5,a6)
@@ -1949,7 +1990,17 @@ function M.ImPlot_PushStyleVar(a1,a2) -- generic version
     print(a1,a2)
     error'M.ImPlot_PushStyleVar could not find overloaded'
 end
-M.ImPlot_RestorePalette = lib.ImPlot_RestorePalette
+function M.ImPlot_SetColormapPlotColormap(colormap,samples)
+    samples = samples or 0
+    return lib.ImPlot_SetColormapPlotColormap(colormap,samples)
+end
+M.ImPlot_SetColormapVec4Ptr = lib.ImPlot_SetColormapVec4Ptr
+function M.ImPlot_SetColormap(a1,a2) -- generic version
+    if (ffi.istype('ImPlotColormap',a1) or type(a1)=='number') then return M.ImPlot_SetColormapPlotColormap(a1,a2) end
+    if ffi.istype('const ImVec4*',a1) then return M.ImPlot_SetColormapVec4Ptr(a1,a2) end
+    print(a1,a2)
+    error'M.ImPlot_SetColormap could not find overloaded'
+end
 function M.ImPlot_SetNextPlotLimits(x_min,x_max,y_min,y_max,cond)
     cond = cond or ImGuiCond_Once
     return lib.ImPlot_SetNextPlotLimits(x_min,x_max,y_min,y_max,cond)
@@ -1963,8 +2014,42 @@ function M.ImPlot_SetNextPlotLimitsY(y_min,y_max,cond,y_axis)
     y_axis = y_axis or 0
     return lib.ImPlot_SetNextPlotLimitsY(y_min,y_max,cond,y_axis)
 end
-M.ImPlot_SetPalette = lib.ImPlot_SetPalette
+function M.ImPlot_SetNextPlotTicksXdoublePtr(values,n_ticks,labels,show_default)
+    show_default = show_default or false
+    labels = labels or nil
+    return lib.ImPlot_SetNextPlotTicksXdoublePtr(values,n_ticks,labels,show_default)
+end
+function M.ImPlot_SetNextPlotTicksXdouble(x_min,x_max,n_ticks,labels,show_default)
+    show_default = show_default or false
+    labels = labels or nil
+    return lib.ImPlot_SetNextPlotTicksXdouble(x_min,x_max,n_ticks,labels,show_default)
+end
+function M.ImPlot_SetNextPlotTicksX(a1,a2,a3,a4,a5) -- generic version
+    if ffi.istype('const double*',a1) then return M.ImPlot_SetNextPlotTicksXdoublePtr(a1,a2,a3,a4) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_SetNextPlotTicksXdouble(a1,a2,a3,a4,a5) end
+    print(a1,a2,a3,a4,a5)
+    error'M.ImPlot_SetNextPlotTicksX could not find overloaded'
+end
+function M.ImPlot_SetNextPlotTicksYdoublePtr(values,n_ticks,labels,show_default,y_axis)
+    y_axis = y_axis or 0
+    labels = labels or nil
+    show_default = show_default or false
+    return lib.ImPlot_SetNextPlotTicksYdoublePtr(values,n_ticks,labels,show_default,y_axis)
+end
+function M.ImPlot_SetNextPlotTicksYdouble(y_min,y_max,n_ticks,labels,show_default,y_axis)
+    y_axis = y_axis or 0
+    labels = labels or nil
+    show_default = show_default or false
+    return lib.ImPlot_SetNextPlotTicksYdouble(y_min,y_max,n_ticks,labels,show_default,y_axis)
+end
+function M.ImPlot_SetNextPlotTicksY(a1,a2,a3,a4,a5,a6) -- generic version
+    if ffi.istype('const double*',a1) then return M.ImPlot_SetNextPlotTicksYdoublePtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_SetNextPlotTicksYdouble(a1,a2,a3,a4,a5,a6) end
+    print(a1,a2,a3,a4,a5,a6)
+    error'M.ImPlot_SetNextPlotTicksY could not find overloaded'
+end
 M.ImPlot_SetPlotYAxis = lib.ImPlot_SetPlotYAxis
+M.ImPlot_ShowColormapScale = lib.ImPlot_ShowColormapScale
 function M.ImPlot_ShowDemoWindow(p_open)
     p_open = p_open or nil
     return lib.ImPlot_ShowDemoWindow(p_open)

@@ -3020,6 +3020,7 @@ typedef int ImPlotAxisFlags;
 typedef int ImPlotCol;
 typedef int ImPlotStyleVar;
 typedef int ImPlotMarker;
+typedef int ImPlotColormap;
 typedef enum {
     ImPlotFlags_MousePos = 1 << 0,
     ImPlotFlags_Legend = 1 << 1,
@@ -3089,6 +3090,19 @@ typedef enum {
     ImPlotMarker_Plus = 1 << 9,
     ImPlotMarker_Asterisk = 1 << 10,
 }ImPlotMarker_;
+typedef enum {
+    ImPlotColormap_Default = 0,
+    ImPlotColormap_Dark = 1,
+    ImPlotColormap_Pastel = 2,
+    ImPlotColormap_Paired = 3,
+    ImPlotColormap_Viridis = 4,
+    ImPlotColormap_Plasma = 5,
+    ImPlotColormap_Hot = 6,
+    ImPlotColormap_Cool = 7,
+    ImPlotColormap_Pink = 8,
+    ImPlotColormap_Jet = 9,
+    ImPlotColormap_COUNT
+}ImPlotColormap_;
 struct ImPlotPoint
 {
     double x, y;
@@ -3122,50 +3136,52 @@ _Bool                ImPlotRange_Contains(ImPlotRange* self,double value);
 double ImPlotRange_Size(ImPlotRange* self);
 ImPlotLimits* ImPlotLimits_ImPlotLimits(void);
 void ImPlotLimits_destroy(ImPlotLimits* self);
-_Bool                ImPlotLimits_Contains(ImPlotLimits* self,double x,double y);
+_Bool                ImPlotLimits_ContainsPlotPoInt(ImPlotLimits* self,const ImPlotPoint p);
+_Bool                ImPlotLimits_Containsdouble(ImPlotLimits* self,double x,double y);
 ImPlotStyle* ImPlotStyle_ImPlotStyle(void);
 void ImPlotStyle_destroy(ImPlotStyle* self);
 _Bool                ImPlot_BeginPlot(const char* title_id,const char* x_label,const char* y_label,const ImVec2 size,ImPlotFlags flags,ImPlotAxisFlags x_flags,ImPlotAxisFlags y_flags,ImPlotAxisFlags y2_flags,ImPlotAxisFlags y3_flags);
 void ImPlot_EndPlot(void);
 void ImPlot_PlotLineFloatPtrInt(const char* label_id,const float* values,int count,int offset,int stride);
-void ImPlot_PlotLineFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,int offset,int stride);
-void ImPlot_PlotLineVec2Ptr(const char* label_id,const ImVec2* data,int count,int offset);
-void ImPlot_PlotLineFnVec2Ptr(const char* label_id,ImVec2(*getter)(void* data,int idx),void* data,int count,int offset);
-void ImPlot_PlotScatterFloatPtrInt(const char* label_id,const float* values,int count,int offset,int stride);
-void ImPlot_PlotScatterFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,int offset,int stride);
-void ImPlot_PlotScatterVec2Ptr(const char* label_id,const ImVec2* data,int count,int offset);
-void ImPlot_PlotScatterFnVec2Ptr(const char* label_id,ImVec2(*getter)(void* data,int idx),void* data,int count,int offset);
-void ImPlot_PlotBarsFloatPtrIntFloat(const char* label_id,const float* values,int count,float width,float shift,int offset,int stride);
-void ImPlot_PlotBarsFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,float width,int offset,int stride);
-void ImPlot_PlotBarsFnVec2Ptr(const char* label_id,ImVec2(*getter)(void* data,int idx),void* data,int count,float width,int offset);
-void ImPlot_PlotBarsHFloatPtrIntFloat(const char* label_id,const float* values,int count,float height,float shift,int offset,int stride);
-void ImPlot_PlotBarsHFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,float height,int offset,int stride);
-void ImPlot_PlotBarsHFnVec2Ptr(const char* label_id,ImVec2(*getter)(void* data,int idx),void* data,int count,float height,int offset);
-void ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrInt(const char* label_id,const float* xs,const float* ys,const float* err,int count,int offset,int stride);
-void ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,const float* neg,const float* pos,int count,int offset,int stride);
-void ImPlot_PlotPieChartFloatPtr(const char** label_ids,float* values,int count,float x,float y,float radius,                                                                                                                       _Bool                                                                                                                             show_percents,float angle0);
-void ImPlot_PlotDigitalFloatPtr(const char* label_id,const float* xs,const float* ys,int count,int offset,int stride);
-void ImPlot_PlotDigitalFnVec2Ptr(const char* label_id,ImVec2(*getter)(void* data,int idx),void* data,int count,int offset);
-void ImPlot_PlotTextFloat(const char* text,float x,float y,                                                                     _Bool                                                                           vertical,const ImVec2 pixel_offset);
 void ImPlot_PlotLinedoublePtrInt(const char* label_id,const double* values,int count,int offset,int stride);
+void ImPlot_PlotLineFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,int offset,int stride);
 void ImPlot_PlotLinedoublePtrdoublePtr(const char* label_id,const double* xs,const double* ys,int count,int offset,int stride);
+void ImPlot_PlotLineVec2Ptr(const char* label_id,const ImVec2* data,int count,int offset);
 void ImPlot_PlotLinePlotPoIntPtr(const char* label_id,const ImPlotPoint* data,int count,int offset);
 void ImPlot_PlotLineFnPlotPoIntPtr(const char* label_id,ImPlotPoint(*getter)(void* data,int idx),void* data,int count,int offset);
+void ImPlot_PlotScatterFloatPtrInt(const char* label_id,const float* values,int count,int offset,int stride);
 void ImPlot_PlotScatterdoublePtrInt(const char* label_id,const double* values,int count,int offset,int stride);
+void ImPlot_PlotScatterFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,int offset,int stride);
 void ImPlot_PlotScatterdoublePtrdoublePtr(const char* label_id,const double* xs,const double* ys,int count,int offset,int stride);
+void ImPlot_PlotScatterVec2Ptr(const char* label_id,const ImVec2* data,int count,int offset);
 void ImPlot_PlotScatterPlotPoIntPtr(const char* label_id,const ImPlotPoint* data,int count,int offset);
 void ImPlot_PlotScatterFnPlotPoIntPtr(const char* label_id,ImPlotPoint(*getter)(void* data,int idx),void* data,int count,int offset);
+void ImPlot_PlotBarsFloatPtrIntFloat(const char* label_id,const float* values,int count,float width,float shift,int offset,int stride);
 void ImPlot_PlotBarsdoublePtrIntdouble(const char* label_id,const double* values,int count,double width,double shift,int offset,int stride);
+void ImPlot_PlotBarsFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,float width,int offset,int stride);
 void ImPlot_PlotBarsdoublePtrdoublePtr(const char* label_id,const double* xs,const double* ys,int count,double width,int offset,int stride);
 void ImPlot_PlotBarsFnPlotPoIntPtr(const char* label_id,ImPlotPoint(*getter)(void* data,int idx),void* data,int count,double width,int offset);
+void ImPlot_PlotBarsHFloatPtrIntFloat(const char* label_id,const float* values,int count,float height,float shift,int offset,int stride);
 void ImPlot_PlotBarsHdoublePtrIntdouble(const char* label_id,const double* values,int count,double height,double shift,int offset,int stride);
+void ImPlot_PlotBarsHFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,float height,int offset,int stride);
 void ImPlot_PlotBarsHdoublePtrdoublePtr(const char* label_id,const double* xs,const double* ys,int count,double height,int offset,int stride);
 void ImPlot_PlotBarsHFnPlotPoIntPtr(const char* label_id,ImPlotPoint(*getter)(void* data,int idx),void* data,int count,double height,int offset);
+void ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrInt(const char* label_id,const float* xs,const float* ys,const float* err,int count,int offset,int stride);
 void ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrInt(const char* label_id,const double* xs,const double* ys,const double* err,int count,int offset,int stride);
+void ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,const float* neg,const float* pos,int count,int offset,int stride);
 void ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrdoublePtr(const char* label_id,const double* xs,const double* ys,const double* neg,const double* pos,int count,int offset,int stride);
-void ImPlot_PlotPieChartdoublePtr(const char** label_ids,double* values,int count,double x,double y,double radius,                                                                                                                            _Bool                                                                                                                                  show_percents,double angle0);
+void ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrInt(const char* label_id,const float* xs,const float* ys,const float* err,int count,int offset,int stride);
+void ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrInt(const char* label_id,const double* xs,const double* ys,const double* err,int count,int offset,int stride);
+void ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,const float* neg,const float* pos,int count,int offset,int stride);
+void ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrdoublePtr(const char* label_id,const double* xs,const double* ys,const double* neg,const double* pos,int count,int offset,int stride);
+void ImPlot_PlotPieChartFloatPtr(const char** label_ids,const float* values,int count,float x,float y,float radius,                                                                                                                             _Bool                                                                                                                                   normalize,const char* label_fmt,float angle0);
+void ImPlot_PlotPieChartdoublePtr(const char** label_ids,const double* values,int count,double x,double y,double radius,                                                                                                                                  _Bool                                                                                                                                        normalize,const char* label_fmt,double angle0);
+void ImPlot_PlotHeatmapFloatPtr(const char* label_id,const float* values,int rows,int cols,float scale_min,float scale_max,const char* label_fmt,const ImPlotPoint bounds_min,const ImPlotPoint bounds_max);
+void ImPlot_PlotHeatmapdoublePtr(const char* label_id,const double* values,int rows,int cols,double scale_min,double scale_max,const char* label_fmt,const ImPlotPoint bounds_min,const ImPlotPoint bounds_max);
+void ImPlot_PlotDigitalFloatPtr(const char* label_id,const float* xs,const float* ys,int count,int offset,int stride);
 void ImPlot_PlotDigitaldoublePtr(const char* label_id,const double* xs,const double* ys,int count,int offset,int stride);
 void ImPlot_PlotDigitalFnPlotPoIntPtr(const char* label_id,ImPlotPoint(*getter)(void* data,int idx),void* data,int count,int offset);
+void ImPlot_PlotTextFloat(const char* text,float x,float y,                                                                     _Bool                                                                           vertical,const ImVec2 pixel_offset);
 void ImPlot_PlotTextdouble(const char* text,double x,double y,                                                                        _Bool                                                                              vertical,const ImVec2 pixel_offset);
 _Bool                ImPlot_IsPlotHovered(void);
 ImPlotPoint ImPlot_GetPlotMousePos(int y_axis);
@@ -3173,22 +3189,30 @@ ImPlotLimits ImPlot_GetPlotLimits(int y_axis);
 _Bool                ImPlot_IsPlotQueried(void);
 ImPlotLimits ImPlot_GetPlotQuery(int y_axis);
 ImPlotStyle* ImPlot_GetStyle(void);
-void ImPlot_SetPalette(const ImVec4* colors,int num_colors);
-void ImPlot_RestorePalette(void);
 void ImPlot_PushStyleColorU32(ImPlotCol idx,ImU32 col);
 void ImPlot_PushStyleColorVec4(ImPlotCol idx,const ImVec4 col);
 void ImPlot_PopStyleColor(int count);
 void ImPlot_PushStyleVarFloat(ImPlotStyleVar idx,float val);
 void ImPlot_PushStyleVarInt(ImPlotStyleVar idx,int val);
 void ImPlot_PopStyleVar(int count);
+void ImPlot_SetColormapPlotColormap(ImPlotColormap colormap,int samples);
+void ImPlot_SetColormapVec4Ptr(const ImVec4* colors,int num_colors);
+int ImPlot_GetColormapSize(void);
+void ImPlot_GetColormapColor(ImVec4 *pOut,int index);
+void ImPlot_LerpColormap(ImVec4 *pOut,float t);
 void ImPlot_SetNextPlotLimits(double x_min,double x_max,double y_min,double y_max,ImGuiCond cond);
 void ImPlot_SetNextPlotLimitsX(double x_min,double x_max,ImGuiCond cond);
 void ImPlot_SetNextPlotLimitsY(double y_min,double y_max,ImGuiCond cond,int y_axis);
+void ImPlot_SetNextPlotTicksXdoublePtr(const double* values,int n_ticks,const char** labels,                                                                                                      _Bool                                                                                                            show_default);
+void ImPlot_SetNextPlotTicksXdouble(double x_min,double x_max,int n_ticks,const char** labels,                                                                                                        _Bool                                                                                                              show_default);
+void ImPlot_SetNextPlotTicksYdoublePtr(const double* values,int n_ticks,const char** labels,                                                                                                      _Bool                                                                                                            show_default,int y_axis);
+void ImPlot_SetNextPlotTicksYdouble(double y_min,double y_max,int n_ticks,const char** labels,                                                                                                        _Bool                                                                                                              show_default,int y_axis);
 void ImPlot_SetPlotYAxis(int y_axis);
 void ImPlot_GetPlotPos(ImVec2 *pOut);
 void ImPlot_GetPlotSize(ImVec2 *pOut);
 ImPlotPoint ImPlot_PixelsToPlot(const ImVec2 pix,int y_axis);
 void ImPlot_PlotToPixels(ImVec2 *pOut,const ImPlotPoint plt,int y_axis);
+void ImPlot_ShowColormapScale(double scale_min,double scale_max,float height);
 void ImPlot_PushPlotClipRect(void);
 void ImPlot_PopPlotClipRect(void);
 void ImPlot_ShowDemoWindow(                                     _Bool                                         * p_open);
