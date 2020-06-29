@@ -797,6 +797,11 @@ function ImRect.__new(ctype,a1,a2,a3,a4) -- generic version
 end
 ImRect.IsInverted = lib.ImRect_IsInverted
 ImRect.Overlaps = lib.ImRect_Overlaps
+function ImRect:ToVec4()
+    local nonUDT_out = ffi.new("ImVec4")
+    lib.ImRect_ToVec4(nonUDT_out,self)
+    return nonUDT_out
+end
 ImRect.Translate = lib.ImRect_Translate
 ImRect.TranslateX = lib.ImRect_TranslateX
 ImRect.TranslateY = lib.ImRect_TranslateY
@@ -819,23 +824,6 @@ function ImGuiColumnData.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiColumnData_destroy)
 end
 M.ImGuiColumnData = ffi.metatype("ImGuiColumnData",ImGuiColumnData)
---------------------------ImGuiTabItem----------------------------
-local ImGuiTabItem= {}
-ImGuiTabItem.__index = ImGuiTabItem
-function ImGuiTabItem.__new(ctype)
-    local ptr = lib.ImGuiTabItem_ImGuiTabItem()
-    return ffi.gc(ptr,lib.ImGuiTabItem_destroy)
-end
-M.ImGuiTabItem = ffi.metatype("ImGuiTabItem",ImGuiTabItem)
---------------------------ImGuiWindowSettings----------------------------
-local ImGuiWindowSettings= {}
-ImGuiWindowSettings.__index = ImGuiWindowSettings
-ImGuiWindowSettings.GetName = lib.ImGuiWindowSettings_GetName
-function ImGuiWindowSettings.__new(ctype)
-    local ptr = lib.ImGuiWindowSettings_ImGuiWindowSettings()
-    return ffi.gc(ptr,lib.ImGuiWindowSettings_destroy)
-end
-M.ImGuiWindowSettings = ffi.metatype("ImGuiWindowSettings",ImGuiWindowSettings)
 --------------------------ImGuiPtrOrIndex----------------------------
 local ImGuiPtrOrIndex= {}
 ImGuiPtrOrIndex.__index = ImGuiPtrOrIndex
@@ -854,6 +842,33 @@ function ImGuiPtrOrIndex.__new(ctype,a1) -- generic version
     error'ImGuiPtrOrIndex.__new could not find overloaded'
 end
 M.ImGuiPtrOrIndex = ffi.metatype("ImGuiPtrOrIndex",ImGuiPtrOrIndex)
+--------------------------ImGuiNextItemData----------------------------
+local ImGuiNextItemData= {}
+ImGuiNextItemData.__index = ImGuiNextItemData
+ImGuiNextItemData.ClearFlags = lib.ImGuiNextItemData_ClearFlags
+function ImGuiNextItemData.__new(ctype)
+    local ptr = lib.ImGuiNextItemData_ImGuiNextItemData()
+    return ffi.gc(ptr,lib.ImGuiNextItemData_destroy)
+end
+M.ImGuiNextItemData = ffi.metatype("ImGuiNextItemData",ImGuiNextItemData)
+--------------------------ImGuiWindowSettings----------------------------
+local ImGuiWindowSettings= {}
+ImGuiWindowSettings.__index = ImGuiWindowSettings
+ImGuiWindowSettings.GetName = lib.ImGuiWindowSettings_GetName
+function ImGuiWindowSettings.__new(ctype)
+    local ptr = lib.ImGuiWindowSettings_ImGuiWindowSettings()
+    return ffi.gc(ptr,lib.ImGuiWindowSettings_destroy)
+end
+M.ImGuiWindowSettings = ffi.metatype("ImGuiWindowSettings",ImGuiWindowSettings)
+--------------------------ImDrawListSharedData----------------------------
+local ImDrawListSharedData= {}
+ImDrawListSharedData.__index = ImDrawListSharedData
+function ImDrawListSharedData.__new(ctype)
+    local ptr = lib.ImDrawListSharedData_ImDrawListSharedData()
+    return ffi.gc(ptr,lib.ImDrawListSharedData_destroy)
+end
+ImDrawListSharedData.SetCircleSegmentMaxError = lib.ImDrawListSharedData_SetCircleSegmentMaxError
+M.ImDrawListSharedData = ffi.metatype("ImDrawListSharedData",ImDrawListSharedData)
 --------------------------ImGuiNavMoveResult----------------------------
 local ImGuiNavMoveResult= {}
 ImGuiNavMoveResult.__index = ImGuiNavMoveResult
@@ -863,6 +878,38 @@ function ImGuiNavMoveResult.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiNavMoveResult_destroy)
 end
 M.ImGuiNavMoveResult = ffi.metatype("ImGuiNavMoveResult",ImGuiNavMoveResult)
+--------------------------ImDrawData----------------------------
+local ImDrawData= {}
+ImDrawData.__index = ImDrawData
+ImDrawData.Clear = lib.ImDrawData_Clear
+ImDrawData.DeIndexAllBuffers = lib.ImDrawData_DeIndexAllBuffers
+function ImDrawData.__new(ctype)
+    local ptr = lib.ImDrawData_ImDrawData()
+    return ffi.gc(ptr,lib.ImDrawData_destroy)
+end
+ImDrawData.ScaleClipRects = lib.ImDrawData_ScaleClipRects
+M.ImDrawData = ffi.metatype("ImDrawData",ImDrawData)
+--------------------------ImDrawListSplitter----------------------------
+local ImDrawListSplitter= {}
+ImDrawListSplitter.__index = ImDrawListSplitter
+ImDrawListSplitter.Clear = lib.ImDrawListSplitter_Clear
+ImDrawListSplitter.ClearFreeMemory = lib.ImDrawListSplitter_ClearFreeMemory
+function ImDrawListSplitter.__new(ctype)
+    local ptr = lib.ImDrawListSplitter_ImDrawListSplitter()
+    return ffi.gc(ptr,lib.ImDrawListSplitter_destroy)
+end
+ImDrawListSplitter.Merge = lib.ImDrawListSplitter_Merge
+ImDrawListSplitter.SetCurrentChannel = lib.ImDrawListSplitter_SetCurrentChannel
+ImDrawListSplitter.Split = lib.ImDrawListSplitter_Split
+M.ImDrawListSplitter = ffi.metatype("ImDrawListSplitter",ImDrawListSplitter)
+--------------------------ImGuiContext----------------------------
+local ImGuiContext= {}
+ImGuiContext.__index = ImGuiContext
+function ImGuiContext.__new(ctype,shared_font_atlas)
+    local ptr = lib.ImGuiContext_ImGuiContext(shared_font_atlas)
+    return ffi.gc(ptr,lib.ImGuiContext_destroy)
+end
+M.ImGuiContext = ffi.metatype("ImGuiContext",ImGuiContext)
 --------------------------ImGuiStyleMod----------------------------
 local ImGuiStyleMod= {}
 ImGuiStyleMod.__index = ImGuiStyleMod
@@ -886,72 +933,6 @@ function ImGuiStyleMod.__new(ctype,a1,a2) -- generic version
     error'ImGuiStyleMod.__new could not find overloaded'
 end
 M.ImGuiStyleMod = ffi.metatype("ImGuiStyleMod",ImGuiStyleMod)
---------------------------ImColor----------------------------
-local ImColor= {}
-ImColor.__index = ImColor
-function ImColor:HSV(h,s,v,a)
-    a = a or 1.0
-    local nonUDT_out = ffi.new("ImColor")
-    lib.ImColor_HSV(nonUDT_out,self,h,s,v,a)
-    return nonUDT_out
-end
-function ImColor.ImColorNil()
-    local ptr = lib.ImColor_ImColorNil()
-    return ffi.gc(ptr,lib.ImColor_destroy)
-end
-function ImColor.ImColorInt(r,g,b,a)
-    if a == nil then a = 255 end
-    local ptr = lib.ImColor_ImColorInt(r,g,b,a)
-    return ffi.gc(ptr,lib.ImColor_destroy)
-end
-function ImColor.ImColorU32(rgba)
-    local ptr = lib.ImColor_ImColorU32(rgba)
-    return ffi.gc(ptr,lib.ImColor_destroy)
-end
-function ImColor.ImColorFloat(r,g,b,a)
-    if a == nil then a = 1.0 end
-    local ptr = lib.ImColor_ImColorFloat(r,g,b,a)
-    return ffi.gc(ptr,lib.ImColor_destroy)
-end
-function ImColor.ImColorVec4(col)
-    local ptr = lib.ImColor_ImColorVec4(col)
-    return ffi.gc(ptr,lib.ImColor_destroy)
-end
-function ImColor.__new(ctype,a1,a2,a3,a4) -- generic version
-    if a1==nil then return ImColor.ImColorNil() end
-    if (ffi.istype('int',a1) or type(a1)=='number') then return ImColor.ImColorInt(a1,a2,a3,a4) end
-    if ffi.istype('ImU32',a1) then return ImColor.ImColorU32(a1) end
-    if (ffi.istype('float',a1) or type(a1)=='number') then return ImColor.ImColorFloat(a1,a2,a3,a4) end
-    if ffi.istype('const ImVec4',a1) then return ImColor.ImColorVec4(a1) end
-    print(ctype,a1,a2,a3,a4)
-    error'ImColor.__new could not find overloaded'
-end
-function ImColor:SetHSV(h,s,v,a)
-    a = a or 1.0
-    return lib.ImColor_SetHSV(self,h,s,v,a)
-end
-M.ImColor = ffi.metatype("ImColor",ImColor)
---------------------------ImDrawListSplitter----------------------------
-local ImDrawListSplitter= {}
-ImDrawListSplitter.__index = ImDrawListSplitter
-ImDrawListSplitter.Clear = lib.ImDrawListSplitter_Clear
-ImDrawListSplitter.ClearFreeMemory = lib.ImDrawListSplitter_ClearFreeMemory
-function ImDrawListSplitter.__new(ctype)
-    local ptr = lib.ImDrawListSplitter_ImDrawListSplitter()
-    return ffi.gc(ptr,lib.ImDrawListSplitter_destroy)
-end
-ImDrawListSplitter.Merge = lib.ImDrawListSplitter_Merge
-ImDrawListSplitter.SetCurrentChannel = lib.ImDrawListSplitter_SetCurrentChannel
-ImDrawListSplitter.Split = lib.ImDrawListSplitter_Split
-M.ImDrawListSplitter = ffi.metatype("ImDrawListSplitter",ImDrawListSplitter)
---------------------------ImGuiContext----------------------------
-local ImGuiContext= {}
-ImGuiContext.__index = ImGuiContext
-function ImGuiContext.__new(ctype,shared_font_atlas)
-    local ptr = lib.ImGuiContext_ImGuiContext(shared_font_atlas)
-    return ffi.gc(ptr,lib.ImGuiContext_destroy)
-end
-M.ImGuiContext = ffi.metatype("ImGuiContext",ImGuiContext)
 --------------------------ImDrawList----------------------------
 local ImDrawList= {}
 ImDrawList.__index = ImDrawList
@@ -1040,8 +1021,6 @@ ImDrawList.AddTriangleFilled = lib.ImDrawList_AddTriangleFilled
 ImDrawList.ChannelsMerge = lib.ImDrawList_ChannelsMerge
 ImDrawList.ChannelsSetCurrent = lib.ImDrawList_ChannelsSetCurrent
 ImDrawList.ChannelsSplit = lib.ImDrawList_ChannelsSplit
-ImDrawList.Clear = lib.ImDrawList_Clear
-ImDrawList.ClearFreeMemory = lib.ImDrawList_ClearFreeMemory
 ImDrawList.CloneOutput = lib.ImDrawList_CloneOutput
 function ImDrawList:GetClipRectMax()
     local nonUDT_out = ffi.new("ImVec2")
@@ -1095,8 +1074,12 @@ function ImDrawList:PushClipRect(clip_rect_min,clip_rect_max,intersect_with_curr
 end
 ImDrawList.PushClipRectFullScreen = lib.ImDrawList_PushClipRectFullScreen
 ImDrawList.PushTextureID = lib.ImDrawList_PushTextureID
-ImDrawList.UpdateClipRect = lib.ImDrawList_UpdateClipRect
-ImDrawList.UpdateTextureID = lib.ImDrawList_UpdateTextureID
+ImDrawList._ClearFreeMemory = lib.ImDrawList__ClearFreeMemory
+ImDrawList._OnChangedClipRect = lib.ImDrawList__OnChangedClipRect
+ImDrawList._OnChangedTextureID = lib.ImDrawList__OnChangedTextureID
+ImDrawList._OnChangedVtxOffset = lib.ImDrawList__OnChangedVtxOffset
+ImDrawList._PopUnusedDrawCmd = lib.ImDrawList__PopUnusedDrawCmd
+ImDrawList._ResetForNewFrame = lib.ImDrawList__ResetForNewFrame
 M.ImDrawList = ffi.metatype("ImDrawList",ImDrawList)
 --------------------------ImGuiTextRange----------------------------
 local ImGuiTextRange= {}
@@ -1191,6 +1174,85 @@ function ImGuiMenuColumns.__new(ctype)
 end
 ImGuiMenuColumns.Update = lib.ImGuiMenuColumns_Update
 M.ImGuiMenuColumns = ffi.metatype("ImGuiMenuColumns",ImGuiMenuColumns)
+--------------------------ImColor----------------------------
+local ImColor= {}
+ImColor.__index = ImColor
+function ImColor:HSV(h,s,v,a)
+    a = a or 1.0
+    local nonUDT_out = ffi.new("ImColor")
+    lib.ImColor_HSV(nonUDT_out,self,h,s,v,a)
+    return nonUDT_out
+end
+function ImColor.ImColorNil()
+    local ptr = lib.ImColor_ImColorNil()
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor.ImColorInt(r,g,b,a)
+    if a == nil then a = 255 end
+    local ptr = lib.ImColor_ImColorInt(r,g,b,a)
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor.ImColorU32(rgba)
+    local ptr = lib.ImColor_ImColorU32(rgba)
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor.ImColorFloat(r,g,b,a)
+    if a == nil then a = 1.0 end
+    local ptr = lib.ImColor_ImColorFloat(r,g,b,a)
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor.ImColorVec4(col)
+    local ptr = lib.ImColor_ImColorVec4(col)
+    return ffi.gc(ptr,lib.ImColor_destroy)
+end
+function ImColor.__new(ctype,a1,a2,a3,a4) -- generic version
+    if a1==nil then return ImColor.ImColorNil() end
+    if (ffi.istype('int',a1) or type(a1)=='number') then return ImColor.ImColorInt(a1,a2,a3,a4) end
+    if ffi.istype('ImU32',a1) then return ImColor.ImColorU32(a1) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return ImColor.ImColorFloat(a1,a2,a3,a4) end
+    if ffi.istype('const ImVec4',a1) then return ImColor.ImColorVec4(a1) end
+    print(ctype,a1,a2,a3,a4)
+    error'ImColor.__new could not find overloaded'
+end
+function ImColor:SetHSV(h,s,v,a)
+    a = a or 1.0
+    return lib.ImColor_SetHSV(self,h,s,v,a)
+end
+M.ImColor = ffi.metatype("ImColor",ImColor)
+--------------------------ImGuiTabItem----------------------------
+local ImGuiTabItem= {}
+ImGuiTabItem.__index = ImGuiTabItem
+function ImGuiTabItem.__new(ctype)
+    local ptr = lib.ImGuiTabItem_ImGuiTabItem()
+    return ffi.gc(ptr,lib.ImGuiTabItem_destroy)
+end
+M.ImGuiTabItem = ffi.metatype("ImGuiTabItem",ImGuiTabItem)
+--------------------------ImVec1----------------------------
+local ImVec1= {}
+ImVec1.__index = ImVec1
+function ImVec1.ImVec1Nil()
+    local ptr = lib.ImVec1_ImVec1Nil()
+    return ffi.gc(ptr,lib.ImVec1_destroy)
+end
+function ImVec1.ImVec1Float(_x)
+    local ptr = lib.ImVec1_ImVec1Float(_x)
+    return ffi.gc(ptr,lib.ImVec1_destroy)
+end
+function ImVec1.__new(ctype,a1) -- generic version
+    if a1==nil then return ImVec1.ImVec1Nil() end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return ImVec1.ImVec1Float(a1) end
+    print(ctype,a1)
+    error'ImVec1.__new could not find overloaded'
+end
+M.ImVec1 = ffi.metatype("ImVec1",ImVec1)
+--------------------------ImGuiWindowTempData----------------------------
+local ImGuiWindowTempData= {}
+ImGuiWindowTempData.__index = ImGuiWindowTempData
+function ImGuiWindowTempData.__new(ctype)
+    local ptr = lib.ImGuiWindowTempData_ImGuiWindowTempData()
+    return ffi.gc(ptr,lib.ImGuiWindowTempData_destroy)
+end
+M.ImGuiWindowTempData = ffi.metatype("ImGuiWindowTempData",ImGuiWindowTempData)
 --------------------------ImFontAtlas----------------------------
 local ImFontAtlas= {}
 ImFontAtlas.__index = ImFontAtlas
@@ -1255,52 +1317,6 @@ end
 ImFontAtlas.IsBuilt = lib.ImFontAtlas_IsBuilt
 ImFontAtlas.SetTexID = lib.ImFontAtlas_SetTexID
 M.ImFontAtlas = ffi.metatype("ImFontAtlas",ImFontAtlas)
---------------------------ImDrawData----------------------------
-local ImDrawData= {}
-ImDrawData.__index = ImDrawData
-ImDrawData.Clear = lib.ImDrawData_Clear
-ImDrawData.DeIndexAllBuffers = lib.ImDrawData_DeIndexAllBuffers
-function ImDrawData.__new(ctype)
-    local ptr = lib.ImDrawData_ImDrawData()
-    return ffi.gc(ptr,lib.ImDrawData_destroy)
-end
-ImDrawData.ScaleClipRects = lib.ImDrawData_ScaleClipRects
-M.ImDrawData = ffi.metatype("ImDrawData",ImDrawData)
---------------------------ImVec1----------------------------
-local ImVec1= {}
-ImVec1.__index = ImVec1
-function ImVec1.ImVec1Nil()
-    local ptr = lib.ImVec1_ImVec1Nil()
-    return ffi.gc(ptr,lib.ImVec1_destroy)
-end
-function ImVec1.ImVec1Float(_x)
-    local ptr = lib.ImVec1_ImVec1Float(_x)
-    return ffi.gc(ptr,lib.ImVec1_destroy)
-end
-function ImVec1.__new(ctype,a1) -- generic version
-    if a1==nil then return ImVec1.ImVec1Nil() end
-    if (ffi.istype('float',a1) or type(a1)=='number') then return ImVec1.ImVec1Float(a1) end
-    print(ctype,a1)
-    error'ImVec1.__new could not find overloaded'
-end
-M.ImVec1 = ffi.metatype("ImVec1",ImVec1)
---------------------------ImGuiNextItemData----------------------------
-local ImGuiNextItemData= {}
-ImGuiNextItemData.__index = ImGuiNextItemData
-ImGuiNextItemData.ClearFlags = lib.ImGuiNextItemData_ClearFlags
-function ImGuiNextItemData.__new(ctype)
-    local ptr = lib.ImGuiNextItemData_ImGuiNextItemData()
-    return ffi.gc(ptr,lib.ImGuiNextItemData_destroy)
-end
-M.ImGuiNextItemData = ffi.metatype("ImGuiNextItemData",ImGuiNextItemData)
---------------------------ImGuiWindowTempData----------------------------
-local ImGuiWindowTempData= {}
-ImGuiWindowTempData.__index = ImGuiWindowTempData
-function ImGuiWindowTempData.__new(ctype)
-    local ptr = lib.ImGuiWindowTempData_ImGuiWindowTempData()
-    return ffi.gc(ptr,lib.ImGuiWindowTempData_destroy)
-end
-M.ImGuiWindowTempData = ffi.metatype("ImGuiWindowTempData",ImGuiWindowTempData)
 --------------------------ImFontAtlasCustomRect----------------------------
 local ImFontAtlasCustomRect= {}
 ImFontAtlasCustomRect.__index = ImFontAtlasCustomRect
@@ -1391,23 +1407,6 @@ function ImPlotPoint.__new(ctype,a1,a2) -- generic version
     error'ImPlotPoint.__new could not find overloaded'
 end
 M.ImPlotPoint = ffi.metatype("ImPlotPoint",ImPlotPoint)
---------------------------ImDrawListSharedData----------------------------
-local ImDrawListSharedData= {}
-ImDrawListSharedData.__index = ImDrawListSharedData
-function ImDrawListSharedData.__new(ctype)
-    local ptr = lib.ImDrawListSharedData_ImDrawListSharedData()
-    return ffi.gc(ptr,lib.ImDrawListSharedData_destroy)
-end
-ImDrawListSharedData.SetCircleSegmentMaxError = lib.ImDrawListSharedData_SetCircleSegmentMaxError
-M.ImDrawListSharedData = ffi.metatype("ImDrawListSharedData",ImDrawListSharedData)
---------------------------ImGuiOnceUponAFrame----------------------------
-local ImGuiOnceUponAFrame= {}
-ImGuiOnceUponAFrame.__index = ImGuiOnceUponAFrame
-function ImGuiOnceUponAFrame.__new(ctype)
-    local ptr = lib.ImGuiOnceUponAFrame_ImGuiOnceUponAFrame()
-    return ffi.gc(ptr,lib.ImGuiOnceUponAFrame_destroy)
-end
-M.ImGuiOnceUponAFrame = ffi.metatype("ImGuiOnceUponAFrame",ImGuiOnceUponAFrame)
 --------------------------ImGuiStyle----------------------------
 local ImGuiStyle= {}
 ImGuiStyle.__index = ImGuiStyle
@@ -1417,6 +1416,14 @@ function ImGuiStyle.__new(ctype)
 end
 ImGuiStyle.ScaleAllSizes = lib.ImGuiStyle_ScaleAllSizes
 M.ImGuiStyle = ffi.metatype("ImGuiStyle",ImGuiStyle)
+--------------------------ImGuiOnceUponAFrame----------------------------
+local ImGuiOnceUponAFrame= {}
+ImGuiOnceUponAFrame.__index = ImGuiOnceUponAFrame
+function ImGuiOnceUponAFrame.__new(ctype)
+    local ptr = lib.ImGuiOnceUponAFrame_ImGuiOnceUponAFrame()
+    return ffi.gc(ptr,lib.ImGuiOnceUponAFrame_destroy)
+end
+M.ImGuiOnceUponAFrame = ffi.metatype("ImGuiOnceUponAFrame",ImGuiOnceUponAFrame)
 --------------------------ImGuiPayload----------------------------
 local ImGuiPayload= {}
 ImGuiPayload.__index = ImGuiPayload
@@ -2026,21 +2033,20 @@ function M.BeginPopup(str_id,flags)
     flags = flags or 0
     return lib.igBeginPopup(str_id,flags)
 end
-function M.BeginPopupContextItem(str_id,mouse_button)
-    mouse_button = mouse_button or 1
+function M.BeginPopupContextItem(str_id,popup_flags)
+    popup_flags = popup_flags or 1
     str_id = str_id or nil
-    return lib.igBeginPopupContextItem(str_id,mouse_button)
+    return lib.igBeginPopupContextItem(str_id,popup_flags)
 end
-function M.BeginPopupContextVoid(str_id,mouse_button)
-    mouse_button = mouse_button or 1
+function M.BeginPopupContextVoid(str_id,popup_flags)
+    popup_flags = popup_flags or 1
     str_id = str_id or nil
-    return lib.igBeginPopupContextVoid(str_id,mouse_button)
+    return lib.igBeginPopupContextVoid(str_id,popup_flags)
 end
-function M.BeginPopupContextWindow(str_id,mouse_button,also_over_items)
-    if also_over_items == nil then also_over_items = true end
-    mouse_button = mouse_button or 1
+function M.BeginPopupContextWindow(str_id,popup_flags)
+    popup_flags = popup_flags or 1
     str_id = str_id or nil
-    return lib.igBeginPopupContextWindow(str_id,mouse_button,also_over_items)
+    return lib.igBeginPopupContextWindow(str_id,popup_flags)
 end
 M.BeginPopupEx = lib.igBeginPopupEx
 function M.BeginPopupModal(name,p_open,flags)
@@ -2113,6 +2119,7 @@ M.Checkbox = lib.igCheckbox
 M.CheckboxFlags = lib.igCheckboxFlags
 M.ClearActiveID = lib.igClearActiveID
 M.ClearDragDrop = lib.igClearDragDrop
+M.ClearIniSettings = lib.igClearIniSettings
 M.CloseButton = lib.igCloseButton
 M.CloseCurrentPopup = lib.igCloseCurrentPopup
 M.ClosePopupToLevel = lib.igClosePopupToLevel
@@ -2197,6 +2204,7 @@ end
 M.CreateNewWindowSettings = lib.igCreateNewWindowSettings
 M.DataTypeApplyOp = lib.igDataTypeApplyOp
 M.DataTypeApplyOpFromText = lib.igDataTypeApplyOpFromText
+M.DataTypeClamp = lib.igDataTypeClamp
 M.DataTypeFormatString = lib.igDataTypeFormatString
 M.DataTypeGetInfo = lib.igDataTypeGetInfo
 M.DebugCheckVersionAndDataLayout = lib.igDebugCheckVersionAndDataLayout
@@ -2728,6 +2736,7 @@ function M.ImageButton(user_texture_id,size,uv0,uv1,frame_padding,bg_col,tint_co
     frame_padding = frame_padding or -1
     return lib.igImageButton(user_texture_id,size,uv0,uv1,frame_padding,bg_col,tint_col)
 end
+M.ImageButtonEx = lib.igImageButtonEx
 function M.Indent(indent_w)
     indent_w = indent_w or 0.0
     return lib.igIndent(indent_w)
@@ -2880,12 +2889,15 @@ end
 M.IsMouseReleased = lib.igIsMouseReleased
 M.IsNavInputDown = lib.igIsNavInputDown
 M.IsNavInputTest = lib.igIsNavInputTest
-M.IsPopupOpenStr = lib.igIsPopupOpenStr
+function M.IsPopupOpenStr(str_id,flags)
+    flags = flags or 0
+    return lib.igIsPopupOpenStr(str_id,flags)
+end
 M.IsPopupOpenID = lib.igIsPopupOpenID
-function M.IsPopupOpen(a1) -- generic version
-    if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.IsPopupOpenStr(a1) end
-    if ffi.istype('ImGuiID',a1) then return M.IsPopupOpenID(a1) end
-    print(a1)
+function M.IsPopupOpen(a1,a2) -- generic version
+    if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.IsPopupOpenStr(a1,a2) end
+    if ffi.istype('ImGuiID',a1) then return M.IsPopupOpenID(a1,a2) end
+    print(a1,a2)
     error'M.IsPopupOpen could not find overloaded'
 end
 M.IsRectVisibleNil = lib.igIsRectVisibleNil
@@ -3024,12 +3036,18 @@ M.NavMoveRequestTryWrapping = lib.igNavMoveRequestTryWrapping
 M.NewFrame = lib.igNewFrame
 M.NewLine = lib.igNewLine
 M.NextColumn = lib.igNextColumn
-M.OpenPopup = lib.igOpenPopup
-M.OpenPopupEx = lib.igOpenPopupEx
-function M.OpenPopupOnItemClick(str_id,mouse_button)
-    mouse_button = mouse_button or 1
+function M.OpenPopup(str_id,popup_flags)
+    popup_flags = popup_flags or 0
+    return lib.igOpenPopup(str_id,popup_flags)
+end
+function M.OpenPopupContextItem(str_id,popup_flags)
+    popup_flags = popup_flags or 1
     str_id = str_id or nil
-    return lib.igOpenPopupOnItemClick(str_id,mouse_button)
+    return lib.igOpenPopupContextItem(str_id,popup_flags)
+end
+function M.OpenPopupEx(id,popup_flags)
+    popup_flags = popup_flags or ImGuiPopupFlags_None
+    return lib.igOpenPopupEx(id,popup_flags)
 end
 M.PlotEx = lib.igPlotEx
 function M.PlotHistogramFloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
@@ -3283,6 +3301,7 @@ function M.SetNextWindowPos(pos,cond,pivot)
     pivot = pivot or ImVec2(0,0)
     return lib.igSetNextWindowPos(pos,cond,pivot)
 end
+M.SetNextWindowScroll = lib.igSetNextWindowScroll
 function M.SetNextWindowSize(size,cond)
     cond = cond or 0
     return lib.igSetNextWindowSize(size,cond)
@@ -3348,6 +3367,7 @@ M.SetStateStorage = lib.igSetStateStorage
 M.SetTabItemClosed = lib.igSetTabItemClosed
 M.SetTooltip = lib.igSetTooltip
 M.SetTooltipV = lib.igSetTooltipV
+M.SetWindowClipRectBeforeSetChannel = lib.igSetWindowClipRectBeforeSetChannel
 function M.SetWindowCollapsedBool(collapsed,cond)
     cond = cond or 0
     return lib.igSetWindowCollapsedBool(collapsed,cond)
@@ -3523,7 +3543,11 @@ end
 M.TabItemEx = lib.igTabItemEx
 M.TabItemLabelAndCloseButton = lib.igTabItemLabelAndCloseButton
 M.TempInputIsActive = lib.igTempInputIsActive
-M.TempInputScalar = lib.igTempInputScalar
+function M.TempInputScalar(bb,id,label,data_type,p_data,format,p_clamp_min,p_clamp_max)
+    p_clamp_min = p_clamp_min or nil
+    p_clamp_max = p_clamp_max or nil
+    return lib.igTempInputScalar(bb,id,label,data_type,p_data,format,p_clamp_min,p_clamp_max)
+end
 M.TempInputText = lib.igTempInputText
 M.Text = lib.igText
 M.TextColored = lib.igTextColored
