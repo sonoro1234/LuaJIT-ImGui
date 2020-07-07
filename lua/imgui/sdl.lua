@@ -1649,11 +1649,15 @@ end
 M.ImPlot_GetColormapSize = lib.ImPlot_GetColormapSize
 function M.ImPlot_GetPlotLimits(y_axis)
     y_axis = y_axis or -1
-    return lib.ImPlot_GetPlotLimits(y_axis)
+    local nonUDT_out = ffi.new("ImPlotLimits")
+    lib.ImPlot_GetPlotLimits(nonUDT_out,y_axis)
+    return nonUDT_out
 end
 function M.ImPlot_GetPlotMousePos(y_axis)
     y_axis = y_axis or -1
-    return lib.ImPlot_GetPlotMousePos(y_axis)
+    local nonUDT_out = ffi.new("ImPlotPoint")
+    lib.ImPlot_GetPlotMousePos(nonUDT_out,y_axis)
+    return nonUDT_out
 end
 function M.ImPlot_GetPlotPos()
     local nonUDT_out = ffi.new("ImVec2")
@@ -1662,7 +1666,9 @@ function M.ImPlot_GetPlotPos()
 end
 function M.ImPlot_GetPlotQuery(y_axis)
     y_axis = y_axis or -1
-    return lib.ImPlot_GetPlotQuery(y_axis)
+    local nonUDT_out = ffi.new("ImPlotLimits")
+    lib.ImPlot_GetPlotQuery(nonUDT_out,y_axis)
+    return nonUDT_out
 end
 function M.ImPlot_GetPlotSize()
     local nonUDT_out = ffi.new("ImVec2")
@@ -1679,7 +1685,9 @@ function M.ImPlot_LerpColormap(t)
 end
 function M.ImPlot_PixelsToPlot(pix,y_axis)
     y_axis = y_axis or -1
-    return lib.ImPlot_PixelsToPlot(pix,y_axis)
+    local nonUDT_out = ffi.new("ImPlotPoint")
+    lib.ImPlot_PixelsToPlot(nonUDT_out,pix,y_axis)
+    return nonUDT_out
 end
 function M.ImPlot_PlotBarsFloatPtrIntFloat(label_id,values,count,width,shift,offset,stride)
     width = width or 0.67
