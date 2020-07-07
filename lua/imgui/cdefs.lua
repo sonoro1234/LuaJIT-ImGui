@@ -2843,10 +2843,10 @@ void ImPlot_PlotDigitalFnPlotPoIntPtr(const char* label_id,ImPlotPoint(*getter)(
 void ImPlot_PlotTextFloat(const char* text,float x,float y,                                                                     _Bool                                                                           vertical,const ImVec2 pixel_offset);
 void ImPlot_PlotTextdouble(const char* text,double x,double y,                                                                        _Bool                                                                              vertical,const ImVec2 pixel_offset);
 _Bool                ImPlot_IsPlotHovered(void);
-ImPlotPoint ImPlot_GetPlotMousePos(int y_axis);
-ImPlotLimits ImPlot_GetPlotLimits(int y_axis);
+void ImPlot_GetPlotMousePos(ImPlotPoint *pOut,int y_axis);
+void ImPlot_GetPlotLimits(ImPlotLimits *pOut,int y_axis);
 _Bool                ImPlot_IsPlotQueried(void);
-ImPlotLimits ImPlot_GetPlotQuery(int y_axis);
+void ImPlot_GetPlotQuery(ImPlotLimits *pOut,int y_axis);
 ImPlotStyle* ImPlot_GetStyle(void);
 void ImPlot_PushStyleColorU32(ImPlotCol idx,ImU32 col);
 void ImPlot_PushStyleColorVec4(ImPlotCol idx,const ImVec4 col);
@@ -2869,7 +2869,7 @@ void ImPlot_SetNextPlotTicksYdouble(double y_min,double y_max,int n_ticks,const 
 void ImPlot_SetPlotYAxis(int y_axis);
 void ImPlot_GetPlotPos(ImVec2 *pOut);
 void ImPlot_GetPlotSize(ImVec2 *pOut);
-ImPlotPoint ImPlot_PixelsToPlot(const ImVec2 pix,int y_axis);
+void ImPlot_PixelsToPlot(ImPlotPoint *pOut,const ImVec2 pix,int y_axis);
 void ImPlot_PlotToPixels(ImVec2 *pOut,const ImPlotPoint plt,int y_axis);
 void ImPlot_ShowColormapScale(double scale_min,double scale_max,float height);
 void ImPlot_PushPlotClipRect(void);
