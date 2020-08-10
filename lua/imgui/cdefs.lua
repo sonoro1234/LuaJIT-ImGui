@@ -3035,6 +3035,7 @@ ImVector_ImWchar* ImVector_ImWchar_create();
 void ImVector_ImWchar_destroy(ImVector_ImWchar* self);
 void ImVector_ImWchar_Init(ImVector_ImWchar* p);
 void ImVector_ImWchar_UnInit(ImVector_ImWchar* p);
+typedef struct ImPlotInputMap ImPlotInputMap;
 typedef struct ImPlotStyle ImPlotStyle;
 typedef struct ImPlotLimits ImPlotLimits;
 typedef struct ImPlotRange ImPlotRange;
@@ -3053,12 +3054,11 @@ typedef enum {
     ImPlotFlags_Query = 1 << 4,
     ImPlotFlags_ContextMenu = 1 << 5,
     ImPlotFlags_Crosshairs = 1 << 6,
-    ImPlotFlags_CullData = 1 << 7,
-    ImPlotFlags_AntiAliased = 1 << 8,
-    ImPlotFlags_NoChild = 1 << 9,
-    ImPlotFlags_YAxis2 = 1 << 10,
-    ImPlotFlags_YAxis3 = 1 << 11,
-    ImPlotFlags_Default = ImPlotFlags_MousePos | ImPlotFlags_Legend | ImPlotFlags_Highlight | ImPlotFlags_BoxSelect | ImPlotFlags_ContextMenu | ImPlotFlags_CullData
+    ImPlotFlags_AntiAliased = 1 << 7,
+    ImPlotFlags_NoChild = 1 << 8,
+    ImPlotFlags_YAxis2 = 1 << 9,
+    ImPlotFlags_YAxis3 = 1 << 10,
+    ImPlotFlags_Default = ImPlotFlags_MousePos | ImPlotFlags_Legend | ImPlotFlags_Highlight | ImPlotFlags_BoxSelect | ImPlotFlags_ContextMenu
 }ImPlotFlags_;
 typedef enum {
     ImPlotAxisFlags_GridLines = 1 << 0,
@@ -3067,10 +3067,9 @@ typedef enum {
     ImPlotAxisFlags_Invert = 1 << 3,
     ImPlotAxisFlags_LockMin = 1 << 4,
     ImPlotAxisFlags_LockMax = 1 << 5,
-    ImPlotAxisFlags_Adaptive = 1 << 6,
-    ImPlotAxisFlags_LogScale = 1 << 7,
-    ImPlotAxisFlags_Scientific = 1 << 8,
-    ImPlotAxisFlags_Default = ImPlotAxisFlags_GridLines | ImPlotAxisFlags_TickMarks | ImPlotAxisFlags_TickLabels | ImPlotAxisFlags_Adaptive,
+    ImPlotAxisFlags_LogScale = 1 << 6,
+    ImPlotAxisFlags_Scientific = 1 << 7,
+    ImPlotAxisFlags_Default = ImPlotAxisFlags_GridLines | ImPlotAxisFlags_TickMarks | ImPlotAxisFlags_TickLabels,
     ImPlotAxisFlags_Auxiliary = ImPlotAxisFlags_Default & ~ImPlotAxisFlags_GridLines,
 }ImPlotAxisFlags_;
 typedef enum {
@@ -3095,6 +3094,7 @@ typedef enum {
     ImPlotStyleVar_Marker,
     ImPlotStyleVar_MarkerSize,
     ImPlotStyleVar_MarkerWeight,
+    ImPlotStyleVar_FillAlpha,
     ImPlotStyleVar_ErrorBarSize,
     ImPlotStyleVar_ErrorBarWeight,
     ImPlotStyleVar_DigitalBitHeight,
@@ -3145,11 +3145,27 @@ struct ImPlotStyle
     ImPlotMarker Marker;
     float MarkerSize;
     float MarkerWeight;
+    float FillAlpha;
     float ErrorBarSize;
     float ErrorBarWeight;
     float DigitalBitHeight;
     float DigitalBitGap;
     ImVec4 Colors[ImPlotCol_COUNT];
+};
+struct ImPlotInputMap
+{
+    ImGuiMouseButton PanButton;
+    ImGuiKeyModFlags PanMod;
+    ImGuiMouseButton FitButton;
+    ImGuiMouseButton ContextMenuButton;
+    ImGuiMouseButton BoxSelectButton;
+    ImGuiKeyModFlags BoxSelectMod;
+    ImGuiMouseButton BoxSelectCancelButton;
+    ImGuiMouseButton QueryButton;
+    ImGuiKeyModFlags QueryMod;
+    ImGuiKeyModFlags QueryToggleMod;
+    ImGuiKeyModFlags HorizontalMod;
+    ImGuiKeyModFlags VerticalMod;
 };
 ImPlotPoint* ImPlotPoint_ImPlotPointNil(void);
 void ImPlotPoint_destroy(ImPlotPoint* self);
@@ -3164,6 +3180,8 @@ _Bool                ImPlotLimits_ContainsPlotPoInt(ImPlotLimits* self,const ImP
 _Bool                ImPlotLimits_Containsdouble(ImPlotLimits* self,double x,double y);
 ImPlotStyle* ImPlotStyle_ImPlotStyle(void);
 void ImPlotStyle_destroy(ImPlotStyle* self);
+ImPlotInputMap* ImPlotInputMap_ImPlotInputMap(void);
+void ImPlotInputMap_destroy(ImPlotInputMap* self);
 _Bool                ImPlot_BeginPlot(const char* title_id,const char* x_label,const char* y_label,const ImVec2 size,ImPlotFlags flags,ImPlotAxisFlags x_flags,ImPlotAxisFlags y_flags,ImPlotAxisFlags y2_flags,ImPlotAxisFlags y3_flags);
 void ImPlot_EndPlot(void);
 void ImPlot_PlotLineFloatPtrInt(const char* label_id,const float* values,int count,int offset,int stride);
@@ -3180,6 +3198,10 @@ void ImPlot_PlotScatterdoublePtrdoublePtr(const char* label_id,const double* xs,
 void ImPlot_PlotScatterVec2Ptr(const char* label_id,const ImVec2* data,int count,int offset);
 void ImPlot_PlotScatterPlotPoIntPtr(const char* label_id,const ImPlotPoint* data,int count,int offset);
 void ImPlot_PlotScatterFnPlotPoIntPtr(const char* label_id,ImPlotPoint(*getter)(void* data,int idx),void* data,int count,int offset);
+void ImPlot_PlotShadedFloatPtrFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys1,const float* ys2,int count,int offset,int stride);
+void ImPlot_PlotShadeddoublePtrdoublePtrdoublePtr(const char* label_id,const double* xs,const double* ys1,const double* ys2,int count,int offset,int stride);
+void ImPlot_PlotShadedFloatPtrFloatPtrIntFloat(const char* label_id,const float* xs,const float* ys,int count,float y_ref,int offset,int stride);
+void ImPlot_PlotShadeddoublePtrdoublePtrIntdouble(const char* label_id,const double* xs,const double* ys,int count,double y_ref,int offset,int stride);
 void ImPlot_PlotBarsFloatPtrIntFloat(const char* label_id,const float* values,int count,float width,float shift,int offset,int stride);
 void ImPlot_PlotBarsdoublePtrIntdouble(const char* label_id,const double* values,int count,double width,double shift,int offset,int stride);
 void ImPlot_PlotBarsFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys,int count,float width,int offset,int stride);
@@ -3208,10 +3230,14 @@ void ImPlot_PlotDigitalFnPlotPoIntPtr(const char* label_id,ImPlotPoint(*getter)(
 void ImPlot_PlotTextFloat(const char* text,float x,float y,                                                                     _Bool                                                                           vertical,const ImVec2 pixel_offset);
 void ImPlot_PlotTextdouble(const char* text,double x,double y,                                                                        _Bool                                                                              vertical,const ImVec2 pixel_offset);
 _Bool                ImPlot_IsPlotHovered(void);
+_Bool                ImPlot_IsPlotXAxisHovered(void);
+_Bool                ImPlot_IsPlotYAxisHovered(int y_axis);
 void ImPlot_GetPlotMousePos(ImPlotPoint *pOut,int y_axis);
 void ImPlot_GetPlotLimits(ImPlotLimits *pOut,int y_axis);
 _Bool                ImPlot_IsPlotQueried(void);
 void ImPlot_GetPlotQuery(ImPlotLimits *pOut,int y_axis);
+_Bool                ImPlot_IsLegendEntryHovered(const char* label_id);
+ImPlotInputMap* ImPlot_GetInputMap(void);
 ImPlotStyle* ImPlot_GetStyle(void);
 void ImPlot_PushStyleColorU32(ImPlotCol idx,ImU32 col);
 void ImPlot_PushStyleColorVec4(ImPlotCol idx,const ImVec4 col);
