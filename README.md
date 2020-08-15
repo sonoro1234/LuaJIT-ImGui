@@ -30,3 +30,4 @@ Notes:
 # used in
 
 * https://github.com/sonoro1234/anima
+* can be used for LOVE2D as explained in https://github.com/sonoro1234/LuaJIT-ImGui/issues/20
