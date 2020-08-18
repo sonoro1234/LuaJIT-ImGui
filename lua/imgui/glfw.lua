@@ -881,70 +881,16 @@ function ImGuiContext.__new(ctype,shared_font_atlas)
     return ffi.gc(ptr,lib.ImGuiContext_destroy)
 end
 M.ImGuiContext = ffi.metatype("ImGuiContext",ImGuiContext)
---------------------------ImFontAtlas----------------------------
-local ImFontAtlas= {}
-ImFontAtlas.__index = ImFontAtlas
-function ImFontAtlas:AddCustomRectFontGlyph(font,id,width,height,advance_x,offset)
-    offset = offset or ImVec2(0,0)
-    return lib.ImFontAtlas_AddCustomRectFontGlyph(self,font,id,width,height,advance_x,offset)
+--------------------------ImGuiLastItemDataBackup----------------------------
+local ImGuiLastItemDataBackup= {}
+ImGuiLastItemDataBackup.__index = ImGuiLastItemDataBackup
+ImGuiLastItemDataBackup.Backup = lib.ImGuiLastItemDataBackup_Backup
+function ImGuiLastItemDataBackup.__new(ctype)
+    local ptr = lib.ImGuiLastItemDataBackup_ImGuiLastItemDataBackup()
+    return ffi.gc(ptr,lib.ImGuiLastItemDataBackup_destroy)
 end
-ImFontAtlas.AddCustomRectRegular = lib.ImFontAtlas_AddCustomRectRegular
-ImFontAtlas.AddFont = lib.ImFontAtlas_AddFont
-function ImFontAtlas:AddFontDefault(font_cfg)
-    font_cfg = font_cfg or nil
-    return lib.ImFontAtlas_AddFontDefault(self,font_cfg)
-end
-function ImFontAtlas:AddFontFromFileTTF(filename,size_pixels,font_cfg,glyph_ranges)
-    glyph_ranges = glyph_ranges or nil
-    font_cfg = font_cfg or nil
-    return lib.ImFontAtlas_AddFontFromFileTTF(self,filename,size_pixels,font_cfg,glyph_ranges)
-end
-function ImFontAtlas:AddFontFromMemoryCompressedBase85TTF(compressed_font_data_base85,size_pixels,font_cfg,glyph_ranges)
-    glyph_ranges = glyph_ranges or nil
-    font_cfg = font_cfg or nil
-    return lib.ImFontAtlas_AddFontFromMemoryCompressedBase85TTF(self,compressed_font_data_base85,size_pixels,font_cfg,glyph_ranges)
-end
-function ImFontAtlas:AddFontFromMemoryCompressedTTF(compressed_font_data,compressed_font_size,size_pixels,font_cfg,glyph_ranges)
-    glyph_ranges = glyph_ranges or nil
-    font_cfg = font_cfg or nil
-    return lib.ImFontAtlas_AddFontFromMemoryCompressedTTF(self,compressed_font_data,compressed_font_size,size_pixels,font_cfg,glyph_ranges)
-end
-function ImFontAtlas:AddFontFromMemoryTTF(font_data,font_size,size_pixels,font_cfg,glyph_ranges)
-    glyph_ranges = glyph_ranges or nil
-    font_cfg = font_cfg or nil
-    return lib.ImFontAtlas_AddFontFromMemoryTTF(self,font_data,font_size,size_pixels,font_cfg,glyph_ranges)
-end
-ImFontAtlas.Build = lib.ImFontAtlas_Build
-ImFontAtlas.CalcCustomRectUV = lib.ImFontAtlas_CalcCustomRectUV
-ImFontAtlas.Clear = lib.ImFontAtlas_Clear
-ImFontAtlas.ClearFonts = lib.ImFontAtlas_ClearFonts
-ImFontAtlas.ClearInputData = lib.ImFontAtlas_ClearInputData
-ImFontAtlas.ClearTexData = lib.ImFontAtlas_ClearTexData
-ImFontAtlas.GetCustomRectByIndex = lib.ImFontAtlas_GetCustomRectByIndex
-ImFontAtlas.GetGlyphRangesChineseFull = lib.ImFontAtlas_GetGlyphRangesChineseFull
-ImFontAtlas.GetGlyphRangesChineseSimplifiedCommon = lib.ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon
-ImFontAtlas.GetGlyphRangesCyrillic = lib.ImFontAtlas_GetGlyphRangesCyrillic
-ImFontAtlas.GetGlyphRangesDefault = lib.ImFontAtlas_GetGlyphRangesDefault
-ImFontAtlas.GetGlyphRangesJapanese = lib.ImFontAtlas_GetGlyphRangesJapanese
-ImFontAtlas.GetGlyphRangesKorean = lib.ImFontAtlas_GetGlyphRangesKorean
-ImFontAtlas.GetGlyphRangesThai = lib.ImFontAtlas_GetGlyphRangesThai
-ImFontAtlas.GetGlyphRangesVietnamese = lib.ImFontAtlas_GetGlyphRangesVietnamese
-ImFontAtlas.GetMouseCursorTexData = lib.ImFontAtlas_GetMouseCursorTexData
-function ImFontAtlas:GetTexDataAsAlpha8(out_pixels,out_width,out_height,out_bytes_per_pixel)
-    out_bytes_per_pixel = out_bytes_per_pixel or nil
-    return lib.ImFontAtlas_GetTexDataAsAlpha8(self,out_pixels,out_width,out_height,out_bytes_per_pixel)
-end
-function ImFontAtlas:GetTexDataAsRGBA32(out_pixels,out_width,out_height,out_bytes_per_pixel)
-    out_bytes_per_pixel = out_bytes_per_pixel or nil
-    return lib.ImFontAtlas_GetTexDataAsRGBA32(self,out_pixels,out_width,out_height,out_bytes_per_pixel)
-end
-function ImFontAtlas.__new(ctype)
-    local ptr = lib.ImFontAtlas_ImFontAtlas()
-    return ffi.gc(ptr,lib.ImFontAtlas_destroy)
-end
-ImFontAtlas.IsBuilt = lib.ImFontAtlas_IsBuilt
-ImFontAtlas.SetTexID = lib.ImFontAtlas_SetTexID
-M.ImFontAtlas = ffi.metatype("ImFontAtlas",ImFontAtlas)
+ImGuiLastItemDataBackup.Restore = lib.ImGuiLastItemDataBackup_Restore
+M.ImGuiLastItemDataBackup = ffi.metatype("ImGuiLastItemDataBackup",ImGuiLastItemDataBackup)
 --------------------------ImGuiColumns----------------------------
 local ImGuiColumns= {}
 ImGuiColumns.__index = ImGuiColumns
@@ -1067,12 +1013,12 @@ function ImDrawList:AddBezierCurve(p1,p2,p3,p4,col,thickness,num_segments)
 end
 ImDrawList.AddCallback = lib.ImDrawList_AddCallback
 function ImDrawList:AddCircle(center,radius,col,num_segments,thickness)
-    num_segments = num_segments or 12
+    num_segments = num_segments or 0
     thickness = thickness or 1.0
     return lib.ImDrawList_AddCircle(self,center,radius,col,num_segments,thickness)
 end
 function ImDrawList:AddCircleFilled(center,radius,col,num_segments)
-    num_segments = num_segments or 12
+    num_segments = num_segments or 0
     return lib.ImDrawList_AddCircleFilled(self,center,radius,col,num_segments)
 end
 ImDrawList.AddConvexPolyFilled = lib.ImDrawList_AddConvexPolyFilled
@@ -1206,44 +1152,79 @@ ImDrawList._OnChangedVtxOffset = lib.ImDrawList__OnChangedVtxOffset
 ImDrawList._PopUnusedDrawCmd = lib.ImDrawList__PopUnusedDrawCmd
 ImDrawList._ResetForNewFrame = lib.ImDrawList__ResetForNewFrame
 M.ImDrawList = ffi.metatype("ImDrawList",ImDrawList)
---------------------------ImGuiTextRange----------------------------
-local ImGuiTextRange= {}
-ImGuiTextRange.__index = ImGuiTextRange
-function ImGuiTextRange.ImGuiTextRangeNil()
-    local ptr = lib.ImGuiTextRange_ImGuiTextRangeNil()
-    return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
+--------------------------ImDrawListSharedData----------------------------
+local ImDrawListSharedData= {}
+ImDrawListSharedData.__index = ImDrawListSharedData
+function ImDrawListSharedData.__new(ctype)
+    local ptr = lib.ImDrawListSharedData_ImDrawListSharedData()
+    return ffi.gc(ptr,lib.ImDrawListSharedData_destroy)
 end
-function ImGuiTextRange.ImGuiTextRangeStr(_b,_e)
-    local ptr = lib.ImGuiTextRange_ImGuiTextRangeStr(_b,_e)
-    return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
+ImDrawListSharedData.SetCircleSegmentMaxError = lib.ImDrawListSharedData_SetCircleSegmentMaxError
+M.ImDrawListSharedData = ffi.metatype("ImDrawListSharedData",ImDrawListSharedData)
+--------------------------ImFontAtlas----------------------------
+local ImFontAtlas= {}
+ImFontAtlas.__index = ImFontAtlas
+function ImFontAtlas:AddCustomRectFontGlyph(font,id,width,height,advance_x,offset)
+    offset = offset or ImVec2(0,0)
+    return lib.ImFontAtlas_AddCustomRectFontGlyph(self,font,id,width,height,advance_x,offset)
 end
-function ImGuiTextRange.__new(ctype,a1,a2) -- generic version
-    if a1==nil then return ImGuiTextRange.ImGuiTextRangeNil() end
-    if (ffi.istype('const char*',a1) or type(a1)=='string') then return ImGuiTextRange.ImGuiTextRangeStr(a1,a2) end
-    print(ctype,a1,a2)
-    error'ImGuiTextRange.__new could not find overloaded'
+ImFontAtlas.AddCustomRectRegular = lib.ImFontAtlas_AddCustomRectRegular
+ImFontAtlas.AddFont = lib.ImFontAtlas_AddFont
+function ImFontAtlas:AddFontDefault(font_cfg)
+    font_cfg = font_cfg or nil
+    return lib.ImFontAtlas_AddFontDefault(self,font_cfg)
 end
-ImGuiTextRange.empty = lib.ImGuiTextRange_empty
-ImGuiTextRange.split = lib.ImGuiTextRange_split
-M.ImGuiTextRange = ffi.metatype("ImGuiTextRange",ImGuiTextRange)
---------------------------ImGuiPtrOrIndex----------------------------
-local ImGuiPtrOrIndex= {}
-ImGuiPtrOrIndex.__index = ImGuiPtrOrIndex
-function ImGuiPtrOrIndex.ImGuiPtrOrIndexPtr(ptr)
-    local ptr = lib.ImGuiPtrOrIndex_ImGuiPtrOrIndexPtr(ptr)
-    return ffi.gc(ptr,lib.ImGuiPtrOrIndex_destroy)
+function ImFontAtlas:AddFontFromFileTTF(filename,size_pixels,font_cfg,glyph_ranges)
+    glyph_ranges = glyph_ranges or nil
+    font_cfg = font_cfg or nil
+    return lib.ImFontAtlas_AddFontFromFileTTF(self,filename,size_pixels,font_cfg,glyph_ranges)
 end
-function ImGuiPtrOrIndex.ImGuiPtrOrIndexInt(index)
-    local ptr = lib.ImGuiPtrOrIndex_ImGuiPtrOrIndexInt(index)
-    return ffi.gc(ptr,lib.ImGuiPtrOrIndex_destroy)
+function ImFontAtlas:AddFontFromMemoryCompressedBase85TTF(compressed_font_data_base85,size_pixels,font_cfg,glyph_ranges)
+    glyph_ranges = glyph_ranges or nil
+    font_cfg = font_cfg or nil
+    return lib.ImFontAtlas_AddFontFromMemoryCompressedBase85TTF(self,compressed_font_data_base85,size_pixels,font_cfg,glyph_ranges)
 end
-function ImGuiPtrOrIndex.__new(ctype,a1) -- generic version
-    if ffi.istype('void*',a1) then return ImGuiPtrOrIndex.ImGuiPtrOrIndexPtr(a1) end
-    if (ffi.istype('int',a1) or type(a1)=='number') then return ImGuiPtrOrIndex.ImGuiPtrOrIndexInt(a1) end
-    print(ctype,a1)
-    error'ImGuiPtrOrIndex.__new could not find overloaded'
+function ImFontAtlas:AddFontFromMemoryCompressedTTF(compressed_font_data,compressed_font_size,size_pixels,font_cfg,glyph_ranges)
+    glyph_ranges = glyph_ranges or nil
+    font_cfg = font_cfg or nil
+    return lib.ImFontAtlas_AddFontFromMemoryCompressedTTF(self,compressed_font_data,compressed_font_size,size_pixels,font_cfg,glyph_ranges)
 end
-M.ImGuiPtrOrIndex = ffi.metatype("ImGuiPtrOrIndex",ImGuiPtrOrIndex)
+function ImFontAtlas:AddFontFromMemoryTTF(font_data,font_size,size_pixels,font_cfg,glyph_ranges)
+    glyph_ranges = glyph_ranges or nil
+    font_cfg = font_cfg or nil
+    return lib.ImFontAtlas_AddFontFromMemoryTTF(self,font_data,font_size,size_pixels,font_cfg,glyph_ranges)
+end
+ImFontAtlas.Build = lib.ImFontAtlas_Build
+ImFontAtlas.CalcCustomRectUV = lib.ImFontAtlas_CalcCustomRectUV
+ImFontAtlas.Clear = lib.ImFontAtlas_Clear
+ImFontAtlas.ClearFonts = lib.ImFontAtlas_ClearFonts
+ImFontAtlas.ClearInputData = lib.ImFontAtlas_ClearInputData
+ImFontAtlas.ClearTexData = lib.ImFontAtlas_ClearTexData
+ImFontAtlas.GetCustomRectByIndex = lib.ImFontAtlas_GetCustomRectByIndex
+ImFontAtlas.GetGlyphRangesChineseFull = lib.ImFontAtlas_GetGlyphRangesChineseFull
+ImFontAtlas.GetGlyphRangesChineseSimplifiedCommon = lib.ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon
+ImFontAtlas.GetGlyphRangesCyrillic = lib.ImFontAtlas_GetGlyphRangesCyrillic
+ImFontAtlas.GetGlyphRangesDefault = lib.ImFontAtlas_GetGlyphRangesDefault
+ImFontAtlas.GetGlyphRangesJapanese = lib.ImFontAtlas_GetGlyphRangesJapanese
+ImFontAtlas.GetGlyphRangesKorean = lib.ImFontAtlas_GetGlyphRangesKorean
+ImFontAtlas.GetGlyphRangesThai = lib.ImFontAtlas_GetGlyphRangesThai
+ImFontAtlas.GetGlyphRangesVietnamese = lib.ImFontAtlas_GetGlyphRangesVietnamese
+ImFontAtlas.GetMouseCursorTexData = lib.ImFontAtlas_GetMouseCursorTexData
+function ImFontAtlas:GetTexDataAsAlpha8(out_pixels,out_width,out_height,out_bytes_per_pixel)
+    out_bytes_per_pixel = out_bytes_per_pixel or nil
+    return lib.ImFontAtlas_GetTexDataAsAlpha8(self,out_pixels,out_width,out_height,out_bytes_per_pixel)
+end
+function ImFontAtlas:GetTexDataAsRGBA32(out_pixels,out_width,out_height,out_bytes_per_pixel)
+    out_bytes_per_pixel = out_bytes_per_pixel or nil
+    return lib.ImFontAtlas_GetTexDataAsRGBA32(self,out_pixels,out_width,out_height,out_bytes_per_pixel)
+end
+function ImFontAtlas.__new(ctype)
+    local ptr = lib.ImFontAtlas_ImFontAtlas()
+    return ffi.gc(ptr,lib.ImFontAtlas_destroy)
+end
+ImFontAtlas.IsBuilt = lib.ImFontAtlas_IsBuilt
+ImFontAtlas.SetTexID = lib.ImFontAtlas_SetTexID
+M.ImFontAtlas = ffi.metatype("ImFontAtlas",ImFontAtlas)
 --------------------------ImGuiTextBuffer----------------------------
 local ImGuiTextBuffer= {}
 ImGuiTextBuffer.__index = ImGuiTextBuffer
@@ -1380,46 +1361,35 @@ function ImVec1.__new(ctype,a1) -- generic version
     error'ImVec1.__new could not find overloaded'
 end
 M.ImVec1 = ffi.metatype("ImVec1",ImVec1)
---------------------------ImGuiStorage----------------------------
-local ImGuiStorage= {}
-ImGuiStorage.__index = ImGuiStorage
-ImGuiStorage.BuildSortByKey = lib.ImGuiStorage_BuildSortByKey
-ImGuiStorage.Clear = lib.ImGuiStorage_Clear
-function ImGuiStorage:GetBool(key,default_val)
-    default_val = default_val or false
-    return lib.ImGuiStorage_GetBool(self,key,default_val)
+--------------------------ImGuiTextRange----------------------------
+local ImGuiTextRange= {}
+ImGuiTextRange.__index = ImGuiTextRange
+function ImGuiTextRange.ImGuiTextRangeNil()
+    local ptr = lib.ImGuiTextRange_ImGuiTextRangeNil()
+    return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
 end
-function ImGuiStorage:GetBoolRef(key,default_val)
-    default_val = default_val or false
-    return lib.ImGuiStorage_GetBoolRef(self,key,default_val)
+function ImGuiTextRange.ImGuiTextRangeStr(_b,_e)
+    local ptr = lib.ImGuiTextRange_ImGuiTextRangeStr(_b,_e)
+    return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
 end
-function ImGuiStorage:GetFloat(key,default_val)
-    default_val = default_val or 0.0
-    return lib.ImGuiStorage_GetFloat(self,key,default_val)
+function ImGuiTextRange.__new(ctype,a1,a2) -- generic version
+    if a1==nil then return ImGuiTextRange.ImGuiTextRangeNil() end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') then return ImGuiTextRange.ImGuiTextRangeStr(a1,a2) end
+    print(ctype,a1,a2)
+    error'ImGuiTextRange.__new could not find overloaded'
 end
-function ImGuiStorage:GetFloatRef(key,default_val)
-    default_val = default_val or 0.0
-    return lib.ImGuiStorage_GetFloatRef(self,key,default_val)
+ImGuiTextRange.empty = lib.ImGuiTextRange_empty
+ImGuiTextRange.split = lib.ImGuiTextRange_split
+M.ImGuiTextRange = ffi.metatype("ImGuiTextRange",ImGuiTextRange)
+--------------------------ImGuiNextItemData----------------------------
+local ImGuiNextItemData= {}
+ImGuiNextItemData.__index = ImGuiNextItemData
+ImGuiNextItemData.ClearFlags = lib.ImGuiNextItemData_ClearFlags
+function ImGuiNextItemData.__new(ctype)
+    local ptr = lib.ImGuiNextItemData_ImGuiNextItemData()
+    return ffi.gc(ptr,lib.ImGuiNextItemData_destroy)
 end
-function ImGuiStorage:GetInt(key,default_val)
-    default_val = default_val or 0
-    return lib.ImGuiStorage_GetInt(self,key,default_val)
-end
-function ImGuiStorage:GetIntRef(key,default_val)
-    default_val = default_val or 0
-    return lib.ImGuiStorage_GetIntRef(self,key,default_val)
-end
-ImGuiStorage.GetVoidPtr = lib.ImGuiStorage_GetVoidPtr
-function ImGuiStorage:GetVoidPtrRef(key,default_val)
-    default_val = default_val or nil
-    return lib.ImGuiStorage_GetVoidPtrRef(self,key,default_val)
-end
-ImGuiStorage.SetAllInt = lib.ImGuiStorage_SetAllInt
-ImGuiStorage.SetBool = lib.ImGuiStorage_SetBool
-ImGuiStorage.SetFloat = lib.ImGuiStorage_SetFloat
-ImGuiStorage.SetInt = lib.ImGuiStorage_SetInt
-ImGuiStorage.SetVoidPtr = lib.ImGuiStorage_SetVoidPtr
-M.ImGuiStorage = ffi.metatype("ImGuiStorage",ImGuiStorage)
+M.ImGuiNextItemData = ffi.metatype("ImGuiNextItemData",ImGuiNextItemData)
 --------------------------ImDrawListSplitter----------------------------
 local ImDrawListSplitter= {}
 ImDrawListSplitter.__index = ImDrawListSplitter
@@ -1451,15 +1421,6 @@ function ImFontGlyphRangesBuilder.__new(ctype)
 end
 ImFontGlyphRangesBuilder.SetBit = lib.ImFontGlyphRangesBuilder_SetBit
 M.ImFontGlyphRangesBuilder = ffi.metatype("ImFontGlyphRangesBuilder",ImFontGlyphRangesBuilder)
---------------------------ImFontAtlasCustomRect----------------------------
-local ImFontAtlasCustomRect= {}
-ImFontAtlasCustomRect.__index = ImFontAtlasCustomRect
-function ImFontAtlasCustomRect.__new(ctype)
-    local ptr = lib.ImFontAtlasCustomRect_ImFontAtlasCustomRect()
-    return ffi.gc(ptr,lib.ImFontAtlasCustomRect_destroy)
-end
-ImFontAtlasCustomRect.IsPacked = lib.ImFontAtlasCustomRect_IsPacked
-M.ImFontAtlasCustomRect = ffi.metatype("ImFontAtlasCustomRect",ImFontAtlasCustomRect)
 --------------------------ImFont----------------------------
 local ImFont= {}
 ImFont.__index = ImFont
@@ -1548,15 +1509,15 @@ function ImGuiOnceUponAFrame.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiOnceUponAFrame_destroy)
 end
 M.ImGuiOnceUponAFrame = ffi.metatype("ImGuiOnceUponAFrame",ImGuiOnceUponAFrame)
---------------------------ImDrawListSharedData----------------------------
-local ImDrawListSharedData= {}
-ImDrawListSharedData.__index = ImDrawListSharedData
-function ImDrawListSharedData.__new(ctype)
-    local ptr = lib.ImDrawListSharedData_ImDrawListSharedData()
-    return ffi.gc(ptr,lib.ImDrawListSharedData_destroy)
+--------------------------ImFontAtlasCustomRect----------------------------
+local ImFontAtlasCustomRect= {}
+ImFontAtlasCustomRect.__index = ImFontAtlasCustomRect
+function ImFontAtlasCustomRect.__new(ctype)
+    local ptr = lib.ImFontAtlasCustomRect_ImFontAtlasCustomRect()
+    return ffi.gc(ptr,lib.ImFontAtlasCustomRect_destroy)
 end
-ImDrawListSharedData.SetCircleSegmentMaxError = lib.ImDrawListSharedData_SetCircleSegmentMaxError
-M.ImDrawListSharedData = ffi.metatype("ImDrawListSharedData",ImDrawListSharedData)
+ImFontAtlasCustomRect.IsPacked = lib.ImFontAtlasCustomRect_IsPacked
+M.ImFontAtlasCustomRect = ffi.metatype("ImFontAtlasCustomRect",ImFontAtlasCustomRect)
 --------------------------ImGuiPayload----------------------------
 local ImGuiPayload= {}
 ImGuiPayload.__index = ImGuiPayload
@@ -1577,16 +1538,24 @@ function ImDrawCmd.__new(ctype)
     return ffi.gc(ptr,lib.ImDrawCmd_destroy)
 end
 M.ImDrawCmd = ffi.metatype("ImDrawCmd",ImDrawCmd)
---------------------------ImGuiItemHoveredDataBackup----------------------------
-local ImGuiItemHoveredDataBackup= {}
-ImGuiItemHoveredDataBackup.__index = ImGuiItemHoveredDataBackup
-ImGuiItemHoveredDataBackup.Backup = lib.ImGuiItemHoveredDataBackup_Backup
-function ImGuiItemHoveredDataBackup.__new(ctype)
-    local ptr = lib.ImGuiItemHoveredDataBackup_ImGuiItemHoveredDataBackup()
-    return ffi.gc(ptr,lib.ImGuiItemHoveredDataBackup_destroy)
+--------------------------ImGuiPtrOrIndex----------------------------
+local ImGuiPtrOrIndex= {}
+ImGuiPtrOrIndex.__index = ImGuiPtrOrIndex
+function ImGuiPtrOrIndex.ImGuiPtrOrIndexPtr(ptr)
+    local ptr = lib.ImGuiPtrOrIndex_ImGuiPtrOrIndexPtr(ptr)
+    return ffi.gc(ptr,lib.ImGuiPtrOrIndex_destroy)
 end
-ImGuiItemHoveredDataBackup.Restore = lib.ImGuiItemHoveredDataBackup_Restore
-M.ImGuiItemHoveredDataBackup = ffi.metatype("ImGuiItemHoveredDataBackup",ImGuiItemHoveredDataBackup)
+function ImGuiPtrOrIndex.ImGuiPtrOrIndexInt(index)
+    local ptr = lib.ImGuiPtrOrIndex_ImGuiPtrOrIndexInt(index)
+    return ffi.gc(ptr,lib.ImGuiPtrOrIndex_destroy)
+end
+function ImGuiPtrOrIndex.__new(ctype,a1) -- generic version
+    if ffi.istype('void*',a1) then return ImGuiPtrOrIndex.ImGuiPtrOrIndexPtr(a1) end
+    if (ffi.istype('int',a1) or type(a1)=='number') then return ImGuiPtrOrIndex.ImGuiPtrOrIndexInt(a1) end
+    print(ctype,a1)
+    error'ImGuiPtrOrIndex.__new could not find overloaded'
+end
+M.ImGuiPtrOrIndex = ffi.metatype("ImGuiPtrOrIndex",ImGuiPtrOrIndex)
 --------------------------ImGuiTextFilter----------------------------
 local ImGuiTextFilter= {}
 ImGuiTextFilter.__index = ImGuiTextFilter
@@ -1608,15 +1577,46 @@ function ImGuiTextFilter:PassFilter(text,text_end)
     return lib.ImGuiTextFilter_PassFilter(self,text,text_end)
 end
 M.ImGuiTextFilter = ffi.metatype("ImGuiTextFilter",ImGuiTextFilter)
---------------------------ImGuiNextItemData----------------------------
-local ImGuiNextItemData= {}
-ImGuiNextItemData.__index = ImGuiNextItemData
-ImGuiNextItemData.ClearFlags = lib.ImGuiNextItemData_ClearFlags
-function ImGuiNextItemData.__new(ctype)
-    local ptr = lib.ImGuiNextItemData_ImGuiNextItemData()
-    return ffi.gc(ptr,lib.ImGuiNextItemData_destroy)
+--------------------------ImGuiStorage----------------------------
+local ImGuiStorage= {}
+ImGuiStorage.__index = ImGuiStorage
+ImGuiStorage.BuildSortByKey = lib.ImGuiStorage_BuildSortByKey
+ImGuiStorage.Clear = lib.ImGuiStorage_Clear
+function ImGuiStorage:GetBool(key,default_val)
+    default_val = default_val or false
+    return lib.ImGuiStorage_GetBool(self,key,default_val)
 end
-M.ImGuiNextItemData = ffi.metatype("ImGuiNextItemData",ImGuiNextItemData)
+function ImGuiStorage:GetBoolRef(key,default_val)
+    default_val = default_val or false
+    return lib.ImGuiStorage_GetBoolRef(self,key,default_val)
+end
+function ImGuiStorage:GetFloat(key,default_val)
+    default_val = default_val or 0.0
+    return lib.ImGuiStorage_GetFloat(self,key,default_val)
+end
+function ImGuiStorage:GetFloatRef(key,default_val)
+    default_val = default_val or 0.0
+    return lib.ImGuiStorage_GetFloatRef(self,key,default_val)
+end
+function ImGuiStorage:GetInt(key,default_val)
+    default_val = default_val or 0
+    return lib.ImGuiStorage_GetInt(self,key,default_val)
+end
+function ImGuiStorage:GetIntRef(key,default_val)
+    default_val = default_val or 0
+    return lib.ImGuiStorage_GetIntRef(self,key,default_val)
+end
+ImGuiStorage.GetVoidPtr = lib.ImGuiStorage_GetVoidPtr
+function ImGuiStorage:GetVoidPtrRef(key,default_val)
+    default_val = default_val or nil
+    return lib.ImGuiStorage_GetVoidPtrRef(self,key,default_val)
+end
+ImGuiStorage.SetAllInt = lib.ImGuiStorage_SetAllInt
+ImGuiStorage.SetBool = lib.ImGuiStorage_SetBool
+ImGuiStorage.SetFloat = lib.ImGuiStorage_SetFloat
+ImGuiStorage.SetInt = lib.ImGuiStorage_SetInt
+ImGuiStorage.SetVoidPtr = lib.ImGuiStorage_SetVoidPtr
+M.ImGuiStorage = ffi.metatype("ImGuiStorage",ImGuiStorage)
 --------------------------ImGuiViewportP----------------------------
 local ImGuiViewportP= {}
 ImGuiViewportP.__index = ImGuiViewportP
@@ -2419,96 +2419,101 @@ function M.DockSpaceOverViewport(viewport,flags,window_class)
     return lib.igDockSpaceOverViewport(viewport,flags,window_class)
 end
 M.DragBehavior = lib.igDragBehavior
-function M.DragFloat(label,v,v_speed,v_min,v_max,format,power)
+function M.DragFloat(label,v,v_speed,v_min,v_max,format,flags)
     v_max = v_max or 0.0
     format = format or "%.3f"
-    power = power or 1.0
+    flags = flags or 0
     v_speed = v_speed or 1.0
     v_min = v_min or 0.0
-    return lib.igDragFloat(label,v,v_speed,v_min,v_max,format,power)
+    return lib.igDragFloat(label,v,v_speed,v_min,v_max,format,flags)
 end
-function M.DragFloat2(label,v,v_speed,v_min,v_max,format,power)
+function M.DragFloat2(label,v,v_speed,v_min,v_max,format,flags)
     v_max = v_max or 0.0
     format = format or "%.3f"
-    power = power or 1.0
+    flags = flags or 0
     v_speed = v_speed or 1.0
     v_min = v_min or 0.0
-    return lib.igDragFloat2(label,v,v_speed,v_min,v_max,format,power)
+    return lib.igDragFloat2(label,v,v_speed,v_min,v_max,format,flags)
 end
-function M.DragFloat3(label,v,v_speed,v_min,v_max,format,power)
+function M.DragFloat3(label,v,v_speed,v_min,v_max,format,flags)
     v_max = v_max or 0.0
     format = format or "%.3f"
-    power = power or 1.0
+    flags = flags or 0
     v_speed = v_speed or 1.0
     v_min = v_min or 0.0
-    return lib.igDragFloat3(label,v,v_speed,v_min,v_max,format,power)
+    return lib.igDragFloat3(label,v,v_speed,v_min,v_max,format,flags)
 end
-function M.DragFloat4(label,v,v_speed,v_min,v_max,format,power)
+function M.DragFloat4(label,v,v_speed,v_min,v_max,format,flags)
     v_max = v_max or 0.0
     format = format or "%.3f"
-    power = power or 1.0
+    flags = flags or 0
     v_speed = v_speed or 1.0
     v_min = v_min or 0.0
-    return lib.igDragFloat4(label,v,v_speed,v_min,v_max,format,power)
+    return lib.igDragFloat4(label,v,v_speed,v_min,v_max,format,flags)
 end
-function M.DragFloatRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,format,format_max,power)
+function M.DragFloatRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,format,format_max,flags)
     format_max = format_max or nil
     format = format or "%.3f"
-    power = power or 1.0
+    flags = flags or 0
     v_speed = v_speed or 1.0
     v_min = v_min or 0.0
     v_max = v_max or 0.0
-    return lib.igDragFloatRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,format,format_max,power)
+    return lib.igDragFloatRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,format,format_max,flags)
 end
-function M.DragInt(label,v,v_speed,v_min,v_max,format)
+function M.DragInt(label,v,v_speed,v_min,v_max,format,flags)
     v_max = v_max or 0
     format = format or "%d"
+    flags = flags or 0
     v_speed = v_speed or 1.0
     v_min = v_min or 0
-    return lib.igDragInt(label,v,v_speed,v_min,v_max,format)
+    return lib.igDragInt(label,v,v_speed,v_min,v_max,format,flags)
 end
-function M.DragInt2(label,v,v_speed,v_min,v_max,format)
+function M.DragInt2(label,v,v_speed,v_min,v_max,format,flags)
     v_max = v_max or 0
     format = format or "%d"
+    flags = flags or 0
     v_speed = v_speed or 1.0
     v_min = v_min or 0
-    return lib.igDragInt2(label,v,v_speed,v_min,v_max,format)
+    return lib.igDragInt2(label,v,v_speed,v_min,v_max,format,flags)
 end
-function M.DragInt3(label,v,v_speed,v_min,v_max,format)
+function M.DragInt3(label,v,v_speed,v_min,v_max,format,flags)
     v_max = v_max or 0
     format = format or "%d"
+    flags = flags or 0
     v_speed = v_speed or 1.0
     v_min = v_min or 0
-    return lib.igDragInt3(label,v,v_speed,v_min,v_max,format)
+    return lib.igDragInt3(label,v,v_speed,v_min,v_max,format,flags)
 end
-function M.DragInt4(label,v,v_speed,v_min,v_max,format)
+function M.DragInt4(label,v,v_speed,v_min,v_max,format,flags)
     v_max = v_max or 0
     format = format or "%d"
+    flags = flags or 0
     v_speed = v_speed or 1.0
     v_min = v_min or 0
-    return lib.igDragInt4(label,v,v_speed,v_min,v_max,format)
+    return lib.igDragInt4(label,v,v_speed,v_min,v_max,format,flags)
 end
-function M.DragIntRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,format,format_max)
+function M.DragIntRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,format,format_max,flags)
     format_max = format_max or nil
     format = format or "%d"
+    flags = flags or 0
     v_speed = v_speed or 1.0
-    v_max = v_max or 0
     v_min = v_min or 0
-    return lib.igDragIntRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,format,format_max)
+    v_max = v_max or 0
+    return lib.igDragIntRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,format,format_max,flags)
 end
-function M.DragScalar(label,data_type,p_data,v_speed,p_min,p_max,format,power)
-    format = format or nil
+function M.DragScalar(label,data_type,p_data,v_speed,p_min,p_max,format,flags)
     p_max = p_max or nil
+    format = format or nil
     p_min = p_min or nil
-    power = power or 1.0
-    return lib.igDragScalar(label,data_type,p_data,v_speed,p_min,p_max,format,power)
+    flags = flags or 0
+    return lib.igDragScalar(label,data_type,p_data,v_speed,p_min,p_max,format,flags)
 end
-function M.DragScalarN(label,data_type,p_data,components,v_speed,p_min,p_max,format,power)
-    format = format or nil
+function M.DragScalarN(label,data_type,p_data,components,v_speed,p_min,p_max,format,flags)
     p_max = p_max or nil
+    format = format or nil
     p_min = p_min or nil
-    power = power or 1.0
-    return lib.igDragScalarN(label,data_type,p_data,components,v_speed,p_min,p_max,format,power)
+    flags = flags or 0
+    return lib.igDragScalarN(label,data_type,p_data,components,v_speed,p_min,p_max,format,flags)
 end
 M.Dummy = lib.igDummy
 M.End = lib.igEnd
@@ -2769,6 +2774,14 @@ function M.GetWindowSize()
 end
 M.GetWindowViewport = lib.igGetWindowViewport
 M.GetWindowWidth = lib.igGetWindowWidth
+M.ImAbsFloat = lib.igImAbsFloat
+M.ImAbsdouble = lib.igImAbsdouble
+function M.ImAbs(a1) -- generic version
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImAbsFloat(a1) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImAbsdouble(a1) end
+    print(a1)
+    error'M.ImAbs could not find overloaded'
+end
 M.ImAlphaBlendColors = lib.igImAlphaBlendColors
 function M.ImBezierCalc(p1,p2,p3,p4,t)
     local nonUDT_out = ffi.new("ImVec2")
@@ -2824,6 +2837,7 @@ M.ImFontAtlasBuildInit = lib.igImFontAtlasBuildInit
 M.ImFontAtlasBuildMultiplyCalcLookupTable = lib.igImFontAtlasBuildMultiplyCalcLookupTable
 M.ImFontAtlasBuildMultiplyRectAlpha8 = lib.igImFontAtlasBuildMultiplyRectAlpha8
 M.ImFontAtlasBuildPackCustomRects = lib.igImFontAtlasBuildPackCustomRects
+M.ImFontAtlasBuildRender1bppRectFromString = lib.igImFontAtlasBuildRender1bppRectFromString
 M.ImFontAtlasBuildSetupFont = lib.igImFontAtlasBuildSetupFont
 M.ImFontAtlasBuildWithStbTruetype = lib.igImFontAtlasBuildWithStbTruetype
 M.ImFormatString = lib.igImFormatString
@@ -2876,6 +2890,14 @@ function M.ImLineClosestPoint(a,b,p)
     return nonUDT_out
 end
 M.ImLinearSweep = lib.igImLinearSweep
+M.ImLogFloat = lib.igImLogFloat
+M.ImLogdouble = lib.igImLogdouble
+function M.ImLog(a1) -- generic version
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImLogFloat(a1) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImLogdouble(a1) end
+    print(a1)
+    error'M.ImLog could not find overloaded'
+end
 function M.ImMax(lhs,rhs)
     local nonUDT_out = ffi.new("ImVec2")
     lib.igImMax(nonUDT_out,lhs,rhs)
@@ -2910,6 +2932,14 @@ function M.ImRotate(v,cos_a,sin_a)
     return nonUDT_out
 end
 M.ImSaturate = lib.igImSaturate
+M.ImSignFloat = lib.igImSignFloat
+M.ImSigndouble = lib.igImSigndouble
+function M.ImSign(a1) -- generic version
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImSignFloat(a1) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImSigndouble(a1) end
+    print(a1)
+    error'M.ImSign could not find overloaded'
+end
 M.ImStrSkipBlank = lib.igImStrSkipBlank
 M.ImStrTrimBlanks = lib.igImStrTrimBlanks
 M.ImStrbolW = lib.igImStrbolW
@@ -3046,7 +3076,10 @@ function M.InputTextWithHint(label,hint,buf,buf_size,flags,callback,user_data)
     flags = flags or 0
     return lib.igInputTextWithHint(label,hint,buf,buf_size,flags,callback,user_data)
 end
-M.InvisibleButton = lib.igInvisibleButton
+function M.InvisibleButton(str_id,size,flags)
+    flags = flags or 0
+    return lib.igInvisibleButton(str_id,size,flags)
+end
 M.IsActiveIdUsingKey = lib.igIsActiveIdUsingKey
 M.IsActiveIdUsingNavDir = lib.igIsActiveIdUsingNavDir
 M.IsActiveIdUsingNavInput = lib.igIsActiveIdUsingNavInput
@@ -3509,6 +3542,7 @@ function M.SetKeyboardFocusHere(offset)
     offset = offset or 0
     return lib.igSetKeyboardFocusHere(offset)
 end
+M.SetLastItemData = lib.igSetLastItemData
 M.SetMouseCursor = lib.igSetMouseCursor
 M.SetNavID = lib.igSetNavID
 M.SetNavIDWithRectRel = lib.igSetNavIDWithRectRel
@@ -3694,58 +3728,63 @@ M.ShowUserGuide = lib.igShowUserGuide
 M.ShowViewportThumbnails = lib.igShowViewportThumbnails
 M.ShrinkWidths = lib.igShrinkWidths
 M.Shutdown = lib.igShutdown
-function M.SliderAngle(label,v_rad,v_degrees_min,v_degrees_max,format)
+function M.SliderAngle(label,v_rad,v_degrees_min,v_degrees_max,format,flags)
     v_degrees_min = v_degrees_min or -360.0
-    v_degrees_max = v_degrees_max or 360.0
     format = format or "%.0f deg"
-    return lib.igSliderAngle(label,v_rad,v_degrees_min,v_degrees_max,format)
+    v_degrees_max = v_degrees_max or 360.0
+    flags = flags or 0
+    return lib.igSliderAngle(label,v_rad,v_degrees_min,v_degrees_max,format,flags)
 end
 M.SliderBehavior = lib.igSliderBehavior
-function M.SliderFloat(label,v,v_min,v_max,format,power)
-    power = power or 1.0
+function M.SliderFloat(label,v,v_min,v_max,format,flags)
     format = format or "%.3f"
-    return lib.igSliderFloat(label,v,v_min,v_max,format,power)
+    flags = flags or 0
+    return lib.igSliderFloat(label,v,v_min,v_max,format,flags)
 end
-function M.SliderFloat2(label,v,v_min,v_max,format,power)
-    power = power or 1.0
+function M.SliderFloat2(label,v,v_min,v_max,format,flags)
     format = format or "%.3f"
-    return lib.igSliderFloat2(label,v,v_min,v_max,format,power)
+    flags = flags or 0
+    return lib.igSliderFloat2(label,v,v_min,v_max,format,flags)
 end
-function M.SliderFloat3(label,v,v_min,v_max,format,power)
-    power = power or 1.0
+function M.SliderFloat3(label,v,v_min,v_max,format,flags)
     format = format or "%.3f"
-    return lib.igSliderFloat3(label,v,v_min,v_max,format,power)
+    flags = flags or 0
+    return lib.igSliderFloat3(label,v,v_min,v_max,format,flags)
 end
-function M.SliderFloat4(label,v,v_min,v_max,format,power)
-    power = power or 1.0
+function M.SliderFloat4(label,v,v_min,v_max,format,flags)
     format = format or "%.3f"
-    return lib.igSliderFloat4(label,v,v_min,v_max,format,power)
+    flags = flags or 0
+    return lib.igSliderFloat4(label,v,v_min,v_max,format,flags)
 end
-function M.SliderInt(label,v,v_min,v_max,format)
+function M.SliderInt(label,v,v_min,v_max,format,flags)
     format = format or "%d"
-    return lib.igSliderInt(label,v,v_min,v_max,format)
+    flags = flags or 0
+    return lib.igSliderInt(label,v,v_min,v_max,format,flags)
 end
-function M.SliderInt2(label,v,v_min,v_max,format)
+function M.SliderInt2(label,v,v_min,v_max,format,flags)
     format = format or "%d"
-    return lib.igSliderInt2(label,v,v_min,v_max,format)
+    flags = flags or 0
+    return lib.igSliderInt2(label,v,v_min,v_max,format,flags)
 end
-function M.SliderInt3(label,v,v_min,v_max,format)
+function M.SliderInt3(label,v,v_min,v_max,format,flags)
     format = format or "%d"
-    return lib.igSliderInt3(label,v,v_min,v_max,format)
+    flags = flags or 0
+    return lib.igSliderInt3(label,v,v_min,v_max,format,flags)
 end
-function M.SliderInt4(label,v,v_min,v_max,format)
+function M.SliderInt4(label,v,v_min,v_max,format,flags)
     format = format or "%d"
-    return lib.igSliderInt4(label,v,v_min,v_max,format)
+    flags = flags or 0
+    return lib.igSliderInt4(label,v,v_min,v_max,format,flags)
 end
-function M.SliderScalar(label,data_type,p_data,p_min,p_max,format,power)
-    power = power or 1.0
+function M.SliderScalar(label,data_type,p_data,p_min,p_max,format,flags)
     format = format or nil
-    return lib.igSliderScalar(label,data_type,p_data,p_min,p_max,format,power)
+    flags = flags or 0
+    return lib.igSliderScalar(label,data_type,p_data,p_min,p_max,format,flags)
 end
-function M.SliderScalarN(label,data_type,p_data,components,p_min,p_max,format,power)
-    power = power or 1.0
+function M.SliderScalarN(label,data_type,p_data,components,p_min,p_max,format,flags)
     format = format or nil
-    return lib.igSliderScalarN(label,data_type,p_data,components,p_min,p_max,format,power)
+    flags = flags or 0
+    return lib.igSliderScalarN(label,data_type,p_data,components,p_min,p_max,format,flags)
 end
 M.SmallButton = lib.igSmallButton
 M.Spacing = lib.igSpacing
@@ -3876,19 +3915,20 @@ M.UpdateMouseMovingWindowEndFrame = lib.igUpdateMouseMovingWindowEndFrame
 M.UpdateMouseMovingWindowNewFrame = lib.igUpdateMouseMovingWindowNewFrame
 M.UpdatePlatformWindows = lib.igUpdatePlatformWindows
 M.UpdateWindowParentAndRootLinks = lib.igUpdateWindowParentAndRootLinks
-function M.VSliderFloat(label,size,v,v_min,v_max,format,power)
-    power = power or 1.0
+function M.VSliderFloat(label,size,v,v_min,v_max,format,flags)
     format = format or "%.3f"
-    return lib.igVSliderFloat(label,size,v,v_min,v_max,format,power)
+    flags = flags or 0
+    return lib.igVSliderFloat(label,size,v,v_min,v_max,format,flags)
 end
-function M.VSliderInt(label,size,v,v_min,v_max,format)
+function M.VSliderInt(label,size,v,v_min,v_max,format,flags)
     format = format or "%d"
-    return lib.igVSliderInt(label,size,v,v_min,v_max,format)
+    flags = flags or 0
+    return lib.igVSliderInt(label,size,v,v_min,v_max,format,flags)
 end
-function M.VSliderScalar(label,size,data_type,p_data,p_min,p_max,format,power)
-    power = power or 1.0
+function M.VSliderScalar(label,size,data_type,p_data,p_min,p_max,format,flags)
     format = format or nil
-    return lib.igVSliderScalar(label,size,data_type,p_data,p_min,p_max,format,power)
+    flags = flags or 0
+    return lib.igVSliderScalar(label,size,data_type,p_data,p_min,p_max,format,flags)
 end
 M.ValueBool = lib.igValueBool
 M.ValueInt = lib.igValueInt
