@@ -246,6 +246,7 @@ ffi.cdef[[
 typedef struct SDL_Window SDL_Window;
 SDL_Window *SDL_GL_GetCurrentWindow(void);
 void* SDL_GL_GetCurrentContext(void);
+int SDL_GL_MakeCurrent(SDL_Window* window,void* context);
 ]]
 local sdl = jit.os == "Windows" and ffi.load("SDL2") or ffi.C
 
@@ -287,7 +288,18 @@ ig.love_load = function(args)
         igio.ConfigFlags = igio.ConfigFlags + ig.lib.ImGuiConfigFlags_DockingEnable
 		end
         if args.use_imgui_viewport then
+            instance.use_imgui_viewport = true
             igio.ConfigFlags = igio.ConfigFlags + ig.lib.ImGuiConfigFlags_ViewportsEnable
+			local oldrender = instance.Render
+			instance.Render = function(self)
+				oldrender(self)
+				local igio = ig.GetIO()
+				if bit.band(igio.ConfigFlags , ig.lib.ImGuiConfigFlags_ViewportsEnable) ~= 0 then
+					ig.UpdatePlatformWindows();
+					ig.RenderPlatformWindowsDefault();
+					sdl.SDL_GL_MakeCurrent(sdlwindow,openglctx)
+				end
+			end
         end
     end
 	instance:Init(sdlwindow, openglctx)
