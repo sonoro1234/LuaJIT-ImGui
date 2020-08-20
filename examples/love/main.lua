@@ -2,7 +2,7 @@ local ig = require "imgui.love"
 
 local instance
 love.load = function(args)
-    instance = ig.love_load{use_imgui_docking=true}
+    instance = ig.love_load{use_imgui_docking = true, use_imgui_viewport = false}
 end
 
 love.textinput = function(text)
