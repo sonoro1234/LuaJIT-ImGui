@@ -262,11 +262,11 @@ local function MainDockSpace()
 end
 
 local function update_key(scancodestr, pressed)
-	--print("scancode",scancode)
-	local scancode = lovetoSDL[scancodestr]
-	if not (scancode >= 0 and scancode < 512) then
-		print("scancode",scancode)
-	end
+    --print("scancode",scancode)
+    local scancode = lovetoSDL[scancodestr]
+    if not (scancode >= 0 and scancode < 512) then
+        print("scancode",scancode)
+    end
     local io = ig.GetIO()
 
     io.KeysDown[scancode] = pressed
@@ -277,38 +277,38 @@ local function update_key(scancodestr, pressed)
 end
 
 ig.love_load = function(args)
-	local args = args or {}
-	local sdlwindow = sdl.SDL_GL_GetCurrentWindow()
-	local openglctx = sdl.SDL_GL_GetCurrentContext()
+    local args = args or {}
+    local sdlwindow = sdl.SDL_GL_GetCurrentWindow()
+    local openglctx = sdl.SDL_GL_GetCurrentContext()
     local instance = ig.Imgui_Impl_SDL_opengl3()
-	local igio = ig.GetIO()
+    local igio = ig.GetIO()
     igio.ConfigFlags = ig.lib.ImGuiConfigFlags_NavEnableKeyboard + igio.ConfigFlags
     if ig.has_imgui_viewport then
-		if args.use_imgui_docking then
+        if args.use_imgui_docking then
         igio.ConfigFlags = igio.ConfigFlags + ig.lib.ImGuiConfigFlags_DockingEnable
-		end
+        end
         if args.use_imgui_viewport then
             instance.use_imgui_viewport = true
             igio.ConfigFlags = igio.ConfigFlags + ig.lib.ImGuiConfigFlags_ViewportsEnable
-			local oldrender = instance.Render
-			instance.Render = function(self)
-				oldrender(self)
-				local igio = ig.GetIO()
-				if bit.band(igio.ConfigFlags , ig.lib.ImGuiConfigFlags_ViewportsEnable) ~= 0 then
-					ig.UpdatePlatformWindows();
-					ig.RenderPlatformWindowsDefault();
-					sdl.SDL_GL_MakeCurrent(sdlwindow,openglctx)
-				end
-			end
+            local oldrender = instance.Render
+            instance.Render = function(self)
+                oldrender(self)
+                local igio = ig.GetIO()
+                if bit.band(igio.ConfigFlags , ig.lib.ImGuiConfigFlags_ViewportsEnable) ~= 0 then
+                    ig.UpdatePlatformWindows();
+                    ig.RenderPlatformWindowsDefault();
+                    sdl.SDL_GL_MakeCurrent(sdlwindow,openglctx)
+                end
+            end
         end
     end
-	instance:Init(sdlwindow, openglctx)
-	instance.update_key = update_key
-	instance.MainDockSpace = MainDockSpace
-	instance.textinput = function(text)
-		ig.GetIO():AddInputCharactersUTF8(text)
-	end
-	return instance
+    instance:Init(sdlwindow, openglctx)
+    instance.update_key = update_key
+    instance.MainDockSpace = MainDockSpace
+    instance.textinput = function(text)
+        ig.GetIO():AddInputCharactersUTF8(text)
+    end
+    return instance
 end
 
 return ig
