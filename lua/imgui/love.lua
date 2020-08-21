@@ -308,6 +308,19 @@ ig.love_load = function(args)
     instance.textinput = function(text)
         ig.GetIO():AddInputCharactersUTF8(text)
     end
+    instance.wheelmoved = function(x,y)
+        local ioig = ig.GetIO()
+        if x > 0 then
+            ioig.MouseWheelH = ioig.MouseWheelH + 1
+        elseif x < 0 then
+            ioig.MouseWheelH = ioig.MouseWheelH - 1
+        end
+        if y > 0 then
+            ioig.MouseWheel = ioig.MouseWheel + 1
+        elseif y < 0 then
+            ioig.MouseWheel = ioig.MouseWheel - 1
+        end
+    end
     return instance
 end
 
