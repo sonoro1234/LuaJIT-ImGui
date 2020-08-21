@@ -17,6 +17,10 @@ love.keyreleased = function(key,scancode)
     instance.update_key(scancode, false)
 end
 
+love.wheelmoved = function(x,y)
+    instance.wheelmoved(x,y)
+end
+
 local ffi = require"ffi"
 local val = ffi.new("float[1]")
 local padval = ffi.new("float[2]")
