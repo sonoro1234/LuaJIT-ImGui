@@ -61,11 +61,14 @@ for k,enu in pairs(standenu.enums) do
 	end
 end
 --load function definitions
-local dir = [[../cimgui/generator/output/]]
-local fundefs = dofile(dir..[[definitions.lua]])
+local fundefs = dofile([[../cimgui/generator/output/definitions.lua]])
 local fundefspl = dofile([[../cimplot/generator/output/definitions.lua]])
+local fundefszmo = dofile([[../cimguizmo/generator/output/definitions.lua]])
 --merge funcdefs and fundefspl
 for fun,defs in pairs(fundefspl) do
+	fundefs[fun] = defs
+end
+for fun,defs in pairs(fundefszmo) do
 	fundefs[fun] = defs
 end
 --group them by structs
@@ -80,8 +83,6 @@ structs.ImVec4 = nil
 structs.ImVector = nil
 structs.ImChunkStream = nil
 structs.ImPool = nil
-
-
 
 --[[ tests
 require"anima.utils" --gives us prtable

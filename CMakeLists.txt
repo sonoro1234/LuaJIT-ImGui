@@ -6,10 +6,21 @@ endif(WIN32)
 #general settings
 include_directories(cimgui/imgui)
 include_directories(cimplot/implot)
+include_directories(cimguizmo/ImGuizmo)
 add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
-#set(IMGUI_SOURCES ./cimgui/cimgui.cpp ./cimgui/imgui/imgui.cpp ./cimgui/imgui/imgui_draw.cpp ./cimgui/imgui/imgui_demo.cpp)
+
 include_directories(cimgui)
-set(IMGUI_SOURCES ./cimgui/cimgui.cpp ./cimgui/imgui/imgui.cpp ./cimgui/imgui/imgui_draw.cpp ./cimgui/imgui/imgui_demo.cpp ./cimgui/imgui/imgui_widgets.cpp ./cimplot/cimplot.cpp ./cimplot/implot/implot.cpp ./cimplot/implot/implot_demo.cpp)
+set(IMGUI_SOURCES ./cimgui/cimgui.cpp 
+./cimgui/imgui/imgui.cpp 
+./cimgui/imgui/imgui_draw.cpp 
+./cimgui/imgui/imgui_demo.cpp 
+./cimgui/imgui/imgui_widgets.cpp 
+./cimplot/cimplot.cpp 
+./cimplot/implot/implot.cpp 
+./cimplot/implot/implot_demo.cpp
+./cimguizmo/cimguizmo.cpp
+./cimguizmo/ImGuizmo/ImGuizmo.cpp
+)
 
 set(IMGUI_SOURCES_glfw)
 set(IMGUI_SOURCES_sdl)
@@ -56,8 +67,8 @@ if(IMPL_EXTRAS)
     list(APPEND IMGUI_SOURCES ./extras/knob.cpp  ./extras/curve.cpp)
 	include_directories(extras/imGuIZMO.quat/imGuIZMO.quat/)
 	list(APPEND IMGUI_SOURCES ./extras/imGuIZMO.quat/imGuIZMO.quat/imGuIZMOquat.cpp  ./extras/imGuIZMO.quat.cpp)
-	include_directories(extras/ImGuizmo/)
-	list(APPEND IMGUI_SOURCES ./extras/ImGuizmo/ImGuizmo.cpp ./extras/imGuizmo.cpp)
+	#include_directories(extras/ImGuizmo/)
+	#list(APPEND IMGUI_SOURCES ./extras/ImGuizmo/ImGuizmo.cpp ./extras/imGuizmo.cpp)
 endif(IMPL_EXTRAS)
 
 if(IMPL_GLFW)

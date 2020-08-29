@@ -26,13 +26,13 @@ function win:draw(ig)
 		ig.RadioButton("world", zmoMODE, imgui.WORLD);
 	end
 	ig.End()
-	ig.zmoBeginFrame()
-	ig.zmoSetRect(0,0,800,600)
-	ig.zmoSetOrthographic(false)
-	ig.zmoDrawGrid(MVmo,MPmo,Mident,10)
-	ig.zmoViewManipulate(MVmo,7,ig.ImVec2(0,0),ig.ImVec2(128,128),0x01010101)
-	ig.zmoDrawCubes(MVmo,MPmo,MOmo,1)
-	ig.zmoManipulate(MVmo,MPmo,zmoOP[0],zmoMODE[0],MOmo,nil,nil,zmoOP[0]==imgui.BOUNDS and zmobounds or nil,nil)
+	ig.ImGuizmo_BeginFrame()
+	ig.ImGuizmo_SetRect(0,0,800,600)
+	ig.ImGuizmo_SetOrthographic(false)
+	ig.ImGuizmo_DrawGrid(MVmo,MPmo,Mident,10)
+	ig.ImGuizmo_ViewManipulate(MVmo,7,ig.ImVec2(0,0),ig.ImVec2(128,128),0x01010101)
+	ig.ImGuizmo_DrawCubes(MVmo,MPmo,MOmo,1)
+	ig.ImGuizmo_Manipulate(MVmo,MPmo,zmoOP[0],zmoMODE[0],MOmo,nil,nil,zmoOP[0]==imgui.BOUNDS and zmobounds or nil,nil)
 end
 
 win:start()
