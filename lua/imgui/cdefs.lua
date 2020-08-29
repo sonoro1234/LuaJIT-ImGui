@@ -2933,6 +2933,31 @@ void ImPlot_ShowColormapScale(double scale_min,double scale_max,float height);
 void ImPlot_PushPlotClipRect(void);
 void ImPlot_PopPlotClipRect(void);
 void ImPlot_ShowDemoWindow(                                     _Bool                                         * p_open);
+typedef enum {
+  TRANSLATE,
+  ROTATE,
+  SCALE,
+  BOUNDS,
+ }OPERATION;
+typedef enum {
+  LOCAL,
+  WORLD
+ }MODE;
+void ImGuizmo_SetDrawlist(void);
+void ImGuizmo_BeginFrame(void);
+_Bool                ImGuizmo_IsOverNil(void);
+_Bool                ImGuizmo_IsUsing(void);
+void ImGuizmo_Enable(                               _Bool                                     enable);
+void ImGuizmo_DecomposeMatrixToComponents(const float* matrix,float* translation,float* rotation,float* scale);
+void ImGuizmo_RecomposeMatrixFromComponents(const float* translation,const float* rotation,const float* scale,float* matrix);
+void ImGuizmo_SetRect(float x,float y,float width,float height);
+void ImGuizmo_SetOrthographic(                                        _Bool                                              isOrthographic);
+void ImGuizmo_DrawCubes(const float* view,const float* projection,const float* matrices,int matrixCount);
+void ImGuizmo_DrawGrid(const float* view,const float* projection,const float* matrix,const float gridSize);
+void ImGuizmo_Manipulate(const float* view,const float* projection,OPERATION operation,MODE mode,float* matrix,float* deltaMatrix,float* snap,float* localBounds,float* boundsSnap);
+void ImGuizmo_ViewManipulate(float* view,float length,ImVec2 position,ImVec2 size,ImU32 backgroundColor);
+void ImGuizmo_SetID(int id);
+_Bool                ImGuizmo_IsOverOPERATION(OPERATION op);
 typedef struct SDL_Window SDL_Window;
 typedef struct GLFWwindow GLFWwindow;
 struct GLFWwindow;struct SDL_Window;
@@ -3061,32 +3086,6 @@ typedef enum      {                            //0b0000'0000, //C++14 notation
                 axesModeMask       = 0xf0  //0b1111'0000
     } gizmo_modes;
 
-
-//ImGuizmo
-typedef enum {
-	TRANSLATE,
-	ROTATE,
-	SCALE,
-	BOUNDS,
-}OPERATION;
-
-typedef	enum {
-	LOCAL,
-	WORLD
-}MODE;
-
-void igzmoSetDrawlist();
-void igzmoBeginFrame();
-bool igzmoIsOver();
-bool igzmoIsUsing();
-void igzmoEnable(bool enable);
-void igzmoSetOrthographic(bool isOrthographic);
-void igzmoSetRect(float x, float y, float width, float height);
-void igzmoDrawCubes(const float *view, const float *projection, const float *matrix, int count);
-void igzmoDrawGrid(const float *view, const float *projection, const float *matrix , const float gridSize);
-void igzmoManipulate(float cameraView[16], float cameraProjection[16],OPERATION operation, MODE mode, float objectMatrix[16],float deltaMatrix[16] , float snap[1] , float localBounds[6] , float boundsSnap[3] );
-void igzmoViewManipulate(float cameraView[16], float camDistance, ImVec2 pos, ImVec2 size, ImU32 backgroundColor);
-void igzmoSetID(int id);
 
 //Log
 typedef struct Log Log;
