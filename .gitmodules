@@ -1,12 +1,13 @@
 [submodule "cimgui"]
 	path = cimgui
 	url = https://github.com/cimgui/cimgui.git
+	branch = docking_inter
 [submodule "cimplot"]
 	path = cimplot
 	url = https://github.com/cimgui/cimplot.git
-[submodule "ImGuizmo"]
-	path = extras/ImGuizmo
-	url = https://github.com/CedricGuillemet/ImGuizmo
+[submodule "cimguizmo"]
+	path = cimguizmo
+	url = https://github.com/cimgui/cimguizmo.git
 [submodule "imGuIZMO.quat"]
 	path = extras/imGuIZMO.quat
 	url = https://github.com/BrutPitt/imGuIZMO.quat
