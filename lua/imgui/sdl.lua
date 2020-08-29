@@ -299,22 +299,6 @@ M.Log = ffi.metatype("Log",Log)
 ------------convenience function
 function M.U32(a,b,c,d) return lib.igGetColorU32Vec4(ImVec4(a,b,c,d or 1)) end
 
----------------ImGuizmo
-function M.zmoManipulate(view, projection, operation, mode, objectMatrix, deltaMatrix, snap, localBounds, boundsSnap)
-	lib.igzmoManipulate(view, projection, operation, mode, objectMatrix, deltaMatrix or nil, snap or nil ,localBounds or nil , boundsSnap or nil )
-end
-M.zmoSetDrawlist = lib.igzmoSetDrawlist
-M.zmoBeginFrame = lib.igzmoBeginFrame
-M.zmoIsOver = lib.igzmoIsOver
-M.zmoIsUsing = lib.igzmoIsUsing
-M.zmoEnable = lib.igzmoEnable
-M.zmoSetOrthographic = lib.igzmoSetOrthographic
-M.zmoSetRect = lib.igzmoSetRect
-M.zmoDrawCubes = lib.igzmoDrawCubes
-M.zmoDrawGrid = lib.igzmoDrawGrid
-M.zmoViewManipulate = lib.igzmoViewManipulate
-M.zmoSetID = lib.igzmoSetID
-
 -------------ImGuiZMO.quat
 M.setDirectionColor = lib.setDirectionColor
 M.restoreDirectionColor = lib.restoreDirectionColor
@@ -1637,6 +1621,33 @@ function ImGuiViewportP.__new(ctype)
 end
 M.ImGuiViewportP = ffi.metatype("ImGuiViewportP",ImGuiViewportP)
 ------------------------------------------------------
+M.ImGuizmo_BeginFrame = lib.ImGuizmo_BeginFrame
+M.ImGuizmo_DecomposeMatrixToComponents = lib.ImGuizmo_DecomposeMatrixToComponents
+M.ImGuizmo_DrawCubes = lib.ImGuizmo_DrawCubes
+M.ImGuizmo_DrawGrid = lib.ImGuizmo_DrawGrid
+M.ImGuizmo_Enable = lib.ImGuizmo_Enable
+M.ImGuizmo_IsOverNil = lib.ImGuizmo_IsOverNil
+M.ImGuizmo_IsOverOPERATION = lib.ImGuizmo_IsOverOPERATION
+function M.ImGuizmo_IsOver(a1) -- generic version
+    if a1==nil then return M.ImGuizmo_IsOverNil() end
+    if ffi.istype('OPERATION',a1) then return M.ImGuizmo_IsOverOPERATION(a1) end
+    print(a1)
+    error'M.ImGuizmo_IsOver could not find overloaded'
+end
+M.ImGuizmo_IsUsing = lib.ImGuizmo_IsUsing
+function M.ImGuizmo_Manipulate(view,projection,operation,mode,matrix,deltaMatrix,snap,localBounds,boundsSnap)
+    snap = snap or NULL
+    deltaMatrix = deltaMatrix or NULL
+    localBounds = localBounds or NULL
+    boundsSnap = boundsSnap or NULL
+    return lib.ImGuizmo_Manipulate(view,projection,operation,mode,matrix,deltaMatrix,snap,localBounds,boundsSnap)
+end
+M.ImGuizmo_RecomposeMatrixFromComponents = lib.ImGuizmo_RecomposeMatrixFromComponents
+M.ImGuizmo_SetDrawlist = lib.ImGuizmo_SetDrawlist
+M.ImGuizmo_SetID = lib.ImGuizmo_SetID
+M.ImGuizmo_SetOrthographic = lib.ImGuizmo_SetOrthographic
+M.ImGuizmo_SetRect = lib.ImGuizmo_SetRect
+M.ImGuizmo_ViewManipulate = lib.ImGuizmo_ViewManipulate
 function M.ImPlot_BeginPlot(title_id,x_label,y_label,size,flags,x_flags,y_flags,y2_flags,y3_flags)
     x_flags = x_flags or 7
     y_label = y_label or nil
