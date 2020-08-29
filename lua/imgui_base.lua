@@ -298,22 +298,6 @@ M.Log = ffi.metatype("Log",Log)
 ------------convenience function
 function M.U32(a,b,c,d) return lib.igGetColorU32Vec4(ImVec4(a,b,c,d or 1)) end
 
----------------ImGuizmo
-function M.zmoManipulate(view, projection, operation, mode, objectMatrix, deltaMatrix, snap, localBounds, boundsSnap)
-	lib.igzmoManipulate(view, projection, operation, mode, objectMatrix, deltaMatrix or nil, snap or nil ,localBounds or nil , boundsSnap or nil )
-end
-M.zmoSetDrawlist = lib.igzmoSetDrawlist
-M.zmoBeginFrame = lib.igzmoBeginFrame
-M.zmoIsOver = lib.igzmoIsOver
-M.zmoIsUsing = lib.igzmoIsUsing
-M.zmoEnable = lib.igzmoEnable
-M.zmoSetOrthographic = lib.igzmoSetOrthographic
-M.zmoSetRect = lib.igzmoSetRect
-M.zmoDrawCubes = lib.igzmoDrawCubes
-M.zmoDrawGrid = lib.igzmoDrawGrid
-M.zmoViewManipulate = lib.igzmoViewManipulate
-M.zmoSetID = lib.igzmoSetID
-
 -------------ImGuiZMO.quat
 M.setDirectionColor = lib.setDirectionColor
 M.restoreDirectionColor = lib.restoreDirectionColor
