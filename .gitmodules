@@ -8,6 +8,6 @@
 [submodule "cimguizmo"]
 	path = cimguizmo
 	url = https://github.com/cimgui/cimguizmo.git
-[submodule "imGuIZMO.quat"]
-	path = extras/imGuIZMO.quat
-	url = https://github.com/BrutPitt/imGuIZMO.quat
+[submodule "cimguizmo_quat"]
+	path = cimguizmo_quat
+	url = https://github.com/cimgui/cimguizmo_quat.git
