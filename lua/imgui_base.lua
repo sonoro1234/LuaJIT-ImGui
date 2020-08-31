@@ -323,6 +323,14 @@ M.Guizmo3Dquatquat = lib.ImGuizmo3Dquatquat
 M.Guizmo3Dquatvec4 = lib.ImGuizmo3Dquatvec4
 M.Guizmo3Dquatvec3 = lib.ImGuizmo3Dquatvec3
 
+M.Guizmo3DPan = lib.ImGuizmo3DPan
+M.Guizmo3DPanquat = lib.ImGuizmo3DPanquat
+M.Guizmo3DPanvec4 = lib.ImGuizmo3DPanvec4
+M.Guizmo3DPanvec3 = lib.ImGuizmo3DPanvec3
+M.Guizmo3DPanquatquat = lib.ImGuizmo3DPanquatquat
+M.Guizmo3DPanquatvec4 = lib.ImGuizmo3DPanquatvec4
+M.Guizmo3DPanquatvec3 = lib.ImGuizmo3DPanquatvec3
+
 --------------- several widgets------------
 local sin, cos, atan2, pi, max, min,acos,sqrt = math.sin, math.cos, math.atan2, math.pi, math.max, math.min,math.acos,math.sqrt
 function M.dial(label,value_p,sz, fac)
