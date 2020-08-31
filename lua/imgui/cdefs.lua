@@ -2965,10 +2965,6 @@ typedef struct{
  union {
   float f[16];
         Vec4 v[4];
-        struct { float m00, m01, m02, m03,
-                        m10, m11, m12, m13,
-                        m20, m21, m22, m23,
-                        m30, m31, m32, m33; };
     };
 }Mat4;
 typedef struct{
@@ -2989,10 +2985,22 @@ typedef enum {
     } gizmo_modes;
 void resizeAxesOf(float sx,float sy, float sz);
 void restoreAxesSize();
+void resizeSolidOf(float sx);
+void restoreSolidSize();
 void setDirectionColor(const ImVec4 color);
 void restoreDirectionColor();
+void setSphereColors(const ImVec4 a,const ImVec4 b);
+void restoreSphereColors();
+void setGizmoFeelingRot(float f);
+float getGizmoFeelingRot();
+void setDollyScale(float f);
+float getDollyScale();
+void setPanScale(float f);
+float getPanScale();
 void mat4_cast( quat *q,Mat4* mat);
+void mat4_pos_cast( quat *q, float pos[3], Mat4* mat);
 void quat_cast(float f[16], quat *qq);
+void quat_pos_cast(float f[16], quat *qq, float pos[3]);
 _Bool                ImGuizmo3D(const char* label, quat *q, float size, const int mode);
 _Bool                ImGuizmo3Dquat(const char* label, float q[4], float size, const int mode);
 _Bool                ImGuizmo3Dvec4(const char* label, float a[4], float size, const int mode);
