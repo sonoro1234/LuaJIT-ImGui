@@ -300,20 +300,42 @@ M.Log = ffi.metatype("Log",Log)
 function M.U32(a,b,c,d) return lib.igGetColorU32Vec4(ImVec4(a,b,c,d or 1)) end
 
 -------------ImGuiZMO.quat
-M.setDirectionColor = lib.setDirectionColor
-M.restoreDirectionColor = lib.restoreDirectionColor
+
 M.resizeAxesOf = lib.resizeAxesOf
 M.restoreAxesSize = lib.restoreAxesSize
+M.resizeSolidOf = lib.resizeSolidOf
+M.restoreSolidSize = lib.restoreSolidSize
+M.setDirectionColor = lib.setDirectionColor
+M.restoreDirectionColor = lib.restoreDirectionColor
+M.setSphereColors = lib.setSphereColors
+M.restoreSphereColors = lib.restoreSphereColors
+M.setGizmoFeelingRot = lib.setGizmoFeelingRot
+M.getGizmoFeelingRot = lib.getGizmoFeelingRot
+M.setDollyScale = lib.setDollyScale
+M.getDollyScale = lib.getDollyScale
+M.setPanScale = lib.setPanScale
+M.getPanScale = lib.getPanScale
 
 function M.mat4_cast(q)
 	local nonUDT_out = ffi.new("Mat4")
 	lib.mat4_cast(q,nonUDT_out)
 	return nonUDT_out
 end
+function M.mat4_pos_cast(q,pos)
+	local nonUDT_out = ffi.new("Mat4")
+	lib.mat4_pos_cast(q,pos,nonUDT_out)
+	return nonUDT_out
+end
 function M.quat_cast(f)
 	local nonUDT_out = ffi.new("quat")
 	lib.quat_cast(f,nonUDT_out)
 	return nonUDT_out
+end
+function M.quat_pos_cast(f)
+	local nonUDT_out = ffi.new("quat")
+	local nonUDT_pos = ffi.new("float[3]")
+	lib.quat_pos_cast(f,nonUDT_out,nonUDT_pos)
+	return nonUDT_out,nonUDT_pos
 end
 
 M.Guizmo3D = lib.ImGuizmo3D
