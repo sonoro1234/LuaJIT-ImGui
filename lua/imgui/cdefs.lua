@@ -2958,6 +2958,55 @@ void ImGuizmo_Manipulate(const float* view,const float* projection,OPERATION ope
 void ImGuizmo_ViewManipulate(float* view,float length,ImVec2 position,ImVec2 size,ImU32 backgroundColor);
 void ImGuizmo_SetID(int id);
 _Bool                ImGuizmo_IsOverOPERATION(OPERATION op);
+typedef struct{
+ float x,y,z,w;
+}Vec4;
+typedef struct{
+ union {
+  float f[16];
+        Vec4 v[4];
+        struct { float m00, m01, m02, m03,
+                        m10, m11, m12, m13,
+                        m20, m21, m22, m23,
+                        m30, m31, m32, m33; };
+    };
+}Mat4;
+typedef struct{
+ float x,y,z,w;
+}quat;
+typedef enum {
+                mode3Axes = 0x0001,
+                modeDirection = 0x0002,
+                modeDirPlane = 0x0004,
+                modeDual = 0x0008,
+                modePanDolly = 0x0010,
+                modeMask = 0x00ff,
+                cubeAtOrigin = 0x0100,
+                sphereAtOrigin = 0x0200,
+                noSolidAtOrigin = 0x0400,
+                modeFullAxes = 0x0800,
+                axesModeMask = 0xff00
+    } gizmo_modes;
+void resizeAxesOf(float sx,float sy, float sz);
+void restoreAxesSize();
+void setDirectionColor(const ImVec4 color);
+void restoreDirectionColor();
+void mat4_cast( quat *q,Mat4* mat);
+void quat_cast(float f[16], quat *qq);
+_Bool                ImGuizmo3D(const char* label, quat *q, float size, const int mode);
+_Bool                ImGuizmo3Dquat(const char* label, float q[4], float size, const int mode);
+_Bool                ImGuizmo3Dvec4(const char* label, float a[4], float size, const int mode);
+_Bool                ImGuizmo3Dvec3(const char*label ,float v[3],float size,const int mode);
+_Bool                ImGuizmo3Dquatquat(const char*label,float q1[4],float q2[4],float size,const int mode);
+_Bool                ImGuizmo3Dquatvec4(const char* label,float q[4],float a[4],float size,const int mode);
+_Bool                ImGuizmo3Dquatvec3(const char* label, float q[4], float v[3],float size,const int mode);
+_Bool                ImGuizmo3DPan(const char* label, float pa[3], quat *q, float size, const int mode);
+_Bool                ImGuizmo3DPanquat(const char* label, float pa[3], float q[4], float size, const int mode);
+_Bool                ImGuizmo3DPanvec4(const char* label, float pa[3], float a[4], float size, const int mode);
+_Bool                ImGuizmo3DPanvec3(const char*label, float pa[3] ,float v[3],float size,const int mode);
+_Bool                ImGuizmo3DPanquatquat(const char*label, float pa[3],float q1[4],float q2[4],float size,const int mode);
+_Bool                ImGuizmo3DPanquatvec4(const char* label, float pa[3],float q[4],float a[4],float size,const int mode);
+_Bool                ImGuizmo3DPanquatvec3(const char* label, float pa[3], float q[4], float v[3],float size,const int mode);
 typedef struct SDL_Window SDL_Window;
 typedef struct GLFWwindow GLFWwindow;
 struct GLFWwindow;struct SDL_Window;
@@ -3041,50 +3090,6 @@ int Bezier( const char *label, float P[4] );
 bool Curve(const char *label, const struct ImVec2& size, struct ImVec2 *points, const int maxpoints, float *data, int datalen,bool pressed_on_modified);
 void CurveGetData(struct ImVec2 *points, const int maxpoints, float *data, int datalen);
 
-//ImGuiZMO.quat
-typedef struct{
-	float x,y,z,w;
-}Vec4;
-typedef struct{
-	union {
-		float f[16];
-        Vec4 v[4];
-        struct {      float m00, m01, m02, m03,
-                        m10, m11, m12, m13,
-                        m20, m21, m22, m23,
-                        m30, m31, m32, m33; };
-    };
-}Mat4;
-typedef struct{
-	float x,y,z,w;
-}quat;
-void setDirectionColor(const ImVec4 color);
-void restoreDirectionColor();
-void resizeAxesOf(float sx,float sy, float sz);
-void restoreAxesSize();
-void mat4_cast( quat *q, Mat4 *m);
-void quat_cast(float f[16], quat *q);
-bool ImGuizmo3D(const char* label, quat *q, float size, const int mode);
-bool ImGuizmo3Dquat(const char* label, float q[4], float size, const int mode);
-bool ImGuizmo3Dvec4(const char* label, float a[4], float size, const int mode);
-bool ImGuizmo3Dvec3(const char*label ,float v[3],float size,const int mode);
-bool ImGuizmo3Dquatquat(const char*label,float q1[4],float q2[4],float size,const int mode);
-bool ImGuizmo3Dquatvec4(const char* label,float q[4],float a[4],float size,const int mode);
-bool ImGuizmo3Dquatvec3(const char* label, float q[4], float v[3],float size,const int mode);
-typedef enum      {                            //0b0000'0000, //C++14 notation
-                mode3Axes          = 0x01, //0b0000'0001, 
-                modeDirection      = 0x02, //0b0000'0010,
-                modeDirPlane       = 0x04, //0b0000'0010,
-                modeDual           = 0x08, //0b0000'1000,
-                modeMask           = 0x0f, //0b0000'1111,
-                
-
-                cubeAtOrigin       = 0x10, //0b0000'0000, 
-                sphereAtOrigin     = 0x20, //0b0001'0000,
-                noSolidAtOrigin    = 0x40, //0b0010'0000,
-                modeFullAxes       = 0x80,
-                axesModeMask       = 0xf0  //0b1111'0000
-    } gizmo_modes;
 
 
 //Log
