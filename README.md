@@ -8,6 +8,17 @@ Uses cimgui to be the most "up to date" as possible.
 Notes:
 * currently this wrapper is based on version [1.78 docking of imgui]
 
+# cloning
+
+Remember to do a recursive cloning of the repo to pull submodules also.
+
+    git clone --recurse-submodules https://github.com/sonoro1234/LuaJIT-ImGui.git
+
+If already cloned and updating do from this repo folder:
+
+    git submodule update --init --recursive
+
+
 # compiling
 
 * linux cimgui_sdl (for love2d for example) needs: <code>sudo apt install libsdl2-dev</code>
