@@ -42,7 +42,7 @@ local function startGLFW(W)
         
         window:swapBuffers()                    
     end
-    
+    if W.args.use_implot then W.ig.ImPlot_DestroyContext() end
     W.ig_impl:destroy()
     window:destroy()
     W.lj_glfw.terminate()
@@ -50,7 +50,7 @@ end
 
 function M:GLFW(w,h,title,args)
     args = args or {}
-    local W = {}
+    local W = {args = args}
     local ffi = require "ffi"
     W.lj_glfw = require"glfw"
     W.gllib = require"gl"
@@ -82,6 +82,8 @@ function M:GLFW(w,h,title,args)
     
     W.ig_impl:Init(window, true)
 
+    if args.use_implot then W.ig.ImPlot_CreateContext() end
+    
     W.window = window
     W.start = startGLFW
     return W
@@ -136,6 +138,7 @@ local function startSDL(W)
     end
     
     -- Cleanup
+    if W.args.use_implot then W.ig.ImPlot_DestroyContext() end
     W.ig_Impl:destroy()
 
     sdl.gL_DeleteContext(gl_context);
@@ -144,7 +147,7 @@ local function startSDL(W)
 end
 function M:SDL(w,h,title,args)
     args = args or {}
-    local W = {}
+    local W = {args = args}
     local ffi = require "ffi"
     W.sdl = require"sdl2_ffi"
     local sdl = W.sdl
@@ -187,6 +190,7 @@ function M:SDL(w,h,title,args)
     
     W.ig_Impl:Init(window, W.gl_context)
 
+    if args.use_implot then W.ig.ImPlot_CreateContext() end
     W.window = window
     W.start = startSDL
     return W

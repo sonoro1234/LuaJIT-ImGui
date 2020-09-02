@@ -1,6 +1,7 @@
 local igwin = require"imgui.window"
---local win = igwin:SDL(800,400, "widgets",{vsync=true})
-local win = igwin:GLFW(800,400, "widgets",{vsync=true})
+
+--local win = igwin:SDL(800,400, "widgets",{vsync=true,use_implot=true})
+local win = igwin:GLFW(800,400, "widgets",{vsync=true,use_implot=true})
 
 
 local ffi = require"ffi"
@@ -16,18 +17,18 @@ for i = 0,10 do
     ys2[i] = xs2[i] * xs2[i];
 end
 
-
 function win:draw(ig)
-	ig.ImPlot_ShowDemoWindow()
-	ig.Begin("Ploters")
-	if (ig.ImPlot_BeginPlot("Line Plot", "x", "f(x)", ig.ImVec2(-1,-1))) then
+    ig.ImPlot_ShowDemoWindow()
+    ig.Begin("Ploters")
+    if (ig.ImPlot_BeginPlot("Line Plot", "x", "f(x)", ig.ImVec2(-1,-1))) then
           ig.ImPlot_PlotLine("sin(50*x)", xs1, ys1, 1001);
-          ig.ImPlot_PushStyleVarInt(ig.lib.ImPlotStyleVar_Marker, ig.lib.ImPlotMarker_Circle);
+          --ig.ImPlot_PushStyleVarInt(ig.lib.ImPlotStyleVar_Marker, ig.lib.ImPlotMarker_Circle);
+          ig.ImPlot_SetNextMarkerStyle(ig.lib.ImPlotMarker_Circle);
           ig.ImPlot_PlotLine("x^2", xs2, ys2, 11);
-          ig.ImPlot_PopStyleVar();
+          --ig.ImPlot_PopStyleVar();
         ig.ImPlot_EndPlot();
     end
-	ig.End()
+    ig.End()
 end
 
 

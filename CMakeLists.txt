@@ -16,7 +16,8 @@ set(IMGUI_SOURCES ./cimgui/cimgui.cpp
 ./cimgui/imgui/imgui_demo.cpp 
 ./cimgui/imgui/imgui_widgets.cpp 
 ./cimplot/cimplot.cpp 
-./cimplot/implot/implot.cpp 
+./cimplot/implot/implot.cpp
+./cimplot/implot/implot_items.cpp  
 ./cimplot/implot/implot_demo.cpp
 ./cimguizmo/cimguizmo.cpp
 ./cimguizmo/ImGuizmo/ImGuizmo.cpp
