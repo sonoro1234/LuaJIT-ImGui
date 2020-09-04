@@ -171,7 +171,7 @@ local function make_function(method,def)
 		local code = {}
 		local args, fname_lua
 		local empty = def.call_args:match("^%(%)") --no args
-		if method then
+		if method and not def.is_static_function then
 			args = def.call_args:gsub("^%(","(self"..(empty and "" or ","))
 			fname_lua = def.stname..":"..fname_m
 			empty = false
