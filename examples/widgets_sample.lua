@@ -37,8 +37,8 @@ function win:draw(ig)
 		end
 		if ig.TreeNode"gizmoquat" then
 
-			if ig.Guizmo3D("###guizmo0",Quat,150,ig.lib.mode3Axes + ig.lib.cubeAtOrigin) then
-				mat4 = ig.mat4_cast(Quat)
+			if ig.Guizmo3DPan("###guizmo0",v3,Quat,150,ig.lib.mode3Axes + ig.lib.cubeAtOrigin) then
+				mat4 = ig.mat4_pos_cast(Quat,v3)
 			end
 			
 			ig.SameLine()
