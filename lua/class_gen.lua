@@ -161,6 +161,7 @@ function sanitize_reserved(def)
 end
 
 local function make_function(method,def)
+	if def.is_static_function then method = nil end
 	sanitize_reserved(def)
 	local fname = def.ov_cimguiname or def.cimguiname --overloaded or original
 	local fname_m = method and fname:match(def.stname.."_(.*)") or fname:match("^ig(.*)") or fname --drop struct name part
@@ -277,6 +278,9 @@ end
 
 --require"anima.utils" --gives us prtable
 local function create_generic(code,defs,method)
+	if defs[1].is_static_function then
+		method = nil
+	end
 	local methodnotconst = method and not defs[1].constructor
 	--find max number of arguments
 	local maxnargs = -1
