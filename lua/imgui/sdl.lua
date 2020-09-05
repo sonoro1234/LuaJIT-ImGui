@@ -1321,7 +1321,7 @@ M.ImFontAtlas = ffi.metatype("ImFontAtlas",ImFontAtlas)
 --------------------------ImColor----------------------------
 local ImColor= {}
 ImColor.__index = ImColor
-function M.HSV(h,s,v,a)
+function M.ImColor_HSV(h,s,v,a)
     a = a or 1.0
     local nonUDT_out = ffi.new("ImColor")
     lib.ImColor_HSV(nonUDT_out,h,s,v,a)
