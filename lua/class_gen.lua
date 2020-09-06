@@ -3,6 +3,8 @@
 -- expects lua 5.1 or luajit
 -- expects "../cimgui/generator/definitions.lua" to be generated in cimgui (master_auto2 branch)
 -----------------------------------------------
+package.path = package.path.."../cimgui/generator/?.lua"
+local cpp2ffi = require"cpp2ffi"
 --utility functions
 function strsplit(str, pat)
     local t = {} 
@@ -51,7 +53,7 @@ function CleanImU32(def)
 	return res
 end
 -------------------------------------------------
---make enumvalues table
+--make enumsvalues table
 local enumsvalues = {}
 local standenu = dofile([[../cimplot/generator/output/structs_and_enums.lua]])
 for k,enu in pairs(standenu.enums) do
@@ -140,7 +142,16 @@ function sanitize_reserved(def)
 		--do only if not a c string
 		local is_cstring = v:sub(1,1)=='"' and v:sub(-1,-1) =='"'
 		if not is_cstring then
-			if enumsvalues[v] then
+			if v:match"::" then --could be nested enum
+				local enumname = v:gsub("[%w:]-::([%w]+)","%1")
+				local ok,val = pcall(cpp2ffi.parse_enum_value,enumname,enumsvalues)
+				if ok then
+					def.defaults[k] = val
+				else
+					print("deleting default ",v)
+					def.defaults[k] = nil
+				end
+			elseif enumsvalues[v] then
 				def.defaults[k] = enumsvalues[v]
 			else
 				--numbers without f in the end
@@ -169,18 +180,19 @@ local function make_function(method,def)
 	if fname_m == "end" then fname_m = "_end" end
 	--dump function code
 	if def.nonUDT == 1 or next(def.defaults) then
+		local call_args = def.call_args:gsub("%*","")
 		local code = {}
 		local args, fname_lua
-		local empty = def.call_args:match("^%(%)") --no args
+		local empty = call_args:match("^%(%)") --no args
 		if method and not def.is_static_function then
-			args = def.call_args:gsub("^%(","(self"..(empty and "" or ","))
+			args = call_args:gsub("^%(","(self"..(empty and "" or ","))
 			fname_lua = def.stname..":"..fname_m
 			empty = false
 		else
-			args = def.call_args
+			args = call_args
 			fname_lua = "M."..fname_m
 		end
-		table.insert(code,"function "..fname_lua..def.call_args)
+		table.insert(code,"function "..fname_lua..call_args)
 		--set defaults
 		for k,v in pairs(def.defaults) do
 			if v == 'true' then
@@ -245,6 +257,7 @@ local ffi = require"ffi"
 ffi.cdef(cdefs)
 local function checktype(typ,va)
 	if ffi.typeof(typ)==ffi.typeof"int" or 
+		ffi.typeof(typ)==ffi.typeof"const int" or
 		ffi.typeof(typ)==ffi.typeof"float" or
 		ffi.typeof(typ)==ffi.typeof"double" then
 		return "(ffi.istype('"..typ.."',"..va..") or type("..va..")=='number')"
@@ -254,9 +267,18 @@ local function checktype(typ,va)
 		return "(ffi.istype('"..typ.."',"..va..") or type("..va..")=='string')"
 	elseif ffi.typeof(typ)==ffi.typeof"const float*" then
 		return "(ffi.istype('"..typ.."',"..va..") or ffi.istype('float[]',"..va.."))"
+	elseif ffi.typeof(typ)==ffi.typeof"const double*" then
+		return "(ffi.istype('"..typ.."',"..va..") or ffi.istype('double[]',"..va.."))"
 	elseif ffi.typeof(typ)==ffi.typeof"int*" then
 		return "(ffi.istype('"..typ.."',"..va..") or ffi.istype('int[]',"..va.."))"
+	elseif ffi.typeof(typ)==ffi.typeof"void*" or ffi.typeof(typ)==ffi.typeof"const void*" then
+		return "ffi.istype('"..typ.."',"..va..")"
 	else
+		if typ:match"%*" and not typ:match"%(%*%)" then --pointer not function pointer
+			local typsinptr = typ:gsub("(%*)","")
+			local extra = " or ffi.istype('"..typsinptr.."',"..va..")"
+			return "(ffi.istype('"..typ.."',"..va..")"..extra..")"
+		end
 		return "ffi.istype('"..typ.."',"..va..")"
 	end
 end
