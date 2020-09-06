@@ -1108,7 +1108,7 @@ function ImDrawList:AddTextFontPtr(font,font_size,pos,col,text_begin,text_end,wr
 end
 function ImDrawList:AddText(a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
     if ffi.istype('const ImVec2',a2) then return self:AddTextVec2(a2,a3,a4,a5) end
-    if ffi.istype('const ImFont*',a2) then return self:AddTextFontPtr(a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImFont*',a2) or ffi.istype('const ImFont',a2)) then return self:AddTextFontPtr(a2,a3,a4,a5,a6,a7,a8,a9) end
     print(a2,a3,a4,a5,a6,a7,a8,a9)
     error'ImDrawList:AddText could not find overloaded'
 end
@@ -1824,9 +1824,9 @@ function M.ImPlot_PlotBarsFnPlotPoIntPtr(label_id,getter,data,count,width,offset
 end
 function M.ImPlot_PlotBars(a1,a2,a3,a4,a5,a6,a7) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('float',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotBarsFloatPtrIntFloat(a1,a2,a3,a4,a5,a6,a7) end
-    if ffi.istype('const double*',a2) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotBarsdoublePtrIntdouble(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotBarsdoublePtrIntdouble(a1,a2,a3,a4,a5,a6,a7) end
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotBarsFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
-    if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) then return M.ImPlot_PlotBarsdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotBarsdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
     if ffi.istype('ImPlotPoint(*)(void* data,int idx)',a2) then return M.ImPlot_PlotBarsFnPlotPoIntPtr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6,a7)
     error'M.ImPlot_PlotBars could not find overloaded'
@@ -1861,9 +1861,9 @@ function M.ImPlot_PlotBarsHFnPlotPoIntPtr(label_id,getter,data,count,height,offs
 end
 function M.ImPlot_PlotBarsH(a1,a2,a3,a4,a5,a6,a7) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('float',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotBarsHFloatPtrIntFloat(a1,a2,a3,a4,a5,a6,a7) end
-    if ffi.istype('const double*',a2) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotBarsHdoublePtrIntdouble(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotBarsHdoublePtrIntdouble(a1,a2,a3,a4,a5,a6,a7) end
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotBarsHFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
-    if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) then return M.ImPlot_PlotBarsHdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotBarsHdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
     if ffi.istype('ImPlotPoint(*)(void* data,int idx)',a2) then return M.ImPlot_PlotBarsHFnPlotPoIntPtr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6,a7)
     error'M.ImPlot_PlotBarsH could not find overloaded'
@@ -1884,7 +1884,7 @@ function M.ImPlot_PlotDigitalFnPlotPoIntPtr(label_id,getter,data,count,offset)
 end
 function M.ImPlot_PlotDigital(a1,a2,a3,a4,a5,a6) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotDigitalFloatPtr(a1,a2,a3,a4,a5,a6) end
-    if ffi.istype('const double*',a2) then return M.ImPlot_PlotDigitaldoublePtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotDigitaldoublePtr(a1,a2,a3,a4,a5,a6) end
     if ffi.istype('ImPlotPoint(*)(void* data,int idx)',a2) then return M.ImPlot_PlotDigitalFnPlotPoIntPtr(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.ImPlot_PlotDigital could not find overloaded'
@@ -1911,9 +1911,9 @@ function M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,
 end
 function M.ImPlot_PlotErrorBars(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) and ffi.istype('const double*',a4) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('const float*',a5) or ffi.istype('float[]',a5)) then return M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) and ffi.istype('const double*',a4) and ffi.istype('const double*',a5) then return M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) and (ffi.istype('const double*',a5) or ffi.istype('double[]',a5)) then return M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8) end
     print(a1,a2,a3,a4,a5,a6,a7,a8)
     error'M.ImPlot_PlotErrorBars could not find overloaded'
 end
@@ -1939,9 +1939,9 @@ function M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs
 end
 function M.ImPlot_PlotErrorBarsH(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) and ffi.istype('const double*',a4) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('const float*',a5) or ffi.istype('float[]',a5)) then return M.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) and ffi.istype('const double*',a4) and ffi.istype('const double*',a5) then return M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) and (ffi.istype('const double*',a5) or ffi.istype('double[]',a5)) then return M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8) end
     print(a1,a2,a3,a4,a5,a6,a7,a8)
     error'M.ImPlot_PlotErrorBarsH could not find overloaded'
 end
@@ -1959,7 +1959,7 @@ function M.ImPlot_PlotHeatmapdoublePtr(label_id,values,rows,cols,scale_min,scale
 end
 function M.ImPlot_PlotHeatmap(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotHeatmapFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if ffi.istype('const double*',a2) then return M.ImPlot_PlotHeatmapdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotHeatmapdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
     print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
     error'M.ImPlot_PlotHeatmap could not find overloaded'
 end
@@ -1997,11 +1997,11 @@ function M.ImPlot_PlotLineFnPlotPoIntPtr(label_id,getter,data,count,offset)
 end
 function M.ImPlot_PlotLine(a1,a2,a3,a4,a5,a6) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLineFloatPtrInt(a1,a2,a3,a4,a5) end
-    if ffi.istype('const double*',a2) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLinedoublePtrInt(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLinedoublePtrInt(a1,a2,a3,a4,a5) end
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotLineFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
-    if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) then return M.ImPlot_PlotLinedoublePtrdoublePtr(a1,a2,a3,a4,a5,a6) end
-    if ffi.istype('const ImVec2*',a2) then return M.ImPlot_PlotLineVec2Ptr(a1,a2,a3,a4) end
-    if ffi.istype('const ImPlotPoint*',a2) then return M.ImPlot_PlotLinePlotPoIntPtr(a1,a2,a3,a4) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotLinedoublePtrdoublePtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImVec2*',a2) or ffi.istype('const ImVec2',a2)) then return M.ImPlot_PlotLineVec2Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('const ImPlotPoint*',a2) or ffi.istype('const ImPlotPoint',a2)) then return M.ImPlot_PlotLinePlotPoIntPtr(a1,a2,a3,a4) end
     if ffi.istype('ImPlotPoint(*)(void* data,int idx)',a2) then return M.ImPlot_PlotLineFnPlotPoIntPtr(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.ImPlot_PlotLine could not find overloaded'
@@ -2020,7 +2020,7 @@ function M.ImPlot_PlotPieChartdoublePtr(label_ids,values,count,x,y,radius,normal
 end
 function M.ImPlot_PlotPieChart(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotPieChartFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if ffi.istype('const double*',a2) then return M.ImPlot_PlotPieChartdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotPieChartdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
     print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
     error'M.ImPlot_PlotPieChart could not find overloaded'
 end
@@ -2058,11 +2058,11 @@ function M.ImPlot_PlotScatterFnPlotPoIntPtr(label_id,getter,data,count,offset)
 end
 function M.ImPlot_PlotScatter(a1,a2,a3,a4,a5,a6) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterFloatPtrInt(a1,a2,a3,a4,a5) end
-    if ffi.istype('const double*',a2) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterdoublePtrInt(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterdoublePtrInt(a1,a2,a3,a4,a5) end
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotScatterFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
-    if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) then return M.ImPlot_PlotScatterdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6) end
-    if ffi.istype('const ImVec2*',a2) then return M.ImPlot_PlotScatterVec2Ptr(a1,a2,a3,a4) end
-    if ffi.istype('const ImPlotPoint*',a2) then return M.ImPlot_PlotScatterPlotPoIntPtr(a1,a2,a3,a4) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotScatterdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImVec2*',a2) or ffi.istype('const ImVec2',a2)) then return M.ImPlot_PlotScatterVec2Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('const ImPlotPoint*',a2) or ffi.istype('const ImPlotPoint',a2)) then return M.ImPlot_PlotScatterPlotPoIntPtr(a1,a2,a3,a4) end
     if ffi.istype('ImPlotPoint(*)(void* data,int idx)',a2) then return M.ImPlot_PlotScatterFnPlotPoIntPtr(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.ImPlot_PlotScatter could not find overloaded'
@@ -2107,11 +2107,11 @@ function M.ImPlot_PlotShadedFnPlotPoIntPtr(label_id,getter1,data1,getter2,data2,
 end
 function M.ImPlot_PlotShaded(a1,a2,a3,a4,a5,a6,a7) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('float',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotShadedFloatPtrIntFloat(a1,a2,a3,a4,a5,a6) end
-    if ffi.istype('const double*',a2) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotShadeddoublePtrIntdouble(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotShadeddoublePtrIntdouble(a1,a2,a3,a4,a5,a6) end
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('float',a5) or type(a5)=='number') or type(a5)=='nil') then return M.ImPlot_PlotShadedFloatPtrFloatPtrIntFloat(a1,a2,a3,a4,a5,a6,a7) end
-    if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('double',a5) or type(a5)=='number') or type(a5)=='nil') then return M.ImPlot_PlotShadeddoublePtrdoublePtrIntdouble(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('double',a5) or type(a5)=='number') or type(a5)=='nil') then return M.ImPlot_PlotShadeddoublePtrdoublePtrIntdouble(a1,a2,a3,a4,a5,a6,a7) end
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) then return M.ImPlot_PlotShadedFloatPtrFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
-    if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) and ffi.istype('const double*',a4) then return M.ImPlot_PlotShadeddoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) then return M.ImPlot_PlotShadeddoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
     if ffi.istype('ImPlotPoint(*)(void* data,int idx)',a2) then return M.ImPlot_PlotShadedFnPlotPoIntPtr(a1,a2,a3,a4,a5,a6,a7) end
     print(a1,a2,a3,a4,a5,a6,a7)
     error'M.ImPlot_PlotShaded could not find overloaded'
@@ -2142,9 +2142,9 @@ function M.ImPlot_PlotStemsdoublePtrdoublePtr(label_id,xs,ys,count,y_ref,offset,
 end
 function M.ImPlot_PlotStems(a1,a2,a3,a4,a5,a6,a7) -- generic version
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('float',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotStemsFloatPtrIntFloat(a1,a2,a3,a4,a5,a6) end
-    if ffi.istype('const double*',a2) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotStemsdoublePtrIntdouble(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') then return M.ImPlot_PlotStemsdoublePtrIntdouble(a1,a2,a3,a4,a5,a6) end
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotStemsFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
-    if ffi.istype('const double*',a2) and ffi.istype('const double*',a3) then return M.ImPlot_PlotStemsdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotStemsdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
     print(a1,a2,a3,a4,a5,a6,a7)
     error'M.ImPlot_PlotStems could not find overloaded'
 end
@@ -2199,7 +2199,7 @@ M.ImPlot_PushColormapPlotColormap = lib.ImPlot_PushColormapPlotColormap
 M.ImPlot_PushColormapVec4Ptr = lib.ImPlot_PushColormapVec4Ptr
 function M.ImPlot_PushColormap(a1,a2) -- generic version
     if (ffi.istype('ImPlotColormap',a1) or type(a1)=='number') then return M.ImPlot_PushColormapPlotColormap(a1) end
-    if ffi.istype('const ImVec4*',a1) then return M.ImPlot_PushColormapVec4Ptr(a1,a2) end
+    if (ffi.istype('const ImVec4*',a1) or ffi.istype('const ImVec4',a1)) then return M.ImPlot_PushColormapVec4Ptr(a1,a2) end
     print(a1,a2)
     error'M.ImPlot_PushColormap could not find overloaded'
 end
@@ -2228,7 +2228,7 @@ function M.ImPlot_SetColormapPlotColormap(colormap,samples)
     return lib.ImPlot_SetColormapPlotColormap(colormap,samples)
 end
 function M.ImPlot_SetColormap(a1,a2) -- generic version
-    if ffi.istype('const ImVec4*',a1) then return M.ImPlot_SetColormapVec4Ptr(a1,a2) end
+    if (ffi.istype('const ImVec4*',a1) or ffi.istype('const ImVec4',a1)) then return M.ImPlot_SetColormapVec4Ptr(a1,a2) end
     if (ffi.istype('ImPlotColormap',a1) or type(a1)=='number') then return M.ImPlot_SetColormapPlotColormap(a1,a2) end
     print(a1,a2)
     error'M.ImPlot_SetColormap could not find overloaded'
@@ -2282,7 +2282,7 @@ function M.ImPlot_SetNextPlotTicksXdouble(x_min,x_max,n_ticks,labels,show_defaul
     return lib.ImPlot_SetNextPlotTicksXdouble(x_min,x_max,n_ticks,labels,show_default)
 end
 function M.ImPlot_SetNextPlotTicksX(a1,a2,a3,a4,a5) -- generic version
-    if ffi.istype('const double*',a1) then return M.ImPlot_SetNextPlotTicksXdoublePtr(a1,a2,a3,a4) end
+    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_SetNextPlotTicksXdoublePtr(a1,a2,a3,a4) end
     if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_SetNextPlotTicksXdouble(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5)
     error'M.ImPlot_SetNextPlotTicksX could not find overloaded'
@@ -2300,7 +2300,7 @@ function M.ImPlot_SetNextPlotTicksYdouble(y_min,y_max,n_ticks,labels,show_defaul
     return lib.ImPlot_SetNextPlotTicksYdouble(y_min,y_max,n_ticks,labels,show_default,y_axis)
 end
 function M.ImPlot_SetNextPlotTicksY(a1,a2,a3,a4,a5,a6) -- generic version
-    if ffi.istype('const double*',a1) then return M.ImPlot_SetNextPlotTicksYdoublePtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_SetNextPlotTicksYdoublePtr(a1,a2,a3,a4,a5) end
     if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_SetNextPlotTicksYdouble(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.ImPlot_SetNextPlotTicksY could not find overloaded'
@@ -2502,7 +2502,7 @@ function M.CollapsingHeaderBoolPtr(label,p_open,flags)
 end
 function M.CollapsingHeader(a1,a2,a3) -- generic version
     if ((ffi.istype('ImGuiTreeNodeFlags',a2) or type(a2)=='number') or type(a2)=='nil') then return M.CollapsingHeaderTreeNodeFlags(a1,a2) end
-    if ffi.istype('bool*',a2) then return M.CollapsingHeaderBoolPtr(a1,a2,a3) end
+    if (ffi.istype('bool*',a2) or ffi.istype('bool',a2)) then return M.CollapsingHeaderBoolPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.CollapsingHeader could not find overloaded'
 end
@@ -2558,7 +2558,7 @@ function M.ComboFnBoolPtr(label,current_item,items_getter,data,items_count,popup
     return lib.igComboFnBoolPtr(label,current_item,items_getter,data,items_count,popup_max_height_in_items)
 end
 function M.Combo(a1,a2,a3,a4,a5,a6) -- generic version
-    if ffi.istype('const char* const[]',a3) then return M.ComboStr_arr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const char* const[]',a3) or ffi.istype('const char const[]',a3)) then return M.ComboStr_arr(a1,a2,a3,a4,a5) end
     if (ffi.istype('const char*',a3) or type(a3)=='string') then return M.ComboStr(a1,a2,a3,a4) end
     if ffi.istype('bool(*)(void* data,int idx,const char** out_text)',a3) then return M.ComboFnBoolPtr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6)
@@ -2780,7 +2780,7 @@ M.GetBackgroundDrawListNil = lib.igGetBackgroundDrawListNil
 M.GetBackgroundDrawListViewportPtr = lib.igGetBackgroundDrawListViewportPtr
 function M.GetBackgroundDrawList(a1) -- generic version
     if a1==nil then return M.GetBackgroundDrawListNil() end
-    if ffi.istype('ImGuiViewport*',a1) then return M.GetBackgroundDrawListViewportPtr(a1) end
+    if (ffi.istype('ImGuiViewport*',a1) or ffi.istype('ImGuiViewport',a1)) then return M.GetBackgroundDrawListViewportPtr(a1) end
     print(a1)
     error'M.GetBackgroundDrawList could not find overloaded'
 end
@@ -2864,8 +2864,8 @@ M.GetForegroundDrawListViewportPtr = lib.igGetForegroundDrawListViewportPtr
 M.GetForegroundDrawListWindowPtr = lib.igGetForegroundDrawListWindowPtr
 function M.GetForegroundDrawList(a1) -- generic version
     if a1==nil then return M.GetForegroundDrawListNil() end
-    if ffi.istype('ImGuiViewport*',a1) then return M.GetForegroundDrawListViewportPtr(a1) end
-    if ffi.istype('ImGuiWindow*',a1) then return M.GetForegroundDrawListWindowPtr(a1) end
+    if (ffi.istype('ImGuiViewport*',a1) or ffi.istype('ImGuiViewport',a1)) then return M.GetForegroundDrawListViewportPtr(a1) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1)) then return M.GetForegroundDrawListWindowPtr(a1) end
     print(a1)
     error'M.GetForegroundDrawList could not find overloaded'
 end
@@ -3042,7 +3042,7 @@ function M.ImFloorVec2(v)
 end
 function M.ImFloor(a1,a2) -- generic version
     if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImFloorFloat(a1) end
-    if ffi.istype('ImVec2*',a1) then return M.ImFloorVec2(a1,a2) end
+    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1)) then return M.ImFloorVec2(a1,a2) end
     print(a1,a2)
     error'M.ImFloor could not find overloaded'
 end
@@ -3092,9 +3092,9 @@ function M.ImLerpVec4(a,b,t)
     return nonUDT_out
 end
 function M.ImLerp(a1,a2,a3,a4) -- generic version
-    if ffi.istype('ImVec2*',a1) and (ffi.istype('float',a4) or type(a4)=='number') then return M.ImLerpVec2Float(a1,a2,a3,a4) end
-    if ffi.istype('ImVec2*',a1) and ffi.istype('const ImVec2',a4) then return M.ImLerpVec2Vec2(a1,a2,a3,a4) end
-    if ffi.istype('ImVec4*',a1) then return M.ImLerpVec4(a1,a2,a3,a4) end
+    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1)) and (ffi.istype('float',a4) or type(a4)=='number') then return M.ImLerpVec2Float(a1,a2,a3,a4) end
+    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1)) and ffi.istype('const ImVec2',a4) then return M.ImLerpVec2Vec2(a1,a2,a3,a4) end
+    if (ffi.istype('ImVec4*',a1) or ffi.istype('ImVec4',a1)) then return M.ImLerpVec4(a1,a2,a3,a4) end
     print(a1,a2,a3,a4)
     error'M.ImLerp could not find overloaded'
 end
@@ -3418,7 +3418,7 @@ function M.ListBoxFnBoolPtr(label,current_item,items_getter,data,items_count,hei
     return lib.igListBoxFnBoolPtr(label,current_item,items_getter,data,items_count,height_in_items)
 end
 function M.ListBox(a1,a2,a3,a4,a5,a6) -- generic version
-    if ffi.istype('const char* const[]',a3) then return M.ListBoxStr_arr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const char* const[]',a3) or ffi.istype('const char const[]',a3)) then return M.ListBoxStr_arr(a1,a2,a3,a4,a5) end
     if ffi.istype('bool(*)(void* data,int idx,const char** out_text)',a3) then return M.ListBoxFnBoolPtr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.ListBox could not find overloaded'
@@ -3472,7 +3472,7 @@ M.MarkIniSettingsDirtyNil = lib.igMarkIniSettingsDirtyNil
 M.MarkIniSettingsDirtyWindowPtr = lib.igMarkIniSettingsDirtyWindowPtr
 function M.MarkIniSettingsDirty(a1) -- generic version
     if a1==nil then return M.MarkIniSettingsDirtyNil() end
-    if ffi.istype('ImGuiWindow*',a1) then return M.MarkIniSettingsDirtyWindowPtr(a1) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1)) then return M.MarkIniSettingsDirtyWindowPtr(a1) end
     print(a1)
     error'M.MarkIniSettingsDirty could not find overloaded'
 end
@@ -3491,7 +3491,7 @@ function M.MenuItemBoolPtr(label,shortcut,p_selected,enabled)
 end
 function M.MenuItem(a1,a2,a3,a4) -- generic version
     if ((ffi.istype('bool',a3) or type(a3)=='boolean') or type(a3)=='nil') then return M.MenuItemBool(a1,a2,a3,a4) end
-    if ffi.istype('bool*',a3) then return M.MenuItemBoolPtr(a1,a2,a3,a4) end
+    if (ffi.istype('bool*',a3) or ffi.istype('bool',a3)) then return M.MenuItemBoolPtr(a1,a2,a3,a4) end
     print(a1,a2,a3,a4)
     error'M.MenuItem could not find overloaded'
 end
@@ -3723,7 +3723,7 @@ function M.SelectableBoolPtr(label,p_selected,flags,size)
 end
 function M.Selectable(a1,a2,a3,a4) -- generic version
     if ((ffi.istype('bool',a2) or type(a2)=='boolean') or type(a2)=='nil') then return M.SelectableBool(a1,a2,a3,a4) end
-    if ffi.istype('bool*',a2) then return M.SelectableBoolPtr(a1,a2,a3,a4) end
+    if (ffi.istype('bool*',a2) or ffi.istype('bool',a2)) then return M.SelectableBoolPtr(a1,a2,a3,a4) end
     print(a1,a2,a3,a4)
     error'M.Selectable could not find overloaded'
 end
@@ -3803,7 +3803,7 @@ function M.SetScrollFromPosXWindowPtr(window,local_x,center_x_ratio)
 end
 function M.SetScrollFromPosX(a1,a2,a3) -- generic version
     if (ffi.istype('float',a1) or type(a1)=='number') then return M.SetScrollFromPosXFloat(a1,a2) end
-    if ffi.istype('ImGuiWindow*',a1) then return M.SetScrollFromPosXWindowPtr(a1,a2,a3) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1)) then return M.SetScrollFromPosXWindowPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.SetScrollFromPosX could not find overloaded'
 end
@@ -3817,7 +3817,7 @@ function M.SetScrollFromPosYWindowPtr(window,local_y,center_y_ratio)
 end
 function M.SetScrollFromPosY(a1,a2,a3) -- generic version
     if (ffi.istype('float',a1) or type(a1)=='number') then return M.SetScrollFromPosYFloat(a1,a2) end
-    if ffi.istype('ImGuiWindow*',a1) then return M.SetScrollFromPosYWindowPtr(a1,a2,a3) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1)) then return M.SetScrollFromPosYWindowPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.SetScrollFromPosY could not find overloaded'
 end
@@ -3833,7 +3833,7 @@ M.SetScrollXFloat = lib.igSetScrollXFloat
 M.SetScrollXWindowPtr = lib.igSetScrollXWindowPtr
 function M.SetScrollX(a1,a2) -- generic version
     if (ffi.istype('float',a1) or type(a1)=='number') then return M.SetScrollXFloat(a1) end
-    if ffi.istype('ImGuiWindow*',a1) then return M.SetScrollXWindowPtr(a1,a2) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1)) then return M.SetScrollXWindowPtr(a1,a2) end
     print(a1,a2)
     error'M.SetScrollX could not find overloaded'
 end
@@ -3841,7 +3841,7 @@ M.SetScrollYFloat = lib.igSetScrollYFloat
 M.SetScrollYWindowPtr = lib.igSetScrollYWindowPtr
 function M.SetScrollY(a1,a2) -- generic version
     if (ffi.istype('float',a1) or type(a1)=='number') then return M.SetScrollYFloat(a1) end
-    if ffi.istype('ImGuiWindow*',a1) then return M.SetScrollYWindowPtr(a1,a2) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1)) then return M.SetScrollYWindowPtr(a1,a2) end
     print(a1,a2)
     error'M.SetScrollY could not find overloaded'
 end
@@ -3865,7 +3865,7 @@ end
 function M.SetWindowCollapsed(a1,a2,a3) -- generic version
     if (ffi.istype('bool',a1) or type(a1)=='boolean') then return M.SetWindowCollapsedBool(a1,a2) end
     if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.SetWindowCollapsedStr(a1,a2,a3) end
-    if ffi.istype('ImGuiWindow*',a1) then return M.SetWindowCollapsedWindowPtr(a1,a2,a3) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1)) then return M.SetWindowCollapsedWindowPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.SetWindowCollapsed could not find overloaded'
 end
@@ -3895,7 +3895,7 @@ end
 function M.SetWindowPos(a1,a2,a3) -- generic version
     if ffi.istype('const ImVec2',a1) then return M.SetWindowPosVec2(a1,a2) end
     if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.SetWindowPosStr(a1,a2,a3) end
-    if ffi.istype('ImGuiWindow*',a1) then return M.SetWindowPosWindowPtr(a1,a2,a3) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1)) then return M.SetWindowPosWindowPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.SetWindowPos could not find overloaded'
 end
@@ -3914,7 +3914,7 @@ end
 function M.SetWindowSize(a1,a2,a3) -- generic version
     if ffi.istype('const ImVec2',a1) then return M.SetWindowSizeVec2(a1,a2) end
     if (ffi.istype('const char*',a1) or type(a1)=='string') then return M.SetWindowSizeStr(a1,a2,a3) end
-    if ffi.istype('ImGuiWindow*',a1) then return M.SetWindowSizeWindowPtr(a1,a2,a3) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1)) then return M.SetWindowSizeWindowPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.SetWindowSize could not find overloaded'
 end
