@@ -77,70 +77,34 @@ local function location(file,locpathT)
 end
 local struct_re = "^%s*struct%s+([^%s;]+);$"
 --------------------------------------------------------
---first cimgui
+local function get_cdefs(gccline,locat)
+	local pipe,err = io.popen(gccline,"r")
+	if not pipe then error("could not execute gcc "..err) end
+	local cdef = {}
+	for line in location(pipe,{locat}) do
+		line = line:gsub("extern __attribute__%(%(dllexport%)%)%s*","")
+		line = line:gsub("extern __declspec%(dllexport%)%s*","")
+		if line~="" then table.insert(cdef,line) end
+	end
+	pipe:close()
+	return cdef
+end
+
+--first get cdefs
 print"get cimgui cdefs"
-local pipe,err = io.popen([[gcc -E -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS ../cimgui/cimgui.h]],"r")
-if not pipe then error("could not execute gcc "..err) end
-
-local cdefs = {}
-cdefs[1] = "typedef void FILE;"
-for line in location(pipe,{"cimgui"}) do
-	line = line:gsub("extern __attribute__%(%(dllexport%)%)%s*","")
-	line = line:gsub("extern __declspec%(dllexport%)%s*","")
-	if line~="" then table.insert(cdefs,line) end
-end
-pipe:close()
-
---then cimplot
+local cdefs = get_cdefs([[gcc -E -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS ../cimgui/cimgui.h]],"cimgui")
+table.insert(cdefs,1,"typedef void FILE;")
 print"get cimplot cdefs"
-local pipe,err = io.popen([[gcc -E -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS ../cimplot/cimplot.h]],"r")
-if not pipe then error("could not execute gcc "..err) end
-local cdefspl = {}
-for line in location(pipe,{"cimplot"}) do
-	line = line:gsub("extern __attribute__%(%(dllexport%)%)%s*","")
-	line = line:gsub("extern __declspec%(dllexport%)%s*","")
-	if line~="" then table.insert(cdefspl,line) end
-end
-pipe:close()
-
---then cimguizmo
+local cdefspl = get_cdefs([[gcc -E -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS ../cimplot/cimplot.h]],"cimplot")
 print"get cimguizmo cdefs"
-local pipe,err = io.popen([[gcc -E -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS ../cimguizmo/cimguizmo.h]],"r")
-if not pipe then error("could not execute gcc "..err) end
-local cdefszmo = {}
-for line in location(pipe,{"cimguizmo"}) do
-	line = line:gsub("extern __attribute__%(%(dllexport%)%)%s*","")
-	line = line:gsub("extern __declspec%(dllexport%)%s*","")
-	if line~="" then table.insert(cdefszmo,line) end
-end
-pipe:close()
-
---then cimguizmo_quat
+local cdefszmo = get_cdefs([[gcc -E -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS ../cimguizmo/cimguizmo.h]],"cimguizmo")
 print"get cimguizmo_quat cdefs"
-local pipe,err = io.popen([[gcc -E -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS ../cimguizmo_quat/cimguizmo_quat.h]],"r")
-if not pipe then error("could not execute gcc "..err) end
-local cdefszmoquat = {}
-for line in location(pipe,{"cimguizmo_quat"}) do
-	line = line:gsub("extern __attribute__%(%(dllexport%)%)%s*","")
-	line = line:gsub("extern __declspec%(dllexport%)%s*","")
-	if line~="" then table.insert(cdefszmoquat,line) end
-end
-pipe:close()
-
------ cimgui_impl
+local cdefszmoquat = get_cdefs([[gcc -E -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS ../cimguizmo_quat/cimguizmo_quat.h]],"cimguizmo_quat")
 print"get cimgui_impl cdefs"
-local pipe,err = io.popen([[gcc -E -DCIMGUI_API="" ../cimgui/generator/output/cimgui_impl.h]],"r")
-if not pipe then error("could not execute gcc "..err) end
-
-local cdefs_im = {}
-for line in location(pipe,{"cimgui_impl"}) do
-	line = line:gsub("extern __attribute__%(%(dllexport%)%)%s*","")
-	line = line:gsub("extern __declspec%(dllexport%)%s*","")
-	if line~="" then table.insert(cdefs_im,line) end
-	local stname = line:match(struct_re)
-	if  stname then table.insert(cdefs_im,"typedef struct "..stname.." "..stname..";") end
-end
-pipe:close()
+local cdefs_im = get_cdefs([[gcc -E -DCIMGUI_API="" ../cimgui/generator/output/cimgui_impl.h]],"cimgui_impl")
+--there was this in cdefs_im before but dont seems necessary:
+--local stname = line:match(struct_re)
+--if  stname then table.insert(cdefs_im,"typedef struct "..stname.." "..stname..";") end
 
 ----- create imgui/cdefs.lua
 print"save cdefs.lua"
