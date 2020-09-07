@@ -2720,29 +2720,32 @@ typedef int ImPlotStyleVar;
 typedef int ImPlotMarker;
 typedef int ImPlotColormap;
 typedef enum {
-    ImPlotFlags_MousePos = 1 << 0,
-    ImPlotFlags_Legend = 1 << 1,
-    ImPlotFlags_Highlight = 1 << 2,
-    ImPlotFlags_BoxSelect = 1 << 3,
-    ImPlotFlags_Query = 1 << 4,
-    ImPlotFlags_ContextMenu = 1 << 5,
-    ImPlotFlags_Crosshairs = 1 << 6,
-    ImPlotFlags_AntiAliased = 1 << 7,
-    ImPlotFlags_NoChild = 1 << 8,
-    ImPlotFlags_YAxis2 = 1 << 9,
-    ImPlotFlags_YAxis3 = 1 << 10,
-    ImPlotFlags_Default = ImPlotFlags_MousePos | ImPlotFlags_Legend | ImPlotFlags_Highlight | ImPlotFlags_BoxSelect | ImPlotFlags_ContextMenu
+    ImPlotFlags_None = 0,
+    ImPlotFlags_NoLegend = 1 << 0,
+    ImPlotFlags_NoMenus = 1 << 1,
+    ImPlotFlags_NoBoxSelect = 1 << 2,
+    ImPlotFlags_NoMousePos = 1 << 3,
+    ImPlotFlags_NoHighlight = 1 << 4,
+    ImPlotFlags_NoChild = 1 << 5,
+    ImPlotFlags_YAxis2 = 1 << 6,
+    ImPlotFlags_YAxis3 = 1 << 7,
+    ImPlotFlags_Query = 1 << 8,
+    ImPlotFlags_Crosshairs = 1 << 9,
+    ImPlotFlags_AntiAliased = 1 << 10,
+    ImPlotFlags_CanvasOnly = ImPlotFlags_NoLegend | ImPlotFlags_NoMenus | ImPlotFlags_NoBoxSelect | ImPlotFlags_NoMousePos
 }ImPlotFlags_;
 typedef enum {
-    ImPlotAxisFlags_GridLines = 1 << 0,
-    ImPlotAxisFlags_TickMarks = 1 << 1,
-    ImPlotAxisFlags_TickLabels = 1 << 2,
-    ImPlotAxisFlags_Invert = 1 << 3,
-    ImPlotAxisFlags_LockMin = 1 << 4,
-    ImPlotAxisFlags_LockMax = 1 << 5,
-    ImPlotAxisFlags_LogScale = 1 << 6,
-    ImPlotAxisFlags_Default = ImPlotAxisFlags_GridLines | ImPlotAxisFlags_TickMarks | ImPlotAxisFlags_TickLabels,
-    ImPlotAxisFlags_Auxiliary = ImPlotAxisFlags_TickMarks | ImPlotAxisFlags_TickLabels,
+    ImPlotAxisFlags_None = 0,
+    ImPlotAxisFlags_NoGridLines = 1 << 0,
+    ImPlotAxisFlags_NoTickMarks = 1 << 1,
+    ImPlotAxisFlags_NoTickLabels = 1 << 2,
+    ImPlotAxisFlags_LogScale = 1 << 3,
+    ImPlotAxisFlags_Time = 1 << 4,
+    ImPlotAxisFlags_Invert = 1 << 5,
+    ImPlotAxisFlags_LockMin = 1 << 6,
+    ImPlotAxisFlags_LockMax = 1 << 7,
+    ImPlotAxisFlags_Lock = ImPlotAxisFlags_LockMin | ImPlotAxisFlags_LockMax,
+    ImPlotAxisFlags_NoDecorations = ImPlotAxisFlags_NoGridLines | ImPlotAxisFlags_NoTickMarks | ImPlotAxisFlags_NoTickLabels
 }ImPlotAxisFlags_;
 typedef enum {
     ImPlotCol_Line,
@@ -2839,7 +2842,7 @@ struct ImPlotLimits
 struct ImPlotStyle
 {
     float LineWeight;
-    ImPlotMarker Marker;
+    int Marker;
     float MarkerSize;
     float MarkerWeight;
     float FillAlpha;
@@ -2847,7 +2850,6 @@ struct ImPlotStyle
     float ErrorBarWeight;
     float DigitalBitHeight;
     float DigitalBitGap;
-       _Bool         AntiAliasedLines;
     float PlotBorderSize;
     float MinorAlpha;
     ImVec2 MajorTickLen;
@@ -2862,6 +2864,8 @@ struct ImPlotStyle
     ImVec2 InfoPadding;
     ImVec2 PlotMinSize;
     ImVec4 Colors[ImPlotCol_COUNT];
+       _Bool         AntiAliasedLines;
+       _Bool         UseLocalTime;
 };
 struct ImPlotInputMap
 {
@@ -2950,9 +2954,10 @@ void ImPlot_PlotDigitaldoublePtr(const char* label_id,const double* xs,const dou
 void ImPlot_PlotDigitalFnPlotPoIntPtr(const char* label_id,ImPlotPoint(*getter)(void* data,int idx),void* data,int count,int offset);
 void ImPlot_PlotTextFloat(const char* text,float x,float y,                                                                     _Bool                                                                           vertical,const ImVec2 pixel_offset);
 void ImPlot_PlotTextdouble(const char* text,double x,double y,                                                                        _Bool                                                                              vertical,const ImVec2 pixel_offset);
-void ImPlot_SetNextPlotLimits(double x_min,double x_max,double y_min,double y_max,ImGuiCond cond);
-void ImPlot_SetNextPlotLimitsX(double x_min,double x_max,ImGuiCond cond);
-void ImPlot_SetNextPlotLimitsY(double y_min,double y_max,ImGuiCond cond,int y_axis);
+void ImPlot_SetNextPlotLimits(double xmin,double xmax,double ymin,double ymax,ImGuiCond cond);
+void ImPlot_SetNextPlotLimitsX(double xmin,double xmax,ImGuiCond cond);
+void ImPlot_SetNextPlotLimitsY(double ymin,double ymax,ImGuiCond cond,int y_axis);
+void ImPlot_LinkNextPlotLimits(double* xmin,double* xmax,double* ymin,double* ymax,double* ymin2,double* ymax2,double* ymin3,double* ymax3);
 void ImPlot_FitNextPlotAxes(                                      _Bool                                            x,                                             _Bool                                                   y,                                                    _Bool                                                          y2,                                                            _Bool                                                                  y3);
 void ImPlot_SetNextPlotTicksXdoublePtr(const double* values,int n_ticks,const char** labels,                                                                                                      _Bool                                                                                                            show_default);
 void ImPlot_SetNextPlotTicksXdouble(double x_min,double x_max,int n_ticks,const char** labels,                                                                                                        _Bool                                                                                                              show_default);
@@ -2989,6 +2994,7 @@ void ImPlot_SetNextFillStyle(const ImVec4 col,float alpha_mod);
 void ImPlot_SetNextMarkerStyle(ImPlotMarker marker,float size,const ImVec4 fill,float weight,const ImVec4 outline);
 void ImPlot_SetNextErrorBarStyle(const ImVec4 col,float size,float weight);
 const char* ImPlot_GetStyleColorName(ImPlotCol color);
+const char* ImPlot_GetMarkerName(ImPlotMarker marker);
 void ImPlot_PushColormapPlotColormap(ImPlotColormap colormap);
 void ImPlot_PushColormapVec4Ptr(const ImVec4* colormap,int size);
 void ImPlot_PopColormap(int count);
