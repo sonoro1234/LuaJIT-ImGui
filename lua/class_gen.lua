@@ -277,7 +277,8 @@ local function checktype(typ,va)
 		if typ:match"%*" and not typ:match"%(%*%)" then --pointer not function pointer
 			local typsinptr = typ:gsub("(%*)","")
 			local extra = " or ffi.istype('"..typsinptr.."',"..va..")"
-			return "(ffi.istype('"..typ.."',"..va..")"..extra..")"
+			local extra2 = " or ffi.istype('"..typsinptr.."[]',"..va..")"
+			return "(ffi.istype('"..typ.."',"..va..")"..extra..extra2..")"
 		end
 		return "ffi.istype('"..typ.."',"..va..")"
 	end
