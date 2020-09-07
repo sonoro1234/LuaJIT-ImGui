@@ -1693,13 +1693,13 @@ function M.ImPlot_BeginLegendPopup(label_id,mouse_button)
     return lib.ImPlot_BeginLegendPopup(label_id,mouse_button)
 end
 function M.ImPlot_BeginPlot(title_id,x_label,y_label,size,flags,x_flags,y_flags,y2_flags,y3_flags)
-    x_flags = x_flags or 7
+    x_flags = x_flags or 0
     y_label = y_label or nil
     size = size or ImVec2(-1,0)
-    flags = flags or 47
-    y_flags = y_flags or 7
-    y3_flags = y3_flags or 6
-    y2_flags = y2_flags or 6
+    flags = flags or 0
+    y_flags = y_flags or 0
+    y3_flags = y3_flags or 1
+    y2_flags = y2_flags or 1
     x_label = x_label or nil
     return lib.ImPlot_BeginPlot(title_id,x_label,y_label,size,flags,x_flags,y_flags,y2_flags,y3_flags)
 end
@@ -1727,6 +1727,7 @@ M.ImPlot_GetColormapName = lib.ImPlot_GetColormapName
 M.ImPlot_GetColormapSize = lib.ImPlot_GetColormapSize
 M.ImPlot_GetCurrentContext = lib.ImPlot_GetCurrentContext
 M.ImPlot_GetInputMap = lib.ImPlot_GetInputMap
+M.ImPlot_GetMarkerName = lib.ImPlot_GetMarkerName
 M.ImPlot_GetPlotDrawList = lib.ImPlot_GetPlotDrawList
 function M.ImPlot_GetPlotLimits(y_axis)
     y_axis = y_axis or -1
@@ -1770,6 +1771,13 @@ function M.ImPlot_LerpColormap(t)
     local nonUDT_out = ffi.new("ImVec4")
     lib.ImPlot_LerpColormap(nonUDT_out,t)
     return nonUDT_out
+end
+function M.ImPlot_LinkNextPlotLimits(xmin,xmax,ymin,ymax,ymin2,ymax2,ymin3,ymax3)
+    ymax2 = ymax2 or nil
+    ymin2 = ymin2 or nil
+    ymax3 = ymax3 or nil
+    ymin3 = ymin3 or nil
+    return lib.ImPlot_LinkNextPlotLimits(xmin,xmax,ymin,ymax,ymin2,ymax2,ymin3,ymax3)
 end
 function M.ImPlot_NextColormapColor()
     local nonUDT_out = ffi.new("ImVec4")
@@ -2258,18 +2266,18 @@ function M.ImPlot_SetNextMarkerStyle(marker,size,fill,weight,outline)
     marker = marker or -1
     return lib.ImPlot_SetNextMarkerStyle(marker,size,fill,weight,outline)
 end
-function M.ImPlot_SetNextPlotLimits(x_min,x_max,y_min,y_max,cond)
+function M.ImPlot_SetNextPlotLimits(xmin,xmax,ymin,ymax,cond)
     cond = cond or ImGuiCond_Once
-    return lib.ImPlot_SetNextPlotLimits(x_min,x_max,y_min,y_max,cond)
+    return lib.ImPlot_SetNextPlotLimits(xmin,xmax,ymin,ymax,cond)
 end
-function M.ImPlot_SetNextPlotLimitsX(x_min,x_max,cond)
+function M.ImPlot_SetNextPlotLimitsX(xmin,xmax,cond)
     cond = cond or ImGuiCond_Once
-    return lib.ImPlot_SetNextPlotLimitsX(x_min,x_max,cond)
+    return lib.ImPlot_SetNextPlotLimitsX(xmin,xmax,cond)
 end
-function M.ImPlot_SetNextPlotLimitsY(y_min,y_max,cond,y_axis)
+function M.ImPlot_SetNextPlotLimitsY(ymin,ymax,cond,y_axis)
     cond = cond or ImGuiCond_Once
     y_axis = y_axis or 0
-    return lib.ImPlot_SetNextPlotLimitsY(y_min,y_max,cond,y_axis)
+    return lib.ImPlot_SetNextPlotLimitsY(ymin,ymax,cond,y_axis)
 end
 function M.ImPlot_SetNextPlotTicksXdoublePtr(values,n_ticks,labels,show_default)
     show_default = show_default or false
