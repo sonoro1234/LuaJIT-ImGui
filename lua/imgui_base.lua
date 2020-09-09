@@ -317,7 +317,7 @@ function M.quat_cast(f)
 end
 function M.quat_pos_cast(f)
 	local nonUDT_out = ffi.new("quat")
-	local nonUDT_pos = ffi.new("float[3]")
+	local nonUDT_pos = ffi.new("G3Dvec3")
 	lib.quat_pos_cast(f,nonUDT_out,nonUDT_pos)
 	return nonUDT_out,nonUDT_pos
 end
