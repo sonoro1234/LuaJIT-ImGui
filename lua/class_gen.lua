@@ -62,15 +62,26 @@ for k,enu in pairs(standenu.enums) do
 		enumsvalues[v.name] = v.calc_value
 	end
 end
+local standenu = dofile([[../cimguizmo_quat/generator/output/structs_and_enums.lua]])
+for k,enu in pairs(standenu.enums) do
+	for i,v in ipairs(enu) do
+		assert(v.calc_value)
+		enumsvalues[v.name] = v.calc_value
+	end
+end
 --load function definitions
 local fundefs = dofile([[../cimgui/generator/output/definitions.lua]])
 local fundefspl = dofile([[../cimplot/generator/output/definitions.lua]])
 local fundefszmo = dofile([[../cimguizmo/generator/output/definitions.lua]])
+local fundefszmoQ = dofile([[../cimguizmo_quat/generator/output/definitions.lua]])
 --merge funcdefs and fundefspl
 for fun,defs in pairs(fundefspl) do
 	fundefs[fun] = defs
 end
 for fun,defs in pairs(fundefszmo) do
+	fundefs[fun] = defs
+end
+for fun,defs in pairs(fundefszmoQ) do
 	fundefs[fun] = defs
 end
 --group them by structs
@@ -154,6 +165,10 @@ function sanitize_reserved(def)
 			elseif enumsvalues[v] then
 				def.defaults[k] = enumsvalues[v]
 			else
+				local ok,val = pcall(cpp2ffi.parse_enum_value,v,enumsvalues,true)
+				if ok then
+				def.defaults[k] = val
+				else
 				--numbers without f in the end
 				def.defaults[k] = v:gsub("([%d%.%-]+)f","%1")
 				--+ in front of numbers
@@ -166,6 +181,10 @@ function sanitize_reserved(def)
 				if def.defaults[k]:match"%(ImU32%)" then
 					def.defaults[k] = CleanImU32(def.defaults[k])
 				end
+				end
+				--if def.defaults[k]:match"~" then
+				--	def.defaults[k] = bit.bnot
+				--end
 			end
 		end
 	end

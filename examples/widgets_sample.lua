@@ -8,7 +8,7 @@ local val = ffi.new("float[1]")
 local padval = ffi.new("float[2]")
 local curve = win.ig.Curve("mycurve",12,100)
 local Quat = ffi.new("quat",{1,0,0,0})
-local v3 = ffi.new("float[3]",{1,0,0})
+local v3 = ffi.new("G3Dvec3",{1,0,0})
 local mat4 = win.ig.mat4_cast(Quat)
 
 function win:draw(ig)
@@ -37,7 +37,7 @@ function win:draw(ig)
 		end
 		if ig.TreeNode"gizmoquat" then
 
-			if ig.Guizmo3DPan("###guizmo0",v3,Quat,150,ig.lib.mode3Axes + ig.lib.cubeAtOrigin) then
+			if ig.gizmo3D("###guizmo0",v3,Quat,150) then 
 				mat4 = ig.mat4_pos_cast(Quat,v3)
 			end
 			
@@ -48,10 +48,10 @@ function win:draw(ig)
 			ig.InputFloat4("##3",mat4.f+8, nil, ig.lib.ImGuiInputTextFlags_ReadOnly)
 			ig.InputFloat4("##4",mat4.f+12, nil, ig.lib.ImGuiInputTextFlags_ReadOnly)
 			ig.EndGroup()
-			ig.setDirectionColor(ig.ImVec4(1,0,0,1))
-			ig.Guizmo3Dvec3("guizmo3",v3,150,ig.lib.modeDirection)
-			ig.restoreDirectionColor()
-			ig.InputFloat3("dir",v3, nil, ig.lib.ImGuiInputTextFlags_ReadOnly)
+			ig.imguiGizmo_setDirectionColor(ig.ImVec4(1,0,0,1))
+			ig.gizmo3D("guizmo3",v3,150)
+			ig.imguiGizmo_restoreDirectionColor()
+			ig.InputFloat3("dir",ffi.new("float[3]",{v3.x,v3.y,v3.z}), nil, ig.lib.ImGuiInputTextFlags_ReadOnly)
 			ig.TreePop();
 			ig.Separator();
 		end

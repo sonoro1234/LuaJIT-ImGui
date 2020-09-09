@@ -300,21 +300,6 @@ function M.U32(a,b,c,d) return lib.igGetColorU32Vec4(ImVec4(a,b,c,d or 1)) end
 
 -------------ImGuiZMO.quat
 
-M.resizeAxesOf = lib.resizeAxesOf
-M.restoreAxesSize = lib.restoreAxesSize
-M.resizeSolidOf = lib.resizeSolidOf
-M.restoreSolidSize = lib.restoreSolidSize
-M.setDirectionColor = lib.setDirectionColor
-M.restoreDirectionColor = lib.restoreDirectionColor
-M.setSphereColors = lib.setSphereColors
-M.restoreSphereColors = lib.restoreSphereColors
-M.setGizmoFeelingRot = lib.setGizmoFeelingRot
-M.getGizmoFeelingRot = lib.getGizmoFeelingRot
-M.setDollyScale = lib.setDollyScale
-M.getDollyScale = lib.getDollyScale
-M.setPanScale = lib.setPanScale
-M.getPanScale = lib.getPanScale
-
 function M.mat4_cast(q)
 	local nonUDT_out = ffi.new("Mat4")
 	lib.mat4_cast(q,nonUDT_out)
@@ -336,22 +321,6 @@ function M.quat_pos_cast(f)
 	lib.quat_pos_cast(f,nonUDT_out,nonUDT_pos)
 	return nonUDT_out,nonUDT_pos
 end
-
-M.Guizmo3D = lib.ImGuizmo3D
-M.Guizmo3Dquat = lib.ImGuizmo3Dquat
-M.Guizmo3Dvec4 = lib.ImGuizmo3Dvec4
-M.Guizmo3Dvec3 = lib.ImGuizmo3Dvec3
-M.Guizmo3Dquatquat = lib.ImGuizmo3Dquatquat
-M.Guizmo3Dquatvec4 = lib.ImGuizmo3Dquatvec4
-M.Guizmo3Dquatvec3 = lib.ImGuizmo3Dquatvec3
-
-M.Guizmo3DPan = lib.ImGuizmo3DPan
-M.Guizmo3DPanquat = lib.ImGuizmo3DPanquat
-M.Guizmo3DPanvec4 = lib.ImGuizmo3DPanvec4
-M.Guizmo3DPanvec3 = lib.ImGuizmo3DPanvec3
-M.Guizmo3DPanquatquat = lib.ImGuizmo3DPanquatquat
-M.Guizmo3DPanquatvec4 = lib.ImGuizmo3DPanquatvec4
-M.Guizmo3DPanquatvec3 = lib.ImGuizmo3DPanquatvec3
 
 --------------- several widgets------------
 local sin, cos, atan2, pi, max, min,acos,sqrt = math.sin, math.cos, math.atan2, math.pi, math.max, math.min,math.acos,math.sqrt
