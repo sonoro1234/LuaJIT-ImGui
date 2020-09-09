@@ -213,13 +213,15 @@ local function make_function(method,def)
 		end
 		table.insert(code,"function "..fname_lua..call_args)
 		--set defaults
-		for k,v in pairs(def.defaults) do
+		cpp2ffi.table_do_sorted(def.defaults, function(k,v)
+		--for k,v in pairs(def.defaults) do
 			if v == 'true' then
 				table.insert(code,"    if "..k.." == nil then "..k.." = "..v.." end")
 			else
 				table.insert(code,"    "..k.." = "..k.." or "..v)
 			end
-		end
+		--end
+		end)
 		if def.nonUDT == 1 then
 			--allocate variable for return value
 			local out_type = def.argsT[1].type:gsub("*", "")
@@ -252,9 +254,11 @@ local function constructor_gen(code,def)
 		table.insert(code,"function "..def.stname.."."..name..def.call_args)
 	end
 	--set defaults
-	for k,v in pairs(def.defaults) do
+	cpp2ffi.table_do_sorted(def.defaults, function(k,v)
+	--for k,v in pairs(def.defaults) do
 		table.insert(code,"    if "..k.." == nil then "..k.." = "..v.." end")
-	end
+	--end
+	end)
 	local fname = def.ov_cimguiname or def.cimguiname
 	table.insert(code,"    local ptr = lib."..fname..def.call_args)
 	table.insert(code,"    return ffi.gc(ptr,lib."..def.stname.."_destroy)")

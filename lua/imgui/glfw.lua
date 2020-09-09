@@ -594,8 +594,8 @@ function ImDrawList:AddBezierCurve(p1,p2,p3,p4,col,thickness,num_segments)
 end
 ImDrawList.AddCallback = lib.ImDrawList_AddCallback
 function ImDrawList:AddCircle(center,radius,col,num_segments,thickness)
-    thickness = thickness or 1.0
     num_segments = num_segments or 0
+    thickness = thickness or 1.0
     return lib.ImDrawList_AddCircle(self,center,radius,col,num_segments,thickness)
 end
 function ImDrawList:AddCircleFilled(center,radius,col,num_segments)
@@ -611,11 +611,11 @@ function ImDrawList:AddImage(user_texture_id,p_min,p_max,uv_min,uv_max,col)
     return lib.ImDrawList_AddImage(self,user_texture_id,p_min,p_max,uv_min,uv_max,col)
 end
 function ImDrawList:AddImageQuad(user_texture_id,p1,p2,p3,p4,uv1,uv2,uv3,uv4,col)
-    uv3 = uv3 or ImVec2(1,1)
-    uv4 = uv4 or ImVec2(0,1)
     col = col or 4294967295
     uv1 = uv1 or ImVec2(0,0)
     uv2 = uv2 or ImVec2(1,0)
+    uv3 = uv3 or ImVec2(1,1)
+    uv4 = uv4 or ImVec2(0,1)
     return lib.ImDrawList_AddImageQuad(self,user_texture_id,p1,p2,p3,p4,uv1,uv2,uv3,uv4,col)
 end
 function ImDrawList:AddImageRounded(user_texture_id,p_min,p_max,uv_min,uv_max,col,rounding,rounding_corners)
@@ -638,9 +638,9 @@ function ImDrawList:AddQuad(p1,p2,p3,p4,col,thickness)
 end
 ImDrawList.AddQuadFilled = lib.ImDrawList_AddQuadFilled
 function ImDrawList:AddRect(p_min,p_max,col,rounding,rounding_corners,thickness)
-    thickness = thickness or 1.0
     rounding = rounding or 0.0
     rounding_corners = rounding_corners or lib.ImDrawCornerFlags_All
+    thickness = thickness or 1.0
     return lib.ImDrawList_AddRect(self,p_min,p_max,col,rounding,rounding_corners,thickness)
 end
 function ImDrawList:AddRectFilled(p_min,p_max,col,rounding,rounding_corners)
@@ -654,9 +654,9 @@ function ImDrawList:AddTextVec2(pos,col,text_begin,text_end)
     return lib.ImDrawList_AddTextVec2(self,pos,col,text_begin,text_end)
 end
 function ImDrawList:AddTextFontPtr(font,font_size,pos,col,text_begin,text_end,wrap_width,cpu_fine_clip_rect)
-    wrap_width = wrap_width or 0.0
     cpu_fine_clip_rect = cpu_fine_clip_rect or nil
     text_end = text_end or nil
+    wrap_width = wrap_width or 0.0
     return lib.ImDrawList_AddTextFontPtr(self,font,font_size,pos,col,text_begin,text_end,wrap_width,cpu_fine_clip_rect)
 end
 function ImDrawList:AddText(a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
@@ -786,8 +786,8 @@ ImFont.IsGlyphRangeUnused = lib.ImFont_IsGlyphRangeUnused
 ImFont.IsLoaded = lib.ImFont_IsLoaded
 ImFont.RenderChar = lib.ImFont_RenderChar
 function ImFont:RenderText(draw_list,size,pos,col,clip_rect,text_begin,text_end,wrap_width,cpu_fine_clip)
-    wrap_width = wrap_width or 0.0
     cpu_fine_clip = cpu_fine_clip or false
+    wrap_width = wrap_width or 0.0
     return lib.ImFont_RenderText(self,draw_list,size,pos,col,clip_rect,text_begin,text_end,wrap_width,cpu_fine_clip)
 end
 ImFont.SetFallbackChar = lib.ImFont_SetFallbackChar
@@ -980,8 +980,8 @@ function ImGuiListClipper:Begin(items_count,items_height)
 end
 ImGuiListClipper.End = lib.ImGuiListClipper_End
 function ImGuiListClipper.__new(ctype,items_count,items_height)
-    if items_height == nil then items_height = -1.0 end
     if items_count == nil then items_count = -1 end
+    if items_height == nil then items_height = -1.0 end
     local ptr = lib.ImGuiListClipper_ImGuiListClipper(items_count,items_height)
     return ffi.gc(ptr,lib.ImGuiListClipper_destroy)
 end
@@ -1602,10 +1602,10 @@ function M.ImGuizmo_IsOver(a1) -- generic version
 end
 M.ImGuizmo_IsUsing = lib.ImGuizmo_IsUsing
 function M.ImGuizmo_Manipulate(view,projection,operation,mode,matrix,deltaMatrix,snap,localBounds,boundsSnap)
-    snap = snap or NULL
-    localBounds = localBounds or NULL
     boundsSnap = boundsSnap or NULL
     deltaMatrix = deltaMatrix or NULL
+    localBounds = localBounds or NULL
+    snap = snap or NULL
     return lib.ImGuizmo_Manipulate(view,projection,operation,mode,matrix,deltaMatrix,snap,localBounds,boundsSnap)
 end
 M.ImGuizmo_RecomposeMatrixFromComponents = lib.ImGuizmo_RecomposeMatrixFromComponents
@@ -1623,14 +1623,14 @@ function M.ImPlot_BeginLegendPopup(label_id,mouse_button)
     return lib.ImPlot_BeginLegendPopup(label_id,mouse_button)
 end
 function M.ImPlot_BeginPlot(title_id,x_label,y_label,size,flags,x_flags,y_flags,y2_flags,y3_flags)
-    x_label = x_label or nil
-    size = size or ImVec2(-1,0)
-    y_label = y_label or nil
-    x_flags = x_flags or 0
     flags = flags or 0
-    y_flags = y_flags or 0
+    size = size or ImVec2(-1,0)
+    x_flags = x_flags or 0
+    x_label = x_label or nil
     y2_flags = y2_flags or 1
     y3_flags = y3_flags or 1
+    y_flags = y_flags or 0
+    y_label = y_label or nil
     return lib.ImPlot_BeginPlot(title_id,x_label,y_label,size,flags,x_flags,y_flags,y2_flags,y3_flags)
 end
 M.ImPlot_CreateContext = lib.ImPlot_CreateContext
@@ -1642,10 +1642,10 @@ M.ImPlot_EndLegendDragDropSource = lib.ImPlot_EndLegendDragDropSource
 M.ImPlot_EndLegendPopup = lib.ImPlot_EndLegendPopup
 M.ImPlot_EndPlot = lib.ImPlot_EndPlot
 function M.ImPlot_FitNextPlotAxes(x,y,y2,y3)
-    if y3 == nil then y3 = true end
     if x == nil then x = true end
     if y == nil then y = true end
     if y2 == nil then y2 = true end
+    if y3 == nil then y3 = true end
     return lib.ImPlot_FitNextPlotAxes(x,y,y2,y3)
 end
 function M.ImPlot_GetColormapColor(index)
@@ -1703,10 +1703,10 @@ function M.ImPlot_LerpColormap(t)
     return nonUDT_out
 end
 function M.ImPlot_LinkNextPlotLimits(xmin,xmax,ymin,ymax,ymin2,ymax2,ymin3,ymax3)
-    ymin3 = ymin3 or nil
+    ymax2 = ymax2 or nil
     ymax3 = ymax3 or nil
     ymin2 = ymin2 or nil
-    ymax2 = ymax2 or nil
+    ymin3 = ymin3 or nil
     return lib.ImPlot_LinkNextPlotLimits(xmin,xmax,ymin,ymax,ymin2,ymax2,ymin3,ymax3)
 end
 function M.ImPlot_NextColormapColor()
@@ -1733,27 +1733,27 @@ function M.ImPlot_PixelsToPlot(a1,a2,a3,a4) -- generic version
     error'M.ImPlot_PixelsToPlot could not find overloaded'
 end
 function M.ImPlot_PlotBarsFloatPtrIntFloat(label_id,values,count,width,shift,offset,stride)
-    shift = shift or 0
     offset = offset or 0
-    width = width or 0.67
+    shift = shift or 0
     stride = stride or ffi.sizeof("float")
+    width = width or 0.67
     return lib.ImPlot_PlotBarsFloatPtrIntFloat(label_id,values,count,width,shift,offset,stride)
 end
 function M.ImPlot_PlotBarsdoublePtrIntdouble(label_id,values,count,width,shift,offset,stride)
-    shift = shift or 0
     offset = offset or 0
-    width = width or 0.67
+    shift = shift or 0
     stride = stride or ffi.sizeof("double")
+    width = width or 0.67
     return lib.ImPlot_PlotBarsdoublePtrIntdouble(label_id,values,count,width,shift,offset,stride)
 end
 function M.ImPlot_PlotBarsFloatPtrFloatPtr(label_id,xs,ys,count,width,offset,stride)
-    stride = stride or ffi.sizeof("float")
     offset = offset or 0
+    stride = stride or ffi.sizeof("float")
     return lib.ImPlot_PlotBarsFloatPtrFloatPtr(label_id,xs,ys,count,width,offset,stride)
 end
 function M.ImPlot_PlotBarsdoublePtrdoublePtr(label_id,xs,ys,count,width,offset,stride)
-    stride = stride or ffi.sizeof("double")
     offset = offset or 0
+    stride = stride or ffi.sizeof("double")
     return lib.ImPlot_PlotBarsdoublePtrdoublePtr(label_id,xs,ys,count,width,offset,stride)
 end
 function M.ImPlot_PlotBarsFnPlotPoIntPtr(label_id,getter,data,count,width,offset)
@@ -1770,27 +1770,27 @@ function M.ImPlot_PlotBars(a1,a2,a3,a4,a5,a6,a7) -- generic version
     error'M.ImPlot_PlotBars could not find overloaded'
 end
 function M.ImPlot_PlotBarsHFloatPtrIntFloat(label_id,values,count,height,shift,offset,stride)
-    shift = shift or 0
-    offset = offset or 0
-    stride = stride or ffi.sizeof("float")
     height = height or 0.67
+    offset = offset or 0
+    shift = shift or 0
+    stride = stride or ffi.sizeof("float")
     return lib.ImPlot_PlotBarsHFloatPtrIntFloat(label_id,values,count,height,shift,offset,stride)
 end
 function M.ImPlot_PlotBarsHdoublePtrIntdouble(label_id,values,count,height,shift,offset,stride)
-    shift = shift or 0
-    offset = offset or 0
-    stride = stride or ffi.sizeof("double")
     height = height or 0.67
+    offset = offset or 0
+    shift = shift or 0
+    stride = stride or ffi.sizeof("double")
     return lib.ImPlot_PlotBarsHdoublePtrIntdouble(label_id,values,count,height,shift,offset,stride)
 end
 function M.ImPlot_PlotBarsHFloatPtrFloatPtr(label_id,xs,ys,count,height,offset,stride)
-    stride = stride or ffi.sizeof("float")
     offset = offset or 0
+    stride = stride or ffi.sizeof("float")
     return lib.ImPlot_PlotBarsHFloatPtrFloatPtr(label_id,xs,ys,count,height,offset,stride)
 end
 function M.ImPlot_PlotBarsHdoublePtrdoublePtr(label_id,xs,ys,count,height,offset,stride)
-    stride = stride or ffi.sizeof("double")
     offset = offset or 0
+    stride = stride or ffi.sizeof("double")
     return lib.ImPlot_PlotBarsHdoublePtrdoublePtr(label_id,xs,ys,count,height,offset,stride)
 end
 function M.ImPlot_PlotBarsHFnPlotPoIntPtr(label_id,getter,data,count,height,offset)
@@ -1807,13 +1807,13 @@ function M.ImPlot_PlotBarsH(a1,a2,a3,a4,a5,a6,a7) -- generic version
     error'M.ImPlot_PlotBarsH could not find overloaded'
 end
 function M.ImPlot_PlotDigitalFloatPtr(label_id,xs,ys,count,offset,stride)
-    stride = stride or ffi.sizeof("float")
     offset = offset or 0
+    stride = stride or ffi.sizeof("float")
     return lib.ImPlot_PlotDigitalFloatPtr(label_id,xs,ys,count,offset,stride)
 end
 function M.ImPlot_PlotDigitaldoublePtr(label_id,xs,ys,count,offset,stride)
-    stride = stride or ffi.sizeof("double")
     offset = offset or 0
+    stride = stride or ffi.sizeof("double")
     return lib.ImPlot_PlotDigitaldoublePtr(label_id,xs,ys,count,offset,stride)
 end
 function M.ImPlot_PlotDigitalFnPlotPoIntPtr(label_id,getter,data,count,offset)
@@ -1828,23 +1828,23 @@ function M.ImPlot_PlotDigital(a1,a2,a3,a4,a5,a6) -- generic version
     error'M.ImPlot_PlotDigital could not find overloaded'
 end
 function M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
-    stride = stride or ffi.sizeof("float")
     offset = offset or 0
+    stride = stride or ffi.sizeof("float")
     return lib.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
 end
 function M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
-    stride = stride or ffi.sizeof("double")
     offset = offset or 0
+    stride = stride or ffi.sizeof("double")
     return lib.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
 end
 function M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
-    stride = stride or ffi.sizeof("float")
     offset = offset or 0
+    stride = stride or ffi.sizeof("float")
     return lib.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
 function M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
-    stride = stride or ffi.sizeof("double")
     offset = offset or 0
+    stride = stride or ffi.sizeof("double")
     return lib.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
 function M.ImPlot_PlotErrorBars(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
@@ -1856,23 +1856,23 @@ function M.ImPlot_PlotErrorBars(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
     error'M.ImPlot_PlotErrorBars could not find overloaded'
 end
 function M.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
-    stride = stride or ffi.sizeof("float")
     offset = offset or 0
+    stride = stride or ffi.sizeof("float")
     return lib.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
 end
 function M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
-    stride = stride or ffi.sizeof("double")
     offset = offset or 0
+    stride = stride or ffi.sizeof("double")
     return lib.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
 end
 function M.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
-    stride = stride or ffi.sizeof("float")
     offset = offset or 0
+    stride = stride or ffi.sizeof("float")
     return lib.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
 function M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
-    stride = stride or ffi.sizeof("double")
     offset = offset or 0
+    stride = stride or ffi.sizeof("double")
     return lib.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
 function M.ImPlot_PlotErrorBarsH(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
@@ -1884,14 +1884,14 @@ function M.ImPlot_PlotErrorBarsH(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
     error'M.ImPlot_PlotErrorBarsH could not find overloaded'
 end
 function M.ImPlot_PlotHeatmapFloatPtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
-    bounds_min = bounds_min or ImPlotPoint(0,0)
     bounds_max = bounds_max or ImPlotPoint(1,1)
+    bounds_min = bounds_min or ImPlotPoint(0,0)
     label_fmt = label_fmt or "%.1f"
     return lib.ImPlot_PlotHeatmapFloatPtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
 end
 function M.ImPlot_PlotHeatmapdoublePtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
-    bounds_min = bounds_min or ImPlotPoint(0,0)
     bounds_max = bounds_max or ImPlotPoint(1,1)
+    bounds_min = bounds_min or ImPlotPoint(0,0)
     label_fmt = label_fmt or "%.1f"
     return lib.ImPlot_PlotHeatmapdoublePtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
 end
@@ -1902,23 +1902,23 @@ function M.ImPlot_PlotHeatmap(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
     error'M.ImPlot_PlotHeatmap could not find overloaded'
 end
 function M.ImPlot_PlotLineFloatPtrInt(label_id,values,count,offset,stride)
-    stride = stride or ffi.sizeof("float")
     offset = offset or 0
+    stride = stride or ffi.sizeof("float")
     return lib.ImPlot_PlotLineFloatPtrInt(label_id,values,count,offset,stride)
 end
 function M.ImPlot_PlotLinedoublePtrInt(label_id,values,count,offset,stride)
-    stride = stride or ffi.sizeof("double")
     offset = offset or 0
+    stride = stride or ffi.sizeof("double")
     return lib.ImPlot_PlotLinedoublePtrInt(label_id,values,count,offset,stride)
 end
 function M.ImPlot_PlotLineFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
-    stride = stride or ffi.sizeof("float")
     offset = offset or 0
+    stride = stride or ffi.sizeof("float")
     return lib.ImPlot_PlotLineFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
 end
 function M.ImPlot_PlotLinedoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
-    stride = stride or ffi.sizeof("double")
     offset = offset or 0
+    stride = stride or ffi.sizeof("double")
     return lib.ImPlot_PlotLinedoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
 end
 function M.ImPlot_PlotLineVec2Ptr(label_id,data,count,offset)
@@ -1945,15 +1945,15 @@ function M.ImPlot_PlotLine(a1,a2,a3,a4,a5,a6) -- generic version
     error'M.ImPlot_PlotLine could not find overloaded'
 end
 function M.ImPlot_PlotPieChartFloatPtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
-    normalize = normalize or false
     angle0 = angle0 or 90
     label_fmt = label_fmt or "%.1f"
+    normalize = normalize or false
     return lib.ImPlot_PlotPieChartFloatPtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
 function M.ImPlot_PlotPieChartdoublePtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
-    normalize = normalize or false
     angle0 = angle0 or 90
     label_fmt = label_fmt or "%.1f"
+    normalize = normalize or false
     return lib.ImPlot_PlotPieChartdoublePtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
 function M.ImPlot_PlotPieChart(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
@@ -1963,23 +1963,23 @@ function M.ImPlot_PlotPieChart(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
     error'M.ImPlot_PlotPieChart could not find overloaded'
 end
 function M.ImPlot_PlotScatterFloatPtrInt(label_id,values,count,offset,stride)
-    stride = stride or ffi.sizeof("float")
     offset = offset or 0
+    stride = stride or ffi.sizeof("float")
     return lib.ImPlot_PlotScatterFloatPtrInt(label_id,values,count,offset,stride)
 end
 function M.ImPlot_PlotScatterdoublePtrInt(label_id,values,count,offset,stride)
-    stride = stride or ffi.sizeof("double")
     offset = offset or 0
+    stride = stride or ffi.sizeof("double")
     return lib.ImPlot_PlotScatterdoublePtrInt(label_id,values,count,offset,stride)
 end
 function M.ImPlot_PlotScatterFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
-    stride = stride or ffi.sizeof("float")
     offset = offset or 0
+    stride = stride or ffi.sizeof("float")
     return lib.ImPlot_PlotScatterFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
 end
 function M.ImPlot_PlotScatterdoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
-    stride = stride or ffi.sizeof("double")
     offset = offset or 0
+    stride = stride or ffi.sizeof("double")
     return lib.ImPlot_PlotScatterdoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
 end
 function M.ImPlot_PlotScatterVec2Ptr(label_id,data,count,offset)
@@ -2006,37 +2006,37 @@ function M.ImPlot_PlotScatter(a1,a2,a3,a4,a5,a6) -- generic version
     error'M.ImPlot_PlotScatter could not find overloaded'
 end
 function M.ImPlot_PlotShadedFloatPtrIntFloat(label_id,values,count,y_ref,offset,stride)
-    y_ref = y_ref or 0
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
+    y_ref = y_ref or 0
     return lib.ImPlot_PlotShadedFloatPtrIntFloat(label_id,values,count,y_ref,offset,stride)
 end
 function M.ImPlot_PlotShadeddoublePtrIntdouble(label_id,values,count,y_ref,offset,stride)
-    y_ref = y_ref or 0
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
+    y_ref = y_ref or 0
     return lib.ImPlot_PlotShadeddoublePtrIntdouble(label_id,values,count,y_ref,offset,stride)
 end
 function M.ImPlot_PlotShadedFloatPtrFloatPtrIntFloat(label_id,xs,ys,count,y_ref,offset,stride)
-    y_ref = y_ref or 0
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
+    y_ref = y_ref or 0
     return lib.ImPlot_PlotShadedFloatPtrFloatPtrIntFloat(label_id,xs,ys,count,y_ref,offset,stride)
 end
 function M.ImPlot_PlotShadeddoublePtrdoublePtrIntdouble(label_id,xs,ys,count,y_ref,offset,stride)
-    y_ref = y_ref or 0
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
+    y_ref = y_ref or 0
     return lib.ImPlot_PlotShadeddoublePtrdoublePtrIntdouble(label_id,xs,ys,count,y_ref,offset,stride)
 end
 function M.ImPlot_PlotShadedFloatPtrFloatPtrFloatPtr(label_id,xs,ys1,ys2,count,offset,stride)
-    stride = stride or ffi.sizeof("float")
     offset = offset or 0
+    stride = stride or ffi.sizeof("float")
     return lib.ImPlot_PlotShadedFloatPtrFloatPtrFloatPtr(label_id,xs,ys1,ys2,count,offset,stride)
 end
 function M.ImPlot_PlotShadeddoublePtrdoublePtrdoublePtr(label_id,xs,ys1,ys2,count,offset,stride)
-    stride = stride or ffi.sizeof("double")
     offset = offset or 0
+    stride = stride or ffi.sizeof("double")
     return lib.ImPlot_PlotShadeddoublePtrdoublePtrdoublePtr(label_id,xs,ys1,ys2,count,offset,stride)
 end
 function M.ImPlot_PlotShadedFnPlotPoIntPtr(label_id,getter1,data1,getter2,data2,count,offset)
@@ -2055,27 +2055,27 @@ function M.ImPlot_PlotShaded(a1,a2,a3,a4,a5,a6,a7) -- generic version
     error'M.ImPlot_PlotShaded could not find overloaded'
 end
 function M.ImPlot_PlotStemsFloatPtrIntFloat(label_id,values,count,y_ref,offset,stride)
-    y_ref = y_ref or 0
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
+    y_ref = y_ref or 0
     return lib.ImPlot_PlotStemsFloatPtrIntFloat(label_id,values,count,y_ref,offset,stride)
 end
 function M.ImPlot_PlotStemsdoublePtrIntdouble(label_id,values,count,y_ref,offset,stride)
-    y_ref = y_ref or 0
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
+    y_ref = y_ref or 0
     return lib.ImPlot_PlotStemsdoublePtrIntdouble(label_id,values,count,y_ref,offset,stride)
 end
 function M.ImPlot_PlotStemsFloatPtrFloatPtr(label_id,xs,ys,count,y_ref,offset,stride)
-    y_ref = y_ref or 0
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
+    y_ref = y_ref or 0
     return lib.ImPlot_PlotStemsFloatPtrFloatPtr(label_id,xs,ys,count,y_ref,offset,stride)
 end
 function M.ImPlot_PlotStemsdoublePtrdoublePtr(label_id,xs,ys,count,y_ref,offset,stride)
-    y_ref = y_ref or 0
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
+    y_ref = y_ref or 0
     return lib.ImPlot_PlotStemsdoublePtrdoublePtr(label_id,xs,ys,count,y_ref,offset,stride)
 end
 function M.ImPlot_PlotStems(a1,a2,a3,a4,a5,a6,a7) -- generic version
@@ -2087,13 +2087,13 @@ function M.ImPlot_PlotStems(a1,a2,a3,a4,a5,a6,a7) -- generic version
     error'M.ImPlot_PlotStems could not find overloaded'
 end
 function M.ImPlot_PlotTextFloat(text,x,y,vertical,pixel_offset)
-    vertical = vertical or false
     pixel_offset = pixel_offset or ImVec2(0,0)
+    vertical = vertical or false
     return lib.ImPlot_PlotTextFloat(text,x,y,vertical,pixel_offset)
 end
 function M.ImPlot_PlotTextdouble(text,x,y,vertical,pixel_offset)
-    vertical = vertical or false
     pixel_offset = pixel_offset or ImVec2(0,0)
+    vertical = vertical or false
     return lib.ImPlot_PlotTextdouble(text,x,y,vertical,pixel_offset)
 end
 function M.ImPlot_PlotText(a1,a2,a3,a4,a5) -- generic version
@@ -2179,8 +2179,8 @@ function M.ImPlot_SetNextErrorBarStyle(col,size,weight)
     return lib.ImPlot_SetNextErrorBarStyle(col,size,weight)
 end
 function M.ImPlot_SetNextFillStyle(col,alpha_mod)
-    col = col or ImVec4(0,0,0,-1)
     alpha_mod = alpha_mod or -1
+    col = col or ImVec4(0,0,0,-1)
     return lib.ImPlot_SetNextFillStyle(col,alpha_mod)
 end
 function M.ImPlot_SetNextLineStyle(col,weight)
@@ -2189,10 +2189,10 @@ function M.ImPlot_SetNextLineStyle(col,weight)
     return lib.ImPlot_SetNextLineStyle(col,weight)
 end
 function M.ImPlot_SetNextMarkerStyle(marker,size,fill,weight,outline)
-    marker = marker or -1
-    size = size or -1
     fill = fill or ImVec4(0,0,0,-1)
+    marker = marker or -1
     outline = outline or ImVec4(0,0,0,-1)
+    size = size or -1
     weight = weight or -1
     return lib.ImPlot_SetNextMarkerStyle(marker,size,fill,weight,outline)
 end
@@ -2205,18 +2205,18 @@ function M.ImPlot_SetNextPlotLimitsX(xmin,xmax,cond)
     return lib.ImPlot_SetNextPlotLimitsX(xmin,xmax,cond)
 end
 function M.ImPlot_SetNextPlotLimitsY(ymin,ymax,cond,y_axis)
-    y_axis = y_axis or 0
     cond = cond or ImGuiCond_Once
+    y_axis = y_axis or 0
     return lib.ImPlot_SetNextPlotLimitsY(ymin,ymax,cond,y_axis)
 end
 function M.ImPlot_SetNextPlotTicksXdoublePtr(values,n_ticks,labels,show_default)
-    show_default = show_default or false
     labels = labels or nil
+    show_default = show_default or false
     return lib.ImPlot_SetNextPlotTicksXdoublePtr(values,n_ticks,labels,show_default)
 end
 function M.ImPlot_SetNextPlotTicksXdouble(x_min,x_max,n_ticks,labels,show_default)
-    show_default = show_default or false
     labels = labels or nil
+    show_default = show_default or false
     return lib.ImPlot_SetNextPlotTicksXdouble(x_min,x_max,n_ticks,labels,show_default)
 end
 function M.ImPlot_SetNextPlotTicksX(a1,a2,a3,a4,a5) -- generic version
@@ -2226,15 +2226,15 @@ function M.ImPlot_SetNextPlotTicksX(a1,a2,a3,a4,a5) -- generic version
     error'M.ImPlot_SetNextPlotTicksX could not find overloaded'
 end
 function M.ImPlot_SetNextPlotTicksYdoublePtr(values,n_ticks,labels,show_default,y_axis)
+    labels = labels or nil
     show_default = show_default or false
     y_axis = y_axis or 0
-    labels = labels or nil
     return lib.ImPlot_SetNextPlotTicksYdoublePtr(values,n_ticks,labels,show_default,y_axis)
 end
 function M.ImPlot_SetNextPlotTicksYdouble(y_min,y_max,n_ticks,labels,show_default,y_axis)
+    labels = labels or nil
     show_default = show_default or false
     y_axis = y_axis or 0
-    labels = labels or nil
     return lib.ImPlot_SetNextPlotTicksYdouble(y_min,y_max,n_ticks,labels,show_default,y_axis)
 end
 function M.ImPlot_SetNextPlotTicksY(a1,a2,a3,a4,a5,a6) -- generic version
@@ -2283,20 +2283,20 @@ function M.ArrowButtonEx(str_id,dir,size_arg,flags)
     return lib.igArrowButtonEx(str_id,dir,size_arg,flags)
 end
 function M.Begin(name,p_open,flags)
-    p_open = p_open or nil
     flags = flags or 0
+    p_open = p_open or nil
     return lib.igBegin(name,p_open,flags)
 end
 function M.BeginChildStr(str_id,size,border,flags)
     border = border or false
-    size = size or ImVec2(0,0)
     flags = flags or 0
+    size = size or ImVec2(0,0)
     return lib.igBeginChildStr(str_id,size,border,flags)
 end
 function M.BeginChildID(id,size,border,flags)
     border = border or false
-    size = size or ImVec2(0,0)
     flags = flags or 0
+    size = size or ImVec2(0,0)
     return lib.igBeginChildID(id,size,border,flags)
 end
 function M.BeginChild(a1,a2,a3,a4) -- generic version
@@ -2352,8 +2352,8 @@ function M.BeginPopupContextWindow(str_id,popup_flags)
 end
 M.BeginPopupEx = lib.igBeginPopupEx
 function M.BeginPopupModal(name,p_open,flags)
-    p_open = p_open or nil
     flags = flags or 0
+    p_open = p_open or nil
     return lib.igBeginPopupModal(name,p_open,flags)
 end
 function M.BeginTabBar(str_id,flags)
@@ -2362,8 +2362,8 @@ function M.BeginTabBar(str_id,flags)
 end
 M.BeginTabBarEx = lib.igBeginTabBarEx
 function M.BeginTabItem(label,p_open,flags)
-    p_open = p_open or nil
     flags = flags or 0
+    p_open = p_open or nil
     return lib.igBeginTabItem(label,p_open,flags)
 end
 M.BeginTooltip = lib.igBeginTooltip
@@ -2383,8 +2383,8 @@ function M.ButtonBehavior(bb,id,out_hovered,out_held,flags)
     return lib.igButtonBehavior(bb,id,out_hovered,out_held,flags)
 end
 function M.ButtonEx(label,size_arg,flags)
-    size_arg = size_arg or ImVec2(0,0)
     flags = flags or 0
+    size_arg = size_arg or ImVec2(0,0)
     return lib.igButtonEx(label,size_arg,flags)
 end
 function M.CalcItemSize(size,default_w,default_h)
@@ -2395,9 +2395,9 @@ end
 M.CalcItemWidth = lib.igCalcItemWidth
 M.CalcListClipping = lib.igCalcListClipping
 function M.CalcTextSize(text,text_end,hide_text_after_double_hash,wrap_width)
-    wrap_width = wrap_width or -1.0
-    text_end = text_end or nil
     hide_text_after_double_hash = hide_text_after_double_hash or false
+    text_end = text_end or nil
+    wrap_width = wrap_width or -1.0
     local nonUDT_out = ffi.new("ImVec2")
     lib.igCalcTextSize(nonUDT_out,text,text_end,hide_text_after_double_hash,wrap_width)
     return nonUDT_out
@@ -2442,8 +2442,8 @@ function M.CollapsingHeader(a1,a2,a3) -- generic version
     error'M.CollapsingHeader could not find overloaded'
 end
 function M.ColorButton(desc_id,col,flags,size)
-    size = size or ImVec2(0,0)
     flags = flags or 0
+    size = size or ImVec2(0,0)
     return lib.igColorButton(desc_id,col,flags,size)
 end
 M.ColorConvertFloat4ToU32 = lib.igColorConvertFloat4ToU32
@@ -2468,8 +2468,8 @@ function M.ColorPicker3(label,col,flags)
     return lib.igColorPicker3(label,col,flags)
 end
 function M.ColorPicker4(label,col,flags,ref_col)
-    ref_col = ref_col or nil
     flags = flags or 0
+    ref_col = ref_col or nil
     return lib.igColorPicker4(label,col,flags,ref_col)
 end
 M.ColorPickerOptionsPopup = lib.igColorPickerOptionsPopup
@@ -2522,98 +2522,98 @@ end
 M.DragBehavior = lib.igDragBehavior
 function M.DragFloat(label,v,v_speed,v_min,v_max,format,flags)
     flags = flags or 0
-    v_speed = v_speed or 1.0
-    v_min = v_min or 0.0
-    v_max = v_max or 0.0
     format = format or "%.3f"
+    v_max = v_max or 0.0
+    v_min = v_min or 0.0
+    v_speed = v_speed or 1.0
     return lib.igDragFloat(label,v,v_speed,v_min,v_max,format,flags)
 end
 function M.DragFloat2(label,v,v_speed,v_min,v_max,format,flags)
     flags = flags or 0
-    v_speed = v_speed or 1.0
-    v_min = v_min or 0.0
-    v_max = v_max or 0.0
     format = format or "%.3f"
+    v_max = v_max or 0.0
+    v_min = v_min or 0.0
+    v_speed = v_speed or 1.0
     return lib.igDragFloat2(label,v,v_speed,v_min,v_max,format,flags)
 end
 function M.DragFloat3(label,v,v_speed,v_min,v_max,format,flags)
     flags = flags or 0
-    v_speed = v_speed or 1.0
-    v_min = v_min or 0.0
-    v_max = v_max or 0.0
     format = format or "%.3f"
+    v_max = v_max or 0.0
+    v_min = v_min or 0.0
+    v_speed = v_speed or 1.0
     return lib.igDragFloat3(label,v,v_speed,v_min,v_max,format,flags)
 end
 function M.DragFloat4(label,v,v_speed,v_min,v_max,format,flags)
     flags = flags or 0
-    v_speed = v_speed or 1.0
-    v_min = v_min or 0.0
-    v_max = v_max or 0.0
     format = format or "%.3f"
+    v_max = v_max or 0.0
+    v_min = v_min or 0.0
+    v_speed = v_speed or 1.0
     return lib.igDragFloat4(label,v,v_speed,v_min,v_max,format,flags)
 end
 function M.DragFloatRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,format,format_max,flags)
-    format_max = format_max or nil
     flags = flags or 0
-    v_speed = v_speed or 1.0
-    v_min = v_min or 0.0
-    v_max = v_max or 0.0
     format = format or "%.3f"
+    format_max = format_max or nil
+    v_max = v_max or 0.0
+    v_min = v_min or 0.0
+    v_speed = v_speed or 1.0
     return lib.igDragFloatRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,format,format_max,flags)
 end
 function M.DragInt(label,v,v_speed,v_min,v_max,format,flags)
     flags = flags or 0
-    v_speed = v_speed or 1.0
-    v_min = v_min or 0
-    v_max = v_max or 0
     format = format or "%d"
+    v_max = v_max or 0
+    v_min = v_min or 0
+    v_speed = v_speed or 1.0
     return lib.igDragInt(label,v,v_speed,v_min,v_max,format,flags)
 end
 function M.DragInt2(label,v,v_speed,v_min,v_max,format,flags)
     flags = flags or 0
-    v_speed = v_speed or 1.0
-    v_min = v_min or 0
-    v_max = v_max or 0
     format = format or "%d"
+    v_max = v_max or 0
+    v_min = v_min or 0
+    v_speed = v_speed or 1.0
     return lib.igDragInt2(label,v,v_speed,v_min,v_max,format,flags)
 end
 function M.DragInt3(label,v,v_speed,v_min,v_max,format,flags)
     flags = flags or 0
-    v_speed = v_speed or 1.0
-    v_min = v_min or 0
-    v_max = v_max or 0
     format = format or "%d"
+    v_max = v_max or 0
+    v_min = v_min or 0
+    v_speed = v_speed or 1.0
     return lib.igDragInt3(label,v,v_speed,v_min,v_max,format,flags)
 end
 function M.DragInt4(label,v,v_speed,v_min,v_max,format,flags)
     flags = flags or 0
-    v_speed = v_speed or 1.0
-    v_min = v_min or 0
-    v_max = v_max or 0
     format = format or "%d"
+    v_max = v_max or 0
+    v_min = v_min or 0
+    v_speed = v_speed or 1.0
     return lib.igDragInt4(label,v,v_speed,v_min,v_max,format,flags)
 end
 function M.DragIntRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,format,format_max,flags)
-    format_max = format_max or nil
     flags = flags or 0
-    v_speed = v_speed or 1.0
-    v_min = v_min or 0
-    v_max = v_max or 0
     format = format or "%d"
+    format_max = format_max or nil
+    v_max = v_max or 0
+    v_min = v_min or 0
+    v_speed = v_speed or 1.0
     return lib.igDragIntRange2(label,v_current_min,v_current_max,v_speed,v_min,v_max,format,format_max,flags)
 end
 function M.DragScalar(label,data_type,p_data,v_speed,p_min,p_max,format,flags)
     flags = flags or 0
-    p_min = p_min or nil
-    p_max = p_max or nil
     format = format or nil
+    p_max = p_max or nil
+    p_min = p_min or nil
     return lib.igDragScalar(label,data_type,p_data,v_speed,p_min,p_max,format,flags)
 end
 function M.DragScalarN(label,data_type,p_data,components,v_speed,p_min,p_max,format,flags)
     flags = flags or 0
-    p_min = p_min or nil
-    p_max = p_max or nil
     format = format or nil
+    p_max = p_max or nil
+    p_min = p_min or nil
     return lib.igDragScalarN(label,data_type,p_data,components,v_speed,p_min,p_max,format,flags)
 end
 M.Dummy = lib.igDummy
@@ -2801,8 +2801,8 @@ function M.GetMousePosOnOpeningCurrentPopup()
 end
 M.GetNavInputAmount = lib.igGetNavInputAmount
 function M.GetNavInputAmount2d(dir_sources,mode,slow_factor,fast_factor)
-    slow_factor = slow_factor or 0.0
     fast_factor = fast_factor or 0.0
+    slow_factor = slow_factor or 0.0
     local nonUDT_out = ffi.new("ImVec2")
     lib.igGetNavInputAmount2d(nonUDT_out,dir_sources,mode,slow_factor,fast_factor)
     return nonUDT_out
@@ -3054,18 +3054,18 @@ end
 M.ImTriangleContainsPoint = lib.igImTriangleContainsPoint
 M.ImUpperPowerOfTwo = lib.igImUpperPowerOfTwo
 function M.Image(user_texture_id,size,uv0,uv1,tint_col,border_col)
-    tint_col = tint_col or ImVec4(1,1,1,1)
     border_col = border_col or ImVec4(0,0,0,0)
-    uv1 = uv1 or ImVec2(1,1)
+    tint_col = tint_col or ImVec4(1,1,1,1)
     uv0 = uv0 or ImVec2(0,0)
+    uv1 = uv1 or ImVec2(1,1)
     return lib.igImage(user_texture_id,size,uv0,uv1,tint_col,border_col)
 end
 function M.ImageButton(user_texture_id,size,uv0,uv1,frame_padding,bg_col,tint_col)
-    tint_col = tint_col or ImVec4(1,1,1,1)
-    frame_padding = frame_padding or -1
     bg_col = bg_col or ImVec4(0,0,0,0)
-    uv1 = uv1 or ImVec2(1,1)
+    frame_padding = frame_padding or -1
+    tint_col = tint_col or ImVec4(1,1,1,1)
     uv0 = uv0 or ImVec2(0,0)
+    uv1 = uv1 or ImVec2(1,1)
     return lib.igImageButton(user_texture_id,size,uv0,uv1,frame_padding,bg_col,tint_col)
 end
 M.ImageButtonEx = lib.igImageButtonEx
@@ -3075,38 +3075,38 @@ function M.Indent(indent_w)
 end
 M.Initialize = lib.igInitialize
 function M.InputDouble(label,v,step,step_fast,format,flags)
-    step = step or 0
-    step_fast = step_fast or 0
     flags = flags or 0
     format = format or "%.6f"
+    step = step or 0
+    step_fast = step_fast or 0
     return lib.igInputDouble(label,v,step,step_fast,format,flags)
 end
 function M.InputFloat(label,v,step,step_fast,format,flags)
-    step = step or 0.0
-    step_fast = step_fast or 0.0
     flags = flags or 0
     format = format or "%.3f"
+    step = step or 0.0
+    step_fast = step_fast or 0.0
     return lib.igInputFloat(label,v,step,step_fast,format,flags)
 end
 function M.InputFloat2(label,v,format,flags)
-    format = format or "%.3f"
     flags = flags or 0
+    format = format or "%.3f"
     return lib.igInputFloat2(label,v,format,flags)
 end
 function M.InputFloat3(label,v,format,flags)
-    format = format or "%.3f"
     flags = flags or 0
+    format = format or "%.3f"
     return lib.igInputFloat3(label,v,format,flags)
 end
 function M.InputFloat4(label,v,format,flags)
-    format = format or "%.3f"
     flags = flags or 0
+    format = format or "%.3f"
     return lib.igInputFloat4(label,v,format,flags)
 end
 function M.InputInt(label,v,step,step_fast,flags)
+    flags = flags or 0
     step = step or 1
     step_fast = step_fast or 100
-    flags = flags or 0
     return lib.igInputInt(label,v,step,step_fast,flags)
 end
 function M.InputInt2(label,v,flags)
@@ -3122,41 +3122,41 @@ function M.InputInt4(label,v,flags)
     return lib.igInputInt4(label,v,flags)
 end
 function M.InputScalar(label,data_type,p_data,p_step,p_step_fast,format,flags)
-    p_step_fast = p_step_fast or nil
     flags = flags or 0
-    p_step = p_step or nil
     format = format or nil
+    p_step = p_step or nil
+    p_step_fast = p_step_fast or nil
     return lib.igInputScalar(label,data_type,p_data,p_step,p_step_fast,format,flags)
 end
 function M.InputScalarN(label,data_type,p_data,components,p_step,p_step_fast,format,flags)
-    p_step_fast = p_step_fast or nil
     flags = flags or 0
-    p_step = p_step or nil
     format = format or nil
+    p_step = p_step or nil
+    p_step_fast = p_step_fast or nil
     return lib.igInputScalarN(label,data_type,p_data,components,p_step,p_step_fast,format,flags)
 end
 function M.InputText(label,buf,buf_size,flags,callback,user_data)
-    user_data = user_data or nil
     callback = callback or nil
     flags = flags or 0
+    user_data = user_data or nil
     return lib.igInputText(label,buf,buf_size,flags,callback,user_data)
 end
 function M.InputTextEx(label,hint,buf,buf_size,size_arg,flags,callback,user_data)
-    user_data = user_data or nil
     callback = callback or nil
+    user_data = user_data or nil
     return lib.igInputTextEx(label,hint,buf,buf_size,size_arg,flags,callback,user_data)
 end
 function M.InputTextMultiline(label,buf,buf_size,size,flags,callback,user_data)
-    user_data = user_data or nil
-    size = size or ImVec2(0,0)
     callback = callback or nil
     flags = flags or 0
+    size = size or ImVec2(0,0)
+    user_data = user_data or nil
     return lib.igInputTextMultiline(label,buf,buf_size,size,flags,callback,user_data)
 end
 function M.InputTextWithHint(label,hint,buf,buf_size,flags,callback,user_data)
-    user_data = user_data or nil
     callback = callback or nil
     flags = flags or 0
+    user_data = user_data or nil
     return lib.igInputTextWithHint(label,hint,buf,buf_size,flags,callback,user_data)
 end
 function M.InvisibleButton(str_id,size,flags)
@@ -3348,9 +3348,9 @@ M.MarkItemEdited = lib.igMarkItemEdited
 M.MemAlloc = lib.igMemAlloc
 M.MemFree = lib.igMemFree
 function M.MenuItemBool(label,shortcut,selected,enabled)
-    shortcut = shortcut or nil
-    selected = selected or false
     if enabled == nil then enabled = true end
+    selected = selected or false
+    shortcut = shortcut or nil
     return lib.igMenuItemBool(label,shortcut,selected,enabled)
 end
 function M.MenuItemBoolPtr(label,shortcut,p_selected,enabled)
@@ -3386,20 +3386,20 @@ function M.OpenPopupEx(id,popup_flags)
 end
 M.PlotEx = lib.igPlotEx
 function M.PlotHistogramFloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
-    values_offset = values_offset or 0
-    overlay_text = overlay_text or nil
-    scale_min = scale_min or M.FLT_MAX
-    scale_max = scale_max or M.FLT_MAX
-    stride = stride or ffi.sizeof("float")
     graph_size = graph_size or ImVec2(0,0)
+    overlay_text = overlay_text or nil
+    scale_max = scale_max or M.FLT_MAX
+    scale_min = scale_min or M.FLT_MAX
+    stride = stride or ffi.sizeof("float")
+    values_offset = values_offset or 0
     return lib.igPlotHistogramFloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
 end
 function M.PlotHistogramFnFloatPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
-    values_offset = values_offset or 0
-    overlay_text = overlay_text or nil
-    scale_min = scale_min or M.FLT_MAX
-    scale_max = scale_max or M.FLT_MAX
     graph_size = graph_size or ImVec2(0,0)
+    overlay_text = overlay_text or nil
+    scale_max = scale_max or M.FLT_MAX
+    scale_min = scale_min or M.FLT_MAX
+    values_offset = values_offset or 0
     return lib.igPlotHistogramFnFloatPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
 end
 function M.PlotHistogram(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
@@ -3409,20 +3409,20 @@ function M.PlotHistogram(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
     error'M.PlotHistogram could not find overloaded'
 end
 function M.PlotLinesFloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
-    values_offset = values_offset or 0
-    overlay_text = overlay_text or nil
-    scale_min = scale_min or M.FLT_MAX
-    scale_max = scale_max or M.FLT_MAX
-    stride = stride or ffi.sizeof("float")
     graph_size = graph_size or ImVec2(0,0)
+    overlay_text = overlay_text or nil
+    scale_max = scale_max or M.FLT_MAX
+    scale_min = scale_min or M.FLT_MAX
+    stride = stride or ffi.sizeof("float")
+    values_offset = values_offset or 0
     return lib.igPlotLinesFloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
 end
 function M.PlotLinesFnFloatPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
-    values_offset = values_offset or 0
-    overlay_text = overlay_text or nil
-    scale_min = scale_min or M.FLT_MAX
-    scale_max = scale_max or M.FLT_MAX
     graph_size = graph_size or ImVec2(0,0)
+    overlay_text = overlay_text or nil
+    scale_max = scale_max or M.FLT_MAX
+    scale_min = scale_min or M.FLT_MAX
+    values_offset = values_offset or 0
     return lib.igPlotLinesFnFloatPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
 end
 function M.PlotLines(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
@@ -3450,8 +3450,8 @@ function M.PopStyleVar(count)
 end
 M.PopTextWrapPos = lib.igPopTextWrapPos
 function M.ProgressBar(fraction,size_arg,overlay)
-    size_arg = size_arg or ImVec2(-1,0)
     overlay = overlay or nil
+    size_arg = size_arg or ImVec2(-1,0)
     return lib.igProgressBar(fraction,size_arg,overlay)
 end
 M.PushAllowKeyboardFocus = lib.igPushAllowKeyboardFocus
@@ -3535,8 +3535,8 @@ end
 M.RenderRectFilledRangeH = lib.igRenderRectFilledRangeH
 M.RenderRectFilledWithHole = lib.igRenderRectFilledWithHole
 function M.RenderText(pos,text,text_end,hide_text_after_hash)
-    text_end = text_end or nil
     if hide_text_after_hash == nil then hide_text_after_hash = true end
+    text_end = text_end or nil
     return lib.igRenderText(pos,text,text_end,hide_text_after_hash)
 end
 function M.RenderTextClipped(pos_min,pos_max,text,text_end,text_size_if_known,align,clip_rect)
@@ -3573,14 +3573,14 @@ end
 M.Scrollbar = lib.igScrollbar
 M.ScrollbarEx = lib.igScrollbarEx
 function M.SelectableBool(label,selected,flags,size)
+    flags = flags or 0
     selected = selected or false
     size = size or ImVec2(0,0)
-    flags = flags or 0
     return lib.igSelectableBool(label,selected,flags,size)
 end
 function M.SelectableBoolPtr(label,p_selected,flags,size)
-    size = size or ImVec2(0,0)
     flags = flags or 0
+    size = size or ImVec2(0,0)
     return lib.igSelectableBoolPtr(label,p_selected,flags,size)
 end
 function M.Selectable(a1,a2,a3,a4) -- generic version
@@ -3635,8 +3635,8 @@ end
 M.SetNextWindowContentSize = lib.igSetNextWindowContentSize
 M.SetNextWindowFocus = lib.igSetNextWindowFocus
 function M.SetNextWindowPos(pos,cond,pivot)
-    pivot = pivot or ImVec2(0,0)
     cond = cond or 0
+    pivot = pivot or ImVec2(0,0)
     return lib.igSetNextWindowPos(pos,cond,pivot)
 end
 M.SetNextWindowScroll = lib.igSetNextWindowScroll
@@ -3645,8 +3645,8 @@ function M.SetNextWindowSize(size,cond)
     return lib.igSetNextWindowSize(size,cond)
 end
 function M.SetNextWindowSizeConstraints(size_min,size_max,custom_callback,custom_callback_data)
-    custom_callback_data = custom_callback_data or nil
     custom_callback = custom_callback or nil
+    custom_callback_data = custom_callback_data or nil
     return lib.igSetNextWindowSizeConstraints(size_min,size_max,custom_callback,custom_callback_data)
 end
 function M.SetScrollFromPosXFloat(local_x,center_x_ratio)
@@ -3798,67 +3798,67 @@ M.ShrinkWidths = lib.igShrinkWidths
 M.Shutdown = lib.igShutdown
 function M.SliderAngle(label,v_rad,v_degrees_min,v_degrees_max,format,flags)
     flags = flags or 0
+    format = format or "%.0f deg"
     v_degrees_max = v_degrees_max or 360.0
     v_degrees_min = v_degrees_min or -360.0
-    format = format or "%.0f deg"
     return lib.igSliderAngle(label,v_rad,v_degrees_min,v_degrees_max,format,flags)
 end
 M.SliderBehavior = lib.igSliderBehavior
 function M.SliderFloat(label,v,v_min,v_max,format,flags)
-    format = format or "%.3f"
     flags = flags or 0
+    format = format or "%.3f"
     return lib.igSliderFloat(label,v,v_min,v_max,format,flags)
 end
 function M.SliderFloat2(label,v,v_min,v_max,format,flags)
-    format = format or "%.3f"
     flags = flags or 0
+    format = format or "%.3f"
     return lib.igSliderFloat2(label,v,v_min,v_max,format,flags)
 end
 function M.SliderFloat3(label,v,v_min,v_max,format,flags)
-    format = format or "%.3f"
     flags = flags or 0
+    format = format or "%.3f"
     return lib.igSliderFloat3(label,v,v_min,v_max,format,flags)
 end
 function M.SliderFloat4(label,v,v_min,v_max,format,flags)
-    format = format or "%.3f"
     flags = flags or 0
+    format = format or "%.3f"
     return lib.igSliderFloat4(label,v,v_min,v_max,format,flags)
 end
 function M.SliderInt(label,v,v_min,v_max,format,flags)
-    format = format or "%d"
     flags = flags or 0
+    format = format or "%d"
     return lib.igSliderInt(label,v,v_min,v_max,format,flags)
 end
 function M.SliderInt2(label,v,v_min,v_max,format,flags)
-    format = format or "%d"
     flags = flags or 0
+    format = format or "%d"
     return lib.igSliderInt2(label,v,v_min,v_max,format,flags)
 end
 function M.SliderInt3(label,v,v_min,v_max,format,flags)
-    format = format or "%d"
     flags = flags or 0
+    format = format or "%d"
     return lib.igSliderInt3(label,v,v_min,v_max,format,flags)
 end
 function M.SliderInt4(label,v,v_min,v_max,format,flags)
-    format = format or "%d"
     flags = flags or 0
+    format = format or "%d"
     return lib.igSliderInt4(label,v,v_min,v_max,format,flags)
 end
 function M.SliderScalar(label,data_type,p_data,p_min,p_max,format,flags)
-    format = format or nil
     flags = flags or 0
+    format = format or nil
     return lib.igSliderScalar(label,data_type,p_data,p_min,p_max,format,flags)
 end
 function M.SliderScalarN(label,data_type,p_data,components,p_min,p_max,format,flags)
-    format = format or nil
     flags = flags or 0
+    format = format or nil
     return lib.igSliderScalarN(label,data_type,p_data,components,p_min,p_max,format,flags)
 end
 M.SmallButton = lib.igSmallButton
 M.Spacing = lib.igSpacing
 function M.SplitterBehavior(bb,id,axis,size1,size2,min_size1,min_size2,hover_extend,hover_visibility_delay)
-    hover_visibility_delay = hover_visibility_delay or 0.0
     hover_extend = hover_extend or 0.0
+    hover_visibility_delay = hover_visibility_delay or 0.0
     return lib.igSplitterBehavior(bb,id,axis,size1,size2,min_size1,min_size2,hover_extend,hover_visibility_delay)
 end
 M.StartMouseMovingWindow = lib.igStartMouseMovingWindow
@@ -3899,8 +3899,8 @@ M.TextColoredV = lib.igTextColoredV
 M.TextDisabled = lib.igTextDisabled
 M.TextDisabledV = lib.igTextDisabledV
 function M.TextEx(text,text_end,flags)
-    text_end = text_end or nil
     flags = flags or 0
+    text_end = text_end or nil
     return lib.igTextEx(text,text_end,flags)
 end
 function M.TextUnformatted(text,text_end)
@@ -3979,18 +3979,18 @@ M.UpdateMouseMovingWindowEndFrame = lib.igUpdateMouseMovingWindowEndFrame
 M.UpdateMouseMovingWindowNewFrame = lib.igUpdateMouseMovingWindowNewFrame
 M.UpdateWindowParentAndRootLinks = lib.igUpdateWindowParentAndRootLinks
 function M.VSliderFloat(label,size,v,v_min,v_max,format,flags)
-    format = format or "%.3f"
     flags = flags or 0
+    format = format or "%.3f"
     return lib.igVSliderFloat(label,size,v,v_min,v_max,format,flags)
 end
 function M.VSliderInt(label,size,v,v_min,v_max,format,flags)
-    format = format or "%d"
     flags = flags or 0
+    format = format or "%d"
     return lib.igVSliderInt(label,size,v,v_min,v_max,format,flags)
 end
 function M.VSliderScalar(label,size,data_type,p_data,p_min,p_max,format,flags)
-    format = format or nil
     flags = flags or 0
+    format = format or nil
     return lib.igVSliderScalar(label,size,data_type,p_data,p_min,p_max,format,flags)
 end
 M.ValueBool = lib.igValueBool
