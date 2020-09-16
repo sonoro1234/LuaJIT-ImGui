@@ -23,6 +23,8 @@ set(IMGUI_SOURCES ./cimgui/cimgui.cpp
 ./cimguizmo/ImGuizmo/ImGuizmo.cpp
 )
 
+
+
 set(IMGUI_SOURCES_glfw)
 set(IMGUI_SOURCES_sdl)
 set(IMGUI_LIBRARIES )
@@ -40,7 +42,14 @@ option(IMPL_GLFW "add GLFW implementation" OFF)
 option(IMPL_SDL "add SDL implementation" OFF)
 option(IMPL_OPENGL2 "add OPENGL2 implementation" OFF)
 option(IMPL_OPENGL3 "add OPENGL3 implementation" OFF)
+option(IMGUI_FREETYPE "add Freetype2" OFF)
 
+if(IMGUI_FREETYPE)
+	FIND_PACKAGE(freetype REQUIRED PATHS ${FREETYPE_PATH})
+	list(APPEND IMGUI_LIBRARIES freetype)
+	list(APPEND IMGUI_SOURCES ./cimgui/imgui/misc/freetype/imgui_freetype.cpp)
+	add_definitions("-DCIMGUI_FREETYPE=1")
+endif(IMGUI_FREETYPE)
 
 if(IMPL_OPENGL3)
     list(APPEND IMGUI_SOURCES ./cimgui/imgui/examples/imgui_impl_opengl3.cpp
