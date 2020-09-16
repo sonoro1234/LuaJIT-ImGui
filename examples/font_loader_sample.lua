@@ -1,5 +1,4 @@
-﻿
-local igwin = require"imgui.window"
+﻿local igwin = require"imgui.window"
 --local win = igwin:SDL(800,400, "font loader")
 local win = igwin:GLFW(800,400, "font loader")
 local ffi = require"ffi"
@@ -46,7 +45,7 @@ local function ChangeFont(font,fontsize)
 	local FontsAt = ig.GetIO().Fonts
 	------destroy old
 	FontsAt:Clear()
-	ig.lib.ImGui_ImplOpenGL3_DestroyFontsTexture()
+	--ig.lib.ImGui_ImplOpenGL3_DestroyFontsTexture()
 	
 	------reconstruct
 	--load default
@@ -60,6 +59,7 @@ local function ChangeFont(font,fontsize)
 	fnt_cfg.GlyphMinAdvanceX = fontsize -- 13.0
 	fnt_cfg.GlyphMaxAdvanceX = fontsize --13.0
 	fnt_cfg.OversampleH = 1
+	fnt_cfg.RasterizerFlags = ffi.C.MonoHinting
 	
 	--maximal range allowed with ImWchar16
 	local ranges = ffi.new("ImWchar[3]",{0x0001,0xFFFF,0})
@@ -68,6 +68,9 @@ local function ChangeFont(font,fontsize)
 	if (theFONT == nil) then return false end
 	
 	--regenerate 
+	ig.ImGuiFreeType_BuildFontAtlas(FontsAt,ffi.C.MonoHinting)
+	--FontsAt:Build()
+	ig.lib.ImGui_ImplOpenGL3_DestroyFontsTexture()
 	ig.lib.ImGui_ImplOpenGL3_CreateFontsTexture()
 	--set as default
 	--ig.GetIO().FontDefault = theFONT
