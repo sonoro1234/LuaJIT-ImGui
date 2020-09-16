@@ -1684,6 +1684,14 @@ function M.imguiGizmo_setSphereColors(a1,a2) -- generic version
 end
 M.imguiGizmo = ffi.metatype("imguiGizmo",imguiGizmo)
 ------------------------------------------------------
+function M.ImGuiFreeType_BuildFontAtlas(atlas,extra_flags)
+    extra_flags = extra_flags or 0
+    return lib.ImGuiFreeType_BuildFontAtlas(atlas,extra_flags)
+end
+function M.ImGuiFreeType_SetAllocatorFunctions(alloc_func,free_func,user_data)
+    user_data = user_data or nil
+    return lib.ImGuiFreeType_SetAllocatorFunctions(alloc_func,free_func,user_data)
+end
 M.ImGuizmo_BeginFrame = lib.ImGuizmo_BeginFrame
 M.ImGuizmo_DecomposeMatrixToComponents = lib.ImGuizmo_DecomposeMatrixToComponents
 M.ImGuizmo_DrawCubes = lib.ImGuizmo_DrawCubes
