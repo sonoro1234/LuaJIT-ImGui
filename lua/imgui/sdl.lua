@@ -1699,10 +1699,10 @@ function M.ImGuizmo_IsOver(a1) -- generic version
 end
 M.ImGuizmo_IsUsing = lib.ImGuizmo_IsUsing
 function M.ImGuizmo_Manipulate(view,projection,operation,mode,matrix,deltaMatrix,snap,localBounds,boundsSnap)
-    boundsSnap = boundsSnap or NULL
-    deltaMatrix = deltaMatrix or NULL
-    localBounds = localBounds or NULL
-    snap = snap or NULL
+    boundsSnap = boundsSnap or nil
+    deltaMatrix = deltaMatrix or nil
+    localBounds = localBounds or nil
+    snap = snap or nil
     return lib.ImGuizmo_Manipulate(view,projection,operation,mode,matrix,deltaMatrix,snap,localBounds,boundsSnap)
 end
 M.ImGuizmo_RecomposeMatrixFromComponents = lib.ImGuizmo_RecomposeMatrixFromComponents
