@@ -178,6 +178,7 @@ function sanitize_reserved(def)
 				def.defaults[k] = def.defaults[k]:gsub("ImDrawCornerFlags_All","lib.ImDrawCornerFlags_All")
 				def.defaults[k] = def.defaults[k]:gsub("sizeof%((%w+)%)",[[ffi.sizeof("%1")]])
 				def.defaults[k] = def.defaults[k]:gsub("%(%(void%s*%*%)0%)","nil")
+				def.defaults[k] = def.defaults[k]:gsub("NULL","nil")
 				if def.defaults[k]:match"%(ImU32%)" then
 					def.defaults[k] = CleanImU32(def.defaults[k])
 				end
