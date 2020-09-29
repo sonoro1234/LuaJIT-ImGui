@@ -3398,7 +3398,7 @@ typedef enum {
   LOCAL,
   WORLD
  }MODE;
-void ImGuizmo_SetDrawlist(void);
+void ImGuizmo_SetDrawlist(ImDrawList* drawlist);
 void ImGuizmo_BeginFrame(void);
 _Bool                ImGuizmo_IsOverNil(void);
 _Bool                ImGuizmo_IsUsing(void);
@@ -3409,7 +3409,7 @@ void ImGuizmo_SetRect(float x,float y,float width,float height);
 void ImGuizmo_SetOrthographic(                                        _Bool                                              isOrthographic);
 void ImGuizmo_DrawCubes(const float* view,const float* projection,const float* matrices,int matrixCount);
 void ImGuizmo_DrawGrid(const float* view,const float* projection,const float* matrix,const float gridSize);
-void ImGuizmo_Manipulate(const float* view,const float* projection,OPERATION operation,MODE mode,float* matrix,float* deltaMatrix,float* snap,float* localBounds,float* boundsSnap);
+_Bool                ImGuizmo_Manipulate(const float* view,const float* projection,OPERATION operation,MODE mode,float* matrix,float* deltaMatrix,float* snap,float* localBounds,float* boundsSnap);
 void ImGuizmo_ViewManipulate(float* view,float length,ImVec2 position,ImVec2 size,ImU32 backgroundColor);
 void ImGuizmo_SetID(int id);
 _Bool                ImGuizmo_IsOverOPERATION(OPERATION op);

@@ -1706,7 +1706,10 @@ function M.ImGuizmo_Manipulate(view,projection,operation,mode,matrix,deltaMatrix
     return lib.ImGuizmo_Manipulate(view,projection,operation,mode,matrix,deltaMatrix,snap,localBounds,boundsSnap)
 end
 M.ImGuizmo_RecomposeMatrixFromComponents = lib.ImGuizmo_RecomposeMatrixFromComponents
-M.ImGuizmo_SetDrawlist = lib.ImGuizmo_SetDrawlist
+function M.ImGuizmo_SetDrawlist(drawlist)
+    drawlist = drawlist or nil
+    return lib.ImGuizmo_SetDrawlist(drawlist)
+end
 M.ImGuizmo_SetID = lib.ImGuizmo_SetID
 M.ImGuizmo_SetOrthographic = lib.ImGuizmo_SetOrthographic
 M.ImGuizmo_SetRect = lib.ImGuizmo_SetRect
