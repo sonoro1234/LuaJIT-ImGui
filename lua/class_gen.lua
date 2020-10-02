@@ -69,11 +69,19 @@ for k,enu in pairs(standenu.enums) do
 		enumsvalues[v.name] = v.calc_value
 	end
 end
+local standenu = dofile([[../cimnodes/generator/output/structs_and_enums.lua]])
+for k,enu in pairs(standenu.enums) do
+	for i,v in ipairs(enu) do
+		assert(v.calc_value)
+		enumsvalues[v.name] = v.calc_value
+	end
+end
 --load function definitions
 local fundefs = dofile([[../cimgui/generator/output/definitions.lua]])
 local fundefspl = dofile([[../cimplot/generator/output/definitions.lua]])
 local fundefszmo = dofile([[../cimguizmo/generator/output/definitions.lua]])
 local fundefszmoQ = dofile([[../cimguizmo_quat/generator/output/definitions.lua]])
+local fundefsimnodes = dofile([[../cimnodes/generator/output/definitions.lua]])
 --merge funcdefs and fundefspl
 for fun,defs in pairs(fundefspl) do
 	fundefs[fun] = defs
@@ -82,6 +90,9 @@ for fun,defs in pairs(fundefszmo) do
 	fundefs[fun] = defs
 end
 for fun,defs in pairs(fundefszmoQ) do
+	fundefs[fun] = defs
+end
+for fun,defs in pairs(fundefsimnodes) do
 	fundefs[fun] = defs
 end
 --group them by structs
