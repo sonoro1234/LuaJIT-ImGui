@@ -7,6 +7,7 @@ endif(WIN32)
 include_directories(cimgui/imgui)
 include_directories(cimplot/implot)
 include_directories(cimguizmo/ImGuizmo)
+include_directories(cimnodes/imnodes)
 add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
 
 include_directories(cimgui)
@@ -21,6 +22,8 @@ set(IMGUI_SOURCES ./cimgui/cimgui.cpp
 ./cimplot/implot/implot_demo.cpp
 ./cimguizmo/cimguizmo.cpp
 ./cimguizmo/ImGuizmo/ImGuizmo.cpp
+./cimnodes/cimnodes.cpp
+./cimnodes/imnodes/imnodes.cpp
 )
 
 

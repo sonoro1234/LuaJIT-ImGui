@@ -11,3 +11,6 @@
 [submodule "cimguizmo_quat"]
 	path = cimguizmo_quat
 	url = https://github.com/cimgui/cimguizmo_quat.git
+[submodule "cimnodes"]
+	path = cimnodes
+	url = https://github.com/cimgui/cimnodes.git

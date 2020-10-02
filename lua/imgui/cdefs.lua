@@ -3509,6 +3509,153 @@ void mat4_cast( quat *q,Mat4* mat);
 void mat4_pos_cast( quat *q, G3Dvec3 pos, Mat4* mat);
 void quat_cast(float f[16], quat *qq);
 void quat_pos_cast(float f[16], quat *qq, G3Dvec3 *pos);
+typedef struct EditorContext EditorContext;
+typedef struct Style Style;
+typedef struct LinkDetachWithModifierClick LinkDetachWithModifierClick;
+typedef struct EmulateThreeButtonMouse EmulateThreeButtonMouse;
+typedef struct IO IO;
+typedef struct ImVec2 ImVec2;
+struct ImVec2;
+struct EditorContext;
+typedef enum {
+    ColorStyle_NodeBackground = 0,
+    ColorStyle_NodeBackgroundHovered,
+    ColorStyle_NodeBackgroundSelected,
+    ColorStyle_NodeOutline,
+    ColorStyle_TitleBar,
+    ColorStyle_TitleBarHovered,
+    ColorStyle_TitleBarSelected,
+    ColorStyle_Link,
+    ColorStyle_LinkHovered,
+    ColorStyle_LinkSelected,
+    ColorStyle_Pin,
+    ColorStyle_PinHovered,
+    ColorStyle_BoxSelector,
+    ColorStyle_BoxSelectorOutline,
+    ColorStyle_GridBackground,
+    ColorStyle_GridLine,
+    ColorStyle_Count
+}ColorStyle;
+typedef enum {
+    StyleVar_GridSpacing = 0,
+    StyleVar_NodeCornerRounding,
+    StyleVar_NodePaddingHorizontal,
+    StyleVar_NodePaddingVertical
+}StyleVar;
+typedef enum {
+    StyleFlags_None = 0,
+    StyleFlags_NodeOutline = 1 << 0,
+    StyleFlags_GridLines = 1 << 2
+}StyleFlags;
+typedef enum {
+    PinShape_Circle,
+    PinShape_CircleFilled,
+    PinShape_Triangle,
+    PinShape_TriangleFilled,
+    PinShape_Quad,
+    PinShape_QuadFilled
+}PinShape;
+typedef enum {
+    AttributeFlags_None = 0,
+    AttributeFlags_EnableLinkDetachWithDragClick = 1 << 0,
+    AttributeFlags_EnableLinkCreationOnSnap = 1 << 1
+}AttributeFlags;
+struct IO
+{
+};
+struct EmulateThreeButtonMouse
+{
+               _Bool             enabled;
+        const              _Bool                 * modifier;
+};
+struct LinkDetachWithModifierClick
+{
+        const              _Bool                 * modifier;
+};
+struct Style
+{
+    float grid_spacing;
+    float node_corner_rounding;
+    float node_padding_horizontal;
+    float node_padding_vertical;
+    float link_thickness;
+    float link_line_segments_per_length;
+    float link_hover_distance;
+    float pin_circle_radius;
+    float pin_quad_side_length;
+    float pin_triangle_side_length;
+    float pin_line_thickness;
+    float pin_hover_radius;
+    float pin_offset;
+    StyleFlags flags;
+    unsigned int colors[ColorStyle_Count];
+};
+EmulateThreeButtonMouse* EmulateThreeButtonMouse_EmulateThreeButtonMouse(void);
+void EmulateThreeButtonMouse_destroy(EmulateThreeButtonMouse* self);
+LinkDetachWithModifierClick* LinkDetachWithModifierClick_LinkDetachWithModifierClick(void);
+void LinkDetachWithModifierClick_destroy(LinkDetachWithModifierClick* self);
+IO* IO_IO(void);
+void IO_destroy(IO* self);
+Style* Style_Style(void);
+void Style_destroy(Style* self);
+EditorContext* imnodes_EditorContextCreate(void);
+void imnodes_EditorContextFree(EditorContext* noname1);
+void imnodes_EditorContextSet(EditorContext* noname1);
+void imnodes_EditorContextGetPanning(ImVec2 *pOut);
+void imnodes_EditorContextResetPanning(const ImVec2 pos);
+void imnodes_EditorContextMoveToNode(const int node_id);
+void imnodes_Initialize(void);
+void imnodes_Shutdown(void);
+IO* imnodes_GetIO(void);
+Style* imnodes_GetStyle(void);
+void imnodes_StyleColorsDark(void);
+void imnodes_StyleColorsClassic(void);
+void imnodes_StyleColorsLight(void);
+void imnodes_BeginNodeEditor(void);
+void imnodes_EndNodeEditor(void);
+void imnodes_PushColorStyle(ColorStyle item,unsigned int color);
+void imnodes_PopColorStyle(void);
+void imnodes_PushStyleVar(StyleVar style_item,float value);
+void imnodes_PopStyleVar(void);
+void imnodes_BeginNode(int id);
+void imnodes_EndNode(void);
+void imnodes_GetNodeDimensions(ImVec2 *pOut,int id);
+void imnodes_BeginNodeTitleBar(void);
+void imnodes_EndNodeTitleBar(void);
+void imnodes_BeginInputAttribute(int id,PinShape shape);
+void imnodes_EndInputAttribute(void);
+void imnodes_BeginOutputAttribute(int id,PinShape shape);
+void imnodes_EndOutputAttribute(void);
+void imnodes_BeginStaticAttribute(int id);
+void imnodes_EndStaticAttribute(void);
+void imnodes_PushAttributeFlag(AttributeFlags flag);
+void imnodes_PopAttributeFlag(void);
+void imnodes_Link(int id,int start_attribute_id,int end_attribute_id);
+void imnodes_SetNodeScreenSpacePos(int node_id,const ImVec2 screen_space_pos);
+void imnodes_SetNodeGridSpacePos(int node_id,const ImVec2 grid_pos);
+void imnodes_SetNodeDraggable(int node_id,const                                                           _Bool                                                                draggable);
+_Bool                imnodes_IsEditorHovered(void);
+_Bool                imnodes_IsNodeHovered(int* node_id);
+_Bool                imnodes_IsLinkHovered(int* link_id);
+_Bool                imnodes_IsPinHovered(int* attribute_id);
+int imnodes_NumSelectedNodes(void);
+int imnodes_NumSelectedLinks(void);
+void imnodes_GetSelectedNodes(int* node_ids);
+void imnodes_GetSelectedLinks(int* link_ids);
+_Bool                imnodes_IsAttributeActive(void);
+_Bool                imnodes_IsAnyAttributeActive(int* attribute_id);
+_Bool                imnodes_IsLinkStarted(int* started_at_attribute_id);
+_Bool                imnodes_IsLinkDropped(int* started_at_attribute_id,                                                                  _Bool                                                                        including_detached_links);
+_Bool                imnodes_IsLinkCreated(int* started_at_attribute_id,int* ended_at_attribute_id,                                                                                             _Bool                                                                                                 * created_from_snap);
+_Bool                imnodes_IsLinkDestroyed(int* link_id);
+const char* imnodes_SaveCurrentEditorStateToIniString(size_t* data_size);
+const char* imnodes_SaveEditorStateToIniString(const EditorContext* editor,size_t* data_size);
+void imnodes_LoadCurrentEditorStateFromIniString(const char* data,size_t data_size);
+void imnodes_LoadEditorStateFromIniString(EditorContext* editor,const char* data,size_t data_size);
+void imnodes_SaveCurrentEditorStateToIniFile(const char* file_name);
+void imnodes_SaveEditorStateToIniFile(const EditorContext* editor,const char* file_name);
+void imnodes_LoadCurrentEditorStateFromIniFile(const char* file_name);
+void imnodes_LoadEditorStateFromIniFile(EditorContext* editor,const char* file_name);
 typedef struct SDL_Window SDL_Window;
 typedef struct GLFWmonitor GLFWmonitor;
 typedef struct GLFWwindow GLFWwindow;
