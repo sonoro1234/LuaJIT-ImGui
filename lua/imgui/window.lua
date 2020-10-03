@@ -8,7 +8,7 @@ local function MainDockSpace(W)
 end
 local M = {}
 
-local function startGLFW(W)
+local function startGLFW(W, postf)
     local window = W.window
     local ig = W.ig
     while not window:shouldClose() do
@@ -42,6 +42,7 @@ local function startGLFW(W)
         
         window:swapBuffers()                    
     end
+    if postf then postf() end
     if W.args.use_implot then W.ig.ImPlot_DestroyContext() end
     if W.args.use_imnodes then W.ig.imnodes_Shutdown() end
     W.ig_impl:destroy()
@@ -91,7 +92,7 @@ function M:GLFW(w,h,title,args)
     return W
 end
 
-local function startSDL(W)
+local function startSDL(W, postf)
     local ffi = require"ffi"
 
     local window = W.window
@@ -140,6 +141,7 @@ local function startSDL(W)
     end
     
     -- Cleanup
+    if postf then postf() end
     if W.args.use_implot then W.ig.ImPlot_DestroyContext() end
     if W.args.use_imnodes then W.ig.imnodes_Shutdown() end
     W.ig_Impl:destroy()
