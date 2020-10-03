@@ -635,7 +635,7 @@ function ImDrawList:AddImageQuad(user_texture_id,p1,p2,p3,p4,uv1,uv2,uv3,uv4,col
     return lib.ImDrawList_AddImageQuad(self,user_texture_id,p1,p2,p3,p4,uv1,uv2,uv3,uv4,col)
 end
 function ImDrawList:AddImageRounded(user_texture_id,p_min,p_max,uv_min,uv_max,col,rounding,rounding_corners)
-    rounding_corners = rounding_corners or lib.ImDrawCornerFlags_All
+    rounding_corners = rounding_corners or 15
     return lib.ImDrawList_AddImageRounded(self,user_texture_id,p_min,p_max,uv_min,uv_max,col,rounding,rounding_corners)
 end
 function ImDrawList:AddLine(p1,p2,col,thickness)
@@ -655,13 +655,13 @@ end
 ImDrawList.AddQuadFilled = lib.ImDrawList_AddQuadFilled
 function ImDrawList:AddRect(p_min,p_max,col,rounding,rounding_corners,thickness)
     rounding = rounding or 0.0
-    rounding_corners = rounding_corners or lib.ImDrawCornerFlags_All
+    rounding_corners = rounding_corners or 15
     thickness = thickness or 1.0
     return lib.ImDrawList_AddRect(self,p_min,p_max,col,rounding,rounding_corners,thickness)
 end
 function ImDrawList:AddRectFilled(p_min,p_max,col,rounding,rounding_corners)
     rounding = rounding or 0.0
-    rounding_corners = rounding_corners or lib.ImDrawCornerFlags_All
+    rounding_corners = rounding_corners or 15
     return lib.ImDrawList_AddRectFilled(self,p_min,p_max,col,rounding,rounding_corners)
 end
 ImDrawList.AddRectFilledMultiColor = lib.ImDrawList_AddRectFilledMultiColor
@@ -719,7 +719,7 @@ ImDrawList.PathLineTo = lib.ImDrawList_PathLineTo
 ImDrawList.PathLineToMergeDuplicate = lib.ImDrawList_PathLineToMergeDuplicate
 function ImDrawList:PathRect(rect_min,rect_max,rounding,rounding_corners)
     rounding = rounding or 0.0
-    rounding_corners = rounding_corners or lib.ImDrawCornerFlags_All
+    rounding_corners = rounding_corners or 15
     return lib.ImDrawList_PathRect(self,rect_min,rect_max,rounding,rounding_corners)
 end
 function ImDrawList:PathStroke(col,closed,thickness)
@@ -2232,15 +2232,15 @@ function M.ImPlot_SetNextMarkerStyle(marker,size,fill,weight,outline)
     return lib.ImPlot_SetNextMarkerStyle(marker,size,fill,weight,outline)
 end
 function M.ImPlot_SetNextPlotLimits(xmin,xmax,ymin,ymax,cond)
-    cond = cond or ImGuiCond_Once
+    cond = cond or 2
     return lib.ImPlot_SetNextPlotLimits(xmin,xmax,ymin,ymax,cond)
 end
 function M.ImPlot_SetNextPlotLimitsX(xmin,xmax,cond)
-    cond = cond or ImGuiCond_Once
+    cond = cond or 2
     return lib.ImPlot_SetNextPlotLimitsX(xmin,xmax,cond)
 end
 function M.ImPlot_SetNextPlotLimitsY(ymin,ymax,cond,y_axis)
-    cond = cond or ImGuiCond_Once
+    cond = cond or 2
     y_axis = y_axis or 0
     return lib.ImPlot_SetNextPlotLimitsY(ymin,ymax,cond,y_axis)
 end
@@ -2674,7 +2674,7 @@ function M.FindBestWindowPosForPopup(window)
     return nonUDT_out
 end
 function M.FindBestWindowPosForPopupEx(ref_pos,size,last_dir,r_outer,r_avoid,policy)
-    policy = policy or ImGuiPopupPositionPolicy_Default
+    policy = policy or 0
     local nonUDT_out = ffi.new("ImVec2")
     lib.igFindBestWindowPosForPopupEx(nonUDT_out,ref_pos,size,last_dir,r_outer,r_avoid,policy)
     return nonUDT_out
@@ -3416,7 +3416,7 @@ function M.OpenPopupContextItem(str_id,popup_flags)
     return lib.igOpenPopupContextItem(str_id,popup_flags)
 end
 function M.OpenPopupEx(id,popup_flags)
-    popup_flags = popup_flags or ImGuiPopupFlags_None
+    popup_flags = popup_flags or 0
     return lib.igOpenPopupEx(id,popup_flags)
 end
 M.PlotEx = lib.igPlotEx
@@ -3564,7 +3564,7 @@ function M.RenderFrameBorder(p_min,p_max,rounding)
 end
 M.RenderMouseCursor = lib.igRenderMouseCursor
 function M.RenderNavHighlight(bb,id,flags)
-    flags = flags or ImGuiNavHighlightFlags_TypeDefault
+    flags = flags or 1
     return lib.igRenderNavHighlight(bb,id,flags)
 end
 M.RenderRectFilledRangeH = lib.igRenderRectFilledRangeH
