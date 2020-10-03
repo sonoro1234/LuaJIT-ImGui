@@ -781,20 +781,25 @@ struct ImGuiOnceUponAFrame
 {
      int RefFrame;
 };
+struct ImGuiTextRange
+{
+        const char* b;
+        const char* e;
+};
 struct ImGuiTextFilter
 {
     char InputBuf[256];
     ImVector_ImGuiTextRange Filters;
     int CountGrep;
 };
-struct ImGuiTextRange
-{
-        const char* b;
-        const char* e;
-};
 struct ImGuiTextBuffer
 {
     ImVector_char Buf;
+};
+struct ImGuiStoragePair
+{
+        ImGuiID key;
+        union { int val_i; float val_f; void* val_p; };
 };
 struct ImGuiStorage
 {
@@ -802,11 +807,6 @@ struct ImGuiStorage
 };
 typedef struct ImVector_ImGuiTabBar {int Size;int Capacity;ImGuiTabBar* Data;} ImVector_ImGuiTabBar;
 typedef struct ImPool_ImGuiTabBar {ImVector_ImGuiTabBar Buf;ImGuiStorage Map;ImPoolIdx FreeIdx;} ImPool_ImGuiTabBar;
-struct ImGuiStoragePair
-{
-        ImGuiID key;
-        union { int val_i; float val_f; void* val_p; };
-};
 struct ImGuiListClipper
 {
     int DisplayStart, DisplayEnd;
@@ -3191,9 +3191,6 @@ typedef enum {
     AttributeFlags_EnableLinkDetachWithDragClick = 1 << 0,
     AttributeFlags_EnableLinkCreationOnSnap = 1 << 1
 }AttributeFlags;
-struct IO
-{
-};
 struct EmulateThreeButtonMouse
 {
                _Bool             enabled;
@@ -3202,6 +3199,11 @@ struct EmulateThreeButtonMouse
 struct LinkDetachWithModifierClick
 {
         const              _Bool                 * modifier;
+};
+struct IO
+{
+    EmulateThreeButtonMouse emulate_three_button_mouse;
+    LinkDetachWithModifierClick link_detach_with_modifier_click;
 };
 struct Style
 {
@@ -3287,6 +3289,7 @@ void imnodes_SaveCurrentEditorStateToIniFile(const char* file_name);
 void imnodes_SaveEditorStateToIniFile(const EditorContext* editor,const char* file_name);
 void imnodes_LoadCurrentEditorStateFromIniFile(const char* file_name);
 void imnodes_LoadEditorStateFromIniFile(EditorContext* editor,const char* file_name);
+_Bool              * getIOKeyCtrlPtr();
 typedef struct SDL_Window SDL_Window;
 typedef struct GLFWwindow GLFWwindow;
 struct GLFWwindow;
