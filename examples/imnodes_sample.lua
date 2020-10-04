@@ -1,10 +1,11 @@
 local igwin = require"imgui.window"
 
 --local win = igwin:SDL(800,400, "widgets",{vsync=true,use_imnodes=true})
-local win = igwin:GLFW(800,400, "widgets",{vsync=true,use_imnodes=true})
+local win = igwin:GLFW(800,400, "widgets",{vsync=true})
 local ig = win.ig
 local ffi = require"ffi"
 
+ig.imnodes_Initialize()
 
 local function Link()
     return {id=0,start_attr=ffi.new("int[?]",1),end_attr=ffi.new("int[?]",1)}
@@ -114,6 +115,7 @@ local function clean()
     ig.imnodes_PopAttributeFlag();
     ig.imnodes_EditorContextFree(editor1.context);
     ig.imnodes_EditorContextFree(editor2.context);
+    ig.imnodes_Shutdown()
 end
 
 win:start(clean)

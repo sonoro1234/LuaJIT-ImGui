@@ -43,8 +43,6 @@ local function startGLFW(W, postf)
         window:swapBuffers()                    
     end
     if postf then postf() end
-    if W.args.use_implot then W.ig.ImPlot_DestroyContext() end
-    if W.args.use_imnodes then W.ig.imnodes_Shutdown() end
     W.ig_impl:destroy()
     window:destroy()
     W.lj_glfw.terminate()
@@ -83,9 +81,6 @@ function M:GLFW(w,h,title,args)
     end
     
     W.ig_impl:Init(window, true)
-
-    if args.use_implot then W.ig.ImPlot_CreateContext() end
-    if args.use_imnodes then W.ig.imnodes_Initialize() end
     
     W.window = window
     W.start = startGLFW
@@ -142,8 +137,6 @@ local function startSDL(W, postf)
     
     -- Cleanup
     if postf then postf() end
-    if W.args.use_implot then W.ig.ImPlot_DestroyContext() end
-    if W.args.use_imnodes then W.ig.imnodes_Shutdown() end
     W.ig_Impl:destroy()
 
     sdl.gL_DeleteContext(gl_context);
@@ -195,8 +188,6 @@ function M:SDL(w,h,title,args)
     
     W.ig_Impl:Init(window, W.gl_context)
 
-    if args.use_implot then W.ig.ImPlot_CreateContext() end
-    if args.use_imnodes then W.ig.imnodes_Initialize() end
     W.window = window
     W.start = startSDL
     return W

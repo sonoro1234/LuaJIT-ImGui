@@ -1,8 +1,8 @@
 local igwin = require"imgui.window"
 
 --local win = igwin:SDL(800,400, "widgets",{vsync=true,use_implot=true})
-local win = igwin:GLFW(800,400, "widgets",{vsync=true,use_implot=true})
-
+local win = igwin:GLFW(800,400, "widgets",{vsync=true})
+win.ig.ImPlot_CreateContext()
 
 local ffi = require"ffi"
 local xs1, ys1 = ffi.new("float[?]",1001),ffi.new("float[?]",1001)
@@ -31,6 +31,8 @@ function win:draw(ig)
     ig.End()
 end
 
+local function clean()
+	win.ig.ImPlot_DestroyContext()
+end
 
-
-win:start()
+win:start(clean)
