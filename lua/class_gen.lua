@@ -161,7 +161,7 @@ local function make_function(method,def)
 	fname_m = fname_m:match("(.*)_nonUDT$") or fname_m --drop "_nonUDT" suffix
 	if fname_m == "end" then fname_m = "_end" end
 	--dump function code
-	if def.nonUDT == 1 or next(def.defaults) then
+	if def.nonUDT == 1 or next(def.defaults) or def.skipped then
 		local call_args = def.call_args:gsub("%*","")
 		local code = {}
 		local args, fname_lua
