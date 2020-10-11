@@ -270,8 +270,11 @@ local function checktype(typ,va)
 	end
 end
 
-local function gen_args(method,n)
+local function gen_args(method,n,minvararg)
 	local args = "" 
+	if minvararg < math.huge then
+		n = minvararg - 1
+	end
 	if method then
 		for i=2,n do
 			args = args.."a"..i..","
@@ -280,6 +283,9 @@ local function gen_args(method,n)
 		for i=1,n do
 			args = args.."a"..i..","
 		end
+	end
+	if minvararg < math.huge then
+		args = args .. "...,"
 	end
 	args = args:sub(1,-2) --drop last 
 	return args
@@ -293,10 +299,17 @@ local function create_generic(code,defs,method)
 	local methodnotconst = method and not defs[1].constructor
 	--find max number of arguments
 	local maxnargs = -1
+	local minvararg = math.huge
+	local is_vararg
 	for i,def in ipairs(defs) do
+		if #def.argsT> 0 and def.argsT[#def.argsT].type == "..." then
+			minvararg = minvararg > #def.argsT and #def.argsT or minvararg
+			--print("...",def.cimguiname,#def.argsT)
+		end
 		maxnargs = maxnargs < #def.argsT and #def.argsT or maxnargs
 	end
-	--print("maxnargs",defs[1].cimguiname,maxnargs)
+	is_vararg = minvararg < math.huge
+	--print("maxnargs",defs[1].cimguiname,maxnargs,minvararg)
 	--[[
 	for i,def in ipairs(defs) do
 		io.write(def.ov_cimguiname," , ")
@@ -335,15 +348,18 @@ local function create_generic(code,defs,method)
 				end
 				if keys[i][tt] == 1 then 
 					done[j]= true;
-					--print(defs[j].ov_cimguiname,"done") 
+					--print(j,defs[j].ov_cimguiname,"done") 
 				end
 			end
 		end
 	end
-	--prtable(check)
+	
+	--cpp2ffi.prtable(keys,done,check)
+
 	--do generic--------------
 	local code2 = {}
 	--create args
+	if is_vararg then maxnargs = minvararg-1 end
 	local args = "" --method and "self," or ""
 	if methodnotconst then
 		for i=2,maxnargs do
@@ -357,6 +373,7 @@ local function create_generic(code,defs,method)
 			args = args.."a"..i..","
 		end
 	end
+	if is_vararg then args = args.."...," end
 	args = args:sub(1,-2) --drop last ,
 	
 	local fname = defs[1].cimguiname 
@@ -370,6 +387,7 @@ local function create_generic(code,defs,method)
 		table.insert(code2,"\n    if ")
 		local addand = false
 		for k,v in pairs(chk) do
+			assert(k < minvararg)
 			if addand then table.insert(code2," and ") end
 			if v=="nil" then
 				table.insert(code2,"a"..k.."==nil")
@@ -388,7 +406,7 @@ local function create_generic(code,defs,method)
 		local fname2 = defs[i].ov_cimguiname 
 		local fname2_e = method and fname2:match(defs[1].stname.."_(.*)") or fname2:match("^ig(.*)") or fname2 --drop struct name part
 		fname2 = method and (methodnotconst and "self:"..fname2_e or defs[1].stname.."."..fname2_e) or "M."..fname2_e
-		table.insert(code2," then return "..fname2.."("..gen_args(methodnotconst,#defs[i].argsT)..") end")
+		table.insert(code2," then return "..fname2.."("..gen_args(methodnotconst,#defs[i].argsT,minvararg)..") end")
 		if fname_e == fname2_e then
 			print("--------error cimguiname equals ov_cimguiname in overloaded function",fname)
 			--error"cimguiname equals ov_cimguiname"

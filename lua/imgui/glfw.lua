@@ -1654,29 +1654,37 @@ M.ImGuizmo_SetID = lib.ImGuizmo_SetID
 M.ImGuizmo_SetOrthographic = lib.ImGuizmo_SetOrthographic
 M.ImGuizmo_SetRect = lib.ImGuizmo_SetRect
 M.ImGuizmo_ViewManipulate = lib.ImGuizmo_ViewManipulate
-function M.ImPlot_AnnotateStr(x,y,pix_offset,fmt,...)
-    return lib.ImPlot_AnnotateStr(x,y,pix_offset,fmt,...)
-end
-function M.ImPlot_AnnotateVec4(x,y,pix_offset,color,fmt,...)
-    return lib.ImPlot_AnnotateVec4(x,y,pix_offset,color,fmt,...)
-end
-function M.ImPlot_Annotate(a1,a2,a3,a4,a5,a6) -- generic version
-    if (ffi.istype('const char*',a4) or type(a4)=='string') then return M.ImPlot_AnnotateStr(a1,a2,a3,a4,a5) end
-    if ffi.istype('const ImVec4',a4) then return M.ImPlot_AnnotateVec4(a1,a2,a3,a4,a5,a6) end
-    print(a1,a2,a3,a4,a5,a6)
+M.ImPlot_AnnotateStr = lib.ImPlot_AnnotateStr
+M.ImPlot_AnnotateVec4 = lib.ImPlot_AnnotateVec4
+function M.ImPlot_Annotate(a1,a2,a3,a4,...) -- generic version
+    if (ffi.istype('const char*',a4) or type(a4)=='string') then return M.ImPlot_AnnotateStr(a1,a2,a3,a4,...) end
+    if ffi.istype('const ImVec4',a4) then return M.ImPlot_AnnotateVec4(a1,a2,a3,a4,...) end
+    print(a1,a2,a3,a4,...)
     error'M.ImPlot_Annotate could not find overloaded'
 end
-function M.ImPlot_AnnotateClampedStr(x,y,pix_offset,fmt,...)
-    return lib.ImPlot_AnnotateClampedStr(x,y,pix_offset,fmt,...)
-end
-function M.ImPlot_AnnotateClampedVec4(x,y,pix_offset,color,fmt,...)
-    return lib.ImPlot_AnnotateClampedVec4(x,y,pix_offset,color,fmt,...)
-end
-function M.ImPlot_AnnotateClamped(a1,a2,a3,a4,a5,a6) -- generic version
-    if (ffi.istype('const char*',a4) or type(a4)=='string') then return M.ImPlot_AnnotateClampedStr(a1,a2,a3,a4,a5) end
-    if ffi.istype('const ImVec4',a4) then return M.ImPlot_AnnotateClampedVec4(a1,a2,a3,a4,a5,a6) end
-    print(a1,a2,a3,a4,a5,a6)
+M.ImPlot_AnnotateClampedStr = lib.ImPlot_AnnotateClampedStr
+M.ImPlot_AnnotateClampedVec4 = lib.ImPlot_AnnotateClampedVec4
+function M.ImPlot_AnnotateClamped(a1,a2,a3,a4,...) -- generic version
+    if (ffi.istype('const char*',a4) or type(a4)=='string') then return M.ImPlot_AnnotateClampedStr(a1,a2,a3,a4,...) end
+    if ffi.istype('const ImVec4',a4) then return M.ImPlot_AnnotateClampedVec4(a1,a2,a3,a4,...) end
+    print(a1,a2,a3,a4,...)
     error'M.ImPlot_AnnotateClamped could not find overloaded'
+end
+M.ImPlot_AnnotateClampedVStr = lib.ImPlot_AnnotateClampedVStr
+M.ImPlot_AnnotateClampedVVec4 = lib.ImPlot_AnnotateClampedVVec4
+function M.ImPlot_AnnotateClampedV(a1,a2,a3,a4,a5,a6) -- generic version
+    if (ffi.istype('const char*',a4) or type(a4)=='string') then return M.ImPlot_AnnotateClampedVStr(a1,a2,a3,a4,a5) end
+    if ffi.istype('const ImVec4',a4) then return M.ImPlot_AnnotateClampedVVec4(a1,a2,a3,a4,a5,a6) end
+    print(a1,a2,a3,a4,a5,a6)
+    error'M.ImPlot_AnnotateClampedV could not find overloaded'
+end
+M.ImPlot_AnnotateVStr = lib.ImPlot_AnnotateVStr
+M.ImPlot_AnnotateVVec4 = lib.ImPlot_AnnotateVVec4
+function M.ImPlot_AnnotateV(a1,a2,a3,a4,a5,a6) -- generic version
+    if (ffi.istype('const char*',a4) or type(a4)=='string') then return M.ImPlot_AnnotateVStr(a1,a2,a3,a4,a5) end
+    if ffi.istype('const ImVec4',a4) then return M.ImPlot_AnnotateVVec4(a1,a2,a3,a4,a5,a6) end
+    print(a1,a2,a3,a4,a5,a6)
+    error'M.ImPlot_AnnotateV could not find overloaded'
 end
 function M.ImPlot_BeginLegendDragDropSource(label_id,flags)
     flags = flags or 0
@@ -3427,6 +3435,7 @@ function M.ImPlot_SetNextPlotTicksY(a1,a2,a3,a4,a5,a6) -- generic version
 end
 M.ImPlot_SetPlotYAxis = lib.ImPlot_SetPlotYAxis
 M.ImPlot_ShowColormapScale = lib.ImPlot_ShowColormapScale
+M.ImPlot_ShowColormapSelector = lib.ImPlot_ShowColormapSelector
 function M.ImPlot_ShowDemoWindow(p_open)
     p_open = p_open or nil
     return lib.ImPlot_ShowDemoWindow(p_open)
@@ -5095,11 +5104,11 @@ M.TextWrappedV = lib.igTextWrappedV
 M.TreeNodeStr = lib.igTreeNodeStr
 M.TreeNodeStrStr = lib.igTreeNodeStrStr
 M.TreeNodePtr = lib.igTreeNodePtr
-function M.TreeNode(a1,a2,a3) -- generic version
-    if (ffi.istype('const char*',a1) or type(a1)=='string') and a2==nil then return M.TreeNodeStr(a1) end
-    if (ffi.istype('const char*',a1) or type(a1)=='string') and (ffi.istype('const char*',a2) or type(a2)=='string') then return M.TreeNodeStrStr(a1,a2,a3) end
-    if ffi.istype('const void*',a1) then return M.TreeNodePtr(a1,a2,a3) end
-    print(a1,a2,a3)
+function M.TreeNode(a1,a2,...) -- generic version
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and a2==nil then return M.TreeNodeStr(a1,a2,...) end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and (ffi.istype('const char*',a2) or type(a2)=='string') then return M.TreeNodeStrStr(a1,a2,...) end
+    if ffi.istype('const void*',a1) then return M.TreeNodePtr(a1,a2,...) end
+    print(a1,a2,...)
     error'M.TreeNode could not find overloaded'
 end
 function M.TreeNodeBehavior(id,flags,label,label_end)
@@ -5116,11 +5125,11 @@ function M.TreeNodeExStr(label,flags)
 end
 M.TreeNodeExStrStr = lib.igTreeNodeExStrStr
 M.TreeNodeExPtr = lib.igTreeNodeExPtr
-function M.TreeNodeEx(a1,a2,a3,a4) -- generic version
-    if (ffi.istype('const char*',a1) or type(a1)=='string') and a3==nil then return M.TreeNodeExStr(a1,a2) end
-    if (ffi.istype('const char*',a1) or type(a1)=='string') and (ffi.istype('const char*',a3) or type(a3)=='string') then return M.TreeNodeExStrStr(a1,a2,a3,a4) end
-    if ffi.istype('const void*',a1) then return M.TreeNodeExPtr(a1,a2,a3,a4) end
-    print(a1,a2,a3,a4)
+function M.TreeNodeEx(a1,a2,a3,...) -- generic version
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and a3==nil then return M.TreeNodeExStr(a1,a2,a3,...) end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and (ffi.istype('const char*',a3) or type(a3)=='string') then return M.TreeNodeExStrStr(a1,a2,a3,...) end
+    if ffi.istype('const void*',a1) then return M.TreeNodeExPtr(a1,a2,a3,...) end
+    print(a1,a2,a3,...)
     error'M.TreeNodeEx could not find overloaded'
 end
 M.TreeNodeExVStr = lib.igTreeNodeExVStr

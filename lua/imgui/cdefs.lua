@@ -3127,7 +3127,6 @@ void ImPlot_PlotDigitalS32Ptr(const char* label_id,const ImS32* xs,const ImS32* 
 void ImPlot_PlotDigitalU32Ptr(const char* label_id,const ImU32* xs,const ImU32* ys,int count,int offset,int stride);
 void ImPlot_PlotDigitalS64Ptr(const char* label_id,const ImS64* xs,const ImS64* ys,int count,int offset,int stride);
 void ImPlot_PlotDigitalU64Ptr(const char* label_id,const ImU64* xs,const ImU64* ys,int count,int offset,int stride);
-void ImPlot_PlotDigitalG(const char* label_id,ImPlotPoint(*getter)(void* data,int idx),void* data,int count,int offset);
 void ImPlot_PlotImage(const char* label_id,ImTextureID user_texture_id,const ImPlotPoint bounds_min,const ImPlotPoint bounds_max,const ImVec2 uv0,const ImVec2 uv1,const ImVec4 tint_col);
 void ImPlot_PlotText(const char* text,double x,double y,                                                                  _Bool                                                                        vertical,const ImVec2 pix_offset);
 void ImPlot_SetNextPlotLimits(double xmin,double xmax,double ymin,double ymax,ImGuiCond cond);
@@ -3154,6 +3153,14 @@ void ImPlot_GetPlotMousePos(ImPlotPoint *pOut,int y_axis);
 void ImPlot_GetPlotLimits(ImPlotLimits *pOut,int y_axis);
 _Bool                ImPlot_IsPlotQueried(void);
 void ImPlot_GetPlotQuery(ImPlotLimits *pOut,int y_axis);
+void ImPlot_AnnotateStr(double x,double y,const ImVec2 pix_offset,const char* fmt,...);
+void ImPlot_AnnotateVec4(double x,double y,const ImVec2 pix_offset,const ImVec4 color,const char* fmt,...);
+void ImPlot_AnnotateClampedStr(double x,double y,const ImVec2 pix_offset,const char* fmt,...);
+void ImPlot_AnnotateClampedVec4(double x,double y,const ImVec2 pix_offset,const ImVec4 color,const char* fmt,...);
+void ImPlot_AnnotateVStr(double x,double y,const ImVec2 pix_offset,const char* fmt,va_list args);
+void ImPlot_AnnotateVVec4(double x,double y,const ImVec2 pix_offset,const ImVec4 color,const char* fmt,va_list args);
+void ImPlot_AnnotateClampedVStr(double x,double y,const ImVec2 pix_offset,const char* fmt,va_list args);
+void ImPlot_AnnotateClampedVVec4(double x,double y,const ImVec2 pix_offset,const ImVec4 color,const char* fmt,va_list args);
 _Bool                ImPlot_DragLineX(const char* id,double* x_value,                                                               _Bool                                                                     show_label,const ImVec4 col,float thickness);
 _Bool                ImPlot_DragLineY(const char* id,double* y_value,                                                               _Bool                                                                     show_label,const ImVec4 col,float thickness);
 _Bool                ImPlot_DragPoint(const char* id,double* x,double* y,                                                                   _Bool                                                                         show_label,const ImVec4 col,float radius);
@@ -3197,10 +3204,17 @@ ImDrawList* ImPlot_GetPlotDrawList(void);
 void ImPlot_PushPlotClipRect(void);
 void ImPlot_PopPlotClipRect(void);
 _Bool                ImPlot_ShowStyleSelector(const char* label);
+_Bool                ImPlot_ShowColormapSelector(const char* label);
 void ImPlot_ShowStyleEditor(ImPlotStyle* ref);
 void ImPlot_ShowUserGuide(void);
 void ImPlot_SetImGuiContext(ImGuiContext* ctx);
 void ImPlot_ShowDemoWindow(                                     _Bool                                         * p_open);
+void ImPlot_PlotLineG(const char* label_id,ImPlotPoint*(*getter)(void* data,int idx),void* data,int count,int offset);
+void ImPlot_PlotScatterG(const char* label_id, ImPlotPoint* (*getter)(void* data, int idx), void* data, int count, int offset);
+void ImPlot_PlotShadedG(const char* label_id, ImPlotPoint* (*getter1)(void* data, int idx), void* data1, ImPlotPoint* (*getter2)(void* data, int idx), void* data2, int count, int offset);
+void ImPlot_PlotBarsG(const char* label_id, ImPlotPoint* (*getter)(void* data, int idx), void* data, int count, double width, int offset);
+void ImPlot_PlotBarsHG(const char* label_id, ImPlotPoint* (*getter)(void* data, int idx), void* data, int count, double height, int offset);
+void ImPlot_PlotDigitalG(const char* label_id, ImPlotPoint* (*getter)(void* data, int idx), void* data, int count, int offset);
 typedef enum {
   TRANSLATE,
   ROTATE,
