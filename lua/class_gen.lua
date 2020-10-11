@@ -309,7 +309,7 @@ local function create_generic(code,defs,method)
 		maxnargs = maxnargs < #def.argsT and #def.argsT or maxnargs
 	end
 	is_vararg = minvararg < math.huge
-	print("maxnargs",defs[1].cimguiname,maxnargs,minvararg)
+	--print("maxnargs",defs[1].cimguiname,maxnargs,minvararg)
 	--[[
 	for i,def in ipairs(defs) do
 		io.write(def.ov_cimguiname," , ")
