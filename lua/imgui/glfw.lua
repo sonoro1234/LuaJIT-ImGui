@@ -5291,7 +5291,7 @@ M.TreeNodeStr = lib.igTreeNodeStr
 M.TreeNodeStrStr = lib.igTreeNodeStrStr
 M.TreeNodePtr = lib.igTreeNodePtr
 function M.TreeNode(a1,a2,...) -- generic version
-    if (ffi.istype('const char*',a1) or type(a1)=='string') and a2==nil then return M.TreeNodeStr(a1,a2,...) end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and a2==nil then return M.TreeNodeStr(a1) end
     if (ffi.istype('const char*',a1) or type(a1)=='string') and (ffi.istype('const char*',a2) or type(a2)=='string') then return M.TreeNodeStrStr(a1,a2,...) end
     if ffi.istype('const void*',a1) then return M.TreeNodePtr(a1,a2,...) end
     print(a1,a2,...)
@@ -5312,7 +5312,7 @@ end
 M.TreeNodeExStrStr = lib.igTreeNodeExStrStr
 M.TreeNodeExPtr = lib.igTreeNodeExPtr
 function M.TreeNodeEx(a1,a2,a3,...) -- generic version
-    if (ffi.istype('const char*',a1) or type(a1)=='string') and a3==nil then return M.TreeNodeExStr(a1,a2,a3,...) end
+    if (ffi.istype('const char*',a1) or type(a1)=='string') and a3==nil then return M.TreeNodeExStr(a1,a2) end
     if (ffi.istype('const char*',a1) or type(a1)=='string') and (ffi.istype('const char*',a3) or type(a3)=='string') then return M.TreeNodeExStrStr(a1,a2,a3,...) end
     if ffi.istype('const void*',a1) then return M.TreeNodeExPtr(a1,a2,a3,...) end
     print(a1,a2,a3,...)
