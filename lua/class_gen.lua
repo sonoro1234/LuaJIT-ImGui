@@ -271,9 +271,11 @@ local function checktype(typ,va)
 end
 
 local function gen_args(method,n,minvararg)
-	local args = "" 
-	if minvararg < math.huge then
+	local args = ""
+	local isvararg
+	if minvararg < math.huge and n >= minvararg then
 		n = minvararg - 1
+		isvararg = true
 	end
 	if method then
 		for i=2,n do
@@ -284,7 +286,7 @@ local function gen_args(method,n,minvararg)
 			args = args.."a"..i..","
 		end
 	end
-	if minvararg < math.huge then
+	if isvararg then
 		args = args .. "...,"
 	end
 	args = args:sub(1,-2) --drop last 
