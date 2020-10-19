@@ -5297,6 +5297,21 @@ function M.imnodes_GetNodeDimensions(id)
     lib.imnodes_GetNodeDimensions(nonUDT_out,id)
     return nonUDT_out
 end
+function M.imnodes_GetNodeEditorSpacePos(node_id)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.imnodes_GetNodeEditorSpacePos(nonUDT_out,node_id)
+    return nonUDT_out
+end
+function M.imnodes_GetNodeGridSpacePos(node_id)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.imnodes_GetNodeGridSpacePos(nonUDT_out,node_id)
+    return nonUDT_out
+end
+function M.imnodes_GetNodeScreenSpacePos(node_id)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.imnodes_GetNodeScreenSpacePos(nonUDT_out,node_id)
+    return nonUDT_out
+end
 M.imnodes_GetSelectedLinks = lib.imnodes_GetSelectedLinks
 M.imnodes_GetSelectedNodes = lib.imnodes_GetSelectedNodes
 M.imnodes_GetStyle = lib.imnodes_GetStyle
@@ -5307,9 +5322,19 @@ function M.imnodes_IsAnyAttributeActive(attribute_id)
 end
 M.imnodes_IsAttributeActive = lib.imnodes_IsAttributeActive
 M.imnodes_IsEditorHovered = lib.imnodes_IsEditorHovered
-function M.imnodes_IsLinkCreated(started_at_attribute_id,ended_at_attribute_id,created_from_snap)
+function M.imnodes_IsLinkCreatedBoolPtr(started_at_attribute_id,ended_at_attribute_id,created_from_snap)
     created_from_snap = created_from_snap or 0
-    return lib.imnodes_IsLinkCreated(started_at_attribute_id,ended_at_attribute_id,created_from_snap)
+    return lib.imnodes_IsLinkCreatedBoolPtr(started_at_attribute_id,ended_at_attribute_id,created_from_snap)
+end
+function M.imnodes_IsLinkCreatedIntPtr(started_at_node_id,started_at_attribute_id,ended_at_node_id,ended_at_attribute_id,created_from_snap)
+    created_from_snap = created_from_snap or 0
+    return lib.imnodes_IsLinkCreatedIntPtr(started_at_node_id,started_at_attribute_id,ended_at_node_id,ended_at_attribute_id,created_from_snap)
+end
+function M.imnodes_IsLinkCreated(a1,a2,a3,a4,a5) -- generic version
+    if ((ffi.istype('bool*',a3) or ffi.istype('bool',a3) or ffi.istype('bool[]',a3)) or type(a3)=='nil') then return M.imnodes_IsLinkCreatedBoolPtr(a1,a2,a3) end
+    if (ffi.istype('int*',a3) or ffi.istype('int[]',a3)) then return M.imnodes_IsLinkCreatedIntPtr(a1,a2,a3,a4,a5) end
+    print(a1,a2,a3,a4,a5)
+    error'M.imnodes_IsLinkCreated could not find overloaded'
 end
 M.imnodes_IsLinkDestroyed = lib.imnodes_IsLinkDestroyed
 function M.imnodes_IsLinkDropped(started_at_attribute_id,including_detached_links)
@@ -5345,6 +5370,7 @@ function M.imnodes_SaveEditorStateToIniString(editor,data_size)
     return lib.imnodes_SaveEditorStateToIniString(editor,data_size)
 end
 M.imnodes_SetNodeDraggable = lib.imnodes_SetNodeDraggable
+M.imnodes_SetNodeEditorSpacePos = lib.imnodes_SetNodeEditorSpacePos
 M.imnodes_SetNodeGridSpacePos = lib.imnodes_SetNodeGridSpacePos
 M.imnodes_SetNodeScreenSpacePos = lib.imnodes_SetNodeScreenSpacePos
 M.imnodes_Shutdown = lib.imnodes_Shutdown
