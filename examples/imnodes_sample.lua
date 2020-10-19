@@ -85,7 +85,7 @@ local function show_editor(editor_name,editor)
     ig.imnodes_EndNodeEditor();
 
     local link = Link()
-    if (ig.imnodes_IsLinkCreated(link.start_attr, link.end_attr, ffi.new("bool[?]",1))) then
+    if (ig.imnodes_IsLinkCreated(link.start_attr, link.end_attr)) then 
         editor:addLink(link)
     end
 

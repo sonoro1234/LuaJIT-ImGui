@@ -5504,17 +5504,17 @@ M.imnodes_GetSelectedNodes = lib.imnodes_GetSelectedNodes
 M.imnodes_GetStyle = lib.imnodes_GetStyle
 M.imnodes_Initialize = lib.imnodes_Initialize
 function M.imnodes_IsAnyAttributeActive(attribute_id)
-    attribute_id = attribute_id or 0
+    attribute_id = attribute_id or nil
     return lib.imnodes_IsAnyAttributeActive(attribute_id)
 end
 M.imnodes_IsAttributeActive = lib.imnodes_IsAttributeActive
 M.imnodes_IsEditorHovered = lib.imnodes_IsEditorHovered
 function M.imnodes_IsLinkCreatedBoolPtr(started_at_attribute_id,ended_at_attribute_id,created_from_snap)
-    created_from_snap = created_from_snap or 0
+    created_from_snap = created_from_snap or nil
     return lib.imnodes_IsLinkCreatedBoolPtr(started_at_attribute_id,ended_at_attribute_id,created_from_snap)
 end
 function M.imnodes_IsLinkCreatedIntPtr(started_at_node_id,started_at_attribute_id,ended_at_node_id,ended_at_attribute_id,created_from_snap)
-    created_from_snap = created_from_snap or 0
+    created_from_snap = created_from_snap or nil
     return lib.imnodes_IsLinkCreatedIntPtr(started_at_node_id,started_at_attribute_id,ended_at_node_id,ended_at_attribute_id,created_from_snap)
 end
 function M.imnodes_IsLinkCreated(a1,a2,a3,a4,a5) -- generic version
@@ -5526,7 +5526,7 @@ end
 M.imnodes_IsLinkDestroyed = lib.imnodes_IsLinkDestroyed
 function M.imnodes_IsLinkDropped(started_at_attribute_id,including_detached_links)
     if including_detached_links == nil then including_detached_links = true end
-    started_at_attribute_id = started_at_attribute_id or 0
+    started_at_attribute_id = started_at_attribute_id or nil
     return lib.imnodes_IsLinkDropped(started_at_attribute_id,including_detached_links)
 end
 M.imnodes_IsLinkHovered = lib.imnodes_IsLinkHovered
