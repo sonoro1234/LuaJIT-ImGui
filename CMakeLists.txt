@@ -7,6 +7,7 @@ endif(WIN32)
 include_directories(cimgui/imgui)
 include_directories(cimplot/implot)
 include_directories(cimguizmo/ImGuizmo)
+include_directories(./cimguizmo_quat/imGuIZMO.quat/imGuIZMO.quat)
 include_directories(cimnodes/imnodes)
 add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
 
@@ -22,6 +23,8 @@ set(IMGUI_SOURCES ./cimgui/cimgui.cpp
 ./cimplot/implot/implot_demo.cpp
 ./cimguizmo/cimguizmo.cpp
 ./cimguizmo/ImGuizmo/ImGuizmo.cpp
+./cimguizmo_quat/imGuIZMO.quat/imGuIZMO.quat/imGuIZMOquat.cpp  
+./cimguizmo_quat/cimguizmo_quat.cpp
 ./cimnodes/cimnodes.cpp
 ./cimnodes/imnodes/imnodes.cpp
 )
@@ -46,6 +49,7 @@ option(IMPL_SDL "add SDL implementation" OFF)
 option(IMPL_OPENGL2 "add OPENGL2 implementation" OFF)
 option(IMPL_OPENGL3 "add OPENGL3 implementation" OFF)
 option(IMGUI_FREETYPE "add Freetype2" OFF)
+
 
 if(IMGUI_FREETYPE)
 	FIND_PACKAGE(freetype REQUIRED PATHS ${FREETYPE_PATH})
@@ -76,12 +80,11 @@ if(IMPL_OPENGL2)
 endif(IMPL_OPENGL2)
 
 if(IMPL_EXTRAS)
-    list(APPEND IMGUI_SOURCES ./extras/knob.cpp  ./extras/curve.cpp)
-	include_directories(./cimguizmo_quat/imGuIZMO.quat/imGuIZMO.quat/)
-	list(APPEND IMGUI_SOURCES ./cimguizmo_quat/imGuIZMO.quat/imGuIZMO.quat/imGuIZMOquat.cpp  ./cimguizmo_quat/cimguizmo_quat.cpp)
-	#include_directories(extras/ImGuizmo/)
-	#list(APPEND IMGUI_SOURCES ./extras/ImGuizmo/ImGuizmo.cpp ./extras/imGuizmo.cpp)
+    list(APPEND IMGUI_SOURCES ./extras/knob.cpp  ./extras/curve.cpp ./extras/cimgui_extras.cpp)
 endif(IMPL_EXTRAS)
+
+add_library(cimgui_base OBJECT ${IMGUI_SOURCES})
+
 
 if(IMPL_GLFW)
     list(APPEND IMGUI_SOURCES_glfw ./cimgui/imgui/examples/imgui_impl_glfw.cpp)
@@ -93,9 +96,8 @@ if(IMPL_GLFW)
 		message(STATUS GLFW_PATH not defined)
 		#include_directories(${GLFW_INCLUDE})
 	endif(DEFINED GLFW_PATH)
-    #list(APPEND IMGUI_LIBRARIES glfw)
-	add_library(cimgui_glfw SHARED ${IMGUI_SOURCES} ${IMGUI_SOURCES_glfw})
-	target_link_libraries(cimgui_glfw ${IMGUI_LIBRARIES} glfw)
+	add_library(cimgui_glfw SHARED ${IMGUI_SOURCES_glfw} $<TARGET_OBJECTS:cimgui_base>)
+	target_link_libraries(cimgui_glfw PUBLIC ${IMGUI_LIBRARIES} glfw)
 	install(TARGETS cimgui_glfw
               RUNTIME DESTINATION  ${LUAJIT_BIN}
               LIBRARY DESTINATION  ${LUAJIT_BIN}
@@ -123,9 +125,8 @@ if(IMPL_SDL)
 		message(STATUS "SDL_PATH not defined")
 		set(IMGUI_SDL_LIBRARY SDL2)
 	endif(DEFINED SDL_PATH)
-    #list(APPEND IMGUI_LIBRARIES ${SDL_LIBRARY})
-	add_library(cimgui_sdl SHARED ${IMGUI_SOURCES} ${IMGUI_SOURCES_sdl})
-	target_link_libraries(cimgui_sdl ${IMGUI_LIBRARIES} ${IMGUI_SDL_LIBRARY})
+	add_library(cimgui_sdl SHARED  ${IMGUI_SOURCES_sdl} $<TARGET_OBJECTS:cimgui_base>)
+	target_link_libraries(cimgui_sdl PUBLIC ${IMGUI_LIBRARIES} ${IMGUI_SDL_LIBRARY})
 	install(TARGETS cimgui_sdl
               RUNTIME DESTINATION  ${LUAJIT_BIN}
               LIBRARY DESTINATION  ${LUAJIT_BIN}
