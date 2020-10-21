@@ -44,11 +44,12 @@ endif(WIN32)
 add_compile_definitions("IMGUI_IMPL_OPENGL_LOADER_GL3W")
 
 #optional adding implementations
-option(IMPL_GLFW "add GLFW implementation" OFF)
-option(IMPL_SDL "add SDL implementation" OFF)
-option(IMPL_OPENGL2 "add OPENGL2 implementation" OFF)
-option(IMPL_OPENGL3 "add OPENGL3 implementation" OFF)
+option(IMPL_GLFW "add GLFW implementation" ON)
+option(IMPL_SDL "add SDL implementation" ON)
+option(IMPL_OPENGL2 "add OPENGL2 implementation" ON)
+option(IMPL_OPENGL3 "add OPENGL3 implementation" ON)
 option(IMGUI_FREETYPE "add Freetype2" OFF)
+option(IMPL_EXTRAS "knob and curve" ON)
 
 
 if(IMGUI_FREETYPE)
@@ -80,7 +81,7 @@ if(IMPL_OPENGL2)
 endif(IMPL_OPENGL2)
 
 if(IMPL_EXTRAS)
-    list(APPEND IMGUI_SOURCES ./extras/knob.cpp  ./extras/curve.cpp ./extras/cimgui_extras.cpp)
+    list(APPEND IMGUI_SOURCES ./extras/knob.cpp  ./extras/curve.cpp)
 endif(IMPL_EXTRAS)
 
 add_library(cimgui_base OBJECT ${IMGUI_SOURCES})
