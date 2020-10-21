@@ -154,6 +154,7 @@ function sanitize_reserved(def)
 end
 
 local function make_function(method,def)
+	if def.skipped then return "" end
 	if def.is_static_function then method = nil end
 	sanitize_reserved(def)
 	local fname = def.ov_cimguiname or def.cimguiname --overloaded or original
@@ -161,7 +162,7 @@ local function make_function(method,def)
 	fname_m = fname_m:match("(.*)_nonUDT$") or fname_m --drop "_nonUDT" suffix
 	if fname_m == "end" then fname_m = "_end" end
 	--dump function code
-	if def.nonUDT == 1 or next(def.defaults) or def.skipped then
+	if def.nonUDT == 1 or next(def.defaults) then
 		local call_args = def.call_args:gsub("%*","")
 		local code = {}
 		local args, fname_lua
@@ -295,6 +296,7 @@ end
 
 --require"anima.utils" --gives us prtable
 local function create_generic(code,defs,method)
+	if defs[1].skipped then return end
 	if defs[1].is_static_function then
 		method = nil
 	end
