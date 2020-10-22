@@ -7,7 +7,18 @@ local ffi = require"ffi"
 
 
 local function Link()
-    return {id=0,start_attr=ffi.new("int[?]",1),end_attr=ffi.new("int[?]",1)}
+    local link = {id=0,start_attr=ffi.new("int[?]",1),end_attr=ffi.new("int[?]",1)}
+    function link:save_str()
+        return "{id = " .. self.id .. 
+        ", start_attr = " .. self.start_attr[0] .. 
+        ", end_attr = " .. self.end_attr[0] .. "}"
+    end
+    function link:loadT(t)
+        self.id = t.id
+        self.start_attr[0] = t.start_attr
+        self.end_attr[0] = t.end_attr
+    end
+    return link
 end
 
 local function Node(value,editor)
@@ -16,17 +27,40 @@ local function Node(value,editor)
         input_id = editor:newid(),
         output_id = editor:newid(),
         static_id = editor:newid(),
-        value=ffi.new("float[?]",1,value)
+        value = ffi.new("float[?]",1,value)
     }
     function node:hasLink(link)
-        return link.start_attr[0] == self.input_id or
-        link.start_attr[0] == self.output_id or
-        link.end_attr[0] == self.input_id or
-        link.end_attr[0] == self.output_id
+        return link.start_attr[0] == self.output_id or link.end_attr[0] == self.input_id 
     end
-    function node:dump()
+    function node:save_str()
+        local str = "{"
+        for k,v in pairs(self) do
+            if type(v)=="number" then
+                str = str .. k .. "=" .. v ..","
+            elseif type(v) == "cdata" then
+                str = str .. k .. "=" .. v[0] ..","
+            end
+        end
+        local pos = ig.imnodes_GetNodeGridSpacePos(self.id)
+        str = str .. " pos = {" .. pos.x .. "," .. pos.y .. "}"
+        str = str .. "}"
+        return str
+    end
+    function node:loadT(t)
+        for k,v in pairs(t) do
+            if type(self[k]) == "cdata" then
+                self[k][0] = v
+            else
+                self[k] = v
+            end
+        end
     end
     function node:draw()
+        if self.pos then -- for reset position of saved and loaded node
+            --print("self.pos",self.id,self.pos[1],self.pos[2])
+            ig.imnodes_SetNodeGridSpacePos(self.id, ig.ImVec2(self.pos[1],self.pos[2]));
+            self.pos = nil
+        end
         ig.imnodes_BeginNode(node.id);
         ig.imnodes_BeginNodeTitleBar();
         ig.TextUnformatted("node");
@@ -53,19 +87,32 @@ local function Node(value,editor)
     return node
 end
 
-local function show_editor(editor,editor_name)
+local function show_editor(editor)
     ig.imnodes_EditorContextSet(editor.context);
 
-    ig.Begin(editor_name);
+    ig.Begin(editor.name);
     if ig.SmallButton("dump") then
         print"---------dump-----------------"
         for k,node in pairs(editor.nodes) do
-            print("node",node.id,node.input_id,node.output_id)
+            print("node",k,node.id,node.input_id,node.output_id)
         end
         for k,link in pairs(editor.links) do
-            print("link",link.id,link.start_attr[0],link.end_attr[0])
+            print("link",k,link.id,link.start_attr[0],link.end_attr[0])
         end
+        print("current_id",editor.current_id)
     end
+    ig.SameLine()
+    local enab = ffi.new("bool[1]",ig.imnodes_GetIO().emulate_three_button_mouse.enabled)
+    ig.Checkbox("emulate three button mouse",enab)
+    ig.imnodes_GetIO().emulate_three_button_mouse.enabled = enab[0]
+    --[[
+    ig.SameLine()
+    if ig.SmallButton("save") then
+       local str = editor:save_str()
+       print(str)
+       editor:load_str(str)
+    end
+    --]]
     ig.TextUnformatted("A -- add node");
     ig.TextUnformatted("X -- delete selected node or link");
     ig.imnodes_BeginNodeEditor();
@@ -145,8 +192,8 @@ local function show_editor(editor,editor_name)
 
     ig.End();
 end
-local function Editor()
-    local E = {nodes={},links={},current_id=0}
+local function Editor(name)
+    local E = {nodes={},links={},current_id=0,name=name}
     function E:newid()
         E.current_id = E.current_id + 1
         return E.current_id
@@ -169,6 +216,7 @@ local function Editor()
     function E:addLink(link)
         link.id = self:newid();
         self.links[link.id] = link
+        return link
     end
     function E:deleteLink(link_id)
         self.links[link_id] = nil
@@ -177,25 +225,76 @@ local function Editor()
     function E:free()
         ig.imnodes_EditorContextFree(self.context);
     end
+    function E:save_str()
+        local str = "return {nodes = {"
+        for k,node in pairs(self.nodes) do
+            local kst = type(k)=="number" and "["..k.."]" or k
+            str = str .. kst .. "=" .. node:save_str() .. ","
+        end
+        str = str .. "},links = {"
+        for k,link in pairs(self.links) do
+            local kst = type(k)=="number" and "["..k.."]" or k
+            str = str .. kst .. "=" .. link:save_str() .. ","
+        end
+        str = str .. "},name='"..self.name.."',current_id = " .. self.current_id .. "}"
+        return str
+    end
+    function E:save()
+        local str = self:save_str()
+        local file,err = io.open(self.name.."_saved","w")
+        if not file then print(err);error"opening file" end
+        file:write(str)
+        file:close()
+    end
+    function E:load()
+        local file,err = io.open(self.name.."_saved","r")
+        if file then
+            local str = file:read"*a"
+            file:close()
+            self:load_str(str)
+        end
+    end
+    function E:load_str(str)
+        self.nodes = {}
+        self.links = {}
+        local loadedE = loadstring(str)()
+        for k,v in pairs(loadedE.nodes) do
+            local node = Node(0,self)
+            node:loadT(v)
+            self.nodes[node.id] = node
+        end
+        for k,v in pairs(loadedE.links) do
+            local link = Link()
+            link:loadT(v)
+            self.links[link.id] = link
+        end
+        self.current_id = loadedE.current_id
+        self.name = loadedE.name
+    end
     E.context = ig.imnodes_EditorContextCreate();
     return E
 end
-
+--------------------------------------------------------------------------------------------
 ig.imnodes_Initialize()
 
-local editor1 = Editor()
-local editor2 = Editor()
+local editor1 = Editor"editor1"
+local editor2 = Editor"editor2"
+editor1:load()
+editor2:load()
 
 ig.imnodes_PushAttributeFlag(ig.lib.AttributeFlags_EnableLinkDetachWithDragClick);
 local iog = ig.imnodes_GetIO();
 iog.link_detach_with_modifier_click.modifier = ig.lib.getIOKeyCtrlPtr();
 
+
 function win:draw(ig)
-    editor1:draw"editor1"
-    editor2:draw"editor2"
+    editor1:draw()
+    editor2:draw()
 end
 
 local function clean()
+    editor1:save()
+    editor2:save()
     ig.imnodes_PopAttributeFlag();
     editor1:free()
     editor2:free()
