@@ -242,7 +242,10 @@ local function Node(value,editor,typen,loadT)
         end
     end
     function node:hasLink(link)
-        return link.start_attr[0] == self.output_id or link.end_attr[0] == self.input_id 
+		for i ,input_id in ipairs(self.inputs) do
+			if link.end_attr[0] == input_id then return true end
+		end
+        return link.start_attr[0] == self.output_id 
     end
     function node:save_str(name)
         self.pos = ig.imnodes_GetNodeGridSpacePos(self.id)
