@@ -2196,6 +2196,7 @@ function M.ImPlot_PlotDigitalG(label_id,getter,data,count,offset)
     offset = offset or 0
     return lib.ImPlot_PlotDigitalG(label_id,getter,data,count,offset)
 end
+M.ImPlot_PlotDummy = lib.ImPlot_PlotDummy
 function M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
@@ -3122,6 +3123,154 @@ function M.ImPlot_PlotShadedG(label_id,getter1,data1,getter2,data2,count,offset)
     offset = offset or 0
     return lib.ImPlot_PlotShadedG(label_id,getter1,data1,getter2,data2,count,offset)
 end
+function M.ImPlot_PlotStairsFloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("float")
+    x0 = x0 or 0
+    xscale = xscale or 1
+    return lib.ImPlot_PlotStairsFloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
+end
+function M.ImPlot_PlotStairsdoublePtrInt(label_id,values,count,xscale,x0,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("double")
+    x0 = x0 or 0
+    xscale = xscale or 1
+    return lib.ImPlot_PlotStairsdoublePtrInt(label_id,values,count,xscale,x0,offset,stride)
+end
+function M.ImPlot_PlotStairsS8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS8")
+    x0 = x0 or 0
+    xscale = xscale or 1
+    return lib.ImPlot_PlotStairsS8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+end
+function M.ImPlot_PlotStairsU8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU8")
+    x0 = x0 or 0
+    xscale = xscale or 1
+    return lib.ImPlot_PlotStairsU8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+end
+function M.ImPlot_PlotStairsS16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS16")
+    x0 = x0 or 0
+    xscale = xscale or 1
+    return lib.ImPlot_PlotStairsS16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+end
+function M.ImPlot_PlotStairsU16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU16")
+    x0 = x0 or 0
+    xscale = xscale or 1
+    return lib.ImPlot_PlotStairsU16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+end
+function M.ImPlot_PlotStairsS32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS32")
+    x0 = x0 or 0
+    xscale = xscale or 1
+    return lib.ImPlot_PlotStairsS32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+end
+function M.ImPlot_PlotStairsU32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU32")
+    x0 = x0 or 0
+    xscale = xscale or 1
+    return lib.ImPlot_PlotStairsU32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+end
+function M.ImPlot_PlotStairsS64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS64")
+    x0 = x0 or 0
+    xscale = xscale or 1
+    return lib.ImPlot_PlotStairsS64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+end
+function M.ImPlot_PlotStairsU64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU64")
+    x0 = x0 or 0
+    xscale = xscale or 1
+    return lib.ImPlot_PlotStairsU64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+end
+function M.ImPlot_PlotStairsFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("float")
+    return lib.ImPlot_PlotStairsFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotStairsdoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("double")
+    return lib.ImPlot_PlotStairsdoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotStairsS8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS8")
+    return lib.ImPlot_PlotStairsS8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotStairsU8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU8")
+    return lib.ImPlot_PlotStairsU8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotStairsS16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS16")
+    return lib.ImPlot_PlotStairsS16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotStairsU16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU16")
+    return lib.ImPlot_PlotStairsU16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotStairsS32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS32")
+    return lib.ImPlot_PlotStairsS32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotStairsU32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU32")
+    return lib.ImPlot_PlotStairsU32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotStairsS64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS64")
+    return lib.ImPlot_PlotStairsS64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotStairsU64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU64")
+    return lib.ImPlot_PlotStairsU64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotStairs(a1,a2,a3,a4,a5,a6,a7) -- generic version
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsS8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsU8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsS16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsU16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsS32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsU32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsS64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsU64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotStairsFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotStairsdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS8*',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or type(a3)=='string') then return M.ImPlot_PlotStairsS8PtrS8Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) then return M.ImPlot_PlotStairsU8PtrU8Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) then return M.ImPlot_PlotStairsS16PtrS16Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) then return M.ImPlot_PlotStairsU16PtrU16Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) then return M.ImPlot_PlotStairsS32PtrS32Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) then return M.ImPlot_PlotStairsU32PtrU32Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) then return M.ImPlot_PlotStairsS64PtrS64Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) then return M.ImPlot_PlotStairsU64PtrU64Ptr(a1,a2,a3,a4,a5,a6) end
+    print(a1,a2,a3,a4,a5,a6,a7)
+    error'M.ImPlot_PlotStairs could not find overloaded'
+end
+function M.ImPlot_PlotStairsG(label_id,getter,data,count,offset)
+    offset = offset or 0
+    return lib.ImPlot_PlotStairsG(label_id,getter,data,count,offset)
+end
 function M.ImPlot_PlotStemsFloatPtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
@@ -3362,6 +3511,12 @@ function M.ImPlot_SetColormap(a1,a2) -- generic version
 end
 M.ImPlot_SetCurrentContext = lib.ImPlot_SetCurrentContext
 M.ImPlot_SetImGuiContext = lib.ImPlot_SetImGuiContext
+function M.ImPlot_SetLegendLocation(location,orientation,outside)
+    orientation = orientation or 1
+    outside = outside or false
+    return lib.ImPlot_SetLegendLocation(location,orientation,outside)
+end
+M.ImPlot_SetMousePosLocation = lib.ImPlot_SetMousePosLocation
 function M.ImPlot_SetNextErrorBarStyle(col,size,weight)
     col = col or ImVec4(0,0,0,-1)
     size = size or -1
@@ -3439,6 +3594,10 @@ M.ImPlot_ShowColormapSelector = lib.ImPlot_ShowColormapSelector
 function M.ImPlot_ShowDemoWindow(p_open)
     p_open = p_open or nil
     return lib.ImPlot_ShowDemoWindow(p_open)
+end
+function M.ImPlot_ShowMetricsWindow(p_popen)
+    p_popen = p_popen or nil
+    return lib.ImPlot_ShowMetricsWindow(p_popen)
 end
 function M.ImPlot_ShowStyleEditor(ref)
     ref = ref or nil
