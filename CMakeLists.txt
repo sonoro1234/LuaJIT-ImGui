@@ -29,6 +29,11 @@ set(IMGUI_SOURCES ./cimgui/cimgui.cpp
 ./cimnodes/imnodes/imnodes.cpp
 )
 
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cimgui/imgui/backends)
+	set(BAKENDS_FOLDER "./cimgui/imgui/backends/")
+else()
+	set(BAKENDS_FOLDER "./cimgui/imgui/examples/")
+endif()
 
 
 set(IMGUI_SOURCES_glfw)
@@ -60,7 +65,7 @@ if(IMGUI_FREETYPE)
 endif(IMGUI_FREETYPE)
 
 if(IMPL_OPENGL3)
-    list(APPEND IMGUI_SOURCES ./cimgui/imgui/examples/imgui_impl_opengl3.cpp
+    list(APPEND IMGUI_SOURCES ${BAKENDS_FOLDER}imgui_impl_opengl3.cpp
     ./cimgui/imgui/examples/libs/gl3w/GL/gl3w.c)
     list(APPEND IMGUI_SOURCES ./extras/cimgui_extras.cpp)
     include_directories(cimgui/imgui/examples/libs/gl3w)
@@ -72,7 +77,7 @@ if(IMPL_OPENGL3)
 endif(IMPL_OPENGL3)
 
 if(IMPL_OPENGL2)
-    list(APPEND IMGUI_SOURCES ./cimgui/imgui/examples/imgui_impl_opengl2.cpp)
+    list(APPEND IMGUI_SOURCES ${BAKENDS_FOLDER}imgui_impl_opengl2.cpp)
     if(WIN32)
         list(APPEND IMGUI_LIBRARIES opengl32)
 	else(WIN32)#Unix
@@ -88,7 +93,7 @@ add_library(cimgui_base OBJECT ${IMGUI_SOURCES})
 
 
 if(IMPL_GLFW)
-    list(APPEND IMGUI_SOURCES_glfw ./cimgui/imgui/examples/imgui_impl_glfw.cpp)
+    list(APPEND IMGUI_SOURCES_glfw ${BAKENDS_FOLDER}imgui_impl_glfw.cpp)
 	if (DEFINED GLFW_PATH)
 		message(STATUS GLFW_PATH defined as ${GLFW_PATH})
         FIND_PACKAGE(glfw3 3.2 REQUIRED PATHS ${GLFW_PATH})
@@ -107,7 +112,7 @@ if(IMPL_GLFW)
 endif(IMPL_GLFW)
 
 if(IMPL_SDL)
-    list(APPEND IMGUI_SOURCES_sdl ./cimgui/imgui/examples/imgui_impl_sdl.cpp)
+    list(APPEND IMGUI_SOURCES_sdl ${BAKENDS_FOLDER}imgui_impl_sdl.cpp)
 	if(DEFINED SDL_PATH)
 		message(STATUS "SDL_PATH defined as " ${SDL_PATH})
 		FIND_PACKAGE(SDL2 REQUIRED PATHS ${SDL_PATH})
