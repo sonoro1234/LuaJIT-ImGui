@@ -507,10 +507,19 @@ local function class_gen(sources)
 
 	--group them by structs
 	local structs = {}
+	local skipped = {}
 	for fun,defs in pairs(fundefs) do
 		local stname = defs[1].stname
-		structs[stname] = structs[stname] or {}
-		table.insert(structs[stname],fun)
+		if not defs[1].templated then
+			structs[stname] = structs[stname] or {}
+			table.insert(structs[stname],fun)
+		else
+			skipped[stname] = true
+		end
+	end
+	print"---skipped templated structs"
+	for k,_ in pairs(skipped) do
+		print(k)
 	end
 	--delete templated
 	structs.ImVec4 = nil
