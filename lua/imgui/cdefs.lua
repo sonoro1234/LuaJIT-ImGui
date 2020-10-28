@@ -3914,6 +3914,65 @@ void imnodes_SaveEditorStateToIniFile(const EditorContext* editor,const char* fi
 void imnodes_LoadCurrentEditorStateFromIniFile(const char* file_name);
 void imnodes_LoadEditorStateFromIniFile(EditorContext* editor,const char* file_name);
 _Bool              * getIOKeyCtrlPtr();
+typedef struct SlotInfo SlotInfo;
+typedef struct style_ style_;
+typedef struct CanvasState CanvasState;
+typedef struct _CanvasStateImpl _CanvasStateImpl;
+struct _CanvasStateImpl;
+typedef enum {
+    ColCanvasLines,
+    ColNodeBg,
+    ColNodeActiveBg,
+    ColNodeBorder,
+    ColConnection,
+    ColConnectionActive,
+    ColSelectBg,
+    ColSelectBorder,
+    ColMax
+}StyleColor;
+struct style_
+{
+        float curve_thickness;
+        float connection_indent;
+};
+struct CanvasState
+{
+    float zoom;
+    ImVec2 offset;
+    ImColor colors[ColMax];
+    style_ style;
+    _CanvasStateImpl* _impl;
+};
+struct SlotInfo
+{
+    const char* title;
+    int kind;
+};
+CanvasState* CanvasState_CanvasState(void);
+void CanvasState_destroy(CanvasState* self);
+void ImNodes_BeginCanvas(CanvasState* canvas);
+void ImNodes_EndCanvas(void);
+_Bool                ImNodes_BeginNode(void* node_id,ImVec2* pos,                                                           _Bool                                                               * selected);
+void ImNodes_EndNode(void);
+void ImNodes_AutoPositionNode(void* node_id);
+_Bool                ImNodes_GetNewConnection(void** input_node,const char** input_slot_title,void** output_node,const char** output_slot_title);
+_Bool                ImNodes_GetPendingConnection(void** node_id,const char** slot_title,int* slot_kind);
+_Bool                ImNodes_Connection(void* input_node,const char* input_slot,void* output_node,const char* output_slot);
+CanvasState* ImNodes_GetCurrentCanvas(void);
+int ImNodes_InputSlotKind(int kind);
+int ImNodes_OutputSlotKind(int kind);
+_Bool                ImNodes_IsInputSlotKind(int kind);
+_Bool                ImNodes_IsOutputSlotKind(int kind);
+_Bool                ImNodes_BeginSlot(const char* title,int kind);
+_Bool                ImNodes_BeginInputSlot(const char* title,int kind);
+_Bool                ImNodes_BeginOutputSlot(const char* title,int kind);
+void ImNodes_EndSlot(void);
+_Bool                ImNodes_IsSlotCurveHovered(void);
+_Bool                ImNodes_IsConnectingCompatibleSlot(void);
+_Bool                ImNodes_Ez_BeginNode(void* node_id,const char* title,ImVec2* pos,                                                                                _Bool                                                                                    * selected);
+void ImNodes_Ez_EndNode(void);
+void ImNodes_Ez_InputSlots(const SlotInfo* slots,int snum);
+void ImNodes_Ez_OutputSlots(const SlotInfo* slots,int snum);
 typedef struct SDL_Window SDL_Window;
 typedef struct GLFWmonitor GLFWmonitor;
 typedef struct GLFWwindow GLFWwindow;
