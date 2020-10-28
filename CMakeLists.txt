@@ -27,6 +27,9 @@ set(IMGUI_SOURCES ./cimgui/cimgui.cpp
 ./cimguizmo_quat/cimguizmo_quat.cpp
 ./cimnodes/cimnodes.cpp
 ./cimnodes/imnodes/imnodes.cpp
+./cimnodes_r/cimnodes_r.cpp
+./cimnodes_r/ImNodes/ImNodes.cpp
+./cimnodes_r/ImNodes/ImNodesEz.cpp
 )
 
 if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cimgui/imgui/backends)
