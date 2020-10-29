@@ -2,9 +2,10 @@ local igwin = require"imgui.window"
 
 --local win = igwin:SDL(800,400, "widgets",{vsync=true})
 local win = igwin:GLFW(800,400, "widgets",{vsync=true})
+
 local ig = win.ig
 local ffi = require"ffi"
-
+local serializer = require"serializer"
 
 local function Link()
     local link = {id=0,start_attr=ffi.new("int[?]",1),end_attr=ffi.new("int[?]",1)}
@@ -21,54 +22,50 @@ local function Link()
     return link
 end
 
-local function Node(value,editor)
-    local node = {
-        id = editor:newid(),
-        input_id = editor:newid(),
-        output_id = editor:newid(),
-        static_id = editor:newid(),
-        value = ffi.new("float[?]",1,value)
-    }
+local function Node(value,editor,typen,loadT)
+    local node
+    if not loadT then
+        node = {
+            id = editor:newid(),
+            title = typen.name,
+            output_id = editor:newid(),
+            static_id = editor:newid(),
+            value = ffi.new("float[?]",1,value)
+        }
+        node.inputs = {}
+        node.input_names = {}
+        for i,iname in ipairs(typen.input_names) do
+            node.inputs[i] = editor:newid()
+            node.input_names[i] = iname
+        end
+    else
+        node = loadT
+    end
     function node:hasLink(link)
-        return link.start_attr[0] == self.output_id or link.end_attr[0] == self.input_id 
-    end
-    function node:save_str()
-        local str = "{"
-        for k,v in pairs(self) do
-            if type(v)=="number" then
-                str = str .. k .. "=" .. v ..","
-            elseif type(v) == "cdata" then
-                str = str .. k .. "=" .. v[0] ..","
-            end
+        for i ,input_id in ipairs(self.inputs) do
+            if link.end_attr[0] == input_id then return true end
         end
-        local pos = ig.imnodes_GetNodeGridSpacePos(self.id)
-        str = str .. " pos = {" .. pos.x .. "," .. pos.y .. "}"
-        str = str .. "}"
-        return str
+        return link.start_attr[0] == self.output_id 
     end
-    function node:loadT(t)
-        for k,v in pairs(t) do
-            if type(self[k]) == "cdata" then
-                self[k][0] = v
-            else
-                self[k] = v
-            end
-        end
+    function node:save_str(name)
+        self.pos = ig.imnodes_GetNodeGridSpacePos(self.id)
+        return serializer(name,self)
     end
     function node:draw()
         if self.pos then -- for reset position of saved and loaded node
-            --print("self.pos",self.id,self.pos[1],self.pos[2])
-            ig.imnodes_SetNodeGridSpacePos(self.id, ig.ImVec2(self.pos[1],self.pos[2]));
+            ig.imnodes_SetNodeGridSpacePos(self.id, self.pos)
             self.pos = nil
         end
         ig.imnodes_BeginNode(node.id);
         ig.imnodes_BeginNodeTitleBar();
-        ig.TextUnformatted("node");
+        ig.TextUnformatted(node.title);
         ig.imnodes_EndNodeTitleBar();
 
-        ig.imnodes_BeginInputAttribute(node.input_id)
-        ig.TextUnformatted("input");
-        ig.imnodes_EndInputAttribute();
+        for i, input_id in ipairs(node.inputs) do
+            ig.imnodes_BeginInputAttribute(input_id)
+            ig.TextUnformatted(node.input_names[i]);
+            ig.imnodes_EndInputAttribute();
+        end
 
         ig.imnodes_BeginStaticAttribute(node.static_id)
         ig.PushItemWidth(120.0);
@@ -105,24 +102,29 @@ local function show_editor(editor)
     local enab = ffi.new("bool[1]",ig.imnodes_GetIO().emulate_three_button_mouse.enabled)
     ig.Checkbox("emulate three button mouse",enab)
     ig.imnodes_GetIO().emulate_three_button_mouse.enabled = enab[0]
-    --[[
-    ig.SameLine()
-    if ig.SmallButton("save") then
-       local str = editor:save_str()
-       print(str)
-       editor:load_str(str)
-    end
-    --]]
+
     ig.TextUnformatted("A -- add node");
     ig.TextUnformatted("X -- delete selected node or link");
     ig.imnodes_BeginNodeEditor();
 
     local user_key = ig.GetKeyIndex(ig.lib.ImGuiKey_A)
+    local open_popup
     if (ig.IsWindowFocused(ig.lib.ImGuiFocusedFlags_RootAndChildWindows) and
         ig.imnodes_IsEditorHovered() and ig.IsKeyReleased(user_key))
     then
-        local newnode = editor:Node(0)
-        ig.imnodes_SetNodeScreenSpacePos(newnode.id, ig.GetMousePos());
+        open_popup = true
+    end
+    ig.PushStyleVar(ig.lib.ImGuiStyleVar_WindowPadding, ig.ImVec2(8, 8))
+    if open_popup then ig.OpenPopup("add node") end
+    if ig.BeginPopup"add node" then
+        local click_pos = ig.GetMousePosOnOpeningCurrentPopup();
+        for i,ntype in ipairs(editor.nodetypes) do
+            if ig.MenuItem(ntype.name) then
+                local newnode = editor:Node(0,ntype)
+                ig.imnodes_SetNodeScreenSpacePos(newnode.id, ig.GetMousePos());             
+            end
+        end
+        ig.EndPopup()
     end
 
 
@@ -192,14 +194,14 @@ local function show_editor(editor)
 
     ig.End();
 end
-local function Editor(name)
-    local E = {nodes={},links={},current_id=0,name=name}
+local function Editor(name, nodetypes)
+    local E = {nodes={},links={},current_id=0,name=name,nodetypes = nodetypes}
     function E:newid()
         E.current_id = E.current_id + 1
         return E.current_id
     end
-    function E:Node(value)
-        local newnode = Node(value,self)
+    function E:Node(value,typen)
+        local newnode = Node(value,self,typen)
         self.nodes[newnode.id] = newnode
         return newnode
     end
@@ -226,17 +228,24 @@ local function Editor(name)
         ig.imnodes_EditorContextFree(self.context);
     end
     function E:save_str()
-        local str = "return {nodes = {"
+        local str = [[local ffi = require"ffi"]]
+        str = str .. "\n" .. [[local ig = require"imgui.]] .. win.kind .. [["]]
+        for k,node in pairs(self.nodes) do
+            str = str .. node:save_str("node"..k) .. "\n"
+        end
+        str = str .. "return {nodes = {"
         for k,node in pairs(self.nodes) do
             local kst = type(k)=="number" and "["..k.."]" or k
-            str = str .. kst .. "=" .. node:save_str() .. ","
+            str = str .. kst .. "=" .. ("node"..k) .. ","
         end
         str = str .. "},links = {"
         for k,link in pairs(self.links) do
             local kst = type(k)=="number" and "["..k.."]" or k
             str = str .. kst .. "=" .. link:save_str() .. ","
         end
-        str = str .. "},name='"..self.name.."',current_id = " .. self.current_id .. "}"
+        str = str .. "},name='"..self.name
+        str = str .. "',current_id = " .. self.current_id 
+        str = str .. "}"
         return str
     end
     function E:save()
@@ -259,8 +268,7 @@ local function Editor(name)
         self.links = {}
         local loadedE = loadstring(str)()
         for k,v in pairs(loadedE.nodes) do
-            local node = Node(0,self)
-            node:loadT(v)
+            local node = Node(0,self,nil,v)
             self.nodes[node.id] = node
         end
         for k,v in pairs(loadedE.links) do
@@ -277,15 +285,24 @@ end
 --------------------------------------------------------------------------------------------
 ig.imnodes_Initialize()
 
-local editor1 = Editor"editor1"
-local editor2 = Editor"editor2"
+local nodetypes = {
+    {   name = "node_t1",
+        input_names = {"input_t1","input_t2"}
+    },
+    {   name = "node_t2",
+        input_names = {"lhs","rhs"}
+    }
+}
+
+local editor1 = Editor("editor1",nodetypes)
+local editor2 = Editor("editor2",nodetypes)
 editor1:load()
 editor2:load()
 
 ig.imnodes_PushAttributeFlag(ig.lib.AttributeFlags_EnableLinkDetachWithDragClick);
 local iog = ig.imnodes_GetIO();
-iog.link_detach_with_modifier_click.modifier = ig.lib.getIOKeyCtrlPtr();
-
+local KeyCtrlPtr = ffi.cast("bool*", ffi.cast("char*",ig.GetIO()) + ffi.offsetof("ImGuiIO","KeyCtrl"))
+iog.link_detach_with_modifier_click.modifier = KeyCtrlPtr --ig.lib.getIOKeyCtrlPtr();
 
 function win:draw(ig)
     editor1:draw()
