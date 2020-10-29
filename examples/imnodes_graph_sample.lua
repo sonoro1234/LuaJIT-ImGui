@@ -4,71 +4,8 @@ local igwin = require"imgui.window"
 local win = igwin:GLFW(800,400, "compute graph",{vsync=true})
 local ig = win.ig
 local ffi = require"ffi"
+local serializer = require"serializer"
 
-----------------------------serialization
-local function cdataSerialize(cd)
-    if ffi.istype("float[1]", cd) then
-        return table.concat{[[ffi.new('float[1]',]],cd[0],[[)]]}
-    elseif ffi.istype("int[1]", cd) then
-        return table.concat{[[ffi.new('int[1]',]],cd[0],[[)]]}
-    elseif ffi.istype("float[]",cd) then
-        local size = ffi.sizeof(cd)/ffi.sizeof"float"
-        local tab = {[[ffi.new("float[?]",]],size}
-        for i=0,size-1 do tab[#tab+1] = ",";tab[#tab+1] = cd[i] end
-        tab[#tab+1] = [[)]]
-        return table.concat(tab)
-    elseif ffi.istype("ImVec2",cd) then
-        return table.concat{[[ig.ImVec2(]],cd.x,",",cd.y,")"}
-    else
-        print(cd,"not serialized")
-        error"serialization error"
-    end
-end
-
-local function basicSerialize (o)
-    if type(o) == "number" then
-        return string.format("%.17g", o)
-    elseif type(o)=="boolean" then
-        return tostring(o)
-    elseif type(o) == "string" then
-        return string.format("%q", o)
-    elseif type(o)=="cdata" then
-        return cdataSerialize(o)
-    else
-        return tostring(nil) --"nil"
-    end
-end
-
-function SerializeTable(name, value, saved)
-    
-    local string_table = {}
-    if not saved then 
-        table.insert(string_table, "local "..name.." = ") 
-    else
-        table.insert(string_table, name.." = ") 
-    end
-    
-    saved = saved or {}       -- initial value
-    
-    if type(value)~= "table" then
-        table.insert(string_table,basicSerialize(value).."\n")
-    elseif type(value) == "table" then
-        if saved[value] then    -- value already saved?
-            table.insert(string_table,saved[value].."\n")          
-        else
-            saved[value] = name   -- save name for next time
-            table.insert(string_table, "{}\n")          
-            for k,v in pairs(value) do      -- save its fields
-                local fieldname = string.format("%s[%s]", name,basicSerialize(k))
-                table.insert(string_table, SerializeTable(fieldname, v, saved))
-            end
-        end
-    end
-    
-    return table.concat(string_table)
-end
-
--------------------------
 local function DFS(G,v)
     G.nodes_explored[v] = true
     local values = {}
@@ -146,24 +83,15 @@ local function Node(value,editor,typen,loadT)
     if not loadT then
         node = {
             id = editor:newid(),
-            type = typen
+            type = typen.name
         }
-        if typen == "add" then
-            node.inputs = {editor:newid(),editor:newid()}
-            node.inputs_names = {"lhs","rhs"}
-            node.output_id = node.id 
-        elseif typen == "multiply" then
-            node.inputs = {editor:newid(),editor:newid()}
-            node.inputs_names = {"lhs","rhs"}
-            node.output_id = node.id 
-        elseif typen == "output" then
-            node.inputs = {editor:newid(),editor:newid(),editor:newid()}
-            node.inputs_names = {"r","g","b"}
-        elseif typen == "sine" then
-            node.inputs = {editor:newid()}
-            node.output_id = node.id 
-        elseif typen == "time" then
-            node.inputs = {}
+        node.inputs = {}
+        node.input_names = {}
+        for i,iname in ipairs(typen.input_names) do
+            node.inputs[i] = editor:newid()
+            node.input_names[i] = iname
+        end
+        if not typen.is_root then
             node.output_id = node.id 
         end
         -- create static_id
@@ -174,33 +102,13 @@ local function Node(value,editor,typen,loadT)
     else
         node = loadT
     end
-    typen = node.type
-    if typen == "add" then
-        function node.compute(t)
-            return t[1] + t[2]
-        end
-    elseif typen == "multiply" then
-        function node.compute(t)
-            return t[1] * t[2]
-        end
-    elseif typen == "output" then
-        local function clamp(v)
-            return math.max(0,math.min(1,v))
-        end
-        function node.compute(t)
-            local a,b,c = clamp(t[1]),clamp(t[2]),clamp(t[3])
-            return ig.U32(a,b,c)
-        end
-    elseif typen == "sine" then
-        function node.compute(t)
-            return math.sin(t[1])
-        end
-    elseif typen == "time" then
-        function node.compute(t)
-            return os.clock()
+    local typename = node.type
+    for i,typ in ipairs(editor.nodetypes) do
+        if typename==typ.name then
+            node.compute = typ.compute
+            break
         end
     end
-    
     -------------add pins to Graph
     local function computeIn(i)
         return function(t)
@@ -242,14 +150,14 @@ local function Node(value,editor,typen,loadT)
         end
     end
     function node:hasLink(link)
-		for i ,input_id in ipairs(self.inputs) do
-			if link.end_attr[0] == input_id then return true end
-		end
+        for i ,input_id in ipairs(self.inputs) do
+            if link.end_attr[0] == input_id then return true end
+        end
         return link.start_attr[0] == self.output_id 
     end
     function node:save_str(name)
         self.pos = ig.imnodes_GetNodeGridSpacePos(self.id)
-        return SerializeTable(name,self)
+        return serializer(name,self)
     end
     function node:draw()
         if self.pos then -- for reset position of saved and loaded node
@@ -263,7 +171,7 @@ local function Node(value,editor,typen,loadT)
         
         for i, input_id in ipairs(node.inputs) do
             ig.imnodes_BeginInputAttribute(input_id)
-            ig.TextUnformatted(node.inputs_names and node.inputs_names[i] or "input"..i);
+            ig.TextUnformatted(node.input_names[i]);
             ig.imnodes_EndInputAttribute();
             --if there is no input
             local orig = editor.G.nodes[input_id].fromedges
@@ -316,27 +224,13 @@ local function show_editor(editor)
     if open_popup then ig.OpenPopup("add node") end
     if ig.BeginPopup"add node" then
         local click_pos = ig.GetMousePosOnOpeningCurrentPopup();
-        if ig.MenuItem"add" then
-            local newnode = editor:Node(0,"add")
-            ig.imnodes_SetNodeScreenSpacePos(newnode.id, click_pos);
-        end
-        if ig.MenuItem"multiply" then
-            local newnode = editor:Node(0,"multiply")
-            ig.imnodes_SetNodeScreenSpacePos(newnode.id, click_pos);
-        end
-        if ig.MenuItem"output" then
-            if editor.root_node_id == -1 then
-                local newnode = editor:Node(0,"output")
-                ig.imnodes_SetNodeScreenSpacePos(newnode.id, click_pos);
+        for i,ntype in ipairs(editor.nodetypes) do
+            if ig.MenuItem(ntype.name) then
+                local newnode = editor:Node(0,ntype)
+                if newnode then
+                    ig.imnodes_SetNodeScreenSpacePos(newnode.id, click_pos)
+                end
             end
-        end
-        if ig.MenuItem"sine" then
-            local newnode = editor:Node(0,"sine")
-            ig.imnodes_SetNodeScreenSpacePos(newnode.id, click_pos);
-        end
-        if ig.MenuItem"time" then
-            local newnode = editor:Node(0,"time")
-            ig.imnodes_SetNodeScreenSpacePos(newnode.id, click_pos);
         end
         ig.EndPopup()
     end
@@ -415,8 +309,8 @@ local function show_editor(editor)
     ig.PopStyleColor();
 end
 
-local function Editor(name)
-    local E = {nodes={},links={},current_id=0,name=name,root_node_id=-1}
+local function Editor(name, nodetypes)
+    local E = {nodes={},links={},current_id=0,name=name,root_node_id=-1, nodetypes= nodetypes}
     E.G = Graph()
     function E:evaluate()
         return self.G:DFS(self.root_node_id)
@@ -425,10 +319,11 @@ local function Editor(name)
         E.current_id = E.current_id + 1
         return E.current_id
     end
-    function E:Node(value,type)
-        local newnode = Node(value,self,type)
+    function E:Node(value,typen)
+        if self.root_node_id~=-1 and typen.is_root then return end
+        local newnode = Node(value,self,typen)
         self.nodes[newnode.id] = newnode
-        if type=="output" then self.root_node_id = newnode.id end
+        if typen.is_root then self.root_node_id = newnode.id end
         return newnode
     end
     function E:deleteNode(node_id)
@@ -519,15 +414,55 @@ local function Editor(name)
     E.context = ig.imnodes_EditorContextCreate();
     return E
 end
---------------------------------------------------------------------------------------------
+-----------------------------------use it!!--------------------------------------------
 ig.imnodes_Initialize()
 
-local editor1 = Editor"color_editor"
+local function clamp(v)
+    return math.max(0,math.min(1,v))
+end
+
+local nodetypes = {
+{   name = "add",
+    input_names = {"lhs","rhs"},
+    compute = function(t)
+        return t[1] + t[2]
+    end
+},{
+    name = "multiply",
+    input_names = {"lhs","rhs"},
+    compute = function(t)
+        return t[1] * t[2]
+    end
+},{
+    name = "output",
+    input_names = {"r","g","b"},
+    is_root = true,
+    compute = function(t)
+        local a,b,c = clamp(t[1]),clamp(t[2]),clamp(t[3])
+        return ig.U32(a,b,c)
+    end
+},{
+    name = "sine",
+    input_names = {"input"},
+    compute = function(t)
+        return math.sin(t[1])
+    end
+},{
+    name = "time",
+    input_names = {},
+    compute = function(t)
+        return os.clock()
+    end
+}
+}
+
+local editor1 = Editor("color_editor", nodetypes)
 editor1:load()
 
 ig.imnodes_PushAttributeFlag(ig.lib.AttributeFlags_EnableLinkDetachWithDragClick);
 local iog = ig.imnodes_GetIO();
-iog.link_detach_with_modifier_click.modifier = ig.lib.getIOKeyCtrlPtr();
+local KeyCtrlPtr = ffi.cast("bool*", ffi.cast("char*",ig.GetIO()) + ffi.offsetof("ImGuiIO","KeyCtrl"))
+iog.link_detach_with_modifier_click.modifier = KeyCtrlPtr --ig.lib.getIOKeyCtrlPtr();
 
 
 function win:draw(ig)

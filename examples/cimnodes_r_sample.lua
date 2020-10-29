@@ -1,93 +1,10 @@
 local igwin = require"imgui.window"
 
---local win = igwin:SDL(800,400, "widgets",{vsync=true})
-local win = igwin:GLFW(800,400, "widgets",{vsync=true})
+--local win = igwin:SDL(800,400, "cimnodes_r",{vsync=true})
+local win = igwin:GLFW(800,400, "cimnodes_r",{vsync=true})
 local ig = win.ig
 local ffi = require"ffi"
-
-----------------------------serialization
-local function cdataSerialize(cd)
-    if ffi.istype("float[1]", cd) then
-        return table.concat{[[ffi.new('float[1]',]],cd[0],[[)]]}
-    elseif ffi.istype("int[1]", cd) then
-        return table.concat{[[ffi.new('int[1]',]],cd[0],[[)]]}
-    elseif ffi.istype("bool[1]", cd) then
-        return table.concat{[[ffi.new('bool[1]',]],tostring(cd[0]),[[)]]}
-    elseif ffi.istype("float[]",cd) then
-        local size = ffi.sizeof(cd)/ffi.sizeof"float"
-        local tab = {[[ffi.new("float[?]",]],size}
-        for i=0,size-1 do tab[#tab+1] = ",";tab[#tab+1] = cd[i] end
-        tab[#tab+1] = [[)]]
-        return table.concat(tab)
-    elseif ffi.istype("void*",cd) then
-        return table.concat{[[ffi.cast('void*',]],tonumber(ffi.cast("uintptr_t",cd)),[[)]]}
-    elseif ffi.istype("void*[1]",cd) then
-        return table.concat{[[ffi.new('void*[1]',ffi.cast('void*',]],tonumber(ffi.cast("uintptr_t",cd[0])),[[))]]}
-    elseif ffi.istype("const char*[1]",cd) then
-        return table.concat{[[ffi.new('const char*[1]',{']],ffi.string(cd[0]),[['})]]}
-    elseif ffi.istype("SlotInfo[]",cd) then
-        local size = ffi.sizeof(cd)/ffi.sizeof"SlotInfo"
-        local tab = {[[ffi.new("SlotInfo[?]",]],size,",{"}
-        for i=0,size-1 do
-            tab[#tab+1]="{'"
-            tab[#tab+1]= ffi.string(cd[i].title)
-            tab[#tab+1]= "',"
-            tab[#tab+1]= cd[i].kind
-            tab[#tab+1]= "},"
-        end
-        tab[#tab+1] = "})"
-        return table.concat(tab)
-    elseif ffi.istype("ImVec2",cd) then
-        return table.concat{[[ig.ImVec2(]],cd.x,",",cd.y,")"}
-    else
-        print(cd,"not serialized")
-        error"serialization error"
-    end
-end
-
-local function basicSerialize (o)
-    if type(o) == "number" then
-        return string.format("%.17g", o)
-    elseif type(o)=="boolean" then
-        return tostring(o)
-    elseif type(o) == "string" then
-        return string.format("%q", o)
-    elseif type(o)=="cdata" then
-        return cdataSerialize(o)
-    else
-        return tostring(nil) --"nil"
-    end
-end
-
-function SerializeTable(name, value, saved)
-    
-    local string_table = {}
-    if not saved then 
-        table.insert(string_table, "local "..name.." = ") 
-    else
-        table.insert(string_table, name.." = ") 
-    end
-    
-    saved = saved or {}       -- initial value
-    
-    if type(value)~= "table" then
-        table.insert(string_table,basicSerialize(value).."\n")
-    elseif type(value) == "table" then
-        if saved[value] then    -- value already saved?
-            table.insert(string_table,saved[value].."\n")          
-        else
-            saved[value] = name   -- save name for next time
-            table.insert(string_table, "{}\n")          
-            for k,v in pairs(value) do      -- save its fields
-                local fieldname = string.format("%s[%s]", name,basicSerialize(k))
-                table.insert(string_table, SerializeTable(fieldname, v, saved))
-            end
-        end
-    end
-    
-    return table.concat(string_table)
-end
---------------------------------------
+local serializer = require"serializer"
 
 local function Connection()
     local link = {
@@ -104,38 +21,34 @@ end
 local function Node(value,editor,typen,loadT)
     local node
     if not loadT then
-    node = {
-        id = ffi.cast("void*",editor:newid()),
-        pos = ig.ImVec2(20,20),
-        selected = ffi.new"bool[1]",
-        title = "node",
-        nins = 1,
-        nouts = 1
-    }
-    local ins = {{"input1",1},{"input2",2}}
-    local outs = {{"output1",1},{"output2",2}}
-    node.nins = #ins
-    node.nouts = #outs
-    node.input_slots = ffi.new("SlotInfo[?]",node.nins,ins)
-    node.output_slots = ffi.new("SlotInfo[?]",node.nouts,outs)
-    node.connections = {}
+        node = {
+            id = ffi.cast("void*",editor:newid()),
+            pos = ig.ImVec2(20,20),
+            selected = ffi.new"bool[1]",
+            title = typen.name,
+        }
+        node.nins = #typen.ins
+        node.nouts = #typen.outs
+        node.input_slots = ffi.new("SlotInfo[?]",node.nins,typen.ins)
+        node.output_slots = ffi.new("SlotInfo[?]",node.nouts,typen.outs)
+        node.connections = {}
     else
         node = loadT
     end
     
     function node:delete_connection(conn)
         for i,c in ipairs(self.connections) do
-            if c.input_node==conn.input_node and
-            c.input_slot==conn.input_slot and
-            c.output_node==conn.output_node and
-            c.output_slot==conn.output_slot then
+            if c.input_node[0]==conn.input_node[0] and
+            c.input_slot[0]==conn.input_slot[0] and
+            c.output_node[0]==conn.output_node[0] and
+            c.output_slot[0]==conn.output_slot[0] then
                 table.remove(self.connections,i)
                 return
             end
         end
     end
     function node:save_str(name)
-        return SerializeTable(name,self)
+        return serializer(name,self)
     end
     function node:draw()
 
@@ -149,11 +62,9 @@ local function Node(value,editor,typen,loadT)
             if (ig.ImNodes_GetNewConnection(conn.input_node, conn.input_slot, conn.output_node, conn.output_slot)) then
                 table.insert(editor.nodes[idtokey(conn.input_node[0])].connections,conn)
                 table.insert(editor.nodes[idtokey(conn.output_node[0])].connections,conn)
-                print(ffi.string(conn.input_slot[0]))
             end
             
             for i,conn in ipairs(node.connections) do
-                --print(conn.output_node[0] ,node.id)
                 if conn.output_node[0] == node.id then
                     if not ig.ImNodes_Connection(conn.input_node[0], conn.input_slot[0], conn.output_node[0], conn.output_slot[0]) then
                         editor.nodes[idtokey(conn.input_node[0])]:delete_connection(conn)
@@ -192,6 +103,9 @@ local function show_editor(editor)
         print"---------dump-----------------"
         for k,node in pairs(editor.nodes) do
             print("node",k,node.id,editor.nodes[k].id)
+            for i,conn in ipairs(node.connections) do
+                print("\t",conn.input_node[0], ffi.string(conn.input_slot[0]), conn.output_node[0], ffi.string(conn.output_slot[0]))
+            end
         end
         print("current_id",editor.current_id)
     end
@@ -208,20 +122,30 @@ local function show_editor(editor)
     local user_key = ig.GetKeyIndex(ig.lib.ImGuiKey_A)
     if (ig.IsWindowFocused(ig.lib.ImGuiFocusedFlags_RootAndChildWindows) and ig.IsKeyReleased(user_key))
     then
-        local newnode = editor:Node(0)
-        newnode.pos = ig.GetMousePos()  - ig.GetWindowPos()
+        ig.OpenPopup("add node")
+    end
+    local window_pos = ig.GetWindowPos()
+    if ig.BeginPopup"add node" then
+        local click_pos = ig.GetMousePosOnOpeningCurrentPopup();
+        for i,ntype in ipairs(editor.nodetypes) do
+            if ig.MenuItem(ntype.name) then
+                local newnode = editor:Node(0,ntype)
+                newnode.pos = click_pos - window_pos 
+            end
+        end
+        ig.EndPopup()
     end
     ig.ImNodes_EndCanvas()
     ig.End();
 end
-local function Editor(name)
-    local E = {nodes={},current_id=0,name=name}
+local function Editor(name, nodetypes)
+    local E = {nodes={},current_id=0,name=name,nodetypes = nodetypes}
     function E:newid()
         E.current_id = E.current_id + 1
         return E.current_id
     end
-    function E:Node(value)
-        local newnode = Node(value,self)
+    function E:Node(value, ntype)
+        local newnode = Node(value,self, ntype)
         self.nodes[idtokey(newnode.id)] = newnode
         return newnode
     end
@@ -273,10 +197,19 @@ local function Editor(name)
     E.context = ig.CanvasState();
     return E
 end
---------------------------------------------------------------------------------------------
+---------------------------------------use it!!-------------------------------------
+local nodetypes = {
+    {   name = "node_t1",
+        ins = {{"input1",1},{"input2",2}},
+        outs = {{"output1",1},{"output2",2}}
+    },
+    {   name = "node_t2",
+        ins = {{"input1",1},{"input3",3}},
+        outs = {{"output1",1},{"output3",3}}
+    }
+}
 
-
-local editor1 = Editor"editor1_r"
+local editor1 = Editor("editor4_r",nodetypes)
 editor1:load()
 
 function win:draw(ig)
