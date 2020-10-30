@@ -83,7 +83,8 @@ local function Node(value,editor,typen,loadT)
     if not loadT then
         node = {
             id = editor:newid(),
-            type = typen.name
+            type = typen.name,
+			is_root = typen.is_root
         }
         node.inputs = {}
         node.input_names = {}
@@ -130,7 +131,7 @@ local function Node(value,editor,typen,loadT)
         end
     end
     --add root node
-    if node.type=="output" then
+    if node.is_root then
         editor.G:insert_node(node.id,node.compute)
         for _ ,input_id in ipairs(node.inputs) do
             editor.G:insert_edge(input_id,node.id)
@@ -302,7 +303,7 @@ local function show_editor(editor)
     ig.End();
     
     -- The color output window
-    local color = (editor.root_node_id == -1) and ig.U32(1, 20/255, 147/255, 1) or editor:evaluate()
+    local color =  editor:evaluate()
     ig.PushStyleColorU32(ig.lib.ImGuiCol_WindowBg, color);
     ig.Begin("output color");
     ig.End();
@@ -313,7 +314,7 @@ local function Editor(name, nodetypes)
     local E = {nodes={},links={},current_id=0,name=name,root_node_id=-1, nodetypes= nodetypes}
     E.G = Graph()
     function E:evaluate()
-        return self.G:DFS(self.root_node_id)
+		return (self.root_node_id == -1) and ig.U32(1, 20/255, 147/255, 1) or self.G:DFS(self.root_node_id)
     end
     function E:newid()
         E.current_id = E.current_id + 1
