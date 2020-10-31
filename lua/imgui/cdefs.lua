@@ -3883,10 +3883,10 @@ void imnodes_EndStaticAttribute(void);
 void imnodes_PushAttributeFlag(AttributeFlags flag);
 void imnodes_PopAttributeFlag(void);
 void imnodes_Link(int id,int start_attribute_id,int end_attribute_id);
+void imnodes_SetNodeDraggable(int node_id,const                                                           _Bool                                                                draggable);
 void imnodes_SetNodeScreenSpacePos(int node_id,const ImVec2 screen_space_pos);
 void imnodes_SetNodeEditorSpacePos(int node_id,const ImVec2 editor_space_pos);
 void imnodes_SetNodeGridSpacePos(int node_id,const ImVec2 grid_pos);
-void imnodes_SetNodeDraggable(int node_id,const                                                           _Bool                                                                draggable);
 void imnodes_GetNodeScreenSpacePos(ImVec2 *pOut,const int node_id);
 void imnodes_GetNodeEditorSpacePos(ImVec2 *pOut,const int node_id);
 void imnodes_GetNodeGridSpacePos(ImVec2 *pOut,const int node_id);
@@ -3915,7 +3915,7 @@ void imnodes_LoadCurrentEditorStateFromIniFile(const char* file_name);
 void imnodes_LoadEditorStateFromIniFile(EditorContext* editor,const char* file_name);
 _Bool              * getIOKeyCtrlPtr();
 typedef struct SlotInfo SlotInfo;
-typedef struct style_ style_;
+typedef struct CanvasStyle CanvasStyle;
 typedef struct CanvasState CanvasState;
 typedef struct _CanvasStateImpl _CanvasStateImpl;
 struct _CanvasStateImpl;
@@ -3930,7 +3930,7 @@ typedef enum {
     ColSelectBorder,
     ColMax
 }StyleColor;
-struct style_
+struct CanvasStyle
 {
         float curve_thickness;
         float connection_indent;
@@ -3940,7 +3940,7 @@ struct CanvasState
     float zoom;
     ImVec2 offset;
     ImColor colors[ColMax];
-    style_ style;
+    CanvasStyle style;
     _CanvasStateImpl* _impl;
 };
 struct SlotInfo
