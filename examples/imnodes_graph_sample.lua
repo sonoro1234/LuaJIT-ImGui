@@ -1,7 +1,7 @@
 local igwin = require"imgui.window"
 
 --local win = igwin:SDL(800,400, "compute graph",{vsync=true})
-local win = igwin:GLFW(800,400, "compute graph",{vsync=true})
+local win = igwin:GLFW(800,400, "compute graph",{vsync=false})
 local ig = win.ig
 local ffi = require"ffi"
 local serializer = require"serializer"
@@ -54,10 +54,12 @@ local function Graph()
             if id == id1 then table.remove(fromedgs,i) end
         end
     end
-    function G:DFS(root)
+    function G:DFS_prepare()
         G.nodes_explored = {}
         G.old_nodes_values = G.nodes_values or {}
         G.nodes_values = {}
+    end
+    function G:DFS(root)
         return DFS(self,root)
     end
     return G
@@ -84,7 +86,7 @@ local function Node(value,editor,typen,loadT)
         node = {
             id = editor:newid(),
             type = typen.name,
-			is_root = typen.is_root
+            is_root = typen.is_root
         }
         node.inputs = {}
         node.input_names = {}
@@ -107,6 +109,7 @@ local function Node(value,editor,typen,loadT)
     for i,typ in ipairs(editor.nodetypes) do
         if typename==typ.name then
             node.compute = typ.compute
+            node.show = typ.show
             break
         end
     end
@@ -302,29 +305,36 @@ local function show_editor(editor)
 
     ig.End();
     
-    -- The color output window
-    local color =  editor:evaluate()
-    ig.PushStyleColorU32(ig.lib.ImGuiCol_WindowBg, color);
-    ig.Begin("output color");
-    ig.End();
-    ig.PopStyleColor();
+    -- The outputs
+    local outs =  editor:evaluate()
+    for i,root in ipairs(editor.root_nodes) do
+        editor.nodes[root]:show(outs[i],i)
+    end
+
 end
 
 local function Editor(name, nodetypes)
-    local E = {nodes={},links={},current_id=0,name=name,root_node_id=-1, nodetypes= nodetypes}
+    local E = {nodes={},links={},current_id=0,name=name,root_nodes={}, nodetypes= nodetypes}
     E.G = Graph()
     function E:evaluate()
-		return (self.root_node_id == -1) and ig.U32(1, 20/255, 147/255, 1) or self.G:DFS(self.root_node_id)
+        --return (self.root_node_id == -1) and ig.U32(1, 20/255, 147/255, 1) or self.G:DFS(self.root_node_id)
+        local outs = {}
+        self.G:DFS_prepare()
+        for i,root in ipairs(self.root_nodes) do
+            outs[i] = self.G:DFS(root)
+        end
+        return outs
     end
     function E:newid()
         E.current_id = E.current_id + 1
         return E.current_id
     end
     function E:Node(value,typen)
-        if self.root_node_id~=-1 and typen.is_root then return end
         local newnode = Node(value,self,typen)
         self.nodes[newnode.id] = newnode
-        if typen.is_root then self.root_node_id = newnode.id end
+        if newnode.is_root then 
+            table.insert(self.root_nodes, newnode.id)
+        end
         return newnode
     end
     function E:deleteNode(node_id)
@@ -336,7 +346,13 @@ local function Editor(name, nodetypes)
             end
         end
         node:delete() --delete pins in graph
-        if node.type == "output" then self.root_node_id = -1 end
+        if node.is_root then
+            for i,v in ipairs(self.root_nodes) do
+                if v == node_id then
+                    table.remove(self.root_nodes,i)
+                end
+            end
+        end
         self.nodes[node_id] = nil
     end
     function E:addLink(link)
@@ -364,6 +380,7 @@ local function Editor(name, nodetypes)
         for k,node in pairs(self.nodes) do
             str = str .. node:save_str("node"..k) .. "\n"
         end
+        str = str .. serializer("root_nodes",self.root_nodes)
         str = str .. "return {nodes = {"
         for k,node in pairs(self.nodes) do
             local kst = type(k)=="number" and "["..k.."]" or k
@@ -376,7 +393,7 @@ local function Editor(name, nodetypes)
         end
         str = str .. "},name='"..self.name
         str = str .. "',current_id = " .. self.current_id 
-        str = str .. ",root_node_id = " .. self.root_node_id .. "}"
+        str = str .. ",root_nodes = root_nodes}"
         return str
     end
     function E:save()
@@ -410,13 +427,14 @@ local function Editor(name, nodetypes)
         end
         self.current_id = loadedE.current_id
         self.name = loadedE.name
-        self.root_node_id = loadedE.root_node_id
+        self.root_nodes = loadedE.root_nodes
     end
     E.context = ig.imnodes_EditorContextCreate();
     return E
 end
 -----------------------------------use it!!--------------------------------------------
 ig.imnodes_Initialize()
+
 
 local function clamp(v)
     return math.max(0,math.min(1,v))
@@ -438,15 +456,49 @@ local nodetypes = {
     name = "output",
     input_names = {"r","g","b"},
     is_root = true,
+    show = function(self,v,i)
+        ig.PushStyleColorU32(ig.lib.ImGuiCol_WindowBg, v);
+        ig.Begin("output color"..i);
+        ig.End();
+        ig.PopStyleColor();
+    end,
     compute = function(t)
         local a,b,c = clamp(t[1]),clamp(t[2]),clamp(t[3])
         return ig.U32(a,b,c)
     end
 },{
+    name = "lisa",
+    input_names = {"x","y"},
+    is_root = true,
+    show = function(self,v,i)
+        local lisaS = 30
+        self.lisamem = self.lisamem or {}
+        local lisamem = self.lisamem
+        ig.Begin("output lisa"..i);
+        ig.Text("x: %f, y: %f",v[1],v[2])
+        local canvas_p0 = ig.GetCursorScreenPos();      -- ImDrawList API uses screen coordinates!
+        local canvas_sz = ig.GetContentRegionAvail();
+        local canvas_p1 = canvas_p0 + canvas_sz
+        local draw_list = ig.GetWindowDrawList();
+        draw_list:AddRectFilled(canvas_p0, canvas_p1, ig.U32(50/255, 50/255, 50/255, 1));
+        draw_list:AddRect(canvas_p0, canvas_p1, ig.U32(1, 1, 1, 1));
+        table.insert(lisamem ,1,v)
+        table.remove(lisamem,lisaS+1)
+        for i=1,lisaS do
+            local u = lisamem[i] or v
+            draw_list:AddCircleFilled(ig.ImVec2(u[1]*canvas_sz.x,u[2]*canvas_sz.y)+canvas_p0, 3, ig.U32(1,1,1,1));
+        end
+        ig.End();
+    end,
+    compute = function(t)
+        local x,y = clamp(t[1]),clamp(t[2])
+        return {x,y}
+    end
+},{
     name = "sine",
     input_names = {"input"},
     compute = function(t)
-        return math.sin(t[1])
+        return math.sin(t[1])*0.5+0.5
     end
 },{
     name = "time",
@@ -457,7 +509,7 @@ local nodetypes = {
 }
 }
 
-local editor1 = Editor("color_editor", nodetypes)
+local editor1 = Editor("compute_graph", nodetypes)
 editor1:load()
 
 ig.imnodes_PushAttributeFlag(ig.lib.AttributeFlags_EnableLinkDetachWithDragClick);
@@ -468,7 +520,7 @@ iog.link_detach_with_modifier_click.modifier = KeyCtrlPtr --ig.lib.getIOKeyCtrlP
 
 function win:draw(ig)
     editor1:draw()
-    --ig.ShowDemoWindow()
+    ig.ShowDemoWindow()
 end
 
 local function clean()
