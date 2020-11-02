@@ -244,6 +244,13 @@ local function Node(value,editor,typen,loadT)
                 end
             end
             node.connections = {}
+            if node.is_root then
+                for i,v in ipairs(editor.root_nodes) do
+                    if v == idtokey(node.id) then
+                        table.remove(editor.root_nodes,i)
+                    end
+                end
+            end
             node:delete()
         end
     end
@@ -453,6 +460,7 @@ editor1:load()
 
 function win:draw(ig)
     editor1:draw()
+    ig.ShowDemoWindow()
 end
 
 local function clean()
