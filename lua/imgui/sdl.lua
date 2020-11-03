@@ -24,8 +24,8 @@ ffi.cdef(cdecl)
 local lib = ffi.load(cimguimodule)
 
 -----------ImVec2 definition
-local ImVec2 
-ImVec2 = ffi.metatype("ImVec2",{
+local ImVec2
+ImVec2 = {
     __add = function(a,b) return ImVec2(a.x + b.x, a.y + b.y) end,
     __sub = function(a,b) return ImVec2(a.x - b.x, a.y - b.y) end,
     __unm = function(a) return ImVec2(-a.x,-a.y) end,
@@ -34,11 +34,13 @@ ImVec2 = ffi.metatype("ImVec2",{
         return ImVec2(a.x * b, a.y * b) end
         return ImVec2(a * b.x, a * b.y)
     end,
-	__index = function(a,i)
-		if i=="norm" then return math.sqrt(a.x*a.x+a.y*a.y) end
+	norm = function(a)
+		return math.sqrt(a.x*a.x+a.y*a.y)
 	end,
     __tostring = function(v) return 'ImVec2<'..v.x..','..v.y..'>' end
-})
+}
+ImVec2.__index = ImVec2
+ImVec2 = ffi.metatype("ImVec2",ImVec2)
 local ImVec4= {}
 ImVec4.__index = ImVec4
 ImVec4 = ffi.metatype("ImVec4",ImVec4)
