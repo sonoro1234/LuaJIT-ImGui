@@ -5654,6 +5654,8 @@ function M.imnodes_BeginOutputAttribute(id,shape)
     return lib.imnodes_BeginOutputAttribute(id,shape)
 end
 M.imnodes_BeginStaticAttribute = lib.imnodes_BeginStaticAttribute
+M.imnodes_ClearLinkSelection = lib.imnodes_ClearLinkSelection
+M.imnodes_ClearNodeSelection = lib.imnodes_ClearNodeSelection
 M.imnodes_EditorContextCreate = lib.imnodes_EditorContextCreate
 M.imnodes_EditorContextFree = lib.imnodes_EditorContextFree
 function M.imnodes_EditorContextGetPanning()

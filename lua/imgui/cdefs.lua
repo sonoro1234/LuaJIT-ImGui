@@ -3790,7 +3790,17 @@ typedef enum {
     StyleVar_GridSpacing = 0,
     StyleVar_NodeCornerRounding,
     StyleVar_NodePaddingHorizontal,
-    StyleVar_NodePaddingVertical
+    StyleVar_NodePaddingVertical,
+    StyleVar_NodeBorderThickness,
+    StyleVar_LinkThickness,
+    StyleVar_LinkLineSegmentsPerLength,
+    StyleVar_LinkHoverDistance,
+    StyleVar_PinCircleRadius,
+    StyleVar_PinQuadSideLength,
+    StyleVar_PinTriangleSideLength,
+    StyleVar_PinLineThickness,
+    StyleVar_PinHoverRadius,
+    StyleVar_PinOffset
 }StyleVar;
 typedef enum {
     StyleFlags_None = 0,
@@ -3830,6 +3840,7 @@ struct Style
     float node_corner_rounding;
     float node_padding_horizontal;
     float node_padding_vertical;
+    float node_border_thickness;
     float link_thickness;
     float link_line_segments_per_length;
     float link_hover_distance;
@@ -3898,6 +3909,8 @@ int imnodes_NumSelectedNodes(void);
 int imnodes_NumSelectedLinks(void);
 void imnodes_GetSelectedNodes(int* node_ids);
 void imnodes_GetSelectedLinks(int* link_ids);
+void imnodes_ClearNodeSelection(void);
+void imnodes_ClearLinkSelection(void);
 _Bool                imnodes_IsAttributeActive(void);
 _Bool                imnodes_IsAnyAttributeActive(int* attribute_id);
 _Bool                imnodes_IsLinkStarted(int* started_at_attribute_id);
