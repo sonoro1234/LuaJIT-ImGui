@@ -1757,7 +1757,9 @@ function M.ImGuizmo_SetDrawlist(drawlist)
     drawlist = drawlist or nil
     return lib.ImGuizmo_SetDrawlist(drawlist)
 end
+M.ImGuizmo_SetGizmoSizeClipSpace = lib.ImGuizmo_SetGizmoSizeClipSpace
 M.ImGuizmo_SetID = lib.ImGuizmo_SetID
+M.ImGuizmo_SetImGuiContext = lib.ImGuizmo_SetImGuiContext
 M.ImGuizmo_SetOrthographic = lib.ImGuizmo_SetOrthographic
 M.ImGuizmo_SetRect = lib.ImGuizmo_SetRect
 M.ImGuizmo_ViewManipulate = lib.ImGuizmo_ViewManipulate
