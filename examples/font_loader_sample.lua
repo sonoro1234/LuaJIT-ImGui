@@ -136,8 +136,10 @@ function win:draw(ig)
 				local scrly = ig.GetScrollY()
 				local canvas_size = ig.GetContentRegionAvail()
 				ig.PushClipRect(base_pos + ig.ImVec2(0,scrly), ig.ImVec2(base_pos.x + canvas_size.x, base_pos.y + canvas_size.y + scrly), true);
+
 				local linenum =  math.ceil(#fontcps/cols)
-				local clipper = ig.ImGuiListClipper(linenum)
+				local clipper = ig.ImGuiListClipper()
+				clipper:Begin(linenum)
 				while (clipper:Step()) do
 					for line = clipper.DisplayStart,clipper.DisplayEnd-1 do
 						for N=line*cols+1,line*cols+cols do

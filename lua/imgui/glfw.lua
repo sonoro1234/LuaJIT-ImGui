@@ -1660,7 +1660,9 @@ function M.ImGuizmo_SetDrawlist(drawlist)
     drawlist = drawlist or nil
     return lib.ImGuizmo_SetDrawlist(drawlist)
 end
+M.ImGuizmo_SetGizmoSizeClipSpace = lib.ImGuizmo_SetGizmoSizeClipSpace
 M.ImGuizmo_SetID = lib.ImGuizmo_SetID
+M.ImGuizmo_SetImGuiContext = lib.ImGuizmo_SetImGuiContext
 M.ImGuizmo_SetOrthographic = lib.ImGuizmo_SetOrthographic
 M.ImGuizmo_SetRect = lib.ImGuizmo_SetRect
 M.ImGuizmo_ViewManipulate = lib.ImGuizmo_ViewManipulate
@@ -5467,6 +5469,8 @@ function M.imnodes_BeginOutputAttribute(id,shape)
     return lib.imnodes_BeginOutputAttribute(id,shape)
 end
 M.imnodes_BeginStaticAttribute = lib.imnodes_BeginStaticAttribute
+M.imnodes_ClearLinkSelection = lib.imnodes_ClearLinkSelection
+M.imnodes_ClearNodeSelection = lib.imnodes_ClearNodeSelection
 M.imnodes_EditorContextCreate = lib.imnodes_EditorContextCreate
 M.imnodes_EditorContextFree = lib.imnodes_EditorContextFree
 function M.imnodes_EditorContextGetPanning()

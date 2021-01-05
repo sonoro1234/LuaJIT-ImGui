@@ -66,8 +66,12 @@ function M:GLFW(w,h,title,args)
     local window = W.lj_glfw.Window(w,h,title or "")
     window:makeContextCurrent()
     if args.vsync then W.lj_glfw.swapInterval(1) end
-
-    W.ig_impl = W.ig.Imgui_Impl_glfw_opengl3()
+    
+    if args.gl2 then
+        W.ig_impl = W.ig.Imgui_Impl_glfw_opengl2()
+    else
+        W.ig_impl = W.ig.Imgui_Impl_glfw_opengl3()
+    end
     
     local igio = W.ig.GetIO()
     igio.ConfigFlags = W.ig.lib.ImGuiConfigFlags_NavEnableKeyboard + igio.ConfigFlags
@@ -160,21 +164,29 @@ function M:SDL(w,h,title,args)
         return -1;
     end
 
-    sdl.gL_SetAttribute(sdl.GL_CONTEXT_FLAGS, sdl.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-    sdl.gL_SetAttribute(sdl.GL_CONTEXT_PROFILE_MASK, sdl.GL_CONTEXT_PROFILE_CORE);
+
     sdl.gL_SetAttribute(sdl.GL_DOUBLEBUFFER, 1);
     sdl.gL_SetAttribute(sdl.GL_DEPTH_SIZE, 24);
     sdl.gL_SetAttribute(sdl.GL_STENCIL_SIZE, 8);
-    sdl.gL_SetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 3);
+    if args.gl2 then
+        sdl.gL_SetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 2);
+    else
+        sdl.gL_SetAttribute(sdl.GL_CONTEXT_FLAGS, sdl.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+        sdl.gL_SetAttribute(sdl.GL_CONTEXT_PROFILE_MASK, sdl.GL_CONTEXT_PROFILE_CORE);
+        sdl.gL_SetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 3);
+    end
     sdl.gL_SetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 2);
     local current = ffi.new("SDL_DisplayMode[1]")
     sdl.getCurrentDisplayMode(0, current);
     local window = sdl.createWindow(title or "", sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, w, h, sdl.WINDOW_OPENGL+sdl.WINDOW_RESIZABLE); 
     W.gl_context = sdl.gL_CreateContext(window);
-    if self.vsync then sdl.gL_SetSwapInterval(1) end
+    if args.vsync then sdl.gL_SetSwapInterval(1) end
 
-    
-    W.ig_Impl = W.ig.Imgui_Impl_SDL_opengl3()
+    if args.gl2 then
+        W.ig_Impl = W.ig.Imgui_Impl_SDL_opengl2()
+    else
+        W.ig_Impl = W.ig.Imgui_Impl_SDL_opengl3()
+    end
     
     local igio = W.ig.GetIO()
     igio.ConfigFlags = W.ig.lib.ImGuiConfigFlags_NavEnableKeyboard + igio.ConfigFlags

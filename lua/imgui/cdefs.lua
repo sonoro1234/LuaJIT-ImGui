@@ -2745,18 +2745,20 @@ typedef int ImPlotOrientation;
 typedef int ImPlotYAxis;
 typedef enum {
     ImPlotFlags_None = 0,
-    ImPlotFlags_NoLegend = 1 << 0,
-    ImPlotFlags_NoMenus = 1 << 1,
-    ImPlotFlags_NoBoxSelect = 1 << 2,
-    ImPlotFlags_NoMousePos = 1 << 3,
-    ImPlotFlags_NoHighlight = 1 << 4,
-    ImPlotFlags_NoChild = 1 << 5,
-    ImPlotFlags_YAxis2 = 1 << 6,
-    ImPlotFlags_YAxis3 = 1 << 7,
-    ImPlotFlags_Query = 1 << 8,
-    ImPlotFlags_Crosshairs = 1 << 9,
-    ImPlotFlags_AntiAliased = 1 << 10,
-    ImPlotFlags_CanvasOnly = ImPlotFlags_NoLegend | ImPlotFlags_NoMenus | ImPlotFlags_NoBoxSelect | ImPlotFlags_NoMousePos
+    ImPlotFlags_NoTitle = 1 << 0,
+    ImPlotFlags_NoLegend = 1 << 1,
+    ImPlotFlags_NoMenus = 1 << 2,
+    ImPlotFlags_NoBoxSelect = 1 << 3,
+    ImPlotFlags_NoMousePos = 1 << 4,
+    ImPlotFlags_NoHighlight = 1 << 5,
+    ImPlotFlags_NoChild = 1 << 6,
+    ImPlotFlags_Equal = 1 << 7,
+    ImPlotFlags_YAxis2 = 1 << 8,
+    ImPlotFlags_YAxis3 = 1 << 9,
+    ImPlotFlags_Query = 1 << 10,
+    ImPlotFlags_Crosshairs = 1 << 11,
+    ImPlotFlags_AntiAliased = 1 << 12,
+    ImPlotFlags_CanvasOnly = ImPlotFlags_NoTitle | ImPlotFlags_NoLegend | ImPlotFlags_NoMenus | ImPlotFlags_NoBoxSelect | ImPlotFlags_NoMousePos
 }ImPlotFlags_;
 typedef enum {
     ImPlotAxisFlags_None = 0,
@@ -2823,6 +2825,7 @@ typedef enum {
     ImPlotStyleVar_LegendSpacing,
     ImPlotStyleVar_MousePosPadding,
     ImPlotStyleVar_AnnotationPadding,
+    ImPlotStyleVar_FitPadding,
     ImPlotStyleVar_PlotDefaultSize,
     ImPlotStyleVar_PlotMinSize,
     ImPlotStyleVar_COUNT
@@ -2913,6 +2916,7 @@ struct ImPlotStyle
     ImVec2 LegendSpacing;
     ImVec2 MousePosPadding;
     ImVec2 AnnotationPadding;
+    ImVec2 FitPadding;
     ImVec2 PlotDefaultSize;
     ImVec2 PlotMinSize;
     ImVec4 Colors[ImPlotCol_COUNT];
@@ -3271,17 +3275,18 @@ void ImPlot_PlotBarsG(const char* label_id, ImPlotPoint* (*getter)(void* data, i
 void ImPlot_PlotBarsHG(const char* label_id, ImPlotPoint* (*getter)(void* data, int idx), void* data, int count, double height, int offset);
 void ImPlot_PlotDigitalG(const char* label_id, ImPlotPoint* (*getter)(void* data, int idx), void* data, int count, int offset);
 typedef enum {
-  TRANSLATE,
-  ROTATE,
-  SCALE,
-  BOUNDS,
- }OPERATION;
+      TRANSLATE,
+      ROTATE,
+      SCALE,
+      BOUNDS,
+   }OPERATION;
 typedef enum {
-  LOCAL,
-  WORLD
- }MODE;
+      LOCAL,
+      WORLD
+   }MODE;
 void ImGuizmo_SetDrawlist(ImDrawList* drawlist);
 void ImGuizmo_BeginFrame(void);
+void ImGuizmo_SetImGuiContext(ImGuiContext* ctx);
 _Bool                ImGuizmo_IsOverNil(void);
 _Bool                ImGuizmo_IsUsing(void);
 void ImGuizmo_Enable(                               _Bool                                     enable);
@@ -3291,10 +3296,11 @@ void ImGuizmo_SetRect(float x,float y,float width,float height);
 void ImGuizmo_SetOrthographic(                                        _Bool                                              isOrthographic);
 void ImGuizmo_DrawCubes(const float* view,const float* projection,const float* matrices,int matrixCount);
 void ImGuizmo_DrawGrid(const float* view,const float* projection,const float* matrix,const float gridSize);
-_Bool                ImGuizmo_Manipulate(const float* view,const float* projection,OPERATION operation,MODE mode,float* matrix,float* deltaMatrix,float* snap,float* localBounds,float* boundsSnap);
+_Bool                ImGuizmo_Manipulate(const float* view,const float* projection,OPERATION operation,MODE mode,float* matrix,float* deltaMatrix,const float* snap,const float* localBounds,const float* boundsSnap);
 void ImGuizmo_ViewManipulate(float* view,float length,ImVec2 position,ImVec2 size,ImU32 backgroundColor);
 void ImGuizmo_SetID(int id);
 _Bool                ImGuizmo_IsOverOPERATION(OPERATION op);
+void ImGuizmo_SetGizmoSizeClipSpace(float value);
 typedef int vgButtons;
 typedef int vgModifiers;
 typedef struct Vec4{
@@ -3422,7 +3428,17 @@ typedef enum {
     StyleVar_GridSpacing = 0,
     StyleVar_NodeCornerRounding,
     StyleVar_NodePaddingHorizontal,
-    StyleVar_NodePaddingVertical
+    StyleVar_NodePaddingVertical,
+    StyleVar_NodeBorderThickness,
+    StyleVar_LinkThickness,
+    StyleVar_LinkLineSegmentsPerLength,
+    StyleVar_LinkHoverDistance,
+    StyleVar_PinCircleRadius,
+    StyleVar_PinQuadSideLength,
+    StyleVar_PinTriangleSideLength,
+    StyleVar_PinLineThickness,
+    StyleVar_PinHoverRadius,
+    StyleVar_PinOffset
 }StyleVar;
 typedef enum {
     StyleFlags_None = 0,
@@ -3462,6 +3478,7 @@ struct Style
     float node_corner_rounding;
     float node_padding_horizontal;
     float node_padding_vertical;
+    float node_border_thickness;
     float link_thickness;
     float link_line_segments_per_length;
     float link_hover_distance;
@@ -3530,6 +3547,8 @@ int imnodes_NumSelectedNodes(void);
 int imnodes_NumSelectedLinks(void);
 void imnodes_GetSelectedNodes(int* node_ids);
 void imnodes_GetSelectedLinks(int* link_ids);
+void imnodes_ClearNodeSelection(void);
+void imnodes_ClearLinkSelection(void);
 _Bool                imnodes_IsAttributeActive(void);
 _Bool                imnodes_IsAnyAttributeActive(int* attribute_id);
 _Bool                imnodes_IsLinkStarted(int* started_at_attribute_id);

@@ -94,6 +94,10 @@ endif(IMPL_EXTRAS)
 
 add_library(cimgui_base OBJECT ${IMGUI_SOURCES})
 
+if(UNIX)
+set_property(TARGET cimgui_base PROPERTY POSITION_INDEPENDENT_CODE ON)
+endif(UNIX)
+
 
 if(IMPL_GLFW)
     list(APPEND IMGUI_SOURCES_glfw ${BAKENDS_FOLDER}imgui_impl_glfw.cpp)
