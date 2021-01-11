@@ -131,7 +131,7 @@ function sanitize_reserved(def)
 				def.defaults[k] = val
 				else
 				--numbers without f in the end
-				def.defaults[k] = v:gsub("([%d%.%-]+)f","%1")
+				def.defaults[k] = v:gsub("([%d%.%-]+)[Ff]","%1")
 				--+ in front of numbers
 				def.defaults[k] = def.defaults[k]:gsub("^%+([%d%.%-]+)","%1")
 				--FLT_MAX
