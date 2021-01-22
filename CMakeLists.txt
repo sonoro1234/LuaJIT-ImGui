@@ -32,6 +32,10 @@ set(IMGUI_SOURCES ./cimgui/cimgui.cpp
 ./cimnodes_r/ImNodes/ImNodesEz.cpp
 )
 
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cimgui/imgui/imgui_tables.cpp)
+	list(APPEND IMGUI_SOURCES ./cimgui/imgui/imgui_tables.cpp)
+endif()
+
 if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cimgui/imgui/backends)
 	set(BAKENDS_FOLDER "./cimgui/imgui/backends/")
 else()
