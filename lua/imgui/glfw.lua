@@ -614,9 +614,13 @@ M.ImDrawDataBuilder = ffi.metatype("ImDrawDataBuilder",ImDrawDataBuilder)
 --------------------------ImDrawList----------------------------
 local ImDrawList= {}
 ImDrawList.__index = ImDrawList
-function ImDrawList:AddBezierCurve(p1,p2,p3,p4,col,thickness,num_segments)
+function ImDrawList:AddBezierCubic(p1,p2,p3,p4,col,thickness,num_segments)
     num_segments = num_segments or 0
-    return lib.ImDrawList_AddBezierCurve(self,p1,p2,p3,p4,col,thickness,num_segments)
+    return lib.ImDrawList_AddBezierCubic(self,p1,p2,p3,p4,col,thickness,num_segments)
+end
+function ImDrawList:AddBezierQuadratic(p1,p2,p3,col,thickness,num_segments)
+    num_segments = num_segments or 0
+    return lib.ImDrawList_AddBezierQuadratic(self,p1,p2,p3,col,thickness,num_segments)
 end
 ImDrawList.AddCallback = lib.ImDrawList_AddCallback
 function ImDrawList:AddCircle(center,radius,col,num_segments,thickness)
@@ -719,9 +723,13 @@ function ImDrawList:PathArcTo(center,radius,a_min,a_max,num_segments)
     return lib.ImDrawList_PathArcTo(self,center,radius,a_min,a_max,num_segments)
 end
 ImDrawList.PathArcToFast = lib.ImDrawList_PathArcToFast
-function ImDrawList:PathBezierCurveTo(p2,p3,p4,num_segments)
+function ImDrawList:PathBezierCubicCurveTo(p2,p3,p4,num_segments)
     num_segments = num_segments or 0
-    return lib.ImDrawList_PathBezierCurveTo(self,p2,p3,p4,num_segments)
+    return lib.ImDrawList_PathBezierCubicCurveTo(self,p2,p3,p4,num_segments)
+end
+function ImDrawList:PathBezierQuadraticCurveTo(p2,p3,num_segments)
+    num_segments = num_segments or 0
+    return lib.ImDrawList_PathBezierQuadraticCurveTo(self,p2,p3,num_segments)
 end
 ImDrawList.PathClear = lib.ImDrawList_PathClear
 ImDrawList.PathFillConvex = lib.ImDrawList_PathFillConvex
@@ -918,23 +926,6 @@ function ImFontGlyphRangesBuilder.__new(ctype)
 end
 ImFontGlyphRangesBuilder.SetBit = lib.ImFontGlyphRangesBuilder_SetBit
 M.ImFontGlyphRangesBuilder = ffi.metatype("ImFontGlyphRangesBuilder",ImFontGlyphRangesBuilder)
---------------------------ImGuiColumnData----------------------------
-local ImGuiColumnData= {}
-ImGuiColumnData.__index = ImGuiColumnData
-function ImGuiColumnData.__new(ctype)
-    local ptr = lib.ImGuiColumnData_ImGuiColumnData()
-    return ffi.gc(ptr,lib.ImGuiColumnData_destroy)
-end
-M.ImGuiColumnData = ffi.metatype("ImGuiColumnData",ImGuiColumnData)
---------------------------ImGuiColumns----------------------------
-local ImGuiColumns= {}
-ImGuiColumns.__index = ImGuiColumns
-ImGuiColumns.Clear = lib.ImGuiColumns_Clear
-function ImGuiColumns.__new(ctype)
-    local ptr = lib.ImGuiColumns_ImGuiColumns()
-    return ffi.gc(ptr,lib.ImGuiColumns_destroy)
-end
-M.ImGuiColumns = ffi.metatype("ImGuiColumns",ImGuiColumns)
 --------------------------ImGuiContext----------------------------
 local ImGuiContext= {}
 ImGuiContext.__index = ImGuiContext
@@ -943,6 +934,14 @@ function ImGuiContext.__new(ctype,shared_font_atlas)
     return ffi.gc(ptr,lib.ImGuiContext_destroy)
 end
 M.ImGuiContext = ffi.metatype("ImGuiContext",ImGuiContext)
+--------------------------ImGuiContextHook----------------------------
+local ImGuiContextHook= {}
+ImGuiContextHook.__index = ImGuiContextHook
+function ImGuiContextHook.__new(ctype)
+    local ptr = lib.ImGuiContextHook_ImGuiContextHook()
+    return ffi.gc(ptr,lib.ImGuiContextHook_destroy)
+end
+M.ImGuiContextHook = ffi.metatype("ImGuiContextHook",ImGuiContextHook)
 --------------------------ImGuiDockContext----------------------------
 local ImGuiDockContext= {}
 ImGuiDockContext.__index = ImGuiDockContext
@@ -1055,6 +1054,14 @@ function ImGuiMenuColumns.__new(ctype)
 end
 ImGuiMenuColumns.Update = lib.ImGuiMenuColumns_Update
 M.ImGuiMenuColumns = ffi.metatype("ImGuiMenuColumns",ImGuiMenuColumns)
+--------------------------ImGuiMetricsConfig----------------------------
+local ImGuiMetricsConfig= {}
+ImGuiMetricsConfig.__index = ImGuiMetricsConfig
+function ImGuiMetricsConfig.__new(ctype)
+    local ptr = lib.ImGuiMetricsConfig_ImGuiMetricsConfig()
+    return ffi.gc(ptr,lib.ImGuiMetricsConfig_destroy)
+end
+M.ImGuiMetricsConfig = ffi.metatype("ImGuiMetricsConfig",ImGuiMetricsConfig)
 --------------------------ImGuiNavMoveResult----------------------------
 local ImGuiNavMoveResult= {}
 ImGuiNavMoveResult.__index = ImGuiNavMoveResult
@@ -1082,6 +1089,22 @@ function ImGuiNextWindowData.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiNextWindowData_destroy)
 end
 M.ImGuiNextWindowData = ffi.metatype("ImGuiNextWindowData",ImGuiNextWindowData)
+--------------------------ImGuiOldColumnData----------------------------
+local ImGuiOldColumnData= {}
+ImGuiOldColumnData.__index = ImGuiOldColumnData
+function ImGuiOldColumnData.__new(ctype)
+    local ptr = lib.ImGuiOldColumnData_ImGuiOldColumnData()
+    return ffi.gc(ptr,lib.ImGuiOldColumnData_destroy)
+end
+M.ImGuiOldColumnData = ffi.metatype("ImGuiOldColumnData",ImGuiOldColumnData)
+--------------------------ImGuiOldColumns----------------------------
+local ImGuiOldColumns= {}
+ImGuiOldColumns.__index = ImGuiOldColumns
+function ImGuiOldColumns.__new(ctype)
+    local ptr = lib.ImGuiOldColumns_ImGuiOldColumns()
+    return ffi.gc(ptr,lib.ImGuiOldColumns_destroy)
+end
+M.ImGuiOldColumns = ffi.metatype("ImGuiOldColumns",ImGuiOldColumns)
 --------------------------ImGuiOnceUponAFrame----------------------------
 local ImGuiOnceUponAFrame= {}
 ImGuiOnceUponAFrame.__index = ImGuiOnceUponAFrame
@@ -1152,6 +1175,16 @@ function ImGuiSettingsHandler.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiSettingsHandler_destroy)
 end
 M.ImGuiSettingsHandler = ffi.metatype("ImGuiSettingsHandler",ImGuiSettingsHandler)
+--------------------------ImGuiStackSizes----------------------------
+local ImGuiStackSizes= {}
+ImGuiStackSizes.__index = ImGuiStackSizes
+ImGuiStackSizes.CompareWithCurrentState = lib.ImGuiStackSizes_CompareWithCurrentState
+function ImGuiStackSizes.__new(ctype)
+    local ptr = lib.ImGuiStackSizes_ImGuiStackSizes()
+    return ffi.gc(ptr,lib.ImGuiStackSizes_destroy)
+end
+ImGuiStackSizes.SetToCurrentState = lib.ImGuiStackSizes_SetToCurrentState
+M.ImGuiStackSizes = ffi.metatype("ImGuiStackSizes",ImGuiStackSizes)
 --------------------------ImGuiStorage----------------------------
 local ImGuiStorage= {}
 ImGuiStorage.__index = ImGuiStorage
@@ -1265,6 +1298,55 @@ function ImGuiTabItem.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiTabItem_destroy)
 end
 M.ImGuiTabItem = ffi.metatype("ImGuiTabItem",ImGuiTabItem)
+--------------------------ImGuiTable----------------------------
+local ImGuiTable= {}
+ImGuiTable.__index = ImGuiTable
+function ImGuiTable.__new(ctype)
+    local ptr = lib.ImGuiTable_ImGuiTable()
+    return ffi.gc(ptr,lib.ImGuiTable_destroy)
+end
+M.ImGuiTable = ffi.metatype("ImGuiTable",ImGuiTable)
+--------------------------ImGuiTableColumn----------------------------
+local ImGuiTableColumn= {}
+ImGuiTableColumn.__index = ImGuiTableColumn
+function ImGuiTableColumn.__new(ctype)
+    local ptr = lib.ImGuiTableColumn_ImGuiTableColumn()
+    return ffi.gc(ptr,lib.ImGuiTableColumn_destroy)
+end
+M.ImGuiTableColumn = ffi.metatype("ImGuiTableColumn",ImGuiTableColumn)
+--------------------------ImGuiTableColumnSettings----------------------------
+local ImGuiTableColumnSettings= {}
+ImGuiTableColumnSettings.__index = ImGuiTableColumnSettings
+function ImGuiTableColumnSettings.__new(ctype)
+    local ptr = lib.ImGuiTableColumnSettings_ImGuiTableColumnSettings()
+    return ffi.gc(ptr,lib.ImGuiTableColumnSettings_destroy)
+end
+M.ImGuiTableColumnSettings = ffi.metatype("ImGuiTableColumnSettings",ImGuiTableColumnSettings)
+--------------------------ImGuiTableColumnSortSpecs----------------------------
+local ImGuiTableColumnSortSpecs= {}
+ImGuiTableColumnSortSpecs.__index = ImGuiTableColumnSortSpecs
+function ImGuiTableColumnSortSpecs.__new(ctype)
+    local ptr = lib.ImGuiTableColumnSortSpecs_ImGuiTableColumnSortSpecs()
+    return ffi.gc(ptr,lib.ImGuiTableColumnSortSpecs_destroy)
+end
+M.ImGuiTableColumnSortSpecs = ffi.metatype("ImGuiTableColumnSortSpecs",ImGuiTableColumnSortSpecs)
+--------------------------ImGuiTableSettings----------------------------
+local ImGuiTableSettings= {}
+ImGuiTableSettings.__index = ImGuiTableSettings
+ImGuiTableSettings.GetColumnSettings = lib.ImGuiTableSettings_GetColumnSettings
+function ImGuiTableSettings.__new(ctype)
+    local ptr = lib.ImGuiTableSettings_ImGuiTableSettings()
+    return ffi.gc(ptr,lib.ImGuiTableSettings_destroy)
+end
+M.ImGuiTableSettings = ffi.metatype("ImGuiTableSettings",ImGuiTableSettings)
+--------------------------ImGuiTableSortSpecs----------------------------
+local ImGuiTableSortSpecs= {}
+ImGuiTableSortSpecs.__index = ImGuiTableSortSpecs
+function ImGuiTableSortSpecs.__new(ctype)
+    local ptr = lib.ImGuiTableSortSpecs_ImGuiTableSortSpecs()
+    return ffi.gc(ptr,lib.ImGuiTableSortSpecs_destroy)
+end
+M.ImGuiTableSortSpecs = ffi.metatype("ImGuiTableSortSpecs",ImGuiTableSortSpecs)
 --------------------------ImGuiTextBuffer----------------------------
 local ImGuiTextBuffer= {}
 ImGuiTextBuffer.__index = ImGuiTextBuffer
@@ -1439,14 +1521,6 @@ function ImGuiWindowSettings.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiWindowSettings_destroy)
 end
 M.ImGuiWindowSettings = ffi.metatype("ImGuiWindowSettings",ImGuiWindowSettings)
---------------------------ImGuiWindowTempData----------------------------
-local ImGuiWindowTempData= {}
-ImGuiWindowTempData.__index = ImGuiWindowTempData
-function ImGuiWindowTempData.__new(ctype)
-    local ptr = lib.ImGuiWindowTempData_ImGuiWindowTempData()
-    return ffi.gc(ptr,lib.ImGuiWindowTempData_destroy)
-end
-M.ImGuiWindowTempData = ffi.metatype("ImGuiWindowTempData",ImGuiWindowTempData)
 --------------------------ImPlotInputMap----------------------------
 local ImPlotInputMap= {}
 ImPlotInputMap.__index = ImPlotInputMap
@@ -3758,6 +3832,7 @@ function M.AcceptDragDropPayload(type,flags)
     return lib.igAcceptDragDropPayload(type,flags)
 end
 M.ActivateItem = lib.igActivateItem
+M.AddContextHook = lib.igAddContextHook
 M.AlignTextToFramePadding = lib.igAlignTextToFramePadding
 M.ArrowButton = lib.igArrowButton
 function M.ArrowButtonEx(str_id,dir,size_arg,flags)
@@ -3851,6 +3926,18 @@ function M.BeginTabItem(label,p_open,flags)
     p_open = p_open or nil
     return lib.igBeginTabItem(label,p_open,flags)
 end
+function M.BeginTable(str_id,column,flags,outer_size,inner_width)
+    flags = flags or 0
+    inner_width = inner_width or 0.0
+    outer_size = outer_size or ImVec2(0.0,0.0)
+    return lib.igBeginTable(str_id,column,flags,outer_size,inner_width)
+end
+function M.BeginTableEx(name,id,columns_count,flags,outer_size,inner_width)
+    flags = flags or 0
+    inner_width = inner_width or 0.0
+    outer_size = outer_size or ImVec2(0,0)
+    return lib.igBeginTableEx(name,id,columns_count,flags,outer_size,inner_width)
+end
 M.BeginTooltip = lib.igBeginTooltip
 M.BeginTooltipEx = lib.igBeginTooltipEx
 M.BringWindowToDisplayBack = lib.igBringWindowToDisplayBack
@@ -3888,12 +3975,13 @@ function M.CalcTextSize(text,text_end,hide_text_after_double_hash,wrap_width)
     return nonUDT_out
 end
 M.CalcTypematicRepeatAmount = lib.igCalcTypematicRepeatAmount
-function M.CalcWindowExpectedSize(window)
+function M.CalcWindowNextAutoFitSize(window)
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igCalcWindowExpectedSize(nonUDT_out,window)
+    lib.igCalcWindowNextAutoFitSize(nonUDT_out,window)
     return nonUDT_out
 end
 M.CalcWrapWidthForPos = lib.igCalcWrapWidthForPos
+M.CallContextHooks = lib.igCallContextHooks
 function M.CaptureKeyboardFromApp(want_capture_keyboard_value)
     if want_capture_keyboard_value == nil then want_capture_keyboard_value = true end
     return lib.igCaptureKeyboardFromApp(want_capture_keyboard_value)
@@ -3903,7 +3991,18 @@ function M.CaptureMouseFromApp(want_capture_mouse_value)
     return lib.igCaptureMouseFromApp(want_capture_mouse_value)
 end
 M.Checkbox = lib.igCheckbox
-M.CheckboxFlags = lib.igCheckboxFlags
+M.CheckboxFlagsIntPtr = lib.igCheckboxFlagsIntPtr
+M.CheckboxFlagsUintPtr = lib.igCheckboxFlagsUintPtr
+M.CheckboxFlagsS64Ptr = lib.igCheckboxFlagsS64Ptr
+M.CheckboxFlagsU64Ptr = lib.igCheckboxFlagsU64Ptr
+function M.CheckboxFlags(a1,a2,a3) -- generic version
+    if (ffi.istype('int*',a2) or ffi.istype('int[]',a2)) then return M.CheckboxFlagsIntPtr(a1,a2,a3) end
+    if (ffi.istype('unsigned int*',a2) or ffi.istype('unsigned int',a2) or ffi.istype('unsigned int[]',a2)) then return M.CheckboxFlagsUintPtr(a1,a2,a3) end
+    if (ffi.istype('ImS64*',a2) or ffi.istype('ImS64',a2) or ffi.istype('ImS64[]',a2)) then return M.CheckboxFlagsS64Ptr(a1,a2,a3) end
+    if (ffi.istype('ImU64*',a2) or ffi.istype('ImU64',a2) or ffi.istype('ImU64[]',a2)) then return M.CheckboxFlagsU64Ptr(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.CheckboxFlags could not find overloaded'
+end
 M.ClearActiveID = lib.igClearActiveID
 M.ClearDragDrop = lib.igClearDragDrop
 M.ClearIniSettings = lib.igClearIniSettings
@@ -3916,9 +4015,9 @@ function M.CollapsingHeaderTreeNodeFlags(label,flags)
     flags = flags or 0
     return lib.igCollapsingHeaderTreeNodeFlags(label,flags)
 end
-function M.CollapsingHeaderBoolPtr(label,p_open,flags)
+function M.CollapsingHeaderBoolPtr(label,p_visible,flags)
     flags = flags or 0
-    return lib.igCollapsingHeaderBoolPtr(label,p_open,flags)
+    return lib.igCollapsingHeaderBoolPtr(label,p_visible,flags)
 end
 function M.CollapsingHeader(a1,a2,a3) -- generic version
     if ((ffi.istype('ImGuiTreeNodeFlags',a2) or type(a2)=='number') or type(a2)=='nil') then return M.CollapsingHeaderTreeNodeFlags(a1,a2) end
@@ -4000,6 +4099,18 @@ function M.DebugDrawItemRect(col)
     col = col or 4278190335
     return lib.igDebugDrawItemRect(col)
 end
+M.DebugNodeColumns = lib.igDebugNodeColumns
+M.DebugNodeDockNode = lib.igDebugNodeDockNode
+M.DebugNodeDrawCmdShowMeshAndBoundingBox = lib.igDebugNodeDrawCmdShowMeshAndBoundingBox
+M.DebugNodeDrawList = lib.igDebugNodeDrawList
+M.DebugNodeStorage = lib.igDebugNodeStorage
+M.DebugNodeTabBar = lib.igDebugNodeTabBar
+M.DebugNodeTable = lib.igDebugNodeTable
+M.DebugNodeTableSettings = lib.igDebugNodeTableSettings
+M.DebugNodeViewport = lib.igDebugNodeViewport
+M.DebugNodeWindow = lib.igDebugNodeWindow
+M.DebugNodeWindowSettings = lib.igDebugNodeWindowSettings
+M.DebugNodeWindowsList = lib.igDebugNodeWindowsList
 M.DebugStartItemPicker = lib.igDebugStartItemPicker
 function M.DestroyContext(ctx)
     ctx = ctx or nil
@@ -4032,13 +4143,15 @@ M.DockContextCalcDropPosForDocking = lib.igDockContextCalcDropPosForDocking
 M.DockContextClearNodes = lib.igDockContextClearNodes
 M.DockContextGenNodeID = lib.igDockContextGenNodeID
 M.DockContextInitialize = lib.igDockContextInitialize
+M.DockContextNewFrameUpdateDocking = lib.igDockContextNewFrameUpdateDocking
+M.DockContextNewFrameUpdateUndocking = lib.igDockContextNewFrameUpdateUndocking
 M.DockContextQueueDock = lib.igDockContextQueueDock
 M.DockContextQueueUndockNode = lib.igDockContextQueueUndockNode
 M.DockContextQueueUndockWindow = lib.igDockContextQueueUndockWindow
 M.DockContextRebuildNodes = lib.igDockContextRebuildNodes
 M.DockContextShutdown = lib.igDockContextShutdown
-M.DockContextUpdateDocking = lib.igDockContextUpdateDocking
-M.DockContextUpdateUndocking = lib.igDockContextUpdateUndocking
+M.DockNodeBeginAmendTabBar = lib.igDockNodeBeginAmendTabBar
+M.DockNodeEndAmendTabBar = lib.igDockNodeEndAmendTabBar
 M.DockNodeGetDepth = lib.igDockNodeGetDepth
 M.DockNodeGetRootNode = lib.igDockNodeGetRootNode
 function M.DockSpace(id,size,flags,window_class)
@@ -4166,7 +4279,12 @@ M.EndMenuBar = lib.igEndMenuBar
 M.EndPopup = lib.igEndPopup
 M.EndTabBar = lib.igEndTabBar
 M.EndTabItem = lib.igEndTabItem
+M.EndTable = lib.igEndTable
 M.EndTooltip = lib.igEndTooltip
+function M.ErrorCheckEndFrameRecover(log_callback,user_data)
+    user_data = user_data or nil
+    return lib.igErrorCheckEndFrameRecover(log_callback,user_data)
+end
 function M.FindBestWindowPosForPopup(window)
     local nonUDT_out = ffi.new("ImVec2")
     lib.igFindBestWindowPosForPopup(nonUDT_out,window)
@@ -4194,6 +4312,7 @@ M.FocusWindow = lib.igFocusWindow
 M.FocusableItemRegister = lib.igFocusableItemRegister
 M.FocusableItemUnregister = lib.igFocusableItemUnregister
 M.GcAwakeTransientWindowBuffers = lib.igGcAwakeTransientWindowBuffers
+M.GcCompactTransientMiscBuffers = lib.igGcCompactTransientMiscBuffers
 M.GcCompactTransientWindowBuffers = lib.igGcCompactTransientWindowBuffers
 M.GetActiveID = lib.igGetActiveID
 M.GetBackgroundDrawListNil = lib.igGetBackgroundDrawListNil
@@ -4271,7 +4390,8 @@ M.GetDragDropPayload = lib.igGetDragDropPayload
 M.GetDrawData = lib.igGetDrawData
 M.GetDrawListSharedData = lib.igGetDrawListSharedData
 M.GetFocusID = lib.igGetFocusID
-M.GetFocusScopeID = lib.igGetFocusScopeID
+M.GetFocusScope = lib.igGetFocusScope
+M.GetFocusedFocusScope = lib.igGetFocusedFocusScope
 M.GetFont = lib.igGetFont
 M.GetFontSize = lib.igGetFontSize
 function M.GetFontTexUvWhitePixel()
@@ -4323,6 +4443,7 @@ function M.GetItemRectSize()
     return nonUDT_out
 end
 M.GetItemStatusFlags = lib.igGetItemStatusFlags
+M.GetItemsFlags = lib.igGetItemsFlags
 M.GetKeyIndex = lib.igGetKeyIndex
 M.GetKeyPressedAmount = lib.igGetKeyPressedAmount
 M.GetMainViewport = lib.igGetMainViewport
@@ -4418,19 +4539,24 @@ function M.ImAbs(a1) -- generic version
     error'M.ImAbs could not find overloaded'
 end
 M.ImAlphaBlendColors = lib.igImAlphaBlendColors
-function M.ImBezierCalc(p1,p2,p3,p4,t)
+function M.ImBezierCubicCalc(p1,p2,p3,p4,t)
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igImBezierCalc(nonUDT_out,p1,p2,p3,p4,t)
+    lib.igImBezierCubicCalc(nonUDT_out,p1,p2,p3,p4,t)
     return nonUDT_out
 end
-function M.ImBezierClosestPoint(p1,p2,p3,p4,p,num_segments)
+function M.ImBezierCubicClosestPoint(p1,p2,p3,p4,p,num_segments)
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igImBezierClosestPoint(nonUDT_out,p1,p2,p3,p4,p,num_segments)
+    lib.igImBezierCubicClosestPoint(nonUDT_out,p1,p2,p3,p4,p,num_segments)
     return nonUDT_out
 end
-function M.ImBezierClosestPointCasteljau(p1,p2,p3,p4,p,tess_tol)
+function M.ImBezierCubicClosestPointCasteljau(p1,p2,p3,p4,p,tess_tol)
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igImBezierClosestPointCasteljau(nonUDT_out,p1,p2,p3,p4,p,tess_tol)
+    lib.igImBezierCubicClosestPointCasteljau(nonUDT_out,p1,p2,p3,p4,p,tess_tol)
+    return nonUDT_out
+end
+function M.ImBezierQuadraticCalc(p1,p2,p3,t)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.igImBezierQuadraticCalc(nonUDT_out,p1,p2,p3,t)
     return nonUDT_out
 end
 M.ImBitArrayClearBit = lib.igImBitArrayClearBit
@@ -4488,7 +4614,14 @@ function M.ImHashStr(data,data_size,seed)
     return lib.igImHashStr(data,data_size,seed)
 end
 M.ImInvLength = lib.igImInvLength
-M.ImIsPowerOfTwo = lib.igImIsPowerOfTwo
+M.ImIsPowerOfTwoInt = lib.igImIsPowerOfTwoInt
+M.ImIsPowerOfTwoU64 = lib.igImIsPowerOfTwoU64
+function M.ImIsPowerOfTwo(a1) -- generic version
+    if (ffi.istype('int',a1) or type(a1)=='number') then return M.ImIsPowerOfTwoInt(a1) end
+    if ffi.istype('ImU64',a1) then return M.ImIsPowerOfTwoU64(a1) end
+    print(a1)
+    error'M.ImIsPowerOfTwo could not find overloaded'
+end
 M.ImLengthSqrVec2 = lib.igImLengthSqrVec2
 M.ImLengthSqrVec4 = lib.igImLengthSqrVec4
 function M.ImLengthSqr(a1) -- generic version
@@ -4795,6 +4928,7 @@ function M.IsRectVisible(a1,a2) -- generic version
     print(a1,a2)
     error'M.IsRectVisible could not find overloaded'
 end
+M.IsWindowAbove = lib.igIsWindowAbove
 M.IsWindowAppearing = lib.igIsWindowAppearing
 M.IsWindowChildOf = lib.igIsWindowChildOf
 M.IsWindowCollapsed = lib.igIsWindowCollapsed
@@ -5004,7 +5138,7 @@ end
 M.PopTextWrapPos = lib.igPopTextWrapPos
 function M.ProgressBar(fraction,size_arg,overlay)
     overlay = overlay or nil
-    size_arg = size_arg or ImVec2(-1,0)
+    size_arg = size_arg or ImVec2(-1.17549435082228750796873653722224568e-38,0)
     return lib.igProgressBar(fraction,size_arg,overlay)
 end
 M.PushAllowKeyboardFocus = lib.igPushAllowKeyboardFocus
@@ -5174,6 +5308,7 @@ M.SetFocusID = lib.igSetFocusID
 M.SetHoveredID = lib.igSetHoveredID
 M.SetItemAllowOverlap = lib.igSetItemAllowOverlap
 M.SetItemDefaultFocus = lib.igSetItemDefaultFocus
+M.SetItemUsingMouseWheel = lib.igSetItemUsingMouseWheel
 function M.SetKeyboardFocusHere(offset)
     offset = offset or 0
     return lib.igSetKeyboardFocusHere(offset)
@@ -5355,7 +5490,6 @@ function M.ShowStyleEditor(ref)
 end
 M.ShowStyleSelector = lib.igShowStyleSelector
 M.ShowUserGuide = lib.igShowUserGuide
-M.ShowViewportThumbnails = lib.igShowViewportThumbnails
 M.ShrinkWidths = lib.igShrinkWidths
 M.Shutdown = lib.igShutdown
 function M.SliderAngle(label,v_rad,v_degrees_min,v_degrees_max,format,flags)
@@ -5456,6 +5590,96 @@ function M.TabItemCalcSize(label,has_close_button)
 end
 M.TabItemEx = lib.igTabItemEx
 M.TabItemLabelAndCloseButton = lib.igTabItemLabelAndCloseButton
+M.TableBeginApplyRequests = lib.igTableBeginApplyRequests
+M.TableBeginCell = lib.igTableBeginCell
+M.TableBeginInitMemory = lib.igTableBeginInitMemory
+M.TableBeginRow = lib.igTableBeginRow
+M.TableDrawBorders = lib.igTableDrawBorders
+M.TableDrawContextMenu = lib.igTableDrawContextMenu
+M.TableEndCell = lib.igTableEndCell
+M.TableEndRow = lib.igTableEndRow
+M.TableFindByID = lib.igTableFindByID
+M.TableFixColumnSortDirection = lib.igTableFixColumnSortDirection
+M.TableGcCompactSettings = lib.igTableGcCompactSettings
+M.TableGcCompactTransientBuffers = lib.igTableGcCompactTransientBuffers
+M.TableGetBoundSettings = lib.igTableGetBoundSettings
+function M.TableGetCellBgRect(table,column_n)
+    local nonUDT_out = ffi.new("ImRect")
+    lib.igTableGetCellBgRect(nonUDT_out,table,column_n)
+    return nonUDT_out
+end
+M.TableGetColumnCount = lib.igTableGetColumnCount
+function M.TableGetColumnFlags(column_n)
+    column_n = column_n or -1
+    return lib.igTableGetColumnFlags(column_n)
+end
+M.TableGetColumnIndex = lib.igTableGetColumnIndex
+function M.TableGetColumnNameInt(column_n)
+    column_n = column_n or -1
+    return lib.igTableGetColumnNameInt(column_n)
+end
+M.TableGetColumnNameTablePtr = lib.igTableGetColumnNameTablePtr
+function M.TableGetColumnName(a1,a2) -- generic version
+    if ((ffi.istype('int',a1) or type(a1)=='number') or type(a1)=='nil') then return M.TableGetColumnNameInt(a1) end
+    if (ffi.istype('const ImGuiTable*',a1) or ffi.istype('const ImGuiTable',a1) or ffi.istype('const ImGuiTable[]',a1)) then return M.TableGetColumnNameTablePtr(a1,a2) end
+    print(a1,a2)
+    error'M.TableGetColumnName could not find overloaded'
+end
+M.TableGetColumnNextSortDirection = lib.igTableGetColumnNextSortDirection
+function M.TableGetColumnResizeID(table,column_n,instance_no)
+    instance_no = instance_no or 0
+    return lib.igTableGetColumnResizeID(table,column_n,instance_no)
+end
+M.TableGetColumnWidthAuto = lib.igTableGetColumnWidthAuto
+M.TableGetHeaderRowHeight = lib.igTableGetHeaderRowHeight
+M.TableGetHoveredColumn = lib.igTableGetHoveredColumn
+M.TableGetMaxColumnWidth = lib.igTableGetMaxColumnWidth
+M.TableGetRowIndex = lib.igTableGetRowIndex
+M.TableGetSortSpecs = lib.igTableGetSortSpecs
+M.TableHeader = lib.igTableHeader
+M.TableHeadersRow = lib.igTableHeadersRow
+M.TableLoadSettings = lib.igTableLoadSettings
+M.TableMergeDrawChannels = lib.igTableMergeDrawChannels
+M.TableNextColumn = lib.igTableNextColumn
+function M.TableNextRow(row_flags,min_row_height)
+    min_row_height = min_row_height or 0.0
+    row_flags = row_flags or 0
+    return lib.igTableNextRow(row_flags,min_row_height)
+end
+function M.TableOpenContextMenu(column_n)
+    column_n = column_n or -1
+    return lib.igTableOpenContextMenu(column_n)
+end
+M.TablePopBackgroundChannel = lib.igTablePopBackgroundChannel
+M.TablePushBackgroundChannel = lib.igTablePushBackgroundChannel
+M.TableRemove = lib.igTableRemove
+M.TableResetSettings = lib.igTableResetSettings
+M.TableSaveSettings = lib.igTableSaveSettings
+function M.TableSetBgColor(target,color,column_n)
+    column_n = column_n or -1
+    return lib.igTableSetBgColor(target,color,column_n)
+end
+M.TableSetColumnIndex = lib.igTableSetColumnIndex
+M.TableSetColumnSortDirection = lib.igTableSetColumnSortDirection
+M.TableSetColumnWidth = lib.igTableSetColumnWidth
+M.TableSetColumnWidthAutoAll = lib.igTableSetColumnWidthAutoAll
+M.TableSetColumnWidthAutoSingle = lib.igTableSetColumnWidthAutoSingle
+M.TableSettingsCreate = lib.igTableSettingsCreate
+M.TableSettingsFindByID = lib.igTableSettingsFindByID
+M.TableSettingsInstallHandler = lib.igTableSettingsInstallHandler
+function M.TableSetupColumn(label,flags,init_width_or_weight,user_id)
+    flags = flags or 0
+    init_width_or_weight = init_width_or_weight or 0.0
+    user_id = user_id or 0
+    return lib.igTableSetupColumn(label,flags,init_width_or_weight,user_id)
+end
+M.TableSetupDrawChannels = lib.igTableSetupDrawChannels
+M.TableSetupScrollFreeze = lib.igTableSetupScrollFreeze
+M.TableSortSpecsBuild = lib.igTableSortSpecsBuild
+M.TableSortSpecsSanitize = lib.igTableSortSpecsSanitize
+M.TableUpdateBorders = lib.igTableUpdateBorders
+M.TableUpdateColumnsWeightFromWidth = lib.igTableUpdateColumnsWeightFromWidth
+M.TableUpdateLayout = lib.igTableUpdateLayout
 M.TempInputIsActive = lib.igTempInputIsActive
 function M.TempInputScalar(bb,id,label,data_type,p_data,format,p_clamp_min,p_clamp_max)
     p_clamp_max = p_clamp_max or nil
