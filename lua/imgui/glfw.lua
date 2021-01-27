@@ -64,6 +64,7 @@ if jit.os == "Windows" then
 end
 
 M.FLT_MAX = lib.igGET_FLT_MAX()
+M.FLT_MIN = lib.igGET_FLT_MIN()
 
 -----------ImGui_ImplGlfwGL3
 local ImGui_ImplGlfwGL3 = {}
@@ -5138,7 +5139,7 @@ end
 M.PopTextWrapPos = lib.igPopTextWrapPos
 function M.ProgressBar(fraction,size_arg,overlay)
     overlay = overlay or nil
-    size_arg = size_arg or ImVec2(-1.17549435082228750796873653722224568e-38,0)
+    size_arg = size_arg or ImVec2(-M.FLT_MIN,0)
     return lib.igProgressBar(fraction,size_arg,overlay)
 end
 M.PushAllowKeyboardFocus = lib.igPushAllowKeyboardFocus

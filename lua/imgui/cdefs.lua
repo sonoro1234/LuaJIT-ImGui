@@ -3591,6 +3591,7 @@ void igImFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256],unsigne
 void igLogText(const char *fmt, ...);
 void ImGuiTextBuffer_appendf(struct ImGuiTextBuffer *buffer, const char *fmt, ...);
 float igGET_FLT_MAX();
+float igGET_FLT_MIN();
 ImVector_ImWchar* ImVector_ImWchar_create();
 void ImVector_ImWchar_destroy(ImVector_ImWchar* self);
 void ImVector_ImWchar_Init(ImVector_ImWchar* p);
