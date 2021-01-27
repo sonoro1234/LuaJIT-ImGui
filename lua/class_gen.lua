@@ -129,13 +129,16 @@ function sanitize_reserved(def)
 				local ok,val = pcall(cpp2ffi.parse_enum_value,v,enumsvalues,true)
 				if ok then
 				def.defaults[k] = val
+				elseif def.defaults[k]:match"FLT_MAX" then
+					def.defaults[k] = def.defaults[k]:gsub("FLT_MAX","M.FLT_MAX")
+				elseif def.defaults[k]:match"FLT_MIN" then
+					def.defaults[k] = def.defaults[k]:gsub("FLT_MIN","M.FLT_MIN")
 				else
 				--numbers without f in the end
 				def.defaults[k] = v:gsub("([%d%.%-]+)[Ff]","%1")
 				--+ in front of numbers
 				def.defaults[k] = def.defaults[k]:gsub("^%+([%d%.%-]+)","%1")
-				--FLT_MAX
-				def.defaults[k] = def.defaults[k]:gsub("FLT_MAX","M.FLT_MAX")
+				
 				def.defaults[k] = def.defaults[k]:gsub("ImDrawCornerFlags_All","lib.ImDrawCornerFlags_All")
 				def.defaults[k] = def.defaults[k]:gsub("sizeof%((%w+)%)",[[ffi.sizeof("%1")]])
 				def.defaults[k] = def.defaults[k]:gsub("%(%(void%s*%*%)0%)","nil")

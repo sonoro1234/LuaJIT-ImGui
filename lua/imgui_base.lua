@@ -63,6 +63,7 @@ if jit.os == "Windows" then
 end
 
 M.FLT_MAX = lib.igGET_FLT_MAX()
+M.FLT_MIN = lib.igGET_FLT_MIN()
 
 -----------ImGui_ImplGlfwGL3
 local ImGui_ImplGlfwGL3 = {}
