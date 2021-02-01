@@ -22,6 +22,22 @@ ffi.cdef(cdecl)
 --load dll
 local lib = ffi.load(cimguimodule)
 
+-----------ImStr definition
+local ImStr
+if pcall(function() local a = ffi.new("ImStr")end) then
+
+ImStr= {}
+function ImStr.__new(ctype,a,b)
+	b = b or ffi.new("const char*",a) + (a and #a or 0)
+	return ffi.new(ctype,a,b)
+end
+function ImStr.__tostring(is)
+	return is.Begin~=nil and ffi.string(is.Begin,is.End~=nil and is.End-is.Begin or nil) or nil
+end
+ImStr.__index = ImStr
+ImStr = ffi.metatype("ImStr",ImStr)
+
+end
 -----------ImVec2 definition
 local ImVec2
 ImVec2 = {
@@ -44,7 +60,7 @@ local ImVec4= {}
 ImVec4.__index = ImVec4
 ImVec4 = ffi.metatype("ImVec4",ImVec4)
 --the module
-local M = {ImVec2 = ImVec2, ImVec4 = ImVec4 ,lib = lib}
+local M = {ImVec2 = ImVec2, ImVec4 = ImVec4 , ImStr = ImStr, lib = lib}
 
 if jit.os == "Windows" then
     function M.ToUTF(unc_str)
