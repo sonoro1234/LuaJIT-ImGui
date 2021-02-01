@@ -101,7 +101,7 @@ function gui.FileBrowser(filename_p, args, funcOK)
     --ffi.copy(pattern_ed, args.pattern or "" )
     local pathut = M --require"anima.path"
     local curr_dir = args.curr_dir or pathut.this_script_path() 
-    local curr_dir_ed = ffi.new("char[256]")
+    local curr_dir_ed = ffi.new("char[?]",256)
     ffi.copy(curr_dir_ed, curr_dir )
     
     local curr_dir_done = false
