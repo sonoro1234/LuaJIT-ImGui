@@ -111,6 +111,7 @@ function sanitize_reserved(def)
 	end
 	--correct default vals
 	for k,v in pairs(def.defaults) do
+		--if type(v)=="number" then print("aver",def.cimguiname,type(v),k,v) end
 		--do only if not a c string
 		local is_cstring = v:sub(1,1)=='"' and v:sub(-1,-1) =='"'
 		if not is_cstring then
@@ -254,7 +255,7 @@ local function checktype(typ,va)
 	elseif ffi.typeof(typ)==ffi.typeof"bool" then
 		return "(ffi.istype('"..typ.."',"..va..") or type("..va..")=='boolean')"
 	elseif ffi.typeof(typ)==ffi.typeof"const char*" then
-		return "(ffi.istype('"..typ.."',"..va..") or type("..va..")=='string')"
+		return "(ffi.istype('"..typ.."',"..va..") or ffi.istype('char[]',"..va..") or type("..va..")=='string')"
 	elseif ffi.typeof(typ)==ffi.typeof"const float*" then
 		return "(ffi.istype('"..typ.."',"..va..") or ffi.istype('float[]',"..va.."))"
 	elseif ffi.typeof(typ)==ffi.typeof"const double*" then
@@ -263,6 +264,8 @@ local function checktype(typ,va)
 		return "(ffi.istype('"..typ.."',"..va..") or ffi.istype('int[]',"..va.."))"
 	elseif ffi.typeof(typ)==ffi.typeof"void*" or ffi.typeof(typ)==ffi.typeof"const void*" then
 		return "ffi.istype('"..typ.."',"..va..")"
+	elseif typ=="ImU32" then
+		return "(ffi.istype('"..typ.."',"..va..") or type("..va..")=='number')"
 	else
 		if typ:match"%*" and not typ:match"%(%*%)" then --pointer not function pointer
 			local typsinptr = typ:gsub("(%*)","")
@@ -274,21 +277,19 @@ local function checktype(typ,va)
 	end
 end
 
-local function gen_args(method,n,minvararg)
+local function gen_args(method,def,minvararg)
+	local n = #def.argsT
 	local args = ""
 	local isvararg
 	if minvararg < math.huge and n >= minvararg then
 		n = minvararg - 1
 		isvararg = true
 	end
-	if method then
-		for i=2,n do
-			args = args.."a"..i..","
-		end
-	else
-		for i=1,n do
-			args = args.."a"..i..","
-		end
+	local ini = 1
+	if method then ini = ini + 1 end
+	if def.nonUDT then ini = ini + 1 end
+	for i=ini,n do
+		args = args.."a"..i..","
 	end
 	if isvararg then
 		args = args .. "...,"
@@ -303,6 +304,9 @@ local function create_generic(code,defs,method)
 	if defs[1].is_static_function then
 		method = nil
 	end
+	
+	if defs[1].nonUDT then print("create_generic nonUTD",defs[1].cimguiname) end
+	
 	local methodnotconst = method and not defs[1].constructor
 	--find max number of arguments
 	local maxnargs = -1
@@ -316,7 +320,7 @@ local function create_generic(code,defs,method)
 		maxnargs = maxnargs < #def.argsT and #def.argsT or maxnargs
 	end
 	is_vararg = minvararg < math.huge
-	--print("maxnargs",defs[1].cimguiname,maxnargs,minvararg)
+	--if is_vararg then print("maxnargs",defs[1].cimguiname,maxnargs,minvararg) end
 	--[[
 	for i,def in ipairs(defs) do
 		io.write(def.ov_cimguiname," , ")
@@ -335,7 +339,8 @@ local function create_generic(code,defs,method)
 	local keys = {}
 	local done = {}
 	local check = {}
-	for i=1,maxnargs do
+	local maxnargs2 = is_vararg and minvararg-1 or maxnargs
+	for i=1,maxnargs2 do
 		keys[i] = {}
 		for j=1,#defs do
 			if not done[j] then
@@ -361,7 +366,7 @@ local function create_generic(code,defs,method)
 		end
 	end
 	
-	--cpp2ffi.prtable(keys,done,check)
+	--if is_vararg then cpp2ffi.prtable(keys,done,check) end
 
 	--do generic--------------
 	local code2 = {}
@@ -369,15 +374,27 @@ local function create_generic(code,defs,method)
 	if is_vararg then maxnargs = minvararg-1 end
 	local args = "" --method and "self," or ""
 	if methodnotconst then
-		for i=2,maxnargs do
-			args = args.."a"..i..","
+		if defs[1].nonUDT then
+			for i=3,maxnargs do
+				args = args.."a"..i..","
+			end
+		else		
+			for i=2,maxnargs do
+				args = args.."a"..i..","
+			end
 		end
 	elseif method then --constructor
 		args = maxnargs==0 and "ctype" or "ctype,"
 		for i=1,maxnargs do args = args.."a"..i.."," end
 	else
-		for i=1,maxnargs do
-			args = args.."a"..i..","
+		if defs[1].nonUDT then
+			for i=2,maxnargs do
+				args = args.."a"..i..","
+			end
+		else		
+			for i=1,maxnargs do
+				args = args.."a"..i..","
+			end
 		end
 	end
 	if is_vararg then args = args.."...," end
@@ -394,7 +411,7 @@ local function create_generic(code,defs,method)
 		table.insert(code2,"\n    if ")
 		local addand = false
 		for k,v in pairs(chk) do
-			assert(k < minvararg)
+			assert(k < minvararg, fname)
 			if addand then table.insert(code2," and ") end
 			if v=="nil" then
 				table.insert(code2,"a"..k.."==nil")
@@ -403,7 +420,9 @@ local function create_generic(code,defs,method)
 				--if has a default take nil as valid check
 				--print("defs[i].defaults[k]",defs[i].ov_cimguiname,defs[i].defaults[defs[i].argsT[k].name])
 				if defs[i].defaults[defs[i].argsT[k].name]~=nil then
+					if defs[i].argsT[k].type~="ImStr" then 
 					strcode = "("..strcode.." or type(a"..k..")=='nil')"
+					end
 				end
 				table.insert(code2 , strcode)
 				---table.insert(code2,"ffi.istype('"..v.."',a"..k..")")
@@ -413,7 +432,7 @@ local function create_generic(code,defs,method)
 		local fname2 = defs[i].ov_cimguiname 
 		local fname2_e = method and fname2:match(defs[1].stname.."_(.*)") or fname2:match("^ig(.*)") or fname2 --drop struct name part
 		fname2 = method and (methodnotconst and "self:"..fname2_e or defs[1].stname.."."..fname2_e) or "M."..fname2_e
-		table.insert(code2," then return "..fname2.."("..gen_args(methodnotconst,#defs[i].argsT,minvararg)..") end")
+		table.insert(code2," then return "..fname2.."("..gen_args(methodnotconst,defs[i],minvararg)..") end")
 		if fname_e == fname2_e then
 			print("--------error cimguiname equals ov_cimguiname in overloaded function",fname)
 			--error"cimguiname equals ov_cimguiname"
@@ -461,7 +480,6 @@ local function code_for_imguifuns(st,fundefs,structs)
 	table.sort(funs)
 	local code = {}
 	table.insert(code,"--------------------------"..st.."----------------------------")
-
 	for _,f in ipairs(funs) do
 		local defs = fundefs[f]
 		for _,def in ipairs(defs) do
@@ -507,7 +525,6 @@ local function class_gen(sources)
 	--firs get enumsvalues table
 	make_enums(sources)
 	local fundefs = make_funcdefs(sources)
-
 	--group them by structs
 	local structs = {}
 	local skipped = {}
@@ -538,7 +555,6 @@ local function class_gen(sources)
 			table.insert(strout,code_for_struct(struct,fundefs, structs))
 		end
 	end)
-	
 	table.insert(strout,code_for_imguifuns("",fundefs, structs))--("ImGui"))
 	
 	table.insert(strout,"return M")
