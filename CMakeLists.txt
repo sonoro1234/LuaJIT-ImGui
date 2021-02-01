@@ -23,8 +23,8 @@ set(IMGUI_SOURCES ./cimgui/cimgui.cpp
 ./cimplot/implot/implot_demo.cpp
 ./cimguizmo/cimguizmo.cpp
 ./cimguizmo/ImGuizmo/ImGuizmo.cpp
-./cimguizmo_quat/imGuIZMO.quat/imGuIZMO.quat/imGuIZMOquat.cpp  
 ./cimguizmo_quat/cimguizmo_quat.cpp
+./cimguizmo_quat/imGuIZMO.quat/imGuIZMO.quat/imGuIZMOquat.cpp  
 ./cimnodes/cimnodes.cpp
 ./cimnodes/imnodes/imnodes.cpp
 ./cimnodes_r/cimnodes_r.cpp
@@ -54,7 +54,7 @@ else(WIN32)
 endif(WIN32)
 
 add_compile_definitions("IMGUI_IMPL_OPENGL_LOADER_GL3W")
-
+add_definitions("-DIMGUIZMO_IMGUI_FOLDER=")
 #optional adding implementations
 option(IMPL_GLFW "add GLFW implementation" ON)
 option(IMPL_SDL "add SDL implementation" ON)
