@@ -3891,26 +3891,26 @@ void ImPlot_PlotStairsU32PtrU32Ptr(const char* label_id,const ImU32* xs,const Im
 void ImPlot_PlotStairsS64PtrS64Ptr(const char* label_id,const ImS64* xs,const ImS64* ys,int count,int offset,int stride);
 void ImPlot_PlotStairsU64PtrU64Ptr(const char* label_id,const ImU64* xs,const ImU64* ys,int count,int offset,int stride);
 void ImPlot_PlotStairsG(const char* label_id,ImPlotPoint(*getter)(void* data,int idx),void* data,int count,int offset);
-void ImPlot_PlotShadedFloatPtrIntdoubledoubleInt(const char* label_id,const float* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
-void ImPlot_PlotShadeddoublePtrIntdoubledoubleInt(const char* label_id,const double* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
-void ImPlot_PlotShadedS8PtrIntdoubledoubleInt(const char* label_id,const ImS8* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
-void ImPlot_PlotShadedU8PtrIntdoubledoubleInt(const char* label_id,const ImU8* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
-void ImPlot_PlotShadedS16PtrIntdoubledoubleInt(const char* label_id,const ImS16* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
-void ImPlot_PlotShadedU16PtrIntdoubledoubleInt(const char* label_id,const ImU16* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
-void ImPlot_PlotShadedS32PtrIntdoubledoubleInt(const char* label_id,const ImS32* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
-void ImPlot_PlotShadedU32PtrIntdoubledoubleInt(const char* label_id,const ImU32* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
-void ImPlot_PlotShadedS64PtrIntdoubledoubleInt(const char* label_id,const ImS64* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
-void ImPlot_PlotShadedU64PtrIntdoubledoubleInt(const char* label_id,const ImU64* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
-void ImPlot_PlotShadedFloatPtrFloatPtrIntInt(const char* label_id,const float* xs,const float* ys,int count,double y_ref,int offset,int stride);
-void ImPlot_PlotShadeddoublePtrdoublePtrIntInt(const char* label_id,const double* xs,const double* ys,int count,double y_ref,int offset,int stride);
-void ImPlot_PlotShadedS8PtrS8PtrIntInt(const char* label_id,const ImS8* xs,const ImS8* ys,int count,double y_ref,int offset,int stride);
-void ImPlot_PlotShadedU8PtrU8PtrIntInt(const char* label_id,const ImU8* xs,const ImU8* ys,int count,double y_ref,int offset,int stride);
-void ImPlot_PlotShadedS16PtrS16PtrIntInt(const char* label_id,const ImS16* xs,const ImS16* ys,int count,double y_ref,int offset,int stride);
-void ImPlot_PlotShadedU16PtrU16PtrIntInt(const char* label_id,const ImU16* xs,const ImU16* ys,int count,double y_ref,int offset,int stride);
-void ImPlot_PlotShadedS32PtrS32PtrIntInt(const char* label_id,const ImS32* xs,const ImS32* ys,int count,double y_ref,int offset,int stride);
-void ImPlot_PlotShadedU32PtrU32PtrIntInt(const char* label_id,const ImU32* xs,const ImU32* ys,int count,double y_ref,int offset,int stride);
-void ImPlot_PlotShadedS64PtrS64PtrIntInt(const char* label_id,const ImS64* xs,const ImS64* ys,int count,double y_ref,int offset,int stride);
-void ImPlot_PlotShadedU64PtrU64PtrIntInt(const char* label_id,const ImU64* xs,const ImU64* ys,int count,double y_ref,int offset,int stride);
+void ImPlot_PlotShadedFloatPtrInt(const char* label_id,const float* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
+void ImPlot_PlotShadeddoublePtrInt(const char* label_id,const double* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
+void ImPlot_PlotShadedS8PtrInt(const char* label_id,const ImS8* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
+void ImPlot_PlotShadedU8PtrInt(const char* label_id,const ImU8* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
+void ImPlot_PlotShadedS16PtrInt(const char* label_id,const ImS16* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
+void ImPlot_PlotShadedU16PtrInt(const char* label_id,const ImU16* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
+void ImPlot_PlotShadedS32PtrInt(const char* label_id,const ImS32* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
+void ImPlot_PlotShadedU32PtrInt(const char* label_id,const ImU32* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
+void ImPlot_PlotShadedS64PtrInt(const char* label_id,const ImS64* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
+void ImPlot_PlotShadedU64PtrInt(const char* label_id,const ImU64* values,int count,double y_ref,double xscale,double x0,int offset,int stride);
+void ImPlot_PlotShadedFloatPtrFloatPtrInt(const char* label_id,const float* xs,const float* ys,int count,double y_ref,int offset,int stride);
+void ImPlot_PlotShadeddoublePtrdoublePtrInt(const char* label_id,const double* xs,const double* ys,int count,double y_ref,int offset,int stride);
+void ImPlot_PlotShadedS8PtrS8PtrInt(const char* label_id,const ImS8* xs,const ImS8* ys,int count,double y_ref,int offset,int stride);
+void ImPlot_PlotShadedU8PtrU8PtrInt(const char* label_id,const ImU8* xs,const ImU8* ys,int count,double y_ref,int offset,int stride);
+void ImPlot_PlotShadedS16PtrS16PtrInt(const char* label_id,const ImS16* xs,const ImS16* ys,int count,double y_ref,int offset,int stride);
+void ImPlot_PlotShadedU16PtrU16PtrInt(const char* label_id,const ImU16* xs,const ImU16* ys,int count,double y_ref,int offset,int stride);
+void ImPlot_PlotShadedS32PtrS32PtrInt(const char* label_id,const ImS32* xs,const ImS32* ys,int count,double y_ref,int offset,int stride);
+void ImPlot_PlotShadedU32PtrU32PtrInt(const char* label_id,const ImU32* xs,const ImU32* ys,int count,double y_ref,int offset,int stride);
+void ImPlot_PlotShadedS64PtrS64PtrInt(const char* label_id,const ImS64* xs,const ImS64* ys,int count,double y_ref,int offset,int stride);
+void ImPlot_PlotShadedU64PtrU64PtrInt(const char* label_id,const ImU64* xs,const ImU64* ys,int count,double y_ref,int offset,int stride);
 void ImPlot_PlotShadedFloatPtrFloatPtrFloatPtr(const char* label_id,const float* xs,const float* ys1,const float* ys2,int count,int offset,int stride);
 void ImPlot_PlotShadeddoublePtrdoublePtrdoublePtr(const char* label_id,const double* xs,const double* ys1,const double* ys2,int count,int offset,int stride);
 void ImPlot_PlotShadedS8PtrS8PtrS8Ptr(const char* label_id,const ImS8* xs,const ImS8* ys1,const ImS8* ys2,int count,int offset,int stride);
@@ -4144,10 +4144,20 @@ void ImPlot_PlotBarsG(const char* label_id, ImPlotPoint* (*getter)(void* data, i
 void ImPlot_PlotBarsHG(const char* label_id, ImPlotPoint* (*getter)(void* data, int idx), void* data, int count, double height, int offset);
 void ImPlot_PlotDigitalG(const char* label_id, ImPlotPoint* (*getter)(void* data, int idx), void* data, int count, int offset);
 typedef enum {
-      TRANSLATE,
-      ROTATE,
-      SCALE,
-      BOUNDS,
+      TRANSLATE_X = (1u << 0),
+      TRANSLATE_Y = (1u << 1),
+      TRANSLATE_Z = (1u << 2),
+      ROTATE_X = (1u << 3),
+      ROTATE_Y = (1u << 4),
+      ROTATE_Z = (1u << 5),
+      ROTATE_SCREEN = (1u << 6),
+      SCALE_X = (1u << 7),
+      SCALE_Y = (1u << 8),
+      SCALE_Z = (1u << 9),
+      BOUNDS = (1u << 10),
+      TRANSLATE = TRANSLATE_X | TRANSLATE_Y | TRANSLATE_Z,
+      ROTATE = ROTATE_X | ROTATE_Y | ROTATE_Z | ROTATE_SCREEN,
+      SCALE = SCALE_X | SCALE_Y | SCALE_Z
    }OPERATION;
 typedef enum {
       LOCAL,
@@ -4170,6 +4180,7 @@ void ImGuizmo_ViewManipulate(float* view,float length,ImVec2 position,ImVec2 siz
 void ImGuizmo_SetID(int id);
 _Bool                ImGuizmo_IsOverOPERATION(OPERATION op);
 void ImGuizmo_SetGizmoSizeClipSpace(float value);
+void ImGuizmo_AllowAxisFlip(                                      _Bool                                            value);
 typedef int vgButtons;
 typedef int vgModifiers;
 typedef struct Vec4{
@@ -4250,15 +4261,15 @@ void imguiGizmo_modeSettings(imguiGizmo* self,int mode);
 void imguiGizmo_setDualMode(imguiGizmo* self,const int mode);
 _Bool                imguiGizmo_getTransformsvec3Ptr(imguiGizmo* self,quat* q,const char* label,G3Dvec3* dir,float size);
 _Bool                imguiGizmo_getTransformsvec4Ptr(imguiGizmo* self,quat* q,const char* label,G3Dvec4* axis_angle,float size);
-_Bool                iggizmo3DquatPtrFloatInt(const char* noname1,quat* noname2,float noname3,const int noname4);
+_Bool                iggizmo3DquatPtrFloat(const char* noname1,quat* noname2,float noname3,const int noname4);
 _Bool                iggizmo3Dvec4Ptr(const char* noname1,G3Dvec4* noname2,float noname3,const int noname4);
-_Bool                iggizmo3Dvec3PtrFloatInt(const char* noname1,G3Dvec3* noname2,float noname3,const int noname4);
-_Bool                iggizmo3DquatPtrquatPtrFloatInt(const char* noname1,quat* noname2,quat* noname3,float noname4,const int noname5);
-_Bool                iggizmo3DquatPtrvec4PtrFloatInt(const char* noname1,quat* noname2,G3Dvec4* noname3,float noname4,const int noname5);
-_Bool                iggizmo3DquatPtrvec3PtrFloatInt(const char* noname1,quat* noname2,G3Dvec3* noname3,float noname4,const int noname5);
-_Bool                iggizmo3Dvec3PtrquatPtrFloatInt(const char* noname1,G3Dvec3* noname2,quat* noname3,float noname4,const int noname5);
-_Bool                iggizmo3Dvec3Ptrvec4PtrFloatInt(const char* noname1,G3Dvec3* noname2,G3Dvec4* noname3,float noname4,const int noname5);
-_Bool                iggizmo3Dvec3Ptrvec3PtrFloatInt(const char* noname1,G3Dvec3* noname2,G3Dvec3* noname3,float noname4,const int noname5);
+_Bool                iggizmo3Dvec3PtrFloat(const char* noname1,G3Dvec3* noname2,float noname3,const int noname4);
+_Bool                iggizmo3DquatPtrquatPtr(const char* noname1,quat* noname2,quat* noname3,float noname4,const int noname5);
+_Bool                iggizmo3DquatPtrvec4Ptr(const char* noname1,quat* noname2,G3Dvec4* noname3,float noname4,const int noname5);
+_Bool                iggizmo3DquatPtrvec3Ptr(const char* noname1,quat* noname2,G3Dvec3* noname3,float noname4,const int noname5);
+_Bool                iggizmo3Dvec3PtrquatPtrFloat(const char* noname1,G3Dvec3* noname2,quat* noname3,float noname4,const int noname5);
+_Bool                iggizmo3Dvec3Ptrvec4Ptr(const char* noname1,G3Dvec3* noname2,G3Dvec4* noname3,float noname4,const int noname5);
+_Bool                iggizmo3Dvec3Ptrvec3Ptr(const char* noname1,G3Dvec3* noname2,G3Dvec3* noname3,float noname4,const int noname5);
 _Bool                iggizmo3Dvec3PtrquatPtrquatPtr(const char* noname1,G3Dvec3* noname2,quat* noname3,quat* noname4,float noname5,const int noname6);
 _Bool                iggizmo3Dvec3PtrquatPtrvec4Ptr(const char* noname1,G3Dvec3* noname2,quat* noname3,G3Dvec4* noname4,float noname5,const int noname6);
 _Bool                iggizmo3Dvec3PtrquatPtrvec3Ptr(const char* noname1,G3Dvec3* noname2,quat* noname3,G3Dvec3* noname4,float noname5,const int noname6);

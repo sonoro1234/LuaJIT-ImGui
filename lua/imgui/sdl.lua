@@ -1822,6 +1822,7 @@ function M.imguiGizmo_setSphereColors(a1,a2) -- generic version
 end
 M.imguiGizmo = ffi.metatype("imguiGizmo",imguiGizmo)
 ------------------------------------------------------
+M.ImGuizmo_AllowAxisFlip = lib.ImGuizmo_AllowAxisFlip
 M.ImGuizmo_BeginFrame = lib.ImGuizmo_BeginFrame
 M.ImGuizmo_DecomposeMatrixToComponents = lib.ImGuizmo_DecomposeMatrixToComponents
 M.ImGuizmo_DrawCubes = lib.ImGuizmo_DrawCubes
@@ -3118,145 +3119,145 @@ function M.ImPlot_PlotScatterG(label_id,getter,data,count,offset)
     offset = offset or 0
     return lib.ImPlot_PlotScatterG(label_id,getter,data,count,offset)
 end
-function M.ImPlot_PlotShadedFloatPtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShadedFloatPtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedFloatPtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShadedFloatPtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadeddoublePtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShadeddoublePtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadeddoublePtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShadeddoublePtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedS8PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShadedS8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS8PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShadedS8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedU8PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShadedU8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU8PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShadedU8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedS16PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShadedS16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS16PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShadedS16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedU16PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShadedU16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU16PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShadedU16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedS32PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShadedS32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS32PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShadedS32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedU32PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShadedU32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU32PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShadedU32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedS64PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShadedS64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS64PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShadedS64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedU64PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShadedU64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU64PtrIntdoubledoubleInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShadedU64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedFloatPtrFloatPtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShadedFloatPtrFloatPtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedFloatPtrFloatPtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShadedFloatPtrFloatPtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadeddoublePtrdoublePtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShadeddoublePtrdoublePtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadeddoublePtrdoublePtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShadeddoublePtrdoublePtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedS8PtrS8PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShadedS8PtrS8PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS8PtrS8PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShadedS8PtrS8PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedU8PtrU8PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShadedU8PtrU8PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU8PtrU8PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShadedU8PtrU8PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedS16PtrS16PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShadedS16PtrS16PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS16PtrS16PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShadedS16PtrS16PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedU16PtrU16PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShadedU16PtrU16PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU16PtrU16PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShadedU16PtrU16PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedS32PtrS32PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShadedS32PtrS32PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS32PtrS32PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShadedS32PtrS32PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedU32PtrU32PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShadedU32PtrU32PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU32PtrU32PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShadedU32PtrU32PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedS64PtrS64PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShadedS64PtrS64PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS64PtrS64PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShadedS64PtrS64PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedU64PtrU64PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShadedU64PtrU64PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU64PtrU64PtrIntInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShadedU64PtrU64PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
 function M.ImPlot_PlotShadedFloatPtrFloatPtrFloatPtr(label_id,xs,ys1,ys2,count,offset,stride)
     offset = offset or 0
@@ -3309,26 +3310,26 @@ function M.ImPlot_PlotShadedU64PtrU64PtrU64Ptr(label_id,xs,ys1,ys2,count,offset,
     return lib.ImPlot_PlotShadedU64PtrU64PtrU64Ptr(label_id,xs,ys1,ys2,count,offset,stride)
 end
 function M.ImPlot_PlotShaded(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedFloatPtrIntdoubledoubleInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadeddoublePtrIntdoubledoubleInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedS8PtrIntdoubledoubleInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedU8PtrIntdoubledoubleInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedS16PtrIntdoubledoubleInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedU16PtrIntdoubledoubleInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedS32PtrIntdoubledoubleInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedU32PtrIntdoubledoubleInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedS64PtrIntdoubledoubleInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedU64PtrIntdoubledoubleInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedFloatPtrFloatPtrIntInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadeddoublePtrdoublePtrIntInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedS8PtrS8PtrIntInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedU8PtrU8PtrIntInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedS16PtrS16PtrIntInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedU16PtrU16PtrIntInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedS32PtrS32PtrIntInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedU32PtrU32PtrIntInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedS64PtrS64PtrIntInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedU64PtrU64PtrIntInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedFloatPtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadeddoublePtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedS8PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedU8PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedS16PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedU16PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedS32PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedU32PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedS64PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedU64PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedFloatPtrFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadeddoublePtrdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedS8PtrS8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedU8PtrU8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedS16PtrS16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedU16PtrU16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedS32PtrS32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedU32PtrU32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedS64PtrS64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedU64PtrU64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
     if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) then return M.ImPlot_PlotShadedFloatPtrFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
     if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) then return M.ImPlot_PlotShadeddoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
     if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('const ImS8*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') then return M.ImPlot_PlotShadedS8PtrS8PtrS8Ptr(a1,a2,a3,a4,a5,a6,a7) end
@@ -5821,41 +5822,41 @@ function M.Value(a1,a2,a3) -- generic version
     print(a1,a2,a3)
     error'M.Value could not find overloaded'
 end
-function M.gizmo3DquatPtrFloatInt(noname1,noname2,noname3,noname4)
+function M.gizmo3DquatPtrFloat(noname1,noname2,noname3,noname4)
     noname4 = noname4 or 257
-    return lib.iggizmo3DquatPtrFloatInt(noname1,noname2,noname3,noname4)
+    return lib.iggizmo3DquatPtrFloat(noname1,noname2,noname3,noname4)
 end
 function M.gizmo3Dvec4Ptr(noname1,noname2,noname3,noname4)
     noname4 = noname4 or 257
     return lib.iggizmo3Dvec4Ptr(noname1,noname2,noname3,noname4)
 end
-function M.gizmo3Dvec3PtrFloatInt(noname1,noname2,noname3,noname4)
+function M.gizmo3Dvec3PtrFloat(noname1,noname2,noname3,noname4)
     noname4 = noname4 or 2
-    return lib.iggizmo3Dvec3PtrFloatInt(noname1,noname2,noname3,noname4)
+    return lib.iggizmo3Dvec3PtrFloat(noname1,noname2,noname3,noname4)
 end
-function M.gizmo3DquatPtrquatPtrFloatInt(noname1,noname2,noname3,noname4,noname5)
+function M.gizmo3DquatPtrquatPtr(noname1,noname2,noname3,noname4,noname5)
     noname5 = noname5 or 264
-    return lib.iggizmo3DquatPtrquatPtrFloatInt(noname1,noname2,noname3,noname4,noname5)
+    return lib.iggizmo3DquatPtrquatPtr(noname1,noname2,noname3,noname4,noname5)
 end
-function M.gizmo3DquatPtrvec4PtrFloatInt(noname1,noname2,noname3,noname4,noname5)
+function M.gizmo3DquatPtrvec4Ptr(noname1,noname2,noname3,noname4,noname5)
     noname5 = noname5 or 264
-    return lib.iggizmo3DquatPtrvec4PtrFloatInt(noname1,noname2,noname3,noname4,noname5)
+    return lib.iggizmo3DquatPtrvec4Ptr(noname1,noname2,noname3,noname4,noname5)
 end
-function M.gizmo3DquatPtrvec3PtrFloatInt(noname1,noname2,noname3,noname4,noname5)
+function M.gizmo3DquatPtrvec3Ptr(noname1,noname2,noname3,noname4,noname5)
     noname5 = noname5 or 264
-    return lib.iggizmo3DquatPtrvec3PtrFloatInt(noname1,noname2,noname3,noname4,noname5)
+    return lib.iggizmo3DquatPtrvec3Ptr(noname1,noname2,noname3,noname4,noname5)
 end
-function M.gizmo3Dvec3PtrquatPtrFloatInt(noname1,noname2,noname3,noname4,noname5)
+function M.gizmo3Dvec3PtrquatPtrFloat(noname1,noname2,noname3,noname4,noname5)
     noname5 = noname5 or 257
-    return lib.iggizmo3Dvec3PtrquatPtrFloatInt(noname1,noname2,noname3,noname4,noname5)
+    return lib.iggizmo3Dvec3PtrquatPtrFloat(noname1,noname2,noname3,noname4,noname5)
 end
-function M.gizmo3Dvec3Ptrvec4PtrFloatInt(noname1,noname2,noname3,noname4,noname5)
+function M.gizmo3Dvec3Ptrvec4Ptr(noname1,noname2,noname3,noname4,noname5)
     noname5 = noname5 or 257
-    return lib.iggizmo3Dvec3Ptrvec4PtrFloatInt(noname1,noname2,noname3,noname4,noname5)
+    return lib.iggizmo3Dvec3Ptrvec4Ptr(noname1,noname2,noname3,noname4,noname5)
 end
-function M.gizmo3Dvec3Ptrvec3PtrFloatInt(noname1,noname2,noname3,noname4,noname5)
+function M.gizmo3Dvec3Ptrvec3Ptr(noname1,noname2,noname3,noname4,noname5)
     noname5 = noname5 or 2
-    return lib.iggizmo3Dvec3Ptrvec3PtrFloatInt(noname1,noname2,noname3,noname4,noname5)
+    return lib.iggizmo3Dvec3Ptrvec3Ptr(noname1,noname2,noname3,noname4,noname5)
 end
 function M.gizmo3Dvec3PtrquatPtrquatPtr(noname1,noname2,noname3,noname4,noname5,noname6)
     noname6 = noname6 or 264
@@ -5870,15 +5871,15 @@ function M.gizmo3Dvec3PtrquatPtrvec3Ptr(noname1,noname2,noname3,noname4,noname5,
     return lib.iggizmo3Dvec3PtrquatPtrvec3Ptr(noname1,noname2,noname3,noname4,noname5,noname6)
 end
 function M.gizmo3D(a1,a2,a3,a4,a5,a6) -- generic version
-    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('float',a3) or type(a3)=='number') and ((ffi.istype('const int',a4) or type(a4)=='number') or type(a4)=='nil') and a5==nil then return M.gizmo3DquatPtrFloatInt(a1,a2,a3,a4) end
+    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('float',a3) or type(a3)=='number') and ((ffi.istype('const int',a4) or type(a4)=='number') or type(a4)=='nil') and a5==nil then return M.gizmo3DquatPtrFloat(a1,a2,a3,a4) end
     if (ffi.istype('G3Dvec4*',a2) or ffi.istype('G3Dvec4',a2) or ffi.istype('G3Dvec4[]',a2)) then return M.gizmo3Dvec4Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('float',a3) or type(a3)=='number') and ((ffi.istype('const int',a4) or type(a4)=='number') or type(a4)=='nil') and a5==nil then return M.gizmo3Dvec3PtrFloatInt(a1,a2,a3,a4) end
-    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3DquatPtrquatPtrFloatInt(a1,a2,a3,a4,a5) end
-    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('G3Dvec4*',a3) or ffi.istype('G3Dvec4',a3) or ffi.istype('G3Dvec4[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3DquatPtrvec4PtrFloatInt(a1,a2,a3,a4,a5) end
-    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('G3Dvec3*',a3) or ffi.istype('G3Dvec3',a3) or ffi.istype('G3Dvec3[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3DquatPtrvec3PtrFloatInt(a1,a2,a3,a4,a5) end
-    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3Dvec3PtrquatPtrFloatInt(a1,a2,a3,a4,a5) end
-    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('G3Dvec4*',a3) or ffi.istype('G3Dvec4',a3) or ffi.istype('G3Dvec4[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3Dvec3Ptrvec4PtrFloatInt(a1,a2,a3,a4,a5) end
-    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('G3Dvec3*',a3) or ffi.istype('G3Dvec3',a3) or ffi.istype('G3Dvec3[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3Dvec3Ptrvec3PtrFloatInt(a1,a2,a3,a4,a5) end
+    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('float',a3) or type(a3)=='number') and ((ffi.istype('const int',a4) or type(a4)=='number') or type(a4)=='nil') and a5==nil then return M.gizmo3Dvec3PtrFloat(a1,a2,a3,a4) end
+    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3DquatPtrquatPtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('G3Dvec4*',a3) or ffi.istype('G3Dvec4',a3) or ffi.istype('G3Dvec4[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3DquatPtrvec4Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('G3Dvec3*',a3) or ffi.istype('G3Dvec3',a3) or ffi.istype('G3Dvec3[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3DquatPtrvec3Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3Dvec3PtrquatPtrFloat(a1,a2,a3,a4,a5) end
+    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('G3Dvec4*',a3) or ffi.istype('G3Dvec4',a3) or ffi.istype('G3Dvec4[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3Dvec3Ptrvec4Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('G3Dvec3*',a3) or ffi.istype('G3Dvec3',a3) or ffi.istype('G3Dvec3[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3Dvec3Ptrvec3Ptr(a1,a2,a3,a4,a5) end
     if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('quat*',a4) or ffi.istype('quat',a4) or ffi.istype('quat[]',a4)) then return M.gizmo3Dvec3PtrquatPtrquatPtr(a1,a2,a3,a4,a5,a6) end
     if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('G3Dvec4*',a4) or ffi.istype('G3Dvec4',a4) or ffi.istype('G3Dvec4[]',a4)) then return M.gizmo3Dvec3PtrquatPtrvec4Ptr(a1,a2,a3,a4,a5,a6) end
     if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('G3Dvec3*',a4) or ffi.istype('G3Dvec3',a4) or ffi.istype('G3Dvec3[]',a4)) then return M.gizmo3Dvec3PtrquatPtrvec3Ptr(a1,a2,a3,a4,a5,a6) end
