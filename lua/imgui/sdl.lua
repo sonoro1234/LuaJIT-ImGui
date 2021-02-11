@@ -627,6 +627,7 @@ ImDrawDataBuilder.__index = ImDrawDataBuilder
 ImDrawDataBuilder.Clear = lib.ImDrawDataBuilder_Clear
 ImDrawDataBuilder.ClearFreeMemory = lib.ImDrawDataBuilder_ClearFreeMemory
 ImDrawDataBuilder.FlattenIntoSingleLayer = lib.ImDrawDataBuilder_FlattenIntoSingleLayer
+ImDrawDataBuilder.GetDrawListCount = lib.ImDrawDataBuilder_GetDrawListCount
 M.ImDrawDataBuilder = ffi.metatype("ImDrawDataBuilder",ImDrawDataBuilder)
 --------------------------ImDrawList----------------------------
 local ImDrawList= {}
@@ -1434,14 +1435,9 @@ function ImGuiViewport:GetCenter()
     lib.ImGuiViewport_GetCenter(nonUDT_out,self)
     return nonUDT_out
 end
-function ImGuiViewport:GetWorkPos()
+function ImGuiViewport:GetWorkCenter()
     local nonUDT_out = ffi.new("ImVec2")
-    lib.ImGuiViewport_GetWorkPos(nonUDT_out,self)
-    return nonUDT_out
-end
-function ImGuiViewport:GetWorkSize()
-    local nonUDT_out = ffi.new("ImVec2")
-    lib.ImGuiViewport_GetWorkSize(nonUDT_out,self)
+    lib.ImGuiViewport_GetWorkCenter(nonUDT_out,self)
     return nonUDT_out
 end
 function ImGuiViewport.__new(ctype)
@@ -1467,6 +1463,7 @@ function ImGuiViewportP.__new(ctype)
     local ptr = lib.ImGuiViewportP_ImGuiViewportP()
     return ffi.gc(ptr,lib.ImGuiViewportP_destroy)
 end
+ImGuiViewportP.UpdateWorkRect = lib.ImGuiViewportP_UpdateWorkRect
 M.ImGuiViewportP = ffi.metatype("ImGuiViewportP",ImGuiViewportP)
 --------------------------ImGuiWindow----------------------------
 local ImGuiWindow= {}
@@ -3903,6 +3900,10 @@ end
 M.BeginDragDropTarget = lib.igBeginDragDropTarget
 M.BeginDragDropTargetCustom = lib.igBeginDragDropTargetCustom
 M.BeginGroup = lib.igBeginGroup
+function M.BeginListBox(label,size)
+    size = size or ImVec2(0,0)
+    return lib.igBeginListBox(label,size)
+end
 M.BeginMainMenuBar = lib.igBeginMainMenuBar
 function M.BeginMenu(label,enabled)
     if enabled == nil then enabled = true end
@@ -4129,6 +4130,7 @@ M.DebugNodeViewport = lib.igDebugNodeViewport
 M.DebugNodeWindow = lib.igDebugNodeWindow
 M.DebugNodeWindowSettings = lib.igDebugNodeWindowSettings
 M.DebugNodeWindowsList = lib.igDebugNodeWindowsList
+M.DebugRenderViewportThumbnail = lib.igDebugRenderViewportThumbnail
 M.DebugStartItemPicker = lib.igDebugStartItemPicker
 function M.DestroyContext(ctx)
     ctx = ctx or nil
@@ -4291,6 +4293,7 @@ M.EndDragDropSource = lib.igEndDragDropSource
 M.EndDragDropTarget = lib.igEndDragDropTarget
 M.EndFrame = lib.igEndFrame
 M.EndGroup = lib.igEndGroup
+M.EndListBox = lib.igEndListBox
 M.EndMainMenuBar = lib.igEndMainMenuBar
 M.EndMenu = lib.igEndMenu
 M.EndMenuBar = lib.igEndMenuBar
@@ -4616,9 +4619,10 @@ M.ImFontAtlasBuildInit = lib.igImFontAtlasBuildInit
 M.ImFontAtlasBuildMultiplyCalcLookupTable = lib.igImFontAtlasBuildMultiplyCalcLookupTable
 M.ImFontAtlasBuildMultiplyRectAlpha8 = lib.igImFontAtlasBuildMultiplyRectAlpha8
 M.ImFontAtlasBuildPackCustomRects = lib.igImFontAtlasBuildPackCustomRects
-M.ImFontAtlasBuildRender1bppRectFromString = lib.igImFontAtlasBuildRender1bppRectFromString
+M.ImFontAtlasBuildRender32bppRectFromString = lib.igImFontAtlasBuildRender32bppRectFromString
+M.ImFontAtlasBuildRender8bppRectFromString = lib.igImFontAtlasBuildRender8bppRectFromString
 M.ImFontAtlasBuildSetupFont = lib.igImFontAtlasBuildSetupFont
-M.ImFontAtlasBuildWithStbTruetype = lib.igImFontAtlasBuildWithStbTruetype
+M.ImFontAtlasGetBuilderForStbTruetype = lib.igImFontAtlasGetBuilderForStbTruetype
 M.ImFormatString = lib.igImFormatString
 M.ImFormatStringV = lib.igImFormatStringV
 M.ImGetDirQuadrantFromDelta = lib.igImGetDirQuadrantFromDelta
@@ -4996,21 +5000,6 @@ function M.ListBox(a1,a2,a3,a4,a5,a6) -- generic version
     print(a1,a2,a3,a4,a5,a6)
     error'M.ListBox could not find overloaded'
 end
-M.ListBoxFooter = lib.igListBoxFooter
-function M.ListBoxHeaderVec2(label,size)
-    size = size or ImVec2(0,0)
-    return lib.igListBoxHeaderVec2(label,size)
-end
-function M.ListBoxHeaderInt(label,items_count,height_in_items)
-    height_in_items = height_in_items or -1
-    return lib.igListBoxHeaderInt(label,items_count,height_in_items)
-end
-function M.ListBoxHeader(a1,a2,a3) -- generic version
-    if (ffi.istype('const ImVec2',a2) or type(a2)=='nil') then return M.ListBoxHeaderVec2(a1,a2) end
-    if (ffi.istype('int',a2) or type(a2)=='number') then return M.ListBoxHeaderInt(a1,a2,a3) end
-    print(a1,a2,a3)
-    error'M.ListBoxHeader could not find overloaded'
-end
 M.LoadIniSettingsFromDisk = lib.igLoadIniSettingsFromDisk
 function M.LoadIniSettingsFromMemory(ini_data,ini_size)
     ini_size = ini_size or 0
@@ -5023,6 +5012,7 @@ function M.LogRenderedText(ref_pos,text,text_end)
     text_end = text_end or nil
     return lib.igLogRenderedText(ref_pos,text,text_end)
 end
+M.LogSetNextTextDecoration = lib.igLogSetNextTextDecoration
 M.LogText = lib.igLogText
 function M.LogToBuffer(auto_open_depth)
     auto_open_depth = auto_open_depth or -1
@@ -5210,6 +5200,7 @@ function M.RadioButton(a1,a2,a3) -- generic version
     print(a1,a2,a3)
     error'M.RadioButton could not find overloaded'
 end
+M.RemoveContextHook = lib.igRemoveContextHook
 M.Render = lib.igRender
 function M.RenderArrow(draw_list,pos,col,dir,scale)
     scale = scale or 1.0
@@ -5677,6 +5668,7 @@ function M.TableSetBgColor(target,color,column_n)
     column_n = column_n or -1
     return lib.igTableSetBgColor(target,color,column_n)
 end
+M.TableSetColumnEnabled = lib.igTableSetColumnEnabled
 M.TableSetColumnIndex = lib.igTableSetColumnIndex
 M.TableSetColumnSortDirection = lib.igTableSetColumnSortDirection
 M.TableSetColumnWidth = lib.igTableSetColumnWidth
