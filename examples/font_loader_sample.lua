@@ -3,6 +3,8 @@
 local win = igwin:GLFW(800,400, "font loader")
 local ffi = require"ffi"
 
+local use_freetype = ffi.new("bool[?]",1)
+
 local function codepoint_to_utf8(c)
     if     c < 128 then
         return                                                          string.char(c)
@@ -37,11 +39,12 @@ local ITcb = ffi.cast("ImGuiInputTextCallback", function(data)
   return 0
 end)
 
+local has_freetype = pcall(function() return win.ig.lib.ImGuiFreeType_BuildFontAtlas end) or pcall(function() return win.ig.lib.ImGuiFreeType_GetBuilderForFreeType end)
+print("has_freetype",has_freetype)
+
 --this will run outside of imgui NewFrame-Render
 local function ChangeFont(font,fontsize)
 	local ig = win.ig
-	local has_freetype = pcall(function() return ig.lib.ImGuiFreeType_BuildFontAtlas end)
-	print("has_freetype",has_freetype)
 	
 	local FontsAt = ig.GetIO().Fonts
 	------destroy old
@@ -59,7 +62,12 @@ local function ChangeFont(font,fontsize)
 	fnt_cfg.GlyphMinAdvanceX = fontsize -- 13.0
 	fnt_cfg.GlyphMaxAdvanceX = fontsize --13.0
 	fnt_cfg.OversampleH = 1
-	if has_freetype then fnt_cfg.RasterizerFlags = ffi.C.MonoHinting end
+	
+	if ffi.string(ig.GetVersion()) >= "1.81" then
+		fnt_cfg.FontBuilderFlags = use_freetype[0] and ffi.C.ImGuiFreeTypeBuilderFlags_MonoHinting or 0
+	else
+		fnt_cfg.RasterizerFlags = use_freetype[0] and ffi.C.MonoHinting or 0
+	end
 	
 	--maximal range allowed with ImWchar16
 	local ranges = ffi.new("ImWchar[3]",{0x0001,0xFFFF,0})
@@ -67,12 +75,20 @@ local function ChangeFont(font,fontsize)
 	local theFONT= FontsAt:AddFontFromFileTTF(font, fontsize, fnt_cfg,ranges)
 	if (theFONT == nil) then return false end
 	
+	if use_freetype[0] then
+		FontsAt.FontBuilderIO = ig.ImGuiFreeType_GetBuilderForFreeType();
+	else
+		FontsAt.FontBuilderIO = ig.ImFontAtlasGetBuilderForStbTruetype()
+	end
+	
+	--[[
 	--regenerate 
 	if has_freetype then
 		ig.ImGuiFreeType_BuildFontAtlas(FontsAt,ffi.C.MonoHinting)
 	else
 		--FontsAt:Build() --or will be called by ImGui
 	end
+	--]]
 	ig.lib.ImGui_ImplOpenGL3_DestroyFontsTexture()
 	ig.lib.ImGui_ImplOpenGL3_CreateFontsTexture()
 	--set as default
@@ -99,12 +115,14 @@ local fontsize = ffi.new("float[1]",13)
 local fontscale = ffi.new("float[1]",1)
 local fontcps 
 local init_dir = jit.os=="Windows" and [[c:/windows/Fonts]] or ""
+local font_file
 --init_dir = [[c:/anima/lua/anima/fonts]]
 local fB = gui.FileBrowser(nil,{curr_dir=init_dir,pattern=[[%.ttf$]]},function(f)
+	font_file = f
 	--this will be executed before NewFrame
 	win.preimgui = function()
 		fontcps = nil
-		if ChangeFont(f,fontsize[0]) then
+		if ChangeFont(font_file,fontsize[0]) then
 			fontcps = GetVisibleCP(win.ig.GetIO().Fonts.Fonts.Data[1])
 		end
 		win.preimgui=nil
@@ -113,6 +131,19 @@ end)
 
 function win:draw(ig)
 	if ig.Begin"Fonts" then
+		if has_freetype then
+			if ig.Checkbox("use freetype",use_freetype) then
+				win.preimgui = function()
+					if font_file then
+						fontcps = nil
+						if ChangeFont(font_file,fontsize[0]) then
+							fontcps = GetVisibleCP(win.ig.GetIO().Fonts.Fonts.Data[1])
+						end
+					end
+					win.preimgui=nil
+				end
+			end
+		end
 		if ig.Button("Load") then
 			fB.open()
 		end
