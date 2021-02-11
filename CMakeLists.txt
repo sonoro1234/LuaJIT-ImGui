@@ -46,6 +46,7 @@ endif()
 set(IMGUI_SOURCES_glfw)
 set(IMGUI_SOURCES_sdl)
 set(IMGUI_LIBRARIES )
+set(IMGUI_ft_LIBRARIES )
 
 if (WIN32)
     add_definitions("-DIMGUI_IMPL_API=extern \"C\" __declspec\(dllexport\)")
@@ -66,6 +67,7 @@ option(IMPL_EXTRAS "knob and curve" ON)
 
 if(IMGUI_FREETYPE)
 	FIND_PACKAGE(freetype REQUIRED PATHS ${FREETYPE_PATH})
+	list(APPEND IMGUI_ft_LIBRARIES freetype)
 	list(APPEND IMGUI_LIBRARIES freetype)
 	list(APPEND IMGUI_SOURCES ./cimgui/imgui/misc/freetype/imgui_freetype.cpp)
 	add_definitions("-DCIMGUI_FREETYPE=1")
@@ -97,6 +99,7 @@ if(IMPL_EXTRAS)
 endif(IMPL_EXTRAS)
 
 add_library(cimgui_base OBJECT ${IMGUI_SOURCES})
+target_link_libraries(cimgui_base PUBLIC ${IMGUI_ft_LIBRARIES})
 
 if(UNIX)
 set_property(TARGET cimgui_base PROPERTY POSITION_INDEPENDENT_CODE ON)
