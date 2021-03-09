@@ -4160,12 +4160,13 @@ void ImPlot_ShowUserGuide(void);
 void ImPlot_ShowMetricsWindow(                                        _Bool                                            * p_popen);
 void ImPlot_SetImGuiContext(ImGuiContext* ctx);
 void ImPlot_ShowDemoWindow(                                     _Bool                                         * p_open);
-void ImPlot_PlotLineG(const char* label_id,ImPlotPoint*(*getter)(void* data,int idx),void* data,int count,int offset);
-void ImPlot_PlotScatterG(const char* label_id, ImPlotPoint* (*getter)(void* data, int idx), void* data, int count, int offset);
-void ImPlot_PlotShadedG(const char* label_id, ImPlotPoint* (*getter1)(void* data, int idx), void* data1, ImPlotPoint* (*getter2)(void* data, int idx), void* data2, int count, int offset);
-void ImPlot_PlotBarsG(const char* label_id, ImPlotPoint* (*getter)(void* data, int idx), void* data, int count, double width, int offset);
-void ImPlot_PlotBarsHG(const char* label_id, ImPlotPoint* (*getter)(void* data, int idx), void* data, int count, double height, int offset);
-void ImPlot_PlotDigitalG(const char* label_id, ImPlotPoint* (*getter)(void* data, int idx), void* data, int count, int offset);
+typedef void *(*ImPlotPoint_getter)(void* data, int idx, ImPlotPoint *point);
+void ImPlot_PlotLineG(const char* label_id,ImPlotPoint_getter getter,void* data,int count,int offset);
+void ImPlot_PlotScatterG(const char* label_id, ImPlotPoint_getter getter, void* data, int count, int offset);
+void ImPlot_PlotShadedG(const char* label_id, ImPlotPoint_getter getter1, void* data1, ImPlotPoint_getter getter2, void* data2, int count, int offset);
+void ImPlot_PlotBarsG(const char* label_id, ImPlotPoint_getter getter, void* data, int count, double width, int offset);
+void ImPlot_PlotBarsHG(const char* label_id, ImPlotPoint_getter getter, void* data, int count, double height, int offset);
+void ImPlot_PlotDigitalG(const char* label_id, ImPlotPoint_getter getter, void* data, int count, int offset);
 typedef enum {
       TRANSLATE_X = (1u << 0),
       TRANSLATE_Y = (1u << 1),

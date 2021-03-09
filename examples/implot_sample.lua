@@ -12,10 +12,8 @@ for i = 0,10 do
     ys2[i] = xs2[i] * xs2[i];
 end
 
-local gettercb = ffi.cast("ImPlotPoint *(*)(void* data, int idx)", function(data,idx)
-    local ipp = ffi.new("ImPlotPoint[1]")
+local gettercb = ffi.cast("ImPlotPoint_getter", function(data,idx,ipp)
     ipp[0].x = idx*0.001; ipp[0].y=0.5 + 0.5 * math.sin(50 * ipp[0].x);
-    return ipp
 end)
 function win:draw(ig)
     ig.ImPlot_ShowDemoWindow()
