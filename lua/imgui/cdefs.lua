@@ -5014,16 +5014,16 @@ typedef enum {
 }StyleColor;
 struct CanvasStyle
 {
-        float curve_thickness;
-        float connection_indent;
+        float CurveThickness;
+        float ConnectionIndent;
 };
 struct CanvasState
 {
-    float zoom;
-    ImVec2 offset;
-    ImColor colors[ColMax];
-    CanvasStyle style;
-    _CanvasStateImpl* _impl;
+    float Zoom;
+    ImVec2 Offset;
+    ImColor Colors[ColMax];
+    CanvasStyle Style;
+    _CanvasStateImpl* _Impl;
 };
 struct SlotInfo
 {
