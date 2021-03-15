@@ -4831,6 +4831,8 @@ typedef struct LinkDetachWithModifierClick LinkDetachWithModifierClick;
 typedef struct EmulateThreeButtonMouse EmulateThreeButtonMouse;
 typedef struct IO IO;
 typedef struct ImVec2 ImVec2;
+typedef struct ImGuiContext ImGuiContext;
+struct ImGuiContext;
 struct ImVec2;
 struct EditorContext;
 typedef enum {
@@ -4935,6 +4937,7 @@ void imnodes_EditorContextResetPanning(const ImVec2 pos);
 void imnodes_EditorContextMoveToNode(const int node_id);
 void imnodes_Initialize(void);
 void imnodes_Shutdown(void);
+void imnodes_SetImGuiContext(ImGuiContext* ctx);
 IO* imnodes_GetIO(void);
 Style* imnodes_GetStyle(void);
 void imnodes_StyleColorsDark(void);

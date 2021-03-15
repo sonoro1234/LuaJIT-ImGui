@@ -6576,6 +6576,7 @@ function M.imnodes_SaveEditorStateToIniString(editor,data_size)
     data_size = data_size or nil
     return lib.imnodes_SaveEditorStateToIniString(editor,data_size)
 end
+M.imnodes_SetImGuiContext = lib.imnodes_SetImGuiContext
 M.imnodes_SetNodeDraggable = lib.imnodes_SetNodeDraggable
 M.imnodes_SetNodeEditorSpacePos = lib.imnodes_SetNodeEditorSpacePos
 M.imnodes_SetNodeGridSpacePos = lib.imnodes_SetNodeGridSpacePos
