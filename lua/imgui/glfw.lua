@@ -557,6 +557,16 @@ ImBitVector.Create = lib.ImBitVector_Create
 ImBitVector.SetBit = lib.ImBitVector_SetBit
 ImBitVector.TestBit = lib.ImBitVector_TestBit
 M.ImBitVector = ffi.metatype("ImBitVector",ImBitVector)
+--------------------------ImBufferWriter----------------------------
+local ImBufferWriter= {}
+ImBufferWriter.__index = ImBufferWriter
+function ImBufferWriter.__new(ctype,buffer,size)
+    local ptr = lib.ImBufferWriter_ImBufferWriter(buffer,size)
+    return ffi.gc(ptr,lib.ImBufferWriter_destroy)
+end
+ImBufferWriter.Write = lib.ImBufferWriter_Write
+ImBufferWriter.WriteV = lib.ImBufferWriter_WriteV
+M.ImBufferWriter = ffi.metatype("ImBufferWriter",ImBufferWriter)
 --------------------------ImColor----------------------------
 local ImColor= {}
 ImColor.__index = ImColor
@@ -1535,6 +1545,65 @@ function ImGuiWindowSettings.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiWindowSettings_destroy)
 end
 M.ImGuiWindowSettings = ffi.metatype("ImGuiWindowSettings",ImGuiWindowSettings)
+--------------------------ImPlotAnnotationCollection----------------------------
+local ImPlotAnnotationCollection= {}
+ImPlotAnnotationCollection.__index = ImPlotAnnotationCollection
+ImPlotAnnotationCollection.Append = lib.ImPlotAnnotationCollection_Append
+ImPlotAnnotationCollection.AppendV = lib.ImPlotAnnotationCollection_AppendV
+ImPlotAnnotationCollection.GetText = lib.ImPlotAnnotationCollection_GetText
+function ImPlotAnnotationCollection.__new(ctype)
+    local ptr = lib.ImPlotAnnotationCollection_ImPlotAnnotationCollection()
+    return ffi.gc(ptr,lib.ImPlotAnnotationCollection_destroy)
+end
+ImPlotAnnotationCollection.Reset = lib.ImPlotAnnotationCollection_Reset
+M.ImPlotAnnotationCollection = ffi.metatype("ImPlotAnnotationCollection",ImPlotAnnotationCollection)
+--------------------------ImPlotAxis----------------------------
+local ImPlotAxis= {}
+ImPlotAxis.__index = ImPlotAxis
+ImPlotAxis.Constrain = lib.ImPlotAxis_Constrain
+ImPlotAxis.GetAspect = lib.ImPlotAxis_GetAspect
+function ImPlotAxis.__new(ctype)
+    local ptr = lib.ImPlotAxis_ImPlotAxis()
+    return ffi.gc(ptr,lib.ImPlotAxis_destroy)
+end
+ImPlotAxis.IsAlwaysLocked = lib.ImPlotAxis_IsAlwaysLocked
+ImPlotAxis.IsInverted = lib.ImPlotAxis_IsInverted
+ImPlotAxis.IsLabeled = lib.ImPlotAxis_IsLabeled
+ImPlotAxis.IsLocked = lib.ImPlotAxis_IsLocked
+ImPlotAxis.IsLockedMax = lib.ImPlotAxis_IsLockedMax
+ImPlotAxis.IsLockedMin = lib.ImPlotAxis_IsLockedMin
+ImPlotAxis.IsLog = lib.ImPlotAxis_IsLog
+ImPlotAxis.IsTime = lib.ImPlotAxis_IsTime
+ImPlotAxis.SetAspect = lib.ImPlotAxis_SetAspect
+ImPlotAxis.SetMax = lib.ImPlotAxis_SetMax
+ImPlotAxis.SetMin = lib.ImPlotAxis_SetMin
+ImPlotAxis.SetRangedouble = lib.ImPlotAxis_SetRangedouble
+ImPlotAxis.SetRangePlotRange = lib.ImPlotAxis_SetRangePlotRange
+function ImPlotAxis:SetRange(a2,a3) -- generic version
+    if (ffi.istype('double',a2) or type(a2)=='number') then return self:SetRangedouble(a2,a3) end
+    if ffi.istype('const ImPlotRange',a2) then return self:SetRangePlotRange(a2) end
+    print(a2,a3)
+    error'ImPlotAxis:SetRange could not find overloaded'
+end
+M.ImPlotAxis = ffi.metatype("ImPlotAxis",ImPlotAxis)
+--------------------------ImPlotColormapMod----------------------------
+local ImPlotColormapMod= {}
+ImPlotColormapMod.__index = ImPlotColormapMod
+function ImPlotColormapMod.__new(ctype,colormap,colormap_size)
+    local ptr = lib.ImPlotColormapMod_ImPlotColormapMod(colormap,colormap_size)
+    return ffi.gc(ptr,lib.ImPlotColormapMod_destroy)
+end
+M.ImPlotColormapMod = ffi.metatype("ImPlotColormapMod",ImPlotColormapMod)
+--------------------------ImPlotDateTimeFmt----------------------------
+local ImPlotDateTimeFmt= {}
+ImPlotDateTimeFmt.__index = ImPlotDateTimeFmt
+function ImPlotDateTimeFmt.__new(ctype,date_fmt,time_fmt,use_24_hr_clk,use_iso_8601)
+    if use_24_hr_clk == nil then use_24_hr_clk = false end
+    if use_iso_8601 == nil then use_iso_8601 = false end
+    local ptr = lib.ImPlotDateTimeFmt_ImPlotDateTimeFmt(date_fmt,time_fmt,use_24_hr_clk,use_iso_8601)
+    return ffi.gc(ptr,lib.ImPlotDateTimeFmt_destroy)
+end
+M.ImPlotDateTimeFmt = ffi.metatype("ImPlotDateTimeFmt",ImPlotDateTimeFmt)
 --------------------------ImPlotInputMap----------------------------
 local ImPlotInputMap= {}
 ImPlotInputMap.__index = ImPlotInputMap
@@ -1543,6 +1612,19 @@ function ImPlotInputMap.__new(ctype)
     return ffi.gc(ptr,lib.ImPlotInputMap_destroy)
 end
 M.ImPlotInputMap = ffi.metatype("ImPlotInputMap",ImPlotInputMap)
+--------------------------ImPlotItem----------------------------
+local ImPlotItem= {}
+ImPlotItem.__index = ImPlotItem
+function ImPlotItem.__new(ctype)
+    local ptr = lib.ImPlotItem_ImPlotItem()
+    return ffi.gc(ptr,lib.ImPlotItem_destroy)
+end
+M.ImPlotItem = ffi.metatype("ImPlotItem",ImPlotItem)
+--------------------------ImPlotLegendData----------------------------
+local ImPlotLegendData= {}
+ImPlotLegendData.__index = ImPlotLegendData
+ImPlotLegendData.Reset = lib.ImPlotLegendData_Reset
+M.ImPlotLegendData = ffi.metatype("ImPlotLegendData",ImPlotLegendData)
 --------------------------ImPlotLimits----------------------------
 local ImPlotLimits= {}
 ImPlotLimits.__index = ImPlotLimits
@@ -1555,6 +1637,36 @@ function ImPlotLimits:Contains(a2,a3) -- generic version
     error'ImPlotLimits:Contains could not find overloaded'
 end
 M.ImPlotLimits = ffi.metatype("ImPlotLimits",ImPlotLimits)
+--------------------------ImPlotNextItemData----------------------------
+local ImPlotNextItemData= {}
+ImPlotNextItemData.__index = ImPlotNextItemData
+function ImPlotNextItemData.__new(ctype)
+    local ptr = lib.ImPlotNextItemData_ImPlotNextItemData()
+    return ffi.gc(ptr,lib.ImPlotNextItemData_destroy)
+end
+ImPlotNextItemData.Reset = lib.ImPlotNextItemData_Reset
+M.ImPlotNextItemData = ffi.metatype("ImPlotNextItemData",ImPlotNextItemData)
+--------------------------ImPlotNextPlotData----------------------------
+local ImPlotNextPlotData= {}
+ImPlotNextPlotData.__index = ImPlotNextPlotData
+function ImPlotNextPlotData.__new(ctype)
+    local ptr = lib.ImPlotNextPlotData_ImPlotNextPlotData()
+    return ffi.gc(ptr,lib.ImPlotNextPlotData_destroy)
+end
+ImPlotNextPlotData.Reset = lib.ImPlotNextPlotData_Reset
+M.ImPlotNextPlotData = ffi.metatype("ImPlotNextPlotData",ImPlotNextPlotData)
+--------------------------ImPlotPlot----------------------------
+local ImPlotPlot= {}
+ImPlotPlot.__index = ImPlotPlot
+ImPlotPlot.GetLegendCount = lib.ImPlotPlot_GetLegendCount
+ImPlotPlot.GetLegendItem = lib.ImPlotPlot_GetLegendItem
+ImPlotPlot.GetLegendLabel = lib.ImPlotPlot_GetLegendLabel
+function ImPlotPlot.__new(ctype)
+    local ptr = lib.ImPlotPlot_ImPlotPlot()
+    return ffi.gc(ptr,lib.ImPlotPlot_destroy)
+end
+ImPlotPlot.IsLocked = lib.ImPlotPlot_IsLocked
+M.ImPlotPlot = ffi.metatype("ImPlotPlot",ImPlotPlot)
 --------------------------ImPlotPoint----------------------------
 local ImPlotPoint= {}
 ImPlotPoint.__index = ImPlotPoint
@@ -1578,6 +1690,14 @@ function ImPlotPoint.__new(ctype,a1,a2) -- generic version
     error'ImPlotPoint.__new could not find overloaded'
 end
 M.ImPlotPoint = ffi.metatype("ImPlotPoint",ImPlotPoint)
+--------------------------ImPlotPointError----------------------------
+local ImPlotPointError= {}
+ImPlotPointError.__index = ImPlotPointError
+function ImPlotPointError.__new(ctype,x,y,neg,pos)
+    local ptr = lib.ImPlotPointError_ImPlotPointError(x,y,neg,pos)
+    return ffi.gc(ptr,lib.ImPlotPointError_destroy)
+end
+M.ImPlotPointError = ffi.metatype("ImPlotPointError",ImPlotPointError)
 --------------------------ImPlotRange----------------------------
 local ImPlotRange= {}
 ImPlotRange.__index = ImPlotRange
@@ -1606,6 +1726,54 @@ function ImPlotStyle.__new(ctype)
     return ffi.gc(ptr,lib.ImPlotStyle_destroy)
 end
 M.ImPlotStyle = ffi.metatype("ImPlotStyle",ImPlotStyle)
+--------------------------ImPlotTick----------------------------
+local ImPlotTick= {}
+ImPlotTick.__index = ImPlotTick
+function ImPlotTick.__new(ctype,value,major,show_label)
+    local ptr = lib.ImPlotTick_ImPlotTick(value,major,show_label)
+    return ffi.gc(ptr,lib.ImPlotTick_destroy)
+end
+M.ImPlotTick = ffi.metatype("ImPlotTick",ImPlotTick)
+--------------------------ImPlotTickCollection----------------------------
+local ImPlotTickCollection= {}
+ImPlotTickCollection.__index = ImPlotTickCollection
+ImPlotTickCollection.AppendPlotTick = lib.ImPlotTickCollection_AppendPlotTick
+ImPlotTickCollection.Appenddouble = lib.ImPlotTickCollection_Appenddouble
+function ImPlotTickCollection:Append(a2,a3,a4,a5) -- generic version
+    if ffi.istype('const ImPlotTick',a2) then return self:AppendPlotTick(a2) end
+    if (ffi.istype('double',a2) or type(a2)=='number') then return self:Appenddouble(a2,a3,a4,a5) end
+    print(a2,a3,a4,a5)
+    error'ImPlotTickCollection:Append could not find overloaded'
+end
+ImPlotTickCollection.GetText = lib.ImPlotTickCollection_GetText
+function ImPlotTickCollection.__new(ctype)
+    local ptr = lib.ImPlotTickCollection_ImPlotTickCollection()
+    return ffi.gc(ptr,lib.ImPlotTickCollection_destroy)
+end
+ImPlotTickCollection.Reset = lib.ImPlotTickCollection_Reset
+M.ImPlotTickCollection = ffi.metatype("ImPlotTickCollection",ImPlotTickCollection)
+--------------------------ImPlotTime----------------------------
+local ImPlotTime= {}
+ImPlotTime.__index = ImPlotTime
+M.ImPlotTime_FromDouble = lib.ImPlotTime_FromDouble
+function ImPlotTime.ImPlotTimeNil()
+    local ptr = lib.ImPlotTime_ImPlotTimeNil()
+    return ffi.gc(ptr,lib.ImPlotTime_destroy)
+end
+function ImPlotTime.ImPlotTimetime_t(s,us)
+    if us == nil then us = 0 end
+    local ptr = lib.ImPlotTime_ImPlotTimetime_t(s,us)
+    return ffi.gc(ptr,lib.ImPlotTime_destroy)
+end
+function ImPlotTime.__new(ctype,a1,a2) -- generic version
+    if a1==nil then return ImPlotTime.ImPlotTimeNil() end
+    if (ffi.istype('time_t',a1) or type(a1)=='number') then return ImPlotTime.ImPlotTimetime_t(a1,a2) end
+    print(ctype,a1,a2)
+    error'ImPlotTime.__new could not find overloaded'
+end
+ImPlotTime.RollOver = lib.ImPlotTime_RollOver
+ImPlotTime.ToDouble = lib.ImPlotTime_ToDouble
+M.ImPlotTime = ffi.metatype("ImPlotTime",ImPlotTime)
 --------------------------ImRect----------------------------
 local ImRect= {}
 ImRect.__index = ImRect
@@ -1875,6 +2043,15 @@ M.ImNodes_IsInputSlotKind = lib.ImNodes_IsInputSlotKind
 M.ImNodes_IsOutputSlotKind = lib.ImNodes_IsOutputSlotKind
 M.ImNodes_IsSlotCurveHovered = lib.ImNodes_IsSlotCurveHovered
 M.ImNodes_OutputSlotKind = lib.ImNodes_OutputSlotKind
+function M.ImPlot_AddTextVertical(DrawList,pos,col,text_begin,text_end)
+    text_end = text_end or nil
+    return lib.ImPlot_AddTextVertical(DrawList,pos,col,text_begin,text_end)
+end
+M.ImPlot_AddTicksCustom = lib.ImPlot_AddTicksCustom
+M.ImPlot_AddTicksDefault = lib.ImPlot_AddTicksDefault
+M.ImPlot_AddTicksLogarithmic = lib.ImPlot_AddTicksLogarithmic
+M.ImPlot_AddTicksTime = lib.ImPlot_AddTicksTime
+M.ImPlot_AddTime = lib.ImPlot_AddTime
 M.ImPlot_AnnotateStr = lib.ImPlot_AnnotateStr
 M.ImPlot_AnnotateVec4 = lib.ImPlot_AnnotateVec4
 function M.ImPlot_Annotate(a1,a2,a3,a4,...) -- generic version
@@ -1907,25 +2084,74 @@ function M.ImPlot_AnnotateV(a1,a2,a3,a4,a5,a6) -- generic version
     print(a1,a2,a3,a4,a5,a6)
     error'M.ImPlot_AnnotateV could not find overloaded'
 end
-function M.ImPlot_BeginLegendDragDropSource(label_id,flags)
+function M.ImPlot_BeginDragDropSource(key_mods,flags)
     flags = flags or 0
-    return lib.ImPlot_BeginLegendDragDropSource(label_id,flags)
+    key_mods = key_mods or 1
+    return lib.ImPlot_BeginDragDropSource(key_mods,flags)
+end
+function M.ImPlot_BeginDragDropSourceItem(label_id,flags)
+    flags = flags or 0
+    return lib.ImPlot_BeginDragDropSourceItem(label_id,flags)
+end
+function M.ImPlot_BeginDragDropSourceX(key_mods,flags)
+    flags = flags or 0
+    key_mods = key_mods or 1
+    return lib.ImPlot_BeginDragDropSourceX(key_mods,flags)
+end
+function M.ImPlot_BeginDragDropSourceY(axis,key_mods,flags)
+    axis = axis or 0
+    flags = flags or 0
+    key_mods = key_mods or 1
+    return lib.ImPlot_BeginDragDropSourceY(axis,key_mods,flags)
+end
+M.ImPlot_BeginDragDropTarget = lib.ImPlot_BeginDragDropTarget
+M.ImPlot_BeginDragDropTargetLegend = lib.ImPlot_BeginDragDropTargetLegend
+M.ImPlot_BeginDragDropTargetX = lib.ImPlot_BeginDragDropTargetX
+function M.ImPlot_BeginDragDropTargetY(axis)
+    axis = axis or 0
+    return lib.ImPlot_BeginDragDropTargetY(axis)
+end
+function M.ImPlot_BeginItem(label_id,recolor_from)
+    recolor_from = recolor_from or -1
+    return lib.ImPlot_BeginItem(label_id,recolor_from)
 end
 function M.ImPlot_BeginLegendPopup(label_id,mouse_button)
     mouse_button = mouse_button or 1
     return lib.ImPlot_BeginLegendPopup(label_id,mouse_button)
 end
-function M.ImPlot_BeginPlot(title_id,x_label,y_label,size,flags,x_flags,y_flags,y2_flags,y3_flags)
+function M.ImPlot_BeginPlot(title_id,x_label,y_label,size,flags,x_flags,y_flags,y2_flags,y3_flags,y2_label,y3_label)
     flags = flags or 0
     size = size or ImVec2(-1,0)
     x_flags = x_flags or 0
     x_label = x_label or nil
-    y2_flags = y2_flags or 1
-    y3_flags = y3_flags or 1
+    y2_flags = y2_flags or 2
+    y2_label = y2_label or nil
+    y3_flags = y3_flags or 2
+    y3_label = y3_label or nil
     y_flags = y_flags or 0
     y_label = y_label or nil
-    return lib.ImPlot_BeginPlot(title_id,x_label,y_label,size,flags,x_flags,y_flags,y2_flags,y3_flags)
+    return lib.ImPlot_BeginPlot(title_id,x_label,y_label,size,flags,x_flags,y_flags,y2_flags,y3_flags,y2_label,y3_label)
 end
+M.ImPlot_BustItemCache = lib.ImPlot_BustItemCache
+M.ImPlot_BustPlotCache = lib.ImPlot_BustPlotCache
+function M.ImPlot_CalcLegendSize(plot,pad,spacing,orientation)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.ImPlot_CalcLegendSize(nonUDT_out,plot,pad,spacing,orientation)
+    return nonUDT_out
+end
+M.ImPlot_CalcTextColor = lib.ImPlot_CalcTextColor
+function M.ImPlot_CalcTextSizeVertical(text)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.ImPlot_CalcTextSizeVertical(nonUDT_out,text)
+    return nonUDT_out
+end
+M.ImPlot_CeilTime = lib.ImPlot_CeilTime
+function M.ImPlot_ClampLabelPos(pos,size,Min,Max)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.ImPlot_ClampLabelPos(nonUDT_out,pos,size,Min,Max)
+    return nonUDT_out
+end
+M.ImPlot_CombineDateTime = lib.ImPlot_CombineDateTime
 M.ImPlot_CreateContext = lib.ImPlot_CreateContext
 function M.ImPlot_DestroyContext(ctx)
     ctx = ctx or nil
@@ -1949,9 +2175,35 @@ function M.ImPlot_DragPoint(id,x,y,show_label,col,radius)
     if show_label == nil then show_label = true end
     return lib.ImPlot_DragPoint(id,x,y,show_label,col,radius)
 end
-M.ImPlot_EndLegendDragDropSource = lib.ImPlot_EndLegendDragDropSource
+M.ImPlot_EndDragDropSource = lib.ImPlot_EndDragDropSource
+M.ImPlot_EndDragDropTarget = lib.ImPlot_EndDragDropTarget
+M.ImPlot_EndItem = lib.ImPlot_EndItem
 M.ImPlot_EndLegendPopup = lib.ImPlot_EndLegendPopup
 M.ImPlot_EndPlot = lib.ImPlot_EndPlot
+M.ImPlot_FillRangeVector_FloatPtr = lib.ImPlot_FillRangeVector_FloatPtr
+M.ImPlot_FillRangeVector_doublePtr = lib.ImPlot_FillRangeVector_doublePtr
+M.ImPlot_FillRangeVector_S8Ptr = lib.ImPlot_FillRangeVector_S8Ptr
+M.ImPlot_FillRangeVector_U8Ptr = lib.ImPlot_FillRangeVector_U8Ptr
+M.ImPlot_FillRangeVector_S16Ptr = lib.ImPlot_FillRangeVector_S16Ptr
+M.ImPlot_FillRangeVector_U16Ptr = lib.ImPlot_FillRangeVector_U16Ptr
+M.ImPlot_FillRangeVector_S32Ptr = lib.ImPlot_FillRangeVector_S32Ptr
+M.ImPlot_FillRangeVector_U32Ptr = lib.ImPlot_FillRangeVector_U32Ptr
+M.ImPlot_FillRangeVector_S64Ptr = lib.ImPlot_FillRangeVector_S64Ptr
+M.ImPlot_FillRangeVector_U64Ptr = lib.ImPlot_FillRangeVector_U64Ptr
+function M.ImPlot_FillRange(a1,a2,a3,a4) -- generic version
+    if (ffi.istype('ImVector_float*',a1) or ffi.istype('ImVector_float',a1) or ffi.istype('ImVector_float[]',a1)) then return M.ImPlot_FillRangeVector_FloatPtr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_double*',a1) or ffi.istype('ImVector_double',a1) or ffi.istype('ImVector_double[]',a1)) then return M.ImPlot_FillRangeVector_doublePtr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImS8*',a1) or ffi.istype('ImVector_ImS8',a1) or ffi.istype('ImVector_ImS8[]',a1)) then return M.ImPlot_FillRangeVector_S8Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImU8*',a1) or ffi.istype('ImVector_ImU8',a1) or ffi.istype('ImVector_ImU8[]',a1)) then return M.ImPlot_FillRangeVector_U8Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImS16*',a1) or ffi.istype('ImVector_ImS16',a1) or ffi.istype('ImVector_ImS16[]',a1)) then return M.ImPlot_FillRangeVector_S16Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImU16*',a1) or ffi.istype('ImVector_ImU16',a1) or ffi.istype('ImVector_ImU16[]',a1)) then return M.ImPlot_FillRangeVector_U16Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImS32*',a1) or ffi.istype('ImVector_ImS32',a1) or ffi.istype('ImVector_ImS32[]',a1)) then return M.ImPlot_FillRangeVector_S32Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImU32*',a1) or ffi.istype('ImVector_ImU32',a1) or ffi.istype('ImVector_ImU32[]',a1)) then return M.ImPlot_FillRangeVector_U32Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImS64*',a1) or ffi.istype('ImVector_ImS64',a1) or ffi.istype('ImVector_ImS64[]',a1)) then return M.ImPlot_FillRangeVector_S64Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImU64*',a1) or ffi.istype('ImVector_ImU64',a1) or ffi.istype('ImVector_ImU64[]',a1)) then return M.ImPlot_FillRangeVector_U64Ptr(a1,a2,a3,a4) end
+    print(a1,a2,a3,a4)
+    error'M.ImPlot_FillRange could not find overloaded'
+end
 function M.ImPlot_FitNextPlotAxes(x,y,y2,y3)
     if x == nil then x = true end
     if y == nil then y = true end
@@ -1959,6 +2211,20 @@ function M.ImPlot_FitNextPlotAxes(x,y,y2,y3)
     if y3 == nil then y3 = true end
     return lib.ImPlot_FitNextPlotAxes(x,y,y2,y3)
 end
+M.ImPlot_FitPoint = lib.ImPlot_FitPoint
+M.ImPlot_FitPointX = lib.ImPlot_FitPointX
+M.ImPlot_FitPointY = lib.ImPlot_FitPointY
+M.ImPlot_FitThisFrame = lib.ImPlot_FitThisFrame
+M.ImPlot_FloorTime = lib.ImPlot_FloorTime
+M.ImPlot_FormatDate = lib.ImPlot_FormatDate
+M.ImPlot_FormatDateTime = lib.ImPlot_FormatDateTime
+M.ImPlot_FormatTime = lib.ImPlot_FormatTime
+function M.ImPlot_GetAutoColor(idx)
+    local nonUDT_out = ffi.new("ImVec4")
+    lib.ImPlot_GetAutoColor(nonUDT_out,idx)
+    return nonUDT_out
+end
+M.ImPlot_GetColormap = lib.ImPlot_GetColormap
 function M.ImPlot_GetColormapColor(index)
     local nonUDT_out = ffi.new("ImVec4")
     lib.ImPlot_GetColormapColor(nonUDT_out,index)
@@ -1967,13 +2233,29 @@ end
 M.ImPlot_GetColormapName = lib.ImPlot_GetColormapName
 M.ImPlot_GetColormapSize = lib.ImPlot_GetColormapSize
 M.ImPlot_GetCurrentContext = lib.ImPlot_GetCurrentContext
+M.ImPlot_GetCurrentItem = lib.ImPlot_GetCurrentItem
+M.ImPlot_GetCurrentPlot = lib.ImPlot_GetCurrentPlot
+M.ImPlot_GetCurrentScale = lib.ImPlot_GetCurrentScale
+M.ImPlot_GetCurrentYAxis = lib.ImPlot_GetCurrentYAxis
+M.ImPlot_GetDaysInMonth = lib.ImPlot_GetDaysInMonth
+M.ImPlot_GetGmtTime = lib.ImPlot_GetGmtTime
 M.ImPlot_GetInputMap = lib.ImPlot_GetInputMap
+M.ImPlot_GetItem = lib.ImPlot_GetItem
+M.ImPlot_GetItemData = lib.ImPlot_GetItemData
 function M.ImPlot_GetLastItemColor()
     local nonUDT_out = ffi.new("ImVec4")
     lib.ImPlot_GetLastItemColor(nonUDT_out)
     return nonUDT_out
 end
+M.ImPlot_GetLocTime = lib.ImPlot_GetLocTime
+function M.ImPlot_GetLocationPos(outer_rect,inner_size,location,pad)
+    pad = pad or ImVec2(0,0)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.ImPlot_GetLocationPos(nonUDT_out,outer_rect,inner_size,location,pad)
+    return nonUDT_out
+end
 M.ImPlot_GetMarkerName = lib.ImPlot_GetMarkerName
+M.ImPlot_GetPlot = lib.ImPlot_GetPlot
 M.ImPlot_GetPlotDrawList = lib.ImPlot_GetPlotDrawList
 function M.ImPlot_GetPlotLimits(y_axis)
     y_axis = y_axis or -1
@@ -2005,11 +2287,75 @@ function M.ImPlot_GetPlotSize()
 end
 M.ImPlot_GetStyle = lib.ImPlot_GetStyle
 M.ImPlot_GetStyleColorName = lib.ImPlot_GetStyleColorName
+M.ImPlot_GetStyleColorU32 = lib.ImPlot_GetStyleColorU32
+function M.ImPlot_GetStyleColorVec4(idx)
+    local nonUDT_out = ffi.new("ImVec4")
+    lib.ImPlot_GetStyleColorVec4(nonUDT_out,idx)
+    return nonUDT_out
+end
+M.ImPlot_GetYear = lib.ImPlot_GetYear
 function M.ImPlot_HideNextItem(hidden,cond)
     cond = cond or 2
     if hidden == nil then hidden = true end
     return lib.ImPlot_HideNextItem(hidden,cond)
 end
+function M.ImPlot_ImAlmostEqual(v1,v2,ulp)
+    ulp = ulp or 2
+    return lib.ImPlot_ImAlmostEqual(v1,v2,ulp)
+end
+M.ImPlot_ImConstrainInf = lib.ImPlot_ImConstrainInf
+M.ImPlot_ImConstrainLog = lib.ImPlot_ImConstrainLog
+M.ImPlot_ImConstrainNan = lib.ImPlot_ImConstrainNan
+M.ImPlot_ImConstrainTime = lib.ImPlot_ImConstrainTime
+M.ImPlot_ImLog10Float = lib.ImPlot_ImLog10Float
+M.ImPlot_ImLog10double = lib.ImPlot_ImLog10double
+function M.ImPlot_ImLog10(a1) -- generic version
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImPlot_ImLog10Float(a1) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_ImLog10double(a1) end
+    print(a1)
+    error'M.ImPlot_ImLog10 could not find overloaded'
+end
+M.ImPlot_ImNanOrInf = lib.ImPlot_ImNanOrInf
+M.ImPlot_ImPosMod = lib.ImPlot_ImPosMod
+M.ImPlot_ImRemapFloat = lib.ImPlot_ImRemapFloat
+M.ImPlot_ImRemapdouble = lib.ImPlot_ImRemapdouble
+M.ImPlot_ImRemapS8 = lib.ImPlot_ImRemapS8
+M.ImPlot_ImRemapU8 = lib.ImPlot_ImRemapU8
+M.ImPlot_ImRemapS16 = lib.ImPlot_ImRemapS16
+M.ImPlot_ImRemapU16 = lib.ImPlot_ImRemapU16
+M.ImPlot_ImRemapS32 = lib.ImPlot_ImRemapS32
+M.ImPlot_ImRemapU32 = lib.ImPlot_ImRemapU32
+M.ImPlot_ImRemapS64 = lib.ImPlot_ImRemapS64
+M.ImPlot_ImRemapU64 = lib.ImPlot_ImRemapU64
+function M.ImPlot_ImRemap(a1,a2,a3,a4,a5) -- generic version
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImPlot_ImRemapFloat(a1,a2,a3,a4,a5) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_ImRemapdouble(a1,a2,a3,a4,a5) end
+    if ffi.istype('ImS8',a1) then return M.ImPlot_ImRemapS8(a1,a2,a3,a4,a5) end
+    if ffi.istype('ImU8',a1) then return M.ImPlot_ImRemapU8(a1,a2,a3,a4,a5) end
+    if ffi.istype('ImS16',a1) then return M.ImPlot_ImRemapS16(a1,a2,a3,a4,a5) end
+    if ffi.istype('ImU16',a1) then return M.ImPlot_ImRemapU16(a1,a2,a3,a4,a5) end
+    if (ffi.istype('ImS32',a1) or type(a1)=='number') then return M.ImPlot_ImRemapS32(a1,a2,a3,a4,a5) end
+    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.ImPlot_ImRemapU32(a1,a2,a3,a4,a5) end
+    if ffi.istype('ImS64',a1) then return M.ImPlot_ImRemapS64(a1,a2,a3,a4,a5) end
+    if ffi.istype('ImU64',a1) then return M.ImPlot_ImRemapU64(a1,a2,a3,a4,a5) end
+    print(a1,a2,a3,a4,a5)
+    error'M.ImPlot_ImRemap could not find overloaded'
+end
+M.ImPlot_Initialize = lib.ImPlot_Initialize
+function M.ImPlot_Intersection(a1,a2,b1,b2)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.ImPlot_Intersection(nonUDT_out,a1,a2,b1,b2)
+    return nonUDT_out
+end
+M.ImPlot_IsColorAutoVec4 = lib.ImPlot_IsColorAutoVec4
+M.ImPlot_IsColorAutoPlotCol = lib.ImPlot_IsColorAutoPlotCol
+function M.ImPlot_IsColorAuto(a1) -- generic version
+    if ffi.istype('const ImVec4',a1) then return M.ImPlot_IsColorAutoVec4(a1) end
+    if (ffi.istype('ImPlotCol',a1) or type(a1)=='number') then return M.ImPlot_IsColorAutoPlotCol(a1) end
+    print(a1)
+    error'M.ImPlot_IsColorAuto could not find overloaded'
+end
+M.ImPlot_IsLeapYear = lib.ImPlot_IsLeapYear
 M.ImPlot_IsLegendEntryHovered = lib.ImPlot_IsLegendEntryHovered
 M.ImPlot_IsPlotHovered = lib.ImPlot_IsPlotHovered
 M.ImPlot_IsPlotQueried = lib.ImPlot_IsPlotQueried
@@ -2018,10 +2364,33 @@ function M.ImPlot_IsPlotYAxisHovered(y_axis)
     y_axis = y_axis or 0
     return lib.ImPlot_IsPlotYAxisHovered(y_axis)
 end
-function M.ImPlot_LerpColormap(t)
+M.ImPlot_ItemIconVec4 = lib.ImPlot_ItemIconVec4
+M.ImPlot_ItemIconU32 = lib.ImPlot_ItemIconU32
+function M.ImPlot_ItemIcon(a1) -- generic version
+    if ffi.istype('const ImVec4',a1) then return M.ImPlot_ItemIconVec4(a1) end
+    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.ImPlot_ItemIconU32(a1) end
+    print(a1)
+    error'M.ImPlot_ItemIcon could not find overloaded'
+end
+M.ImPlot_LabelAxisValue = lib.ImPlot_LabelAxisValue
+M.ImPlot_LabelTickDefault = lib.ImPlot_LabelTickDefault
+M.ImPlot_LabelTickScientific = lib.ImPlot_LabelTickScientific
+M.ImPlot_LabelTickTime = lib.ImPlot_LabelTickTime
+function M.ImPlot_LerpColormapFloat(t)
     local nonUDT_out = ffi.new("ImVec4")
-    lib.ImPlot_LerpColormap(nonUDT_out,t)
+    lib.ImPlot_LerpColormapFloat(nonUDT_out,t)
     return nonUDT_out
+end
+function M.ImPlot_LerpColormapVec4Ptr(colormap,size,t)
+    local nonUDT_out = ffi.new("ImVec4")
+    lib.ImPlot_LerpColormapVec4Ptr(nonUDT_out,colormap,size,t)
+    return nonUDT_out
+end
+function M.ImPlot_LerpColormap(a2,a3,a4) -- generic version
+    if (ffi.istype('float',a2) or type(a2)=='number') then return M.ImPlot_LerpColormapFloat(a2) end
+    if (ffi.istype('const ImVec4*',a2) or ffi.istype('const ImVec4',a2) or ffi.istype('const ImVec4[]',a2)) then return M.ImPlot_LerpColormapVec4Ptr(a2,a3,a4) end
+    print(a2,a3,a4)
+    error'M.ImPlot_LerpColormap could not find overloaded'
 end
 function M.ImPlot_LinkNextPlotLimits(xmin,xmax,ymin,ymax,ymin2,ymax2,ymin3,ymax3)
     ymax2 = ymax2 or nil
@@ -2030,11 +2399,49 @@ function M.ImPlot_LinkNextPlotLimits(xmin,xmax,ymin,ymax,ymin2,ymax2,ymin3,ymax3
     ymin3 = ymin3 or nil
     return lib.ImPlot_LinkNextPlotLimits(xmin,xmax,ymin,ymax,ymin2,ymax2,ymin3,ymax3)
 end
+function M.ImPlot_MakeTime(year,month,day,hour,min,sec,us)
+    day = day or 1
+    hour = hour or 0
+    min = min or 0
+    month = month or 0
+    sec = sec or 0
+    us = us or 0
+    return lib.ImPlot_MakeTime(year,month,day,hour,min,sec,us)
+end
+M.ImPlot_MkGmtTime = lib.ImPlot_MkGmtTime
+M.ImPlot_MkLocTime = lib.ImPlot_MkLocTime
 function M.ImPlot_NextColormapColor()
     local nonUDT_out = ffi.new("ImVec4")
     lib.ImPlot_NextColormapColor(nonUDT_out)
     return nonUDT_out
 end
+M.ImPlot_NiceNum = lib.ImPlot_NiceNum
+M.ImPlot_OffsetAndStrideFloatPtr = lib.ImPlot_OffsetAndStrideFloatPtr
+M.ImPlot_OffsetAndStridedoublePtr = lib.ImPlot_OffsetAndStridedoublePtr
+M.ImPlot_OffsetAndStrideS8Ptr = lib.ImPlot_OffsetAndStrideS8Ptr
+M.ImPlot_OffsetAndStrideU8Ptr = lib.ImPlot_OffsetAndStrideU8Ptr
+M.ImPlot_OffsetAndStrideS16Ptr = lib.ImPlot_OffsetAndStrideS16Ptr
+M.ImPlot_OffsetAndStrideU16Ptr = lib.ImPlot_OffsetAndStrideU16Ptr
+M.ImPlot_OffsetAndStrideS32Ptr = lib.ImPlot_OffsetAndStrideS32Ptr
+M.ImPlot_OffsetAndStrideU32Ptr = lib.ImPlot_OffsetAndStrideU32Ptr
+M.ImPlot_OffsetAndStrideS64Ptr = lib.ImPlot_OffsetAndStrideS64Ptr
+M.ImPlot_OffsetAndStrideU64Ptr = lib.ImPlot_OffsetAndStrideU64Ptr
+function M.ImPlot_OffsetAndStride(a1,a2,a3,a4,a5) -- generic version
+    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_OffsetAndStrideFloatPtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_OffsetAndStridedoublePtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_OffsetAndStrideS8Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_OffsetAndStrideU8Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_OffsetAndStrideS16Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_OffsetAndStrideU16Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_OffsetAndStrideS32Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_OffsetAndStrideU32Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_OffsetAndStrideS64Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_OffsetAndStrideU64Ptr(a1,a2,a3,a4,a5) end
+    print(a1,a2,a3,a4,a5)
+    error'M.ImPlot_OffsetAndStride could not find overloaded'
+end
+M.ImPlot_OrderOfMagnitude = lib.ImPlot_OrderOfMagnitude
+M.ImPlot_OrderToPrecision = lib.ImPlot_OrderToPrecision
 function M.ImPlot_PixelsToPlotVec2(pix,y_axis)
     y_axis = y_axis or -1
     local nonUDT_out = ffi.new("ImPlotPoint")
@@ -2666,6 +3073,70 @@ function M.ImPlot_PlotErrorBarsH(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
     print(a1,a2,a3,a4,a5,a6,a7,a8)
     error'M.ImPlot_PlotErrorBarsH could not find overloaded'
 end
+function M.ImPlot_PlotHLinesFloatPtr(label_id,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("float")
+    return lib.ImPlot_PlotHLinesFloatPtr(label_id,ys,count,offset,stride)
+end
+function M.ImPlot_PlotHLinesdoublePtr(label_id,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("double")
+    return lib.ImPlot_PlotHLinesdoublePtr(label_id,ys,count,offset,stride)
+end
+function M.ImPlot_PlotHLinesS8Ptr(label_id,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS8")
+    return lib.ImPlot_PlotHLinesS8Ptr(label_id,ys,count,offset,stride)
+end
+function M.ImPlot_PlotHLinesU8Ptr(label_id,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU8")
+    return lib.ImPlot_PlotHLinesU8Ptr(label_id,ys,count,offset,stride)
+end
+function M.ImPlot_PlotHLinesS16Ptr(label_id,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS16")
+    return lib.ImPlot_PlotHLinesS16Ptr(label_id,ys,count,offset,stride)
+end
+function M.ImPlot_PlotHLinesU16Ptr(label_id,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU16")
+    return lib.ImPlot_PlotHLinesU16Ptr(label_id,ys,count,offset,stride)
+end
+function M.ImPlot_PlotHLinesS32Ptr(label_id,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS32")
+    return lib.ImPlot_PlotHLinesS32Ptr(label_id,ys,count,offset,stride)
+end
+function M.ImPlot_PlotHLinesU32Ptr(label_id,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU32")
+    return lib.ImPlot_PlotHLinesU32Ptr(label_id,ys,count,offset,stride)
+end
+function M.ImPlot_PlotHLinesS64Ptr(label_id,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS64")
+    return lib.ImPlot_PlotHLinesS64Ptr(label_id,ys,count,offset,stride)
+end
+function M.ImPlot_PlotHLinesU64Ptr(label_id,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU64")
+    return lib.ImPlot_PlotHLinesU64Ptr(label_id,ys,count,offset,stride)
+end
+function M.ImPlot_PlotHLines(a1,a2,a3,a4,a5) -- generic version
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotHLinesFloatPtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotHLinesdoublePtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotHLinesS8Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotHLinesU8Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotHLinesS16Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotHLinesU16Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotHLinesS32Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotHLinesU32Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotHLinesS64Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotHLinesU64Ptr(a1,a2,a3,a4,a5) end
+    print(a1,a2,a3,a4,a5)
+    error'M.ImPlot_PlotHLines could not find overloaded'
+end
 function M.ImPlot_PlotHeatmapFloatPtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
     bounds_max = bounds_max or ImPlotPoint(1,1)
     bounds_min = bounds_min or ImPlotPoint(0,0)
@@ -2967,6 +3438,27 @@ function M.ImPlot_PlotPieChart(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
     if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotPieChartU64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
     print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
     error'M.ImPlot_PlotPieChart could not find overloaded'
+end
+function M.ImPlot_PlotRectsFloatPtr(label_id,xs,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("float")
+    return lib.ImPlot_PlotRectsFloatPtr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotRectsdoublePtr(label_id,xs,ys,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("double")
+    return lib.ImPlot_PlotRectsdoublePtr(label_id,xs,ys,count,offset,stride)
+end
+function M.ImPlot_PlotRectsFnPlotPoIntPtr(label_id,getter,data,count,offset)
+    offset = offset or 0
+    return lib.ImPlot_PlotRectsFnPlotPoIntPtr(label_id,getter,data,count,offset)
+end
+function M.ImPlot_PlotRects(a1,a2,a3,a4,a5,a6) -- generic version
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotRectsFloatPtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotRectsdoublePtr(a1,a2,a3,a4,a5,a6) end
+    if ffi.istype('ImPlotPoint(*)(void* data,int idx)',a2) then return M.ImPlot_PlotRectsFnPlotPoIntPtr(a1,a2,a3,a4,a5) end
+    print(a1,a2,a3,a4,a5,a6)
+    error'M.ImPlot_PlotRects could not find overloaded'
 end
 function M.ImPlot_PlotScatterFloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
@@ -3679,6 +4171,70 @@ function M.ImPlot_PlotToPixels(a2,a3,a4) -- generic version
     print(a2,a3,a4)
     error'M.ImPlot_PlotToPixels could not find overloaded'
 end
+function M.ImPlot_PlotVLinesFloatPtr(label_id,xs,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("float")
+    return lib.ImPlot_PlotVLinesFloatPtr(label_id,xs,count,offset,stride)
+end
+function M.ImPlot_PlotVLinesdoublePtr(label_id,xs,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("double")
+    return lib.ImPlot_PlotVLinesdoublePtr(label_id,xs,count,offset,stride)
+end
+function M.ImPlot_PlotVLinesS8Ptr(label_id,xs,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS8")
+    return lib.ImPlot_PlotVLinesS8Ptr(label_id,xs,count,offset,stride)
+end
+function M.ImPlot_PlotVLinesU8Ptr(label_id,xs,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU8")
+    return lib.ImPlot_PlotVLinesU8Ptr(label_id,xs,count,offset,stride)
+end
+function M.ImPlot_PlotVLinesS16Ptr(label_id,xs,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS16")
+    return lib.ImPlot_PlotVLinesS16Ptr(label_id,xs,count,offset,stride)
+end
+function M.ImPlot_PlotVLinesU16Ptr(label_id,xs,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU16")
+    return lib.ImPlot_PlotVLinesU16Ptr(label_id,xs,count,offset,stride)
+end
+function M.ImPlot_PlotVLinesS32Ptr(label_id,xs,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS32")
+    return lib.ImPlot_PlotVLinesS32Ptr(label_id,xs,count,offset,stride)
+end
+function M.ImPlot_PlotVLinesU32Ptr(label_id,xs,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU32")
+    return lib.ImPlot_PlotVLinesU32Ptr(label_id,xs,count,offset,stride)
+end
+function M.ImPlot_PlotVLinesS64Ptr(label_id,xs,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImS64")
+    return lib.ImPlot_PlotVLinesS64Ptr(label_id,xs,count,offset,stride)
+end
+function M.ImPlot_PlotVLinesU64Ptr(label_id,xs,count,offset,stride)
+    offset = offset or 0
+    stride = stride or ffi.sizeof("ImU64")
+    return lib.ImPlot_PlotVLinesU64Ptr(label_id,xs,count,offset,stride)
+end
+function M.ImPlot_PlotVLines(a1,a2,a3,a4,a5) -- generic version
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotVLinesFloatPtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotVLinesdoublePtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotVLinesS8Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotVLinesU8Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotVLinesS16Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotVLinesU16Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotVLinesS32Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotVLinesU32Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotVLinesS64Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotVLinesU64Ptr(a1,a2,a3,a4,a5) end
+    print(a1,a2,a3,a4,a5)
+    error'M.ImPlot_PlotVLines could not find overloaded'
+end
 function M.ImPlot_PopColormap(count)
     count = count or 1
     return lib.ImPlot_PopColormap(count)
@@ -3692,6 +4248,8 @@ function M.ImPlot_PopStyleVar(count)
     count = count or 1
     return lib.ImPlot_PopStyleVar(count)
 end
+M.ImPlot_Precision = lib.ImPlot_Precision
+M.ImPlot_PullLinkedAxis = lib.ImPlot_PullLinkedAxis
 M.ImPlot_PushColormapPlotColormap = lib.ImPlot_PushColormapPlotColormap
 M.ImPlot_PushColormapVec4Ptr = lib.ImPlot_PushColormapVec4Ptr
 function M.ImPlot_PushColormap(a1,a2) -- generic version
@@ -3700,6 +4258,7 @@ function M.ImPlot_PushColormap(a1,a2) -- generic version
     print(a1,a2)
     error'M.ImPlot_PushColormap could not find overloaded'
 end
+M.ImPlot_PushLinkedAxis = lib.ImPlot_PushLinkedAxis
 M.ImPlot_PushPlotClipRect = lib.ImPlot_PushPlotClipRect
 M.ImPlot_PushStyleColorU32 = lib.ImPlot_PushStyleColorU32
 M.ImPlot_PushStyleColorVec4 = lib.ImPlot_PushStyleColorVec4
@@ -3719,6 +4278,14 @@ function M.ImPlot_PushStyleVar(a1,a2) -- generic version
     print(a1,a2)
     error'M.ImPlot_PushStyleVar could not find overloaded'
 end
+M.ImPlot_RangesOverlap = lib.ImPlot_RangesOverlap
+function M.ImPlot_RegisterOrGetItem(label_id,just_created)
+    just_created = just_created or nil
+    return lib.ImPlot_RegisterOrGetItem(label_id,just_created)
+end
+M.ImPlot_ResampleColormap = lib.ImPlot_ResampleColormap
+M.ImPlot_Reset = lib.ImPlot_Reset
+M.ImPlot_RoundTime = lib.ImPlot_RoundTime
 M.ImPlot_SetColormapVec4Ptr = lib.ImPlot_SetColormapVec4Ptr
 function M.ImPlot_SetColormapPlotColormap(colormap,samples)
     samples = samples or 0
@@ -3810,21 +4377,42 @@ function M.ImPlot_SetNextPlotTicksY(a1,a2,a3,a4,a5,a6) -- generic version
     error'M.ImPlot_SetNextPlotTicksY could not find overloaded'
 end
 M.ImPlot_SetPlotYAxis = lib.ImPlot_SetPlotYAxis
-M.ImPlot_ShowColormapScale = lib.ImPlot_ShowColormapScale
+function M.ImPlot_ShowAltLegend(title_id,orientation,size,interactable)
+    if interactable == nil then interactable = true end
+    orientation = orientation or 1
+    size = size or ImVec2(0,0)
+    return lib.ImPlot_ShowAltLegend(title_id,orientation,size,interactable)
+end
+function M.ImPlot_ShowAxisContextMenu(axis,equal_axis,time_allowed)
+    time_allowed = time_allowed or false
+    return lib.ImPlot_ShowAxisContextMenu(axis,equal_axis,time_allowed)
+end
+function M.ImPlot_ShowColormapScale(scale_min,scale_max,size)
+    size = size or ImVec2(0,0)
+    return lib.ImPlot_ShowColormapScale(scale_min,scale_max,size)
+end
 M.ImPlot_ShowColormapSelector = lib.ImPlot_ShowColormapSelector
+function M.ImPlot_ShowDatePicker(id,level,t,t1,t2)
+    t1 = t1 or nil
+    t2 = t2 or nil
+    return lib.ImPlot_ShowDatePicker(id,level,t,t1,t2)
+end
 function M.ImPlot_ShowDemoWindow(p_open)
     p_open = p_open or nil
     return lib.ImPlot_ShowDemoWindow(p_open)
 end
+M.ImPlot_ShowLegendEntries = lib.ImPlot_ShowLegendEntries
 function M.ImPlot_ShowMetricsWindow(p_popen)
     p_popen = p_popen or nil
     return lib.ImPlot_ShowMetricsWindow(p_popen)
 end
+M.ImPlot_ShowPlotContextMenu = lib.ImPlot_ShowPlotContextMenu
 function M.ImPlot_ShowStyleEditor(ref)
     ref = ref or nil
     return lib.ImPlot_ShowStyleEditor(ref)
 end
 M.ImPlot_ShowStyleSelector = lib.ImPlot_ShowStyleSelector
+M.ImPlot_ShowTimePicker = lib.ImPlot_ShowTimePicker
 M.ImPlot_ShowUserGuide = lib.ImPlot_ShowUserGuide
 function M.ImPlot_StyleColorsAuto(dst)
     dst = dst or nil
@@ -3842,6 +4430,8 @@ function M.ImPlot_StyleColorsLight(dst)
     dst = dst or nil
     return lib.ImPlot_StyleColorsLight(dst)
 end
+M.ImPlot_UpdateAxisColors = lib.ImPlot_UpdateAxisColors
+M.ImPlot_UpdateTransformCache = lib.ImPlot_UpdateTransformCache
 function M.AcceptDragDropPayload(type,flags)
     flags = flags or 0
     return lib.igAcceptDragDropPayload(type,flags)
