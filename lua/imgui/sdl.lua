@@ -676,9 +676,9 @@ function ImDrawList:AddImageQuad(user_texture_id,p1,p2,p3,p4,uv1,uv2,uv3,uv4,col
     uv4 = uv4 or ImVec2(0,1)
     return lib.ImDrawList_AddImageQuad(self,user_texture_id,p1,p2,p3,p4,uv1,uv2,uv3,uv4,col)
 end
-function ImDrawList:AddImageRounded(user_texture_id,p_min,p_max,uv_min,uv_max,col,rounding,rounding_corners)
-    rounding_corners = rounding_corners or 15
-    return lib.ImDrawList_AddImageRounded(self,user_texture_id,p_min,p_max,uv_min,uv_max,col,rounding,rounding_corners)
+function ImDrawList:AddImageRounded(user_texture_id,p_min,p_max,uv_min,uv_max,col,rounding,flags)
+    flags = flags or 0
+    return lib.ImDrawList_AddImageRounded(self,user_texture_id,p_min,p_max,uv_min,uv_max,col,rounding,flags)
 end
 function ImDrawList:AddLine(p1,p2,col,thickness)
     thickness = thickness or 1.0
@@ -695,16 +695,16 @@ function ImDrawList:AddQuad(p1,p2,p3,p4,col,thickness)
     return lib.ImDrawList_AddQuad(self,p1,p2,p3,p4,col,thickness)
 end
 ImDrawList.AddQuadFilled = lib.ImDrawList_AddQuadFilled
-function ImDrawList:AddRect(p_min,p_max,col,rounding,rounding_corners,thickness)
+function ImDrawList:AddRect(p_min,p_max,col,rounding,flags,thickness)
+    flags = flags or 0
     rounding = rounding or 0.0
-    rounding_corners = rounding_corners or 15
     thickness = thickness or 1.0
-    return lib.ImDrawList_AddRect(self,p_min,p_max,col,rounding,rounding_corners,thickness)
+    return lib.ImDrawList_AddRect(self,p_min,p_max,col,rounding,flags,thickness)
 end
-function ImDrawList:AddRectFilled(p_min,p_max,col,rounding,rounding_corners)
+function ImDrawList:AddRectFilled(p_min,p_max,col,rounding,flags)
+    flags = flags or 0
     rounding = rounding or 0.0
-    rounding_corners = rounding_corners or 15
-    return lib.ImDrawList_AddRectFilled(self,p_min,p_max,col,rounding,rounding_corners)
+    return lib.ImDrawList_AddRectFilled(self,p_min,p_max,col,rounding,flags)
 end
 ImDrawList.AddRectFilledMultiColor = lib.ImDrawList_AddRectFilledMultiColor
 function ImDrawList:AddTextVec2(pos,col,text_begin,text_end)
@@ -747,7 +747,7 @@ function ImDrawList.__new(ctype,shared_data)
     return ffi.gc(ptr,lib.ImDrawList_destroy)
 end
 function ImDrawList:PathArcTo(center,radius,a_min,a_max,num_segments)
-    num_segments = num_segments or 10
+    num_segments = num_segments or 0
     return lib.ImDrawList_PathArcTo(self,center,radius,a_min,a_max,num_segments)
 end
 ImDrawList.PathArcToFast = lib.ImDrawList_PathArcToFast
@@ -763,14 +763,15 @@ ImDrawList.PathClear = lib.ImDrawList_PathClear
 ImDrawList.PathFillConvex = lib.ImDrawList_PathFillConvex
 ImDrawList.PathLineTo = lib.ImDrawList_PathLineTo
 ImDrawList.PathLineToMergeDuplicate = lib.ImDrawList_PathLineToMergeDuplicate
-function ImDrawList:PathRect(rect_min,rect_max,rounding,rounding_corners)
+function ImDrawList:PathRect(rect_min,rect_max,rounding,flags)
+    flags = flags or 0
     rounding = rounding or 0.0
-    rounding_corners = rounding_corners or 15
-    return lib.ImDrawList_PathRect(self,rect_min,rect_max,rounding,rounding_corners)
+    return lib.ImDrawList_PathRect(self,rect_min,rect_max,rounding,flags)
 end
-function ImDrawList:PathStroke(col,closed,thickness)
+function ImDrawList:PathStroke(col,flags,thickness)
+    flags = flags or 0
     thickness = thickness or 1.0
-    return lib.ImDrawList_PathStroke(self,col,closed,thickness)
+    return lib.ImDrawList_PathStroke(self,col,flags,thickness)
 end
 ImDrawList.PopClipRect = lib.ImDrawList_PopClipRect
 ImDrawList.PopTextureID = lib.ImDrawList_PopTextureID
@@ -788,10 +789,13 @@ function ImDrawList:PushClipRect(clip_rect_min,clip_rect_max,intersect_with_curr
 end
 ImDrawList.PushClipRectFullScreen = lib.ImDrawList_PushClipRectFullScreen
 ImDrawList.PushTextureID = lib.ImDrawList_PushTextureID
+ImDrawList._CalcCircleAutoSegmentCount = lib.ImDrawList__CalcCircleAutoSegmentCount
 ImDrawList._ClearFreeMemory = lib.ImDrawList__ClearFreeMemory
 ImDrawList._OnChangedClipRect = lib.ImDrawList__OnChangedClipRect
 ImDrawList._OnChangedTextureID = lib.ImDrawList__OnChangedTextureID
 ImDrawList._OnChangedVtxOffset = lib.ImDrawList__OnChangedVtxOffset
+ImDrawList._PathArcToFastEx = lib.ImDrawList__PathArcToFastEx
+ImDrawList._PathArcToN = lib.ImDrawList__PathArcToN
 ImDrawList._PopUnusedDrawCmd = lib.ImDrawList__PopUnusedDrawCmd
 ImDrawList._ResetForNewFrame = lib.ImDrawList__ResetForNewFrame
 M.ImDrawList = ffi.metatype("ImDrawList",ImDrawList)
@@ -802,7 +806,7 @@ function ImDrawListSharedData.__new(ctype)
     local ptr = lib.ImDrawListSharedData_ImDrawListSharedData()
     return ffi.gc(ptr,lib.ImDrawListSharedData_destroy)
 end
-ImDrawListSharedData.SetCircleSegmentMaxError = lib.ImDrawListSharedData_SetCircleSegmentMaxError
+ImDrawListSharedData.SetCircleTessellationMaxError = lib.ImDrawListSharedData_SetCircleTessellationMaxError
 M.ImDrawListSharedData = ffi.metatype("ImDrawListSharedData",ImDrawListSharedData)
 --------------------------ImDrawListSplitter----------------------------
 local ImDrawListSplitter= {}
@@ -1804,6 +1808,7 @@ function ImRect:Expand(a2) -- generic version
     error'ImRect:Expand could not find overloaded'
 end
 ImRect.Floor = lib.ImRect_Floor
+ImRect.GetArea = lib.ImRect_GetArea
 function ImRect:GetBL()
     local nonUDT_out = ffi.new("ImVec2")
     lib.ImRect_GetBL(nonUDT_out,self)
@@ -4926,6 +4931,7 @@ M.GcAwakeTransientWindowBuffers = lib.igGcAwakeTransientWindowBuffers
 M.GcCompactTransientMiscBuffers = lib.igGcCompactTransientMiscBuffers
 M.GcCompactTransientWindowBuffers = lib.igGcCompactTransientWindowBuffers
 M.GetActiveID = lib.igGetActiveID
+M.GetAllocatorFunctions = lib.igGetAllocatorFunctions
 M.GetBackgroundDrawListNil = lib.igGetBackgroundDrawListNil
 M.GetBackgroundDrawListViewportPtr = lib.igGetBackgroundDrawListViewportPtr
 function M.GetBackgroundDrawList(a1) -- generic version
@@ -4977,6 +4983,7 @@ function M.GetContentRegionMaxAbs()
     return nonUDT_out
 end
 M.GetCurrentContext = lib.igGetCurrentContext
+M.GetCurrentTable = lib.igGetCurrentTable
 M.GetCurrentWindow = lib.igGetCurrentWindow
 M.GetCurrentWindowRead = lib.igGetCurrentWindowRead
 function M.GetCursorPos()
@@ -5100,6 +5107,7 @@ M.GetTime = lib.igGetTime
 M.GetTopMostPopupModal = lib.igGetTopMostPopupModal
 M.GetTreeNodeToLabelSpacing = lib.igGetTreeNodeToLabelSpacing
 M.GetVersion = lib.igGetVersion
+M.GetViewportPlatformMonitor = lib.igGetViewportPlatformMonitor
 function M.GetWindowAllowedExtentRect(window)
     local nonUDT_out = ffi.new("ImRect")
     lib.igGetWindowAllowedExtentRect(nonUDT_out,window)
@@ -5604,6 +5612,7 @@ function M.LogRenderedText(ref_pos,text,text_end)
 end
 M.LogSetNextTextDecoration = lib.igLogSetNextTextDecoration
 M.LogText = lib.igLogText
+M.LogTextV = lib.igLogTextV
 function M.LogToBuffer(auto_open_depth)
     auto_open_depth = auto_open_depth or -1
     return lib.igLogToBuffer(auto_open_depth)
@@ -5800,10 +5809,10 @@ M.RenderArrowDockMenu = lib.igRenderArrowDockMenu
 M.RenderArrowPointingAt = lib.igRenderArrowPointingAt
 M.RenderBullet = lib.igRenderBullet
 M.RenderCheckMark = lib.igRenderCheckMark
-function M.RenderColorRectWithAlphaCheckerboard(draw_list,p_min,p_max,fill_col,grid_step,grid_off,rounding,rounding_corners_flags)
+function M.RenderColorRectWithAlphaCheckerboard(draw_list,p_min,p_max,fill_col,grid_step,grid_off,rounding,flags)
+    flags = flags or 0
     rounding = rounding or 0.0
-    rounding_corners_flags = rounding_corners_flags or -1
-    return lib.igRenderColorRectWithAlphaCheckerboard(draw_list,p_min,p_max,fill_col,grid_step,grid_off,rounding,rounding_corners_flags)
+    return lib.igRenderColorRectWithAlphaCheckerboard(draw_list,p_min,p_max,fill_col,grid_step,grid_off,rounding,flags)
 end
 function M.RenderFrame(p_min,p_max,fill_col,border,rounding)
     if border == nil then border = true end
@@ -5915,7 +5924,6 @@ end
 M.SetLastItemData = lib.igSetLastItemData
 M.SetMouseCursor = lib.igSetMouseCursor
 M.SetNavID = lib.igSetNavID
-M.SetNavIDWithRectRel = lib.igSetNavIDWithRectRel
 function M.SetNextItemOpen(is_open,cond)
     cond = cond or 0
     return lib.igSetNextItemOpen(is_open,cond)
