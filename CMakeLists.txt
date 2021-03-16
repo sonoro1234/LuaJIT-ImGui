@@ -9,7 +9,7 @@ include_directories(cimplot/implot)
 include_directories(cimguizmo/ImGuizmo)
 include_directories(./cimguizmo_quat/imGuIZMO.quat/imGuIZMO.quat)
 include_directories(cimnodes/imnodes)
-add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
+#add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
 
 include_directories(cimgui)
 set(IMGUI_SOURCES ./cimgui/cimgui.cpp 
@@ -50,6 +50,7 @@ set(IMGUI_ft_LIBRARIES )
 
 if (WIN32)
     add_definitions("-DIMGUI_IMPL_API=extern \"C\" __declspec\(dllexport\)")
+    list(APPEND IMGUI_LIBRARIES imm32)
 else(WIN32)
     add_definitions("-DIMGUI_IMPL_API=extern \"C\" ")
 endif(WIN32)
