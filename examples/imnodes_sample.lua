@@ -283,7 +283,7 @@ local function Editor(name, nodetypes)
     return E
 end
 --------------------------------------------------------------------------------------------
-ig.imnodes_Initialize()
+ig.imnodes_CreateContext()
 
 local nodetypes = {
     {   name = "node_t1",
@@ -315,7 +315,7 @@ local function clean()
     ig.imnodes_PopAttributeFlag();
     editor1:free()
     editor2:free()
-    ig.imnodes_Shutdown()
+    ig.imnodes_DestroyContext()
 end
 
 win:start(clean)

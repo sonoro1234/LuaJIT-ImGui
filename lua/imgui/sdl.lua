@@ -6490,6 +6490,11 @@ end
 M.imnodes_BeginStaticAttribute = lib.imnodes_BeginStaticAttribute
 M.imnodes_ClearLinkSelection = lib.imnodes_ClearLinkSelection
 M.imnodes_ClearNodeSelection = lib.imnodes_ClearNodeSelection
+M.imnodes_CreateContext = lib.imnodes_CreateContext
+function M.imnodes_DestroyContext(ctx)
+    ctx = ctx or nil
+    return lib.imnodes_DestroyContext(ctx)
+end
 M.imnodes_EditorContextCreate = lib.imnodes_EditorContextCreate
 M.imnodes_EditorContextFree = lib.imnodes_EditorContextFree
 function M.imnodes_EditorContextGetPanning()
@@ -6506,6 +6511,7 @@ M.imnodes_EndNodeEditor = lib.imnodes_EndNodeEditor
 M.imnodes_EndNodeTitleBar = lib.imnodes_EndNodeTitleBar
 M.imnodes_EndOutputAttribute = lib.imnodes_EndOutputAttribute
 M.imnodes_EndStaticAttribute = lib.imnodes_EndStaticAttribute
+M.imnodes_GetCurrentContext = lib.imnodes_GetCurrentContext
 M.imnodes_GetIO = lib.imnodes_GetIO
 function M.imnodes_GetNodeDimensions(id)
     local nonUDT_out = ffi.new("ImVec2")
@@ -6530,7 +6536,6 @@ end
 M.imnodes_GetSelectedLinks = lib.imnodes_GetSelectedLinks
 M.imnodes_GetSelectedNodes = lib.imnodes_GetSelectedNodes
 M.imnodes_GetStyle = lib.imnodes_GetStyle
-M.imnodes_Initialize = lib.imnodes_Initialize
 function M.imnodes_IsAnyAttributeActive(attribute_id)
     attribute_id = attribute_id or nil
     return lib.imnodes_IsAnyAttributeActive(attribute_id)
@@ -6584,12 +6589,12 @@ function M.imnodes_SaveEditorStateToIniString(editor,data_size)
     data_size = data_size or nil
     return lib.imnodes_SaveEditorStateToIniString(editor,data_size)
 end
+M.imnodes_SetCurrentContext = lib.imnodes_SetCurrentContext
 M.imnodes_SetImGuiContext = lib.imnodes_SetImGuiContext
 M.imnodes_SetNodeDraggable = lib.imnodes_SetNodeDraggable
 M.imnodes_SetNodeEditorSpacePos = lib.imnodes_SetNodeEditorSpacePos
 M.imnodes_SetNodeGridSpacePos = lib.imnodes_SetNodeGridSpacePos
 M.imnodes_SetNodeScreenSpacePos = lib.imnodes_SetNodeScreenSpacePos
-M.imnodes_Shutdown = lib.imnodes_Shutdown
 M.imnodes_StyleColorsClassic = lib.imnodes_StyleColorsClassic
 M.imnodes_StyleColorsDark = lib.imnodes_StyleColorsDark
 M.imnodes_StyleColorsLight = lib.imnodes_StyleColorsLight

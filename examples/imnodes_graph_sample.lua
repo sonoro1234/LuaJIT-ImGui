@@ -433,7 +433,7 @@ local function Editor(name, nodetypes)
     return E
 end
 -----------------------------------use it!!--------------------------------------------
-ig.imnodes_Initialize()
+ig.imnodes_CreateContext()
 
 
 local function clamp(v)
@@ -527,7 +527,7 @@ local function clean()
     editor1:save()
     ig.imnodes_PopAttributeFlag();
     editor1:free()
-    ig.imnodes_Shutdown()
+    ig.imnodes_DestroyContext()
 end
 
 win:start(clean)
