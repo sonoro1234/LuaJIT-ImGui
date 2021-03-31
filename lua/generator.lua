@@ -94,7 +94,7 @@ local function get_all_cdefs(sources)
 	local cdefs = {}
 	for i,v in ipairs(sources) do
 		print("get cdefs from",v)
-		cdefs = get_cdefs([[gcc -E -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS -I "../cimgui/imgui" ]].."../"..v.."/"..v..".h",v,cdefs)
+		cdefs = get_cdefs([[gcc -E -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS -I "../cimgui" ]].."../"..v.."/"..v..".h",v,cdefs)
 	end
 	return cdefs
 end
