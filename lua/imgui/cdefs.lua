@@ -3671,7 +3671,7 @@ typedef struct ImPlotTickCollection ImPlotTickCollection;
 typedef struct ImPlotAnnotationCollection ImPlotAnnotationCollection;
 typedef struct ImPlotAnnotation ImPlotAnnotation;
 typedef struct ImPlotPointError ImPlotPointError;
-typedef struct ImPlotColormapMod ImPlotColormapMod;
+typedef struct ImPlotColormapData ImPlotColormapData;
 typedef struct ImPlotTime ImPlotTime;
 typedef struct ImPlotDateTimeFmt ImPlotDateTimeFmt;
 typedef struct ImPlotInputMap ImPlotInputMap;
@@ -3681,7 +3681,6 @@ typedef struct ImPlotPlot ImPlotPlot;
 typedef struct ImPlotLegendData ImPlotLegendData;
 typedef struct ImPlotItem ImPlotItem;
 typedef struct ImPlotAxisColor ImPlotAxisColor;
-typedef struct ImPlotAxisState ImPlotAxisState;
 typedef struct ImPlotAxis ImPlotAxis;
 typedef struct ImPlotTick ImPlotTick;
 typedef struct ImPlotStyle ImPlotStyle;
@@ -3699,9 +3698,9 @@ typedef int ImPlotColormap;
 typedef int ImPlotLocation;
 typedef int ImPlotOrientation;
 typedef int ImPlotYAxis;
+typedef int ImPlotBin;
 struct ImPlotTick;
 struct ImPlotAxis;
-struct ImPlotAxisState;
 struct ImPlotAxisColor;
 struct ImPlotItem;
 struct ImPlotLegendData;
@@ -3717,7 +3716,7 @@ typedef struct ImPool_ImPlotItem {ImVector_ImPlotItem Buf;ImGuiStorage Map;ImPoo
 typedef struct ImVector_ImPlotPlot {int Size;int Capacity;ImPlotPlot* Data;} ImVector_ImPlotPlot;
 typedef struct ImPool_ImPlotPlot {ImVector_ImPlotPlot Buf;ImGuiStorage Map;ImPoolIdx FreeIdx;} ImPool_ImPlotPlot;
 typedef struct ImVector_ImPlotAnnotation {int Size;int Capacity;ImPlotAnnotation* Data;} ImVector_ImPlotAnnotation;
-typedef struct ImVector_ImPlotColormapMod {int Size;int Capacity;ImPlotColormapMod* Data;} ImVector_ImPlotColormapMod;
+typedef struct ImVector_ImPlotColormap {int Size;int Capacity;ImPlotColormap* Data;} ImVector_ImPlotColormap;
 typedef struct ImVector_ImPlotTick {int Size;int Capacity;ImPlotTick* Data;} ImVector_ImPlotTick;
 typedef struct ImVector_ImS16 {int Size;int Capacity;ImS16* Data;} ImVector_ImS16;
 typedef struct ImVector_ImS32 {int Size;int Capacity;ImS32* Data;} ImVector_ImS32;
@@ -3726,6 +3725,7 @@ typedef struct ImVector_ImS8 {int Size;int Capacity;ImS8* Data;} ImVector_ImS8;
 typedef struct ImVector_ImU16 {int Size;int Capacity;ImU16* Data;} ImVector_ImU16;
 typedef struct ImVector_ImU64 {int Size;int Capacity;ImU64* Data;} ImVector_ImU64;
 typedef struct ImVector_ImU8 {int Size;int Capacity;ImU8* Data;} ImVector_ImU8;
+typedef struct ImVector_bool {int Size;int Capacity;                                                   _Bool                                                       * Data;} ImVector_bool;
 typedef struct ImVector_double {int Size;int Capacity;double* Data;} ImVector_double;
 typedef struct ImVector_int {int Size;int Capacity;int* Data;} ImVector_int;
 typedef enum {
@@ -3754,8 +3754,9 @@ typedef enum {
     ImPlotAxisFlags_LogScale = 1 << 4,
     ImPlotAxisFlags_Time = 1 << 5,
     ImPlotAxisFlags_Invert = 1 << 6,
-    ImPlotAxisFlags_LockMin = 1 << 7,
-    ImPlotAxisFlags_LockMax = 1 << 8,
+    ImPlotAxisFlags_AutoFit = 1 << 7,
+    ImPlotAxisFlags_LockMin = 1 << 8,
+    ImPlotAxisFlags_LockMax = 1 << 9,
     ImPlotAxisFlags_Lock = ImPlotAxisFlags_LockMin | ImPlotAxisFlags_LockMax,
     ImPlotAxisFlags_NoDecorations = ImPlotAxisFlags_NoLabel | ImPlotAxisFlags_NoGridLines | ImPlotAxisFlags_NoTickMarks | ImPlotAxisFlags_NoTickLabels
 }ImPlotAxisFlags_;
@@ -3831,18 +3832,22 @@ typedef enum {
     ImPlotMarker_COUNT
 }ImPlotMarker_;
 typedef enum {
-    ImPlotColormap_Default = 0,
-    ImPlotColormap_Deep = 1,
-    ImPlotColormap_Dark = 2,
-    ImPlotColormap_Pastel = 3,
-    ImPlotColormap_Paired = 4,
-    ImPlotColormap_Viridis = 5,
-    ImPlotColormap_Plasma = 6,
-    ImPlotColormap_Hot = 7,
-    ImPlotColormap_Cool = 8,
-    ImPlotColormap_Pink = 9,
-    ImPlotColormap_Jet = 10,
-    ImPlotColormap_COUNT
+    ImPlotColormap_Deep = 0,
+    ImPlotColormap_Dark = 1,
+    ImPlotColormap_Pastel = 2,
+    ImPlotColormap_Paired = 3,
+    ImPlotColormap_Viridis = 4,
+    ImPlotColormap_Plasma = 5,
+    ImPlotColormap_Hot = 6,
+    ImPlotColormap_Cool = 7,
+    ImPlotColormap_Pink = 8,
+    ImPlotColormap_Jet = 9,
+    ImPlotColormap_Twilight = 10,
+    ImPlotColormap_RdBu = 11,
+    ImPlotColormap_BrBG = 12,
+    ImPlotColormap_PiYG = 13,
+    ImPlotColormap_Spectral = 14,
+    ImPlotColormap_Greys = 15,
 }ImPlotColormap_;
 typedef enum {
     ImPlotLocation_Center = 0,
@@ -3864,6 +3869,12 @@ typedef enum {
     ImPlotYAxis_2 = 1,
     ImPlotYAxis_3 = 2
 }ImPlotYAxis_;
+typedef enum {
+    ImPlotBin_Sqrt = -1,
+    ImPlotBin_Sturges = -2,
+    ImPlotBin_Rice = -3,
+    ImPlotBin_Scott = -4,
+}ImPlotBin_;
 struct ImPlotPoint
 {
     double x, y;
@@ -3906,6 +3917,7 @@ struct ImPlotStyle
     ImVec2 PlotDefaultSize;
     ImVec2 PlotMinSize;
     ImVec4 Colors[ImPlotCol_COUNT];
+    ImPlotColormap Colormap;
        _Bool         AntiAliasedLines;
        _Bool         UseLocalTime;
        _Bool         UseISO8601;
@@ -3980,10 +3992,19 @@ struct ImPlotTime
     time_t S;
     int Us;
 };
-struct ImPlotColormapMod
+struct ImPlotColormapData
 {
-    const ImVec4* Colormap;
-    int ColormapSize;
+    ImVector_ImU32 Keys;
+    ImVector_int KeyCounts;
+    ImVector_int KeyOffsets;
+    ImVector_ImU32 Tables;
+    ImVector_int TableSizes;
+    ImVector_int TableOffsets;
+    ImGuiTextBuffer Text;
+    ImVector_int TextOffsets;
+    ImVector_bool Quals;
+    ImGuiStorage Map;
+    int Count;
 };
 struct ImPlotPointError
 {
@@ -4047,7 +4068,7 @@ struct ImPlotAxis
 struct ImPlotItem
 {
     ImGuiID ID;
-    ImVec4 Color;
+    ImU32 Color;
     int NameOffset;
        _Bool         Show;
        _Bool         LegendHovered;
@@ -4156,10 +4177,10 @@ struct ImPlotContext
     ImPlotStyle Style;
     ImVector_ImGuiColorMod ColorModifiers;
     ImVector_ImGuiStyleMod StyleModifiers;
-    const ImVec4* Colormap;
-    int ColormapSize;
-    ImVector_ImPlotColormapMod ColormapModifiers;
+    ImPlotColormapData ColormapData;
+    ImVector_ImPlotColormap ColormapModifiers;
     tm Tm;
+    ImVector_double Temp1, Temp2;
     int VisibleItemCount;
     int DigitalPlotItemCnt;
     int DigitalPlotOffset;
@@ -4177,14 +4198,20 @@ void ImPlotRange_destroy(ImPlotRange* self);
 ImPlotRange* ImPlotRange_ImPlotRangedouble(double _min,double _max);
 _Bool                ImPlotRange_Contains(ImPlotRange* self,double value);
 double ImPlotRange_Size(ImPlotRange* self);
+ImPlotLimits* ImPlotLimits_ImPlotLimitsNil(void);
+void ImPlotLimits_destroy(ImPlotLimits* self);
+ImPlotLimits* ImPlotLimits_ImPlotLimitsdouble(double x_min,double x_max,double y_min,double y_max);
 _Bool                ImPlotLimits_ContainsPlotPoInt(ImPlotLimits* self,const ImPlotPoint p);
 _Bool                ImPlotLimits_Containsdouble(ImPlotLimits* self,double x,double y);
+void ImPlotLimits_Min(ImPlotPoint *pOut,ImPlotLimits* self);
+void ImPlotLimits_Max(ImPlotPoint *pOut,ImPlotLimits* self);
 ImPlotStyle* ImPlotStyle_ImPlotStyle(void);
 void ImPlotStyle_destroy(ImPlotStyle* self);
 ImPlotContext* ImPlot_CreateContext(void);
 void ImPlot_DestroyContext(ImPlotContext* ctx);
 ImPlotContext* ImPlot_GetCurrentContext(void);
 void ImPlot_SetCurrentContext(ImPlotContext* ctx);
+void ImPlot_SetImGuiContext(ImGuiContext* ctx);
 _Bool                ImPlot_BeginPlot(const char* title_id,const char* x_label,const char* y_label,const ImVec2 size,ImPlotFlags flags,ImPlotAxisFlags x_flags,ImPlotAxisFlags y_flags,ImPlotAxisFlags y2_flags,ImPlotAxisFlags y3_flags,const char* y2_label,const char* y3_label);
 void ImPlot_EndPlot(void);
 void ImPlot_PlotLineFloatPtrInt(const char* label_id,const float* values,int count,double xscale,double x0,int offset,int stride);
@@ -4418,6 +4445,26 @@ void ImPlot_PlotHeatmapS32Ptr(const char* label_id,const ImS32* values,int rows,
 void ImPlot_PlotHeatmapU32Ptr(const char* label_id,const ImU32* values,int rows,int cols,double scale_min,double scale_max,const char* label_fmt,const ImPlotPoint bounds_min,const ImPlotPoint bounds_max);
 void ImPlot_PlotHeatmapS64Ptr(const char* label_id,const ImS64* values,int rows,int cols,double scale_min,double scale_max,const char* label_fmt,const ImPlotPoint bounds_min,const ImPlotPoint bounds_max);
 void ImPlot_PlotHeatmapU64Ptr(const char* label_id,const ImU64* values,int rows,int cols,double scale_min,double scale_max,const char* label_fmt,const ImPlotPoint bounds_min,const ImPlotPoint bounds_max);
+double ImPlot_PlotHistogramFloatPtr(const char* label_id,const float* values,int count,int bins,                                                                                                          _Bool                                                                                                                cumulative,                                                                                                                          _Bool                                                                                                                                density,ImPlotRange range,                                                                                                                                                         _Bool                                                                                                                                                               outliers,double bar_scale);
+double ImPlot_PlotHistogramdoublePtr(const char* label_id,const double* values,int count,int bins,                                                                                                            _Bool                                                                                                                  cumulative,                                                                                                                            _Bool                                                                                                                                  density,ImPlotRange range,                                                                                                                                                           _Bool                                                                                                                                                                 outliers,double bar_scale);
+double ImPlot_PlotHistogramS8Ptr(const char* label_id,const ImS8* values,int count,int bins,                                                                                                      _Bool                                                                                                            cumulative,                                                                                                                      _Bool                                                                                                                            density,ImPlotRange range,                                                                                                                                                     _Bool                                                                                                                                                           outliers,double bar_scale);
+double ImPlot_PlotHistogramU8Ptr(const char* label_id,const ImU8* values,int count,int bins,                                                                                                      _Bool                                                                                                            cumulative,                                                                                                                      _Bool                                                                                                                            density,ImPlotRange range,                                                                                                                                                     _Bool                                                                                                                                                           outliers,double bar_scale);
+double ImPlot_PlotHistogramS16Ptr(const char* label_id,const ImS16* values,int count,int bins,                                                                                                        _Bool                                                                                                              cumulative,                                                                                                                        _Bool                                                                                                                              density,ImPlotRange range,                                                                                                                                                       _Bool                                                                                                                                                             outliers,double bar_scale);
+double ImPlot_PlotHistogramU16Ptr(const char* label_id,const ImU16* values,int count,int bins,                                                                                                        _Bool                                                                                                              cumulative,                                                                                                                        _Bool                                                                                                                              density,ImPlotRange range,                                                                                                                                                       _Bool                                                                                                                                                             outliers,double bar_scale);
+double ImPlot_PlotHistogramS32Ptr(const char* label_id,const ImS32* values,int count,int bins,                                                                                                        _Bool                                                                                                              cumulative,                                                                                                                        _Bool                                                                                                                              density,ImPlotRange range,                                                                                                                                                       _Bool                                                                                                                                                             outliers,double bar_scale);
+double ImPlot_PlotHistogramU32Ptr(const char* label_id,const ImU32* values,int count,int bins,                                                                                                        _Bool                                                                                                              cumulative,                                                                                                                        _Bool                                                                                                                              density,ImPlotRange range,                                                                                                                                                       _Bool                                                                                                                                                             outliers,double bar_scale);
+double ImPlot_PlotHistogramS64Ptr(const char* label_id,const ImS64* values,int count,int bins,                                                                                                        _Bool                                                                                                              cumulative,                                                                                                                        _Bool                                                                                                                              density,ImPlotRange range,                                                                                                                                                       _Bool                                                                                                                                                             outliers,double bar_scale);
+double ImPlot_PlotHistogramU64Ptr(const char* label_id,const ImU64* values,int count,int bins,                                                                                                        _Bool                                                                                                              cumulative,                                                                                                                        _Bool                                                                                                                              density,ImPlotRange range,                                                                                                                                                       _Bool                                                                                                                                                             outliers,double bar_scale);
+double ImPlot_PlotHistogram2DFloatPtr(const char* label_id,const float* xs,const float* ys,int count,int x_bins,int y_bins,                                                                                                                                     _Bool                                                                                                                                           density,ImPlotLimits range,                                                                                                                                                                     _Bool                                                                                                                                                                           outliers);
+double ImPlot_PlotHistogram2DdoublePtr(const char* label_id,const double* xs,const double* ys,int count,int x_bins,int y_bins,                                                                                                                                        _Bool                                                                                                                                              density,ImPlotLimits range,                                                                                                                                                                        _Bool                                                                                                                                                                              outliers);
+double ImPlot_PlotHistogram2DS8Ptr(const char* label_id,const ImS8* xs,const ImS8* ys,int count,int x_bins,int y_bins,                                                                                                                                _Bool                                                                                                                                      density,ImPlotLimits range,                                                                                                                                                                _Bool                                                                                                                                                                      outliers);
+double ImPlot_PlotHistogram2DU8Ptr(const char* label_id,const ImU8* xs,const ImU8* ys,int count,int x_bins,int y_bins,                                                                                                                                _Bool                                                                                                                                      density,ImPlotLimits range,                                                                                                                                                                _Bool                                                                                                                                                                      outliers);
+double ImPlot_PlotHistogram2DS16Ptr(const char* label_id,const ImS16* xs,const ImS16* ys,int count,int x_bins,int y_bins,                                                                                                                                   _Bool                                                                                                                                         density,ImPlotLimits range,                                                                                                                                                                   _Bool                                                                                                                                                                         outliers);
+double ImPlot_PlotHistogram2DU16Ptr(const char* label_id,const ImU16* xs,const ImU16* ys,int count,int x_bins,int y_bins,                                                                                                                                   _Bool                                                                                                                                         density,ImPlotLimits range,                                                                                                                                                                   _Bool                                                                                                                                                                         outliers);
+double ImPlot_PlotHistogram2DS32Ptr(const char* label_id,const ImS32* xs,const ImS32* ys,int count,int x_bins,int y_bins,                                                                                                                                   _Bool                                                                                                                                         density,ImPlotLimits range,                                                                                                                                                                   _Bool                                                                                                                                                                         outliers);
+double ImPlot_PlotHistogram2DU32Ptr(const char* label_id,const ImU32* xs,const ImU32* ys,int count,int x_bins,int y_bins,                                                                                                                                   _Bool                                                                                                                                         density,ImPlotLimits range,                                                                                                                                                                   _Bool                                                                                                                                                                         outliers);
+double ImPlot_PlotHistogram2DS64Ptr(const char* label_id,const ImS64* xs,const ImS64* ys,int count,int x_bins,int y_bins,                                                                                                                                   _Bool                                                                                                                                         density,ImPlotLimits range,                                                                                                                                                                   _Bool                                                                                                                                                                         outliers);
+double ImPlot_PlotHistogram2DU64Ptr(const char* label_id,const ImU64* xs,const ImU64* ys,int count,int x_bins,int y_bins,                                                                                                                                   _Bool                                                                                                                                         density,ImPlotLimits range,                                                                                                                                                                   _Bool                                                                                                                                                                         outliers);
 void ImPlot_PlotDigitalFloatPtr(const char* label_id,const float* xs,const float* ys,int count,int offset,int stride);
 void ImPlot_PlotDigitaldoublePtr(const char* label_id,const double* xs,const double* ys,int count,int offset,int stride);
 void ImPlot_PlotDigitalS8Ptr(const char* label_id,const ImS8* xs,const ImS8* ys,int count,int offset,int stride);
@@ -4500,19 +4547,25 @@ void ImPlot_SetNextErrorBarStyle(const ImVec4 col,float size,float weight);
 void ImPlot_GetLastItemColor(ImVec4 *pOut);
 const char* ImPlot_GetStyleColorName(ImPlotCol idx);
 const char* ImPlot_GetMarkerName(ImPlotMarker idx);
-void ImPlot_PushColormapPlotColormap(ImPlotColormap colormap);
-void ImPlot_PushColormapVec4Ptr(const ImVec4* colormap,int size);
+ImPlotColormap ImPlot_AddColormapVec4Ptr(const char* name,const ImVec4* cols,int size,                                                                                                _Bool                                                                                                      qual);
+ImPlotColormap ImPlot_AddColormapU32Ptr(const char* name,const ImU32* cols,int size,                                                                                              _Bool                                                                                                    qual);
+int ImPlot_GetColormapCount(void);
+const char* ImPlot_GetColormapName(ImPlotColormap cmap);
+ImPlotColormap ImPlot_GetColormapIndex(const char* name);
+void ImPlot_PushColormapPlotColormap(ImPlotColormap cmap);
+void ImPlot_PushColormapStr(const char* name);
 void ImPlot_PopColormap(int count);
-void ImPlot_SetColormapVec4Ptr(const ImVec4* colormap,int size);
-void ImPlot_SetColormapPlotColormap(ImPlotColormap colormap,int samples);
-int ImPlot_GetColormapSize(void);
-void ImPlot_GetColormapColor(ImVec4 *pOut,int index);
-void ImPlot_LerpColormapFloat(ImVec4 *pOut,float t);
 void ImPlot_NextColormapColor(ImVec4 *pOut);
-void ImPlot_ShowColormapScale(double scale_min,double scale_max,const ImVec2 size);
-const char* ImPlot_GetColormapName(ImPlotColormap colormap);
+int ImPlot_GetColormapSize(ImPlotColormap cmap);
+void ImPlot_GetColormapColor(ImVec4 *pOut,int idx,ImPlotColormap cmap);
+void ImPlot_SampleColormap(ImVec4 *pOut,float t,ImPlotColormap cmap);
+void ImPlot_ColormapScale(const char* label,double scale_min,double scale_max,const ImVec2 size,ImPlotColormap cmap);
+_Bool                ImPlot_ColormapSlider(const char* label,float* t,ImVec4* out,const char* format,ImPlotColormap cmap);
+_Bool                ImPlot_ColormapButton(const char* label,const ImVec2 size,ImPlotColormap cmap);
+void ImPlot_BustColorCache(const char* plot_title_id);
 void ImPlot_ItemIconVec4(const ImVec4 col);
 void ImPlot_ItemIconU32(ImU32 col);
+void ImPlot_ColormapIcon(ImPlotColormap cmap);
 ImDrawList* ImPlot_GetPlotDrawList(void);
 void ImPlot_PushPlotClipRect(void);
 void ImPlot_PopPlotClipRect(void);
@@ -4521,7 +4574,6 @@ _Bool                ImPlot_ShowColormapSelector(const char* label);
 void ImPlot_ShowStyleEditor(ImPlotStyle* ref);
 void ImPlot_ShowUserGuide(void);
 void ImPlot_ShowMetricsWindow(                                        _Bool                                            * p_popen);
-void ImPlot_SetImGuiContext(ImGuiContext* ctx);
 void ImPlot_ShowDemoWindow(                                     _Bool                                         * p_open);
 float ImPlot_ImLog10Float(float x);
 double ImPlot_ImLog10double(double x);
@@ -4535,6 +4587,16 @@ ImS32 ImPlot_ImRemapS32(ImS32 x,ImS32 x0,ImS32 x1,ImS32 y0,ImS32 y1);
 ImU32 ImPlot_ImRemapU32(ImU32 x,ImU32 x0,ImU32 x1,ImU32 y0,ImU32 y1);
 ImS64 ImPlot_ImRemapS64(ImS64 x,ImS64 x0,ImS64 x1,ImS64 y0,ImS64 y1);
 ImU64 ImPlot_ImRemapU64(ImU64 x,ImU64 x0,ImU64 x1,ImU64 y0,ImU64 y1);
+float ImPlot_ImRemap01Float(float x,float x0,float x1);
+double ImPlot_ImRemap01double(double x,double x0,double x1);
+ImS8 ImPlot_ImRemap01S8(ImS8 x,ImS8 x0,ImS8 x1);
+ImU8 ImPlot_ImRemap01U8(ImU8 x,ImU8 x0,ImU8 x1);
+ImS16 ImPlot_ImRemap01S16(ImS16 x,ImS16 x0,ImS16 x1);
+ImU16 ImPlot_ImRemap01U16(ImU16 x,ImU16 x0,ImU16 x1);
+ImS32 ImPlot_ImRemap01S32(ImS32 x,ImS32 x0,ImS32 x1);
+ImU32 ImPlot_ImRemap01U32(ImU32 x,ImU32 x0,ImU32 x1);
+ImS64 ImPlot_ImRemap01S64(ImS64 x,ImS64 x0,ImS64 x1);
+ImU64 ImPlot_ImRemap01U64(ImU64 x,ImU64 x0,ImU64 x1);
 int ImPlot_ImPosMod(int l,int r);
 _Bool                ImPlot_ImNanOrInf(double val);
 double ImPlot_ImConstrainNan(double val);
@@ -4542,6 +4604,59 @@ double ImPlot_ImConstrainInf(double val);
 double ImPlot_ImConstrainLog(double val);
 double ImPlot_ImConstrainTime(double val);
 _Bool                ImPlot_ImAlmostEqual(double v1,double v2,int ulp);
+float ImPlot_ImMinArrayFloatPtr(const float* values,int count);
+double ImPlot_ImMinArraydoublePtr(const double* values,int count);
+ImS8 ImPlot_ImMinArrayS8Ptr(const ImS8* values,int count);
+ImU8 ImPlot_ImMinArrayU8Ptr(const ImU8* values,int count);
+ImS16 ImPlot_ImMinArrayS16Ptr(const ImS16* values,int count);
+ImU16 ImPlot_ImMinArrayU16Ptr(const ImU16* values,int count);
+ImS32 ImPlot_ImMinArrayS32Ptr(const ImS32* values,int count);
+ImU32 ImPlot_ImMinArrayU32Ptr(const ImU32* values,int count);
+ImS64 ImPlot_ImMinArrayS64Ptr(const ImS64* values,int count);
+ImU64 ImPlot_ImMinArrayU64Ptr(const ImU64* values,int count);
+float ImPlot_ImMaxArrayFloatPtr(const float* values,int count);
+double ImPlot_ImMaxArraydoublePtr(const double* values,int count);
+ImS8 ImPlot_ImMaxArrayS8Ptr(const ImS8* values,int count);
+ImU8 ImPlot_ImMaxArrayU8Ptr(const ImU8* values,int count);
+ImS16 ImPlot_ImMaxArrayS16Ptr(const ImS16* values,int count);
+ImU16 ImPlot_ImMaxArrayU16Ptr(const ImU16* values,int count);
+ImS32 ImPlot_ImMaxArrayS32Ptr(const ImS32* values,int count);
+ImU32 ImPlot_ImMaxArrayU32Ptr(const ImU32* values,int count);
+ImS64 ImPlot_ImMaxArrayS64Ptr(const ImS64* values,int count);
+ImU64 ImPlot_ImMaxArrayU64Ptr(const ImU64* values,int count);
+void ImPlot_ImMinMaxArrayFloatPtr(const float* values,int count,float* min_out,float* max_out);
+void ImPlot_ImMinMaxArraydoublePtr(const double* values,int count,double* min_out,double* max_out);
+void ImPlot_ImMinMaxArrayS8Ptr(const ImS8* values,int count,ImS8* min_out,ImS8* max_out);
+void ImPlot_ImMinMaxArrayU8Ptr(const ImU8* values,int count,ImU8* min_out,ImU8* max_out);
+void ImPlot_ImMinMaxArrayS16Ptr(const ImS16* values,int count,ImS16* min_out,ImS16* max_out);
+void ImPlot_ImMinMaxArrayU16Ptr(const ImU16* values,int count,ImU16* min_out,ImU16* max_out);
+void ImPlot_ImMinMaxArrayS32Ptr(const ImS32* values,int count,ImS32* min_out,ImS32* max_out);
+void ImPlot_ImMinMaxArrayU32Ptr(const ImU32* values,int count,ImU32* min_out,ImU32* max_out);
+void ImPlot_ImMinMaxArrayS64Ptr(const ImS64* values,int count,ImS64* min_out,ImS64* max_out);
+void ImPlot_ImMinMaxArrayU64Ptr(const ImU64* values,int count,ImU64* min_out,ImU64* max_out);
+double ImPlot_ImMeanFloatPtr(const float* values,int count);
+double ImPlot_ImMeandoublePtr(const double* values,int count);
+double ImPlot_ImMeanS8Ptr(const ImS8* values,int count);
+double ImPlot_ImMeanU8Ptr(const ImU8* values,int count);
+double ImPlot_ImMeanS16Ptr(const ImS16* values,int count);
+double ImPlot_ImMeanU16Ptr(const ImU16* values,int count);
+double ImPlot_ImMeanS32Ptr(const ImS32* values,int count);
+double ImPlot_ImMeanU32Ptr(const ImU32* values,int count);
+double ImPlot_ImMeanS64Ptr(const ImS64* values,int count);
+double ImPlot_ImMeanU64Ptr(const ImU64* values,int count);
+double ImPlot_ImStdDevFloatPtr(const float* values,int count);
+double ImPlot_ImStdDevdoublePtr(const double* values,int count);
+double ImPlot_ImStdDevS8Ptr(const ImS8* values,int count);
+double ImPlot_ImStdDevU8Ptr(const ImU8* values,int count);
+double ImPlot_ImStdDevS16Ptr(const ImS16* values,int count);
+double ImPlot_ImStdDevU16Ptr(const ImU16* values,int count);
+double ImPlot_ImStdDevS32Ptr(const ImS32* values,int count);
+double ImPlot_ImStdDevU32Ptr(const ImU32* values,int count);
+double ImPlot_ImStdDevS64Ptr(const ImS64* values,int count);
+double ImPlot_ImStdDevU64Ptr(const ImU64* values,int count);
+ImU32 ImPlot_ImMixU32(ImU32 a,ImU32 b,ImU32 s);
+ImU32 ImPlot_ImLerpU32(const ImU32* colors,int size,float t);
+ImU32 ImPlot_ImAlphaU32(ImU32 col,float alpha);
 ImBufferWriter* ImBufferWriter_ImBufferWriter(char* buffer,int size);
 void ImBufferWriter_destroy(ImBufferWriter* self);
 void ImBufferWriter_Write(ImBufferWriter* self,const char* fmt,...);
@@ -4556,8 +4671,22 @@ ImPlotTime* ImPlotTime_ImPlotTimetime_t(time_t s,int us);
 void ImPlotTime_RollOver(ImPlotTime* self);
 double ImPlotTime_ToDouble(ImPlotTime* self);
 ImPlotTime ImPlotTime_FromDouble(double t);
-ImPlotColormapMod* ImPlotColormapMod_ImPlotColormapMod(const ImVec4* colormap,int colormap_size);
-void ImPlotColormapMod_destroy(ImPlotColormapMod* self);
+ImPlotColormapData* ImPlotColormapData_ImPlotColormapData(void);
+void ImPlotColormapData_destroy(ImPlotColormapData* self);
+int ImPlotColormapData_Append(ImPlotColormapData* self,const char* name,const ImU32* keys,int count,                                                                                                              _Bool                                                                                                                    qual);
+void ImPlotColormapData__AppendTable(ImPlotColormapData* self,ImPlotColormap cmap);
+void ImPlotColormapData_RebuildTables(ImPlotColormapData* self);
+_Bool                ImPlotColormapData_IsQual(ImPlotColormapData* self,ImPlotColormap cmap);
+const char* ImPlotColormapData_GetName(ImPlotColormapData* self,ImPlotColormap cmap);
+ImPlotColormap ImPlotColormapData_GetIndex(ImPlotColormapData* self,const char* name);
+const ImU32* ImPlotColormapData_GetKeys(ImPlotColormapData* self,ImPlotColormap cmap);
+int ImPlotColormapData_GetKeyCount(ImPlotColormapData* self,ImPlotColormap cmap);
+ImU32 ImPlotColormapData_GetKeyColor(ImPlotColormapData* self,ImPlotColormap cmap,int idx);
+void ImPlotColormapData_SetKeyColor(ImPlotColormapData* self,ImPlotColormap cmap,int idx,ImU32 value);
+const ImU32* ImPlotColormapData_GetTable(ImPlotColormapData* self,ImPlotColormap cmap);
+int ImPlotColormapData_GetTableSize(ImPlotColormapData* self,ImPlotColormap cmap);
+ImU32 ImPlotColormapData_GetTableColor(ImPlotColormapData* self,ImPlotColormap cmap,int idx);
+ImU32 ImPlotColormapData_LerpTable(ImPlotColormapData* self,ImPlotColormap cmap,float t);
 ImPlotPointError* ImPlotPointError_ImPlotPointError(double x,double y,double neg,double pos);
 void ImPlotPointError_destroy(ImPlotPointError* self);
 ImPlotAnnotationCollection* ImPlotAnnotationCollection_ImPlotAnnotationCollection(void);
@@ -4585,10 +4714,12 @@ double ImPlotAxis_GetAspect(ImPlotAxis* self);
 void ImPlotAxis_Constrain(ImPlotAxis* self);
 _Bool                ImPlotAxis_IsLabeled(ImPlotAxis* self);
 _Bool                ImPlotAxis_IsInverted(ImPlotAxis* self);
-_Bool                ImPlotAxis_IsAlwaysLocked(ImPlotAxis* self);
+_Bool                ImPlotAxis_IsAutoFitting(ImPlotAxis* self);
+_Bool                ImPlotAxis_IsRangeLocked(ImPlotAxis* self);
 _Bool                ImPlotAxis_IsLockedMin(ImPlotAxis* self);
 _Bool                ImPlotAxis_IsLockedMax(ImPlotAxis* self);
 _Bool                ImPlotAxis_IsLocked(ImPlotAxis* self);
+_Bool                ImPlotAxis_IsInputLocked(ImPlotAxis* self);
 _Bool                ImPlotAxis_IsTime(ImPlotAxis* self);
 _Bool                ImPlotAxis_IsLog(ImPlotAxis* self);
 ImPlotItem* ImPlotItem_ImPlotItem(void);
@@ -4599,7 +4730,7 @@ void ImPlotPlot_destroy(ImPlotPlot* self);
 int ImPlotPlot_GetLegendCount(ImPlotPlot* self);
 ImPlotItem* ImPlotPlot_GetLegendItem(ImPlotPlot* self,int i);
 const char* ImPlotPlot_GetLegendLabel(ImPlotPlot* self,int i);
-_Bool                ImPlotPlot_IsLocked(ImPlotPlot* self);
+_Bool                ImPlotPlot_IsInputLocked(ImPlotPlot* self);
 ImPlotNextPlotData* ImPlotNextPlotData_ImPlotNextPlotData(void);
 void ImPlotNextPlotData_destroy(ImPlotNextPlotData* self);
 void ImPlotNextPlotData_Reset(ImPlotNextPlotData* self);
@@ -4649,13 +4780,15 @@ _Bool                ImPlot_IsColorAutoPlotCol(ImPlotCol idx);
 void ImPlot_GetAutoColor(ImVec4 *pOut,ImPlotCol idx);
 void ImPlot_GetStyleColorVec4(ImVec4 *pOut,ImPlotCol idx);
 ImU32 ImPlot_GetStyleColorU32(ImPlotCol idx);
-const ImVec4* ImPlot_GetColormap(ImPlotColormap colormap,int* size_out);
-void ImPlot_LerpColormapVec4Ptr(ImVec4 *pOut,const ImVec4* colormap,int size,float t);
-void ImPlot_ResampleColormap(const ImVec4* colormap_in,int size_in,ImVec4* colormap_out,int size_out);
 void ImPlot_AddTextVertical(ImDrawList* DrawList,ImVec2 pos,ImU32 col,const char* text_begin,const char* text_end);
 void ImPlot_CalcTextSizeVertical(ImVec2 *pOut,const char* text);
-ImU32 ImPlot_CalcTextColor(const ImVec4 bg);
+ImU32 ImPlot_CalcTextColorVec4(const ImVec4 bg);
+ImU32 ImPlot_CalcTextColorU32(ImU32 bg);
 void ImPlot_ClampLabelPos(ImVec2 *pOut,ImVec2 pos,const ImVec2 size,const ImVec2 Min,const ImVec2 Max);
+ImU32 ImPlot_GetColormapColorU32(int idx,ImPlotColormap cmap);
+ImU32 ImPlot_NextColormapColorU32(void);
+ImU32 ImPlot_SampleColormapU32(float t,ImPlotColormap cmap);
+void ImPlot_RenderColorBar(const ImU32* colors,int size,ImDrawList* DrawList,const ImRect bounds,                                                                                                           _Bool                                                                                                                 vert,                                                                                                                     _Bool                                                                                                                           reversed,                                                                                                                                   _Bool                                                                                                                                         continuous);
 double ImPlot_NiceNum(double x,                                         _Bool                                               round);
 int ImPlot_OrderOfMagnitude(double val);
 int ImPlot_OrderToPrecision(int order);
@@ -4681,6 +4814,16 @@ ImS32 ImPlot_OffsetAndStrideS32Ptr(const ImS32* data,int idx,int count,int offse
 ImU32 ImPlot_OffsetAndStrideU32Ptr(const ImU32* data,int idx,int count,int offset,int stride);
 ImS64 ImPlot_OffsetAndStrideS64Ptr(const ImS64* data,int idx,int count,int offset,int stride);
 ImU64 ImPlot_OffsetAndStrideU64Ptr(const ImU64* data,int idx,int count,int offset,int stride);
+void ImPlot_CalculateBinsFloatPtr(const float* values,int count,ImPlotBin meth,const ImPlotRange range,int* bins_out,double* width_out);
+void ImPlot_CalculateBinsdoublePtr(const double* values,int count,ImPlotBin meth,const ImPlotRange range,int* bins_out,double* width_out);
+void ImPlot_CalculateBinsS8Ptr(const ImS8* values,int count,ImPlotBin meth,const ImPlotRange range,int* bins_out,double* width_out);
+void ImPlot_CalculateBinsU8Ptr(const ImU8* values,int count,ImPlotBin meth,const ImPlotRange range,int* bins_out,double* width_out);
+void ImPlot_CalculateBinsS16Ptr(const ImS16* values,int count,ImPlotBin meth,const ImPlotRange range,int* bins_out,double* width_out);
+void ImPlot_CalculateBinsU16Ptr(const ImU16* values,int count,ImPlotBin meth,const ImPlotRange range,int* bins_out,double* width_out);
+void ImPlot_CalculateBinsS32Ptr(const ImS32* values,int count,ImPlotBin meth,const ImPlotRange range,int* bins_out,double* width_out);
+void ImPlot_CalculateBinsU32Ptr(const ImU32* values,int count,ImPlotBin meth,const ImPlotRange range,int* bins_out,double* width_out);
+void ImPlot_CalculateBinsS64Ptr(const ImS64* values,int count,ImPlotBin meth,const ImPlotRange range,int* bins_out,double* width_out);
+void ImPlot_CalculateBinsU64Ptr(const ImU64* values,int count,ImPlotBin meth,const ImPlotRange range,int* bins_out,double* width_out);
 _Bool                ImPlot_IsLeapYear(int year);
 int ImPlot_GetDaysInMonth(int year,int month);
 ImPlotTime ImPlot_MkGmtTime(struct tm* ptm);
@@ -4699,9 +4842,6 @@ int ImPlot_FormatDate(const ImPlotTime t,char* buffer,int size,ImPlotDateFmt fmt
 int ImPlot_FormatDateTime(const ImPlotTime t,char* buffer,int size,ImPlotDateTimeFmt fmt);
 _Bool                ImPlot_ShowDatePicker(const char* id,int* level,ImPlotTime* t,const ImPlotTime* t1,const ImPlotTime* t2);
 _Bool                ImPlot_ShowTimePicker(const char* id,ImPlotTime* t);
-void ImPlot_PlotRectsFloatPtr(const char* label_id,const float* xs,const float* ys,int count,int offset,int stride);
-void ImPlot_PlotRectsdoublePtr(const char* label_id,const double* xs,const double* ys,int count,int offset,int stride);
-void ImPlot_PlotRectsFnPlotPoIntPtr(const char* label_id,ImPlotPoint(*getter)(void* data,int idx),void* data,int count,int offset);
 typedef void *(*ImPlotPoint_getter)(void* data, int idx, ImPlotPoint *point);
 void ImPlot_PlotLineG(const char* label_id,ImPlotPoint_getter getter,void* data,int count,int offset);
 void ImPlot_PlotScatterG(const char* label_id, ImPlotPoint_getter getter, void* data, int count, int offset);
