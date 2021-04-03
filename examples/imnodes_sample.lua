@@ -98,10 +98,6 @@ local function show_editor(editor)
         end
         print("current_id",editor.current_id)
     end
-    ig.SameLine()
-    local enab = ffi.new("bool[1]",ig.imnodes_GetIO().emulate_three_button_mouse.enabled)
-    ig.Checkbox("emulate three button mouse",enab)
-    ig.imnodes_GetIO().emulate_three_button_mouse.enabled = enab[0]
 
     ig.TextUnformatted("A -- add node");
     ig.TextUnformatted("X -- delete selected node or link");

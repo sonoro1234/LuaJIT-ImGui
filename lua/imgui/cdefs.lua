@@ -5050,7 +5050,6 @@ typedef enum {
 }AttributeFlags;
 struct EmulateThreeButtonMouse
 {
-               _Bool             enabled;
         const              _Bool                 * modifier;
 };
 struct LinkDetachWithModifierClick
@@ -5061,6 +5060,7 @@ struct IO
 {
     EmulateThreeButtonMouse emulate_three_button_mouse;
     LinkDetachWithModifierClick link_detach_with_modifier_click;
+    int alt_mouse_button;
 };
 struct Style
 {

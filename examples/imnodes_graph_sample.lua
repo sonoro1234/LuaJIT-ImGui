@@ -207,10 +207,6 @@ local function show_editor(editor)
     ig.imnodes_EditorContextSet(editor.context);
 
     ig.Begin(editor.name);
-   
-    local enab = ffi.new("bool[1]",ig.imnodes_GetIO().emulate_three_button_mouse.enabled)
-    ig.Checkbox("emulate three button mouse",enab)
-    ig.imnodes_GetIO().emulate_three_button_mouse.enabled = enab[0]
 
     ig.TextUnformatted("A -- add node");
     ig.TextUnformatted("X -- delete selected node or link");
