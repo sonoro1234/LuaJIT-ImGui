@@ -316,7 +316,7 @@ function Log:Draw(title)
 end
 M.Log = ffi.metatype("Log",Log)
 ------------convenience function
-function M.U32(a,b,c,d) return lib.igGetColorU32Vec4(ImVec4(a,b,c,d or 1)) end
+function M.U32(a,b,c,d) return lib.igGetColorU32_Vec4(ImVec4(a,b,c,d or 1)) end
 
 -------------ImGuiZMO.quat
 
@@ -576,34 +576,34 @@ function M.ImColor_HSV(h,s,v,a)
     lib.ImColor_HSV(nonUDT_out,h,s,v,a)
     return nonUDT_out
 end
-function ImColor.ImColorNil()
-    local ptr = lib.ImColor_ImColorNil()
+function ImColor.ImColor_Nil()
+    local ptr = lib.ImColor_ImColor_Nil()
     return ffi.gc(ptr,lib.ImColor_destroy)
 end
-function ImColor.ImColorInt(r,g,b,a)
+function ImColor.ImColor_Int(r,g,b,a)
     if a == nil then a = 255 end
-    local ptr = lib.ImColor_ImColorInt(r,g,b,a)
+    local ptr = lib.ImColor_ImColor_Int(r,g,b,a)
     return ffi.gc(ptr,lib.ImColor_destroy)
 end
-function ImColor.ImColorU32(rgba)
-    local ptr = lib.ImColor_ImColorU32(rgba)
+function ImColor.ImColor_U32(rgba)
+    local ptr = lib.ImColor_ImColor_U32(rgba)
     return ffi.gc(ptr,lib.ImColor_destroy)
 end
-function ImColor.ImColorFloat(r,g,b,a)
+function ImColor.ImColor_Float(r,g,b,a)
     if a == nil then a = 1.0 end
-    local ptr = lib.ImColor_ImColorFloat(r,g,b,a)
+    local ptr = lib.ImColor_ImColor_Float(r,g,b,a)
     return ffi.gc(ptr,lib.ImColor_destroy)
 end
-function ImColor.ImColorVec4(col)
-    local ptr = lib.ImColor_ImColorVec4(col)
+function ImColor.ImColor_Vec4(col)
+    local ptr = lib.ImColor_ImColor_Vec4(col)
     return ffi.gc(ptr,lib.ImColor_destroy)
 end
 function ImColor.__new(ctype,a1,a2,a3,a4) -- generic version
-    if a1==nil then return ImColor.ImColorNil() end
-    if (ffi.istype('int',a1) or type(a1)=='number') then return ImColor.ImColorInt(a1,a2,a3,a4) end
-    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return ImColor.ImColorU32(a1) end
-    if (ffi.istype('float',a1) or type(a1)=='number') then return ImColor.ImColorFloat(a1,a2,a3,a4) end
-    if ffi.istype('const ImVec4',a1) then return ImColor.ImColorVec4(a1) end
+    if a1==nil then return ImColor.ImColor_Nil() end
+    if (ffi.istype('int',a1) or type(a1)=='number') then return ImColor.ImColor_Int(a1,a2,a3,a4) end
+    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return ImColor.ImColor_U32(a1) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return ImColor.ImColor_Float(a1,a2,a3,a4) end
+    if ffi.istype('const ImVec4',a1) then return ImColor.ImColor_Vec4(a1) end
     print(ctype,a1,a2,a3,a4)
     error'ImColor.__new could not find overloaded'
 end
@@ -707,19 +707,19 @@ function ImDrawList:AddRectFilled(p_min,p_max,col,rounding,flags)
     return lib.ImDrawList_AddRectFilled(self,p_min,p_max,col,rounding,flags)
 end
 ImDrawList.AddRectFilledMultiColor = lib.ImDrawList_AddRectFilledMultiColor
-function ImDrawList:AddTextVec2(pos,col,text_begin,text_end)
+function ImDrawList:AddText_Vec2(pos,col,text_begin,text_end)
     text_end = text_end or nil
-    return lib.ImDrawList_AddTextVec2(self,pos,col,text_begin,text_end)
+    return lib.ImDrawList_AddText_Vec2(self,pos,col,text_begin,text_end)
 end
-function ImDrawList:AddTextFontPtr(font,font_size,pos,col,text_begin,text_end,wrap_width,cpu_fine_clip_rect)
+function ImDrawList:AddText_FontPtr(font,font_size,pos,col,text_begin,text_end,wrap_width,cpu_fine_clip_rect)
     cpu_fine_clip_rect = cpu_fine_clip_rect or nil
     text_end = text_end or nil
     wrap_width = wrap_width or 0.0
-    return lib.ImDrawList_AddTextFontPtr(self,font,font_size,pos,col,text_begin,text_end,wrap_width,cpu_fine_clip_rect)
+    return lib.ImDrawList_AddText_FontPtr(self,font,font_size,pos,col,text_begin,text_end,wrap_width,cpu_fine_clip_rect)
 end
 function ImDrawList:AddText(a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
-    if ffi.istype('const ImVec2',a2) then return self:AddTextVec2(a2,a3,a4,a5) end
-    if (ffi.istype('const ImFont*',a2) or ffi.istype('const ImFont',a2) or ffi.istype('const ImFont[]',a2)) then return self:AddTextFontPtr(a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.istype('const ImVec2',a2) then return self:AddText_Vec2(a2,a3,a4,a5) end
+    if (ffi.istype('const ImFont*',a2) or ffi.istype('const ImFont',a2) or ffi.istype('const ImFont[]',a2)) then return self:AddText_FontPtr(a2,a3,a4,a5,a6,a7,a8,a9) end
     print(a2,a3,a4,a5,a6,a7,a8,a9)
     error'ImDrawList:AddText could not find overloaded'
 end
@@ -1184,17 +1184,17 @@ M.ImGuiPopupData = ffi.metatype("ImGuiPopupData",ImGuiPopupData)
 --------------------------ImGuiPtrOrIndex----------------------------
 local ImGuiPtrOrIndex= {}
 ImGuiPtrOrIndex.__index = ImGuiPtrOrIndex
-function ImGuiPtrOrIndex.ImGuiPtrOrIndexPtr(ptr)
-    local ptr = lib.ImGuiPtrOrIndex_ImGuiPtrOrIndexPtr(ptr)
+function ImGuiPtrOrIndex.ImGuiPtrOrIndex_Ptr(ptr)
+    local ptr = lib.ImGuiPtrOrIndex_ImGuiPtrOrIndex_Ptr(ptr)
     return ffi.gc(ptr,lib.ImGuiPtrOrIndex_destroy)
 end
-function ImGuiPtrOrIndex.ImGuiPtrOrIndexInt(index)
-    local ptr = lib.ImGuiPtrOrIndex_ImGuiPtrOrIndexInt(index)
+function ImGuiPtrOrIndex.ImGuiPtrOrIndex_Int(index)
+    local ptr = lib.ImGuiPtrOrIndex_ImGuiPtrOrIndex_Int(index)
     return ffi.gc(ptr,lib.ImGuiPtrOrIndex_destroy)
 end
 function ImGuiPtrOrIndex.__new(ctype,a1) -- generic version
-    if ffi.istype('void*',a1) then return ImGuiPtrOrIndex.ImGuiPtrOrIndexPtr(a1) end
-    if (ffi.istype('int',a1) or type(a1)=='number') then return ImGuiPtrOrIndex.ImGuiPtrOrIndexInt(a1) end
+    if ffi.istype('void*',a1) then return ImGuiPtrOrIndex.ImGuiPtrOrIndex_Ptr(a1) end
+    if (ffi.istype('int',a1) or type(a1)=='number') then return ImGuiPtrOrIndex.ImGuiPtrOrIndex_Int(a1) end
     print(ctype,a1)
     error'ImGuiPtrOrIndex.__new could not find overloaded'
 end
@@ -1260,22 +1260,22 @@ M.ImGuiStorage = ffi.metatype("ImGuiStorage",ImGuiStorage)
 --------------------------ImGuiStoragePair----------------------------
 local ImGuiStoragePair= {}
 ImGuiStoragePair.__index = ImGuiStoragePair
-function ImGuiStoragePair.ImGuiStoragePairInt(_key,_val_i)
-    local ptr = lib.ImGuiStoragePair_ImGuiStoragePairInt(_key,_val_i)
+function ImGuiStoragePair.ImGuiStoragePair_Int(_key,_val_i)
+    local ptr = lib.ImGuiStoragePair_ImGuiStoragePair_Int(_key,_val_i)
     return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
 end
-function ImGuiStoragePair.ImGuiStoragePairFloat(_key,_val_f)
-    local ptr = lib.ImGuiStoragePair_ImGuiStoragePairFloat(_key,_val_f)
+function ImGuiStoragePair.ImGuiStoragePair_Float(_key,_val_f)
+    local ptr = lib.ImGuiStoragePair_ImGuiStoragePair_Float(_key,_val_f)
     return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
 end
-function ImGuiStoragePair.ImGuiStoragePairPtr(_key,_val_p)
-    local ptr = lib.ImGuiStoragePair_ImGuiStoragePairPtr(_key,_val_p)
+function ImGuiStoragePair.ImGuiStoragePair_Ptr(_key,_val_p)
+    local ptr = lib.ImGuiStoragePair_ImGuiStoragePair_Ptr(_key,_val_p)
     return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
 end
 function ImGuiStoragePair.__new(ctype,a1,a2) -- generic version
-    if (ffi.istype('int',a2) or type(a2)=='number') then return ImGuiStoragePair.ImGuiStoragePairInt(a1,a2) end
-    if (ffi.istype('float',a2) or type(a2)=='number') then return ImGuiStoragePair.ImGuiStoragePairFloat(a1,a2) end
-    if ffi.istype('void*',a2) then return ImGuiStoragePair.ImGuiStoragePairPtr(a1,a2) end
+    if (ffi.istype('int',a2) or type(a2)=='number') then return ImGuiStoragePair.ImGuiStoragePair_Int(a1,a2) end
+    if (ffi.istype('float',a2) or type(a2)=='number') then return ImGuiStoragePair.ImGuiStoragePair_Float(a1,a2) end
+    if ffi.istype('void*',a2) then return ImGuiStoragePair.ImGuiStoragePair_Ptr(a1,a2) end
     print(ctype,a1,a2)
     error'ImGuiStoragePair.__new could not find overloaded'
 end
@@ -1292,22 +1292,22 @@ M.ImGuiStyle = ffi.metatype("ImGuiStyle",ImGuiStyle)
 --------------------------ImGuiStyleMod----------------------------
 local ImGuiStyleMod= {}
 ImGuiStyleMod.__index = ImGuiStyleMod
-function ImGuiStyleMod.ImGuiStyleModInt(idx,v)
-    local ptr = lib.ImGuiStyleMod_ImGuiStyleModInt(idx,v)
+function ImGuiStyleMod.ImGuiStyleMod_Int(idx,v)
+    local ptr = lib.ImGuiStyleMod_ImGuiStyleMod_Int(idx,v)
     return ffi.gc(ptr,lib.ImGuiStyleMod_destroy)
 end
-function ImGuiStyleMod.ImGuiStyleModFloat(idx,v)
-    local ptr = lib.ImGuiStyleMod_ImGuiStyleModFloat(idx,v)
+function ImGuiStyleMod.ImGuiStyleMod_Float(idx,v)
+    local ptr = lib.ImGuiStyleMod_ImGuiStyleMod_Float(idx,v)
     return ffi.gc(ptr,lib.ImGuiStyleMod_destroy)
 end
-function ImGuiStyleMod.ImGuiStyleModVec2(idx,v)
-    local ptr = lib.ImGuiStyleMod_ImGuiStyleModVec2(idx,v)
+function ImGuiStyleMod.ImGuiStyleMod_Vec2(idx,v)
+    local ptr = lib.ImGuiStyleMod_ImGuiStyleMod_Vec2(idx,v)
     return ffi.gc(ptr,lib.ImGuiStyleMod_destroy)
 end
 function ImGuiStyleMod.__new(ctype,a1,a2) -- generic version
-    if (ffi.istype('int',a2) or type(a2)=='number') then return ImGuiStyleMod.ImGuiStyleModInt(a1,a2) end
-    if (ffi.istype('float',a2) or type(a2)=='number') then return ImGuiStyleMod.ImGuiStyleModFloat(a1,a2) end
-    if ffi.istype('ImVec2',a2) then return ImGuiStyleMod.ImGuiStyleModVec2(a1,a2) end
+    if (ffi.istype('int',a2) or type(a2)=='number') then return ImGuiStyleMod.ImGuiStyleMod_Int(a1,a2) end
+    if (ffi.istype('float',a2) or type(a2)=='number') then return ImGuiStyleMod.ImGuiStyleMod_Float(a1,a2) end
+    if ffi.istype('ImVec2',a2) then return ImGuiStyleMod.ImGuiStyleMod_Vec2(a1,a2) end
     print(ctype,a1,a2)
     error'ImGuiStyleMod.__new could not find overloaded'
 end
@@ -1424,17 +1424,17 @@ M.ImGuiTextFilter = ffi.metatype("ImGuiTextFilter",ImGuiTextFilter)
 --------------------------ImGuiTextRange----------------------------
 local ImGuiTextRange= {}
 ImGuiTextRange.__index = ImGuiTextRange
-function ImGuiTextRange.ImGuiTextRangeNil()
-    local ptr = lib.ImGuiTextRange_ImGuiTextRangeNil()
+function ImGuiTextRange.ImGuiTextRange_Nil()
+    local ptr = lib.ImGuiTextRange_ImGuiTextRange_Nil()
     return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
 end
-function ImGuiTextRange.ImGuiTextRangeStr(_b,_e)
-    local ptr = lib.ImGuiTextRange_ImGuiTextRangeStr(_b,_e)
+function ImGuiTextRange.ImGuiTextRange_Str(_b,_e)
+    local ptr = lib.ImGuiTextRange_ImGuiTextRange_Str(_b,_e)
     return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
 end
 function ImGuiTextRange.__new(ctype,a1,a2) -- generic version
-    if a1==nil then return ImGuiTextRange.ImGuiTextRangeNil() end
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return ImGuiTextRange.ImGuiTextRangeStr(a1,a2) end
+    if a1==nil then return ImGuiTextRange.ImGuiTextRange_Nil() end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return ImGuiTextRange.ImGuiTextRange_Str(a1,a2) end
     print(ctype,a1,a2)
     error'ImGuiTextRange.__new could not find overloaded'
 end
@@ -1483,30 +1483,30 @@ M.ImGuiViewportP = ffi.metatype("ImGuiViewportP",ImGuiViewportP)
 local ImGuiWindow= {}
 ImGuiWindow.__index = ImGuiWindow
 ImGuiWindow.CalcFontSize = lib.ImGuiWindow_CalcFontSize
-function ImGuiWindow:GetIDStr(str,str_end)
+function ImGuiWindow:GetID_Str(str,str_end)
     str_end = str_end or nil
-    return lib.ImGuiWindow_GetIDStr(self,str,str_end)
+    return lib.ImGuiWindow_GetID_Str(self,str,str_end)
 end
-ImGuiWindow.GetIDPtr = lib.ImGuiWindow_GetIDPtr
-ImGuiWindow.GetIDInt = lib.ImGuiWindow_GetIDInt
+ImGuiWindow.GetID_Ptr = lib.ImGuiWindow_GetID_Ptr
+ImGuiWindow.GetID_Int = lib.ImGuiWindow_GetID_Int
 function ImGuiWindow:GetID(a2,a3) -- generic version
-    if (ffi.istype('const char*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return self:GetIDStr(a2,a3) end
-    if ffi.istype('const void*',a2) then return self:GetIDPtr(a2) end
-    if (ffi.istype('int',a2) or type(a2)=='number') then return self:GetIDInt(a2) end
+    if (ffi.istype('const char*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return self:GetID_Str(a2,a3) end
+    if ffi.istype('const void*',a2) then return self:GetID_Ptr(a2) end
+    if (ffi.istype('int',a2) or type(a2)=='number') then return self:GetID_Int(a2) end
     print(a2,a3)
     error'ImGuiWindow:GetID could not find overloaded'
 end
 ImGuiWindow.GetIDFromRectangle = lib.ImGuiWindow_GetIDFromRectangle
-function ImGuiWindow:GetIDNoKeepAliveStr(str,str_end)
+function ImGuiWindow:GetIDNoKeepAlive_Str(str,str_end)
     str_end = str_end or nil
-    return lib.ImGuiWindow_GetIDNoKeepAliveStr(self,str,str_end)
+    return lib.ImGuiWindow_GetIDNoKeepAlive_Str(self,str,str_end)
 end
-ImGuiWindow.GetIDNoKeepAlivePtr = lib.ImGuiWindow_GetIDNoKeepAlivePtr
-ImGuiWindow.GetIDNoKeepAliveInt = lib.ImGuiWindow_GetIDNoKeepAliveInt
+ImGuiWindow.GetIDNoKeepAlive_Ptr = lib.ImGuiWindow_GetIDNoKeepAlive_Ptr
+ImGuiWindow.GetIDNoKeepAlive_Int = lib.ImGuiWindow_GetIDNoKeepAlive_Int
 function ImGuiWindow:GetIDNoKeepAlive(a2,a3) -- generic version
-    if (ffi.istype('const char*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return self:GetIDNoKeepAliveStr(a2,a3) end
-    if ffi.istype('const void*',a2) then return self:GetIDNoKeepAlivePtr(a2) end
-    if (ffi.istype('int',a2) or type(a2)=='number') then return self:GetIDNoKeepAliveInt(a2) end
+    if (ffi.istype('const char*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return self:GetIDNoKeepAlive_Str(a2,a3) end
+    if ffi.istype('const void*',a2) then return self:GetIDNoKeepAlive_Ptr(a2) end
+    if (ffi.istype('int',a2) or type(a2)=='number') then return self:GetIDNoKeepAlive_Int(a2) end
     print(a2,a3)
     error'ImGuiWindow:GetIDNoKeepAlive could not find overloaded'
 end
@@ -1583,11 +1583,11 @@ ImPlotAxis.IsTime = lib.ImPlotAxis_IsTime
 ImPlotAxis.SetAspect = lib.ImPlotAxis_SetAspect
 ImPlotAxis.SetMax = lib.ImPlotAxis_SetMax
 ImPlotAxis.SetMin = lib.ImPlotAxis_SetMin
-ImPlotAxis.SetRangedouble = lib.ImPlotAxis_SetRangedouble
-ImPlotAxis.SetRangePlotRange = lib.ImPlotAxis_SetRangePlotRange
+ImPlotAxis.SetRange_double = lib.ImPlotAxis_SetRange_double
+ImPlotAxis.SetRange_PlotRange = lib.ImPlotAxis_SetRange_PlotRange
 function ImPlotAxis:SetRange(a2,a3) -- generic version
-    if (ffi.istype('double',a2) or type(a2)=='number') then return self:SetRangedouble(a2,a3) end
-    if ffi.istype('const ImPlotRange',a2) then return self:SetRangePlotRange(a2) end
+    if (ffi.istype('double',a2) or type(a2)=='number') then return self:SetRange_double(a2,a3) end
+    if ffi.istype('const ImPlotRange',a2) then return self:SetRange_PlotRange(a2) end
     print(a2,a3)
     error'ImPlotAxis:SetRange could not find overloaded'
 end
@@ -1648,25 +1648,25 @@ M.ImPlotLegendData = ffi.metatype("ImPlotLegendData",ImPlotLegendData)
 --------------------------ImPlotLimits----------------------------
 local ImPlotLimits= {}
 ImPlotLimits.__index = ImPlotLimits
-ImPlotLimits.ContainsPlotPoInt = lib.ImPlotLimits_ContainsPlotPoInt
-ImPlotLimits.Containsdouble = lib.ImPlotLimits_Containsdouble
+ImPlotLimits.Contains_PlotPoInt = lib.ImPlotLimits_Contains_PlotPoInt
+ImPlotLimits.Contains_double = lib.ImPlotLimits_Contains_double
 function ImPlotLimits:Contains(a2,a3) -- generic version
-    if ffi.istype('const ImPlotPoint',a2) then return self:ContainsPlotPoInt(a2) end
-    if (ffi.istype('double',a2) or type(a2)=='number') then return self:Containsdouble(a2,a3) end
+    if ffi.istype('const ImPlotPoint',a2) then return self:Contains_PlotPoInt(a2) end
+    if (ffi.istype('double',a2) or type(a2)=='number') then return self:Contains_double(a2,a3) end
     print(a2,a3)
     error'ImPlotLimits:Contains could not find overloaded'
 end
-function ImPlotLimits.ImPlotLimitsNil()
-    local ptr = lib.ImPlotLimits_ImPlotLimitsNil()
+function ImPlotLimits.ImPlotLimits_Nil()
+    local ptr = lib.ImPlotLimits_ImPlotLimits_Nil()
     return ffi.gc(ptr,lib.ImPlotLimits_destroy)
 end
-function ImPlotLimits.ImPlotLimitsdouble(x_min,x_max,y_min,y_max)
-    local ptr = lib.ImPlotLimits_ImPlotLimitsdouble(x_min,x_max,y_min,y_max)
+function ImPlotLimits.ImPlotLimits_double(x_min,x_max,y_min,y_max)
+    local ptr = lib.ImPlotLimits_ImPlotLimits_double(x_min,x_max,y_min,y_max)
     return ffi.gc(ptr,lib.ImPlotLimits_destroy)
 end
 function ImPlotLimits.__new(ctype,a1,a2,a3,a4) -- generic version
-    if a1==nil then return ImPlotLimits.ImPlotLimitsNil() end
-    if (ffi.istype('double',a1) or type(a1)=='number') then return ImPlotLimits.ImPlotLimitsdouble(a1,a2,a3,a4) end
+    if a1==nil then return ImPlotLimits.ImPlotLimits_Nil() end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return ImPlotLimits.ImPlotLimits_double(a1,a2,a3,a4) end
     print(ctype,a1,a2,a3,a4)
     error'ImPlotLimits.__new could not find overloaded'
 end
@@ -1714,22 +1714,22 @@ M.ImPlotPlot = ffi.metatype("ImPlotPlot",ImPlotPlot)
 --------------------------ImPlotPoint----------------------------
 local ImPlotPoint= {}
 ImPlotPoint.__index = ImPlotPoint
-function ImPlotPoint.ImPlotPointNil()
-    local ptr = lib.ImPlotPoint_ImPlotPointNil()
+function ImPlotPoint.ImPlotPoint_Nil()
+    local ptr = lib.ImPlotPoint_ImPlotPoint_Nil()
     return ffi.gc(ptr,lib.ImPlotPoint_destroy)
 end
-function ImPlotPoint.ImPlotPointdouble(_x,_y)
-    local ptr = lib.ImPlotPoint_ImPlotPointdouble(_x,_y)
+function ImPlotPoint.ImPlotPoint_double(_x,_y)
+    local ptr = lib.ImPlotPoint_ImPlotPoint_double(_x,_y)
     return ffi.gc(ptr,lib.ImPlotPoint_destroy)
 end
-function ImPlotPoint.ImPlotPointVec2(p)
-    local ptr = lib.ImPlotPoint_ImPlotPointVec2(p)
+function ImPlotPoint.ImPlotPoint_Vec2(p)
+    local ptr = lib.ImPlotPoint_ImPlotPoint_Vec2(p)
     return ffi.gc(ptr,lib.ImPlotPoint_destroy)
 end
 function ImPlotPoint.__new(ctype,a1,a2) -- generic version
-    if a1==nil then return ImPlotPoint.ImPlotPointNil() end
-    if (ffi.istype('double',a1) or type(a1)=='number') then return ImPlotPoint.ImPlotPointdouble(a1,a2) end
-    if ffi.istype('const ImVec2',a1) then return ImPlotPoint.ImPlotPointVec2(a1) end
+    if a1==nil then return ImPlotPoint.ImPlotPoint_Nil() end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return ImPlotPoint.ImPlotPoint_double(a1,a2) end
+    if ffi.istype('const ImVec2',a1) then return ImPlotPoint.ImPlotPoint_Vec2(a1) end
     print(ctype,a1,a2)
     error'ImPlotPoint.__new could not find overloaded'
 end
@@ -1746,17 +1746,17 @@ M.ImPlotPointError = ffi.metatype("ImPlotPointError",ImPlotPointError)
 local ImPlotRange= {}
 ImPlotRange.__index = ImPlotRange
 ImPlotRange.Contains = lib.ImPlotRange_Contains
-function ImPlotRange.ImPlotRangeNil()
-    local ptr = lib.ImPlotRange_ImPlotRangeNil()
+function ImPlotRange.ImPlotRange_Nil()
+    local ptr = lib.ImPlotRange_ImPlotRange_Nil()
     return ffi.gc(ptr,lib.ImPlotRange_destroy)
 end
-function ImPlotRange.ImPlotRangedouble(_min,_max)
-    local ptr = lib.ImPlotRange_ImPlotRangedouble(_min,_max)
+function ImPlotRange.ImPlotRange_double(_min,_max)
+    local ptr = lib.ImPlotRange_ImPlotRange_double(_min,_max)
     return ffi.gc(ptr,lib.ImPlotRange_destroy)
 end
 function ImPlotRange.__new(ctype,a1,a2) -- generic version
-    if a1==nil then return ImPlotRange.ImPlotRangeNil() end
-    if (ffi.istype('double',a1) or type(a1)=='number') then return ImPlotRange.ImPlotRangedouble(a1,a2) end
+    if a1==nil then return ImPlotRange.ImPlotRange_Nil() end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return ImPlotRange.ImPlotRange_double(a1,a2) end
     print(ctype,a1,a2)
     error'ImPlotRange.__new could not find overloaded'
 end
@@ -1781,11 +1781,11 @@ M.ImPlotTick = ffi.metatype("ImPlotTick",ImPlotTick)
 --------------------------ImPlotTickCollection----------------------------
 local ImPlotTickCollection= {}
 ImPlotTickCollection.__index = ImPlotTickCollection
-ImPlotTickCollection.AppendPlotTick = lib.ImPlotTickCollection_AppendPlotTick
-ImPlotTickCollection.Appenddouble = lib.ImPlotTickCollection_Appenddouble
+ImPlotTickCollection.Append_PlotTick = lib.ImPlotTickCollection_Append_PlotTick
+ImPlotTickCollection.Append_double = lib.ImPlotTickCollection_Append_double
 function ImPlotTickCollection:Append(a2,a3,a4,a5) -- generic version
-    if ffi.istype('const ImPlotTick',a2) then return self:AppendPlotTick(a2) end
-    if (ffi.istype('double',a2) or type(a2)=='number') then return self:Appenddouble(a2,a3,a4,a5) end
+    if ffi.istype('const ImPlotTick',a2) then return self:Append_PlotTick(a2) end
+    if (ffi.istype('double',a2) or type(a2)=='number') then return self:Append_double(a2,a3,a4,a5) end
     print(a2,a3,a4,a5)
     error'ImPlotTickCollection:Append could not find overloaded'
 end
@@ -1800,18 +1800,18 @@ M.ImPlotTickCollection = ffi.metatype("ImPlotTickCollection",ImPlotTickCollectio
 local ImPlotTime= {}
 ImPlotTime.__index = ImPlotTime
 M.ImPlotTime_FromDouble = lib.ImPlotTime_FromDouble
-function ImPlotTime.ImPlotTimeNil()
-    local ptr = lib.ImPlotTime_ImPlotTimeNil()
+function ImPlotTime.ImPlotTime_Nil()
+    local ptr = lib.ImPlotTime_ImPlotTime_Nil()
     return ffi.gc(ptr,lib.ImPlotTime_destroy)
 end
-function ImPlotTime.ImPlotTimetime_t(s,us)
+function ImPlotTime.ImPlotTime_time_t(s,us)
     if us == nil then us = 0 end
-    local ptr = lib.ImPlotTime_ImPlotTimetime_t(s,us)
+    local ptr = lib.ImPlotTime_ImPlotTime_time_t(s,us)
     return ffi.gc(ptr,lib.ImPlotTime_destroy)
 end
 function ImPlotTime.__new(ctype,a1,a2) -- generic version
-    if a1==nil then return ImPlotTime.ImPlotTimeNil() end
-    if (ffi.istype('time_t',a1) or type(a1)=='number') then return ImPlotTime.ImPlotTimetime_t(a1,a2) end
+    if a1==nil then return ImPlotTime.ImPlotTime_Nil() end
+    if (ffi.istype('time_t',a1) or type(a1)=='number') then return ImPlotTime.ImPlotTime_time_t(a1,a2) end
     print(ctype,a1,a2)
     error'ImPlotTime.__new could not find overloaded'
 end
@@ -1821,29 +1821,29 @@ M.ImPlotTime = ffi.metatype("ImPlotTime",ImPlotTime)
 --------------------------ImRect----------------------------
 local ImRect= {}
 ImRect.__index = ImRect
-ImRect.AddVec2 = lib.ImRect_AddVec2
-ImRect.AddRect = lib.ImRect_AddRect
+ImRect.Add_Vec2 = lib.ImRect_Add_Vec2
+ImRect.Add_Rect = lib.ImRect_Add_Rect
 function ImRect:Add(a2) -- generic version
-    if ffi.istype('const ImVec2',a2) then return self:AddVec2(a2) end
-    if ffi.istype('const ImRect',a2) then return self:AddRect(a2) end
+    if ffi.istype('const ImVec2',a2) then return self:Add_Vec2(a2) end
+    if ffi.istype('const ImRect',a2) then return self:Add_Rect(a2) end
     print(a2)
     error'ImRect:Add could not find overloaded'
 end
 ImRect.ClipWith = lib.ImRect_ClipWith
 ImRect.ClipWithFull = lib.ImRect_ClipWithFull
-ImRect.ContainsVec2 = lib.ImRect_ContainsVec2
-ImRect.ContainsRect = lib.ImRect_ContainsRect
+ImRect.Contains_Vec2 = lib.ImRect_Contains_Vec2
+ImRect.Contains_Rect = lib.ImRect_Contains_Rect
 function ImRect:Contains(a2) -- generic version
-    if ffi.istype('const ImVec2',a2) then return self:ContainsVec2(a2) end
-    if ffi.istype('const ImRect',a2) then return self:ContainsRect(a2) end
+    if ffi.istype('const ImVec2',a2) then return self:Contains_Vec2(a2) end
+    if ffi.istype('const ImRect',a2) then return self:Contains_Rect(a2) end
     print(a2)
     error'ImRect:Contains could not find overloaded'
 end
-ImRect.ExpandFloat = lib.ImRect_ExpandFloat
-ImRect.ExpandVec2 = lib.ImRect_ExpandVec2
+ImRect.Expand_Float = lib.ImRect_Expand_Float
+ImRect.Expand_Vec2 = lib.ImRect_Expand_Vec2
 function ImRect:Expand(a2) -- generic version
-    if ffi.istype('const float',a2) then return self:ExpandFloat(a2) end
-    if ffi.istype('const ImVec2',a2) then return self:ExpandVec2(a2) end
+    if ffi.istype('const float',a2) then return self:Expand_Float(a2) end
+    if ffi.istype('const ImVec2',a2) then return self:Expand_Vec2(a2) end
     print(a2)
     error'ImRect:Expand could not find overloaded'
 end
@@ -1881,27 +1881,27 @@ function ImRect:GetTR()
     return nonUDT_out
 end
 ImRect.GetWidth = lib.ImRect_GetWidth
-function ImRect.ImRectNil()
-    local ptr = lib.ImRect_ImRectNil()
+function ImRect.ImRect_Nil()
+    local ptr = lib.ImRect_ImRect_Nil()
     return ffi.gc(ptr,lib.ImRect_destroy)
 end
-function ImRect.ImRectVec2(min,max)
-    local ptr = lib.ImRect_ImRectVec2(min,max)
+function ImRect.ImRect_Vec2(min,max)
+    local ptr = lib.ImRect_ImRect_Vec2(min,max)
     return ffi.gc(ptr,lib.ImRect_destroy)
 end
-function ImRect.ImRectVec4(v)
-    local ptr = lib.ImRect_ImRectVec4(v)
+function ImRect.ImRect_Vec4(v)
+    local ptr = lib.ImRect_ImRect_Vec4(v)
     return ffi.gc(ptr,lib.ImRect_destroy)
 end
-function ImRect.ImRectFloat(x1,y1,x2,y2)
-    local ptr = lib.ImRect_ImRectFloat(x1,y1,x2,y2)
+function ImRect.ImRect_Float(x1,y1,x2,y2)
+    local ptr = lib.ImRect_ImRect_Float(x1,y1,x2,y2)
     return ffi.gc(ptr,lib.ImRect_destroy)
 end
 function ImRect.__new(ctype,a1,a2,a3,a4) -- generic version
-    if a1==nil then return ImRect.ImRectNil() end
-    if ffi.istype('const ImVec2',a1) then return ImRect.ImRectVec2(a1,a2) end
-    if ffi.istype('const ImVec4',a1) then return ImRect.ImRectVec4(a1) end
-    if (ffi.istype('float',a1) or type(a1)=='number') then return ImRect.ImRectFloat(a1,a2,a3,a4) end
+    if a1==nil then return ImRect.ImRect_Nil() end
+    if ffi.istype('const ImVec2',a1) then return ImRect.ImRect_Vec2(a1,a2) end
+    if ffi.istype('const ImVec4',a1) then return ImRect.ImRect_Vec4(a1) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return ImRect.ImRect_Float(a1,a2,a3,a4) end
     print(ctype,a1,a2,a3,a4)
     error'ImRect.__new could not find overloaded'
 end
@@ -1919,17 +1919,17 @@ M.ImRect = ffi.metatype("ImRect",ImRect)
 --------------------------ImVec1----------------------------
 local ImVec1= {}
 ImVec1.__index = ImVec1
-function ImVec1.ImVec1Nil()
-    local ptr = lib.ImVec1_ImVec1Nil()
+function ImVec1.ImVec1_Nil()
+    local ptr = lib.ImVec1_ImVec1_Nil()
     return ffi.gc(ptr,lib.ImVec1_destroy)
 end
-function ImVec1.ImVec1Float(_x)
-    local ptr = lib.ImVec1_ImVec1Float(_x)
+function ImVec1.ImVec1_Float(_x)
+    local ptr = lib.ImVec1_ImVec1_Float(_x)
     return ffi.gc(ptr,lib.ImVec1_destroy)
 end
 function ImVec1.__new(ctype,a1) -- generic version
-    if a1==nil then return ImVec1.ImVec1Nil() end
-    if (ffi.istype('float',a1) or type(a1)=='number') then return ImVec1.ImVec1Float(a1) end
+    if a1==nil then return ImVec1.ImVec1_Nil() end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return ImVec1.ImVec1_Float(a1) end
     print(ctype,a1)
     error'ImVec1.__new could not find overloaded'
 end
@@ -1937,22 +1937,22 @@ M.ImVec1 = ffi.metatype("ImVec1",ImVec1)
 --------------------------ImVec2ih----------------------------
 local ImVec2ih= {}
 ImVec2ih.__index = ImVec2ih
-function ImVec2ih.ImVec2ihNil()
-    local ptr = lib.ImVec2ih_ImVec2ihNil()
+function ImVec2ih.ImVec2ih_Nil()
+    local ptr = lib.ImVec2ih_ImVec2ih_Nil()
     return ffi.gc(ptr,lib.ImVec2ih_destroy)
 end
-function ImVec2ih.ImVec2ihshort(_x,_y)
-    local ptr = lib.ImVec2ih_ImVec2ihshort(_x,_y)
+function ImVec2ih.ImVec2ih_short(_x,_y)
+    local ptr = lib.ImVec2ih_ImVec2ih_short(_x,_y)
     return ffi.gc(ptr,lib.ImVec2ih_destroy)
 end
-function ImVec2ih.ImVec2ihVec2(rhs)
-    local ptr = lib.ImVec2ih_ImVec2ihVec2(rhs)
+function ImVec2ih.ImVec2ih_Vec2(rhs)
+    local ptr = lib.ImVec2ih_ImVec2ih_Vec2(rhs)
     return ffi.gc(ptr,lib.ImVec2ih_destroy)
 end
 function ImVec2ih.__new(ctype,a1,a2) -- generic version
-    if a1==nil then return ImVec2ih.ImVec2ihNil() end
-    if ffi.istype('short',a1) then return ImVec2ih.ImVec2ihshort(a1,a2) end
-    if ffi.istype('const ImVec2',a1) then return ImVec2ih.ImVec2ihVec2(a1) end
+    if a1==nil then return ImVec2ih.ImVec2ih_Nil() end
+    if ffi.istype('short',a1) then return ImVec2ih.ImVec2ih_short(a1,a2) end
+    if ffi.istype('const ImVec2',a1) then return ImVec2ih.ImVec2ih_Vec2(a1) end
     print(ctype,a1,a2)
     error'ImVec2ih.__new could not find overloaded'
 end
@@ -1989,11 +1989,11 @@ imguiGizmo.drawFunc = lib.imguiGizmo_drawFunc
 M.imguiGizmo_getDollyScale = lib.imguiGizmo_getDollyScale
 M.imguiGizmo_getGizmoFeelingRot = lib.imguiGizmo_getGizmoFeelingRot
 M.imguiGizmo_getPanScale = lib.imguiGizmo_getPanScale
-imguiGizmo.getTransformsvec3Ptr = lib.imguiGizmo_getTransformsvec3Ptr
-imguiGizmo.getTransformsvec4Ptr = lib.imguiGizmo_getTransformsvec4Ptr
+imguiGizmo.getTransforms_vec3Ptr = lib.imguiGizmo_getTransforms_vec3Ptr
+imguiGizmo.getTransforms_vec4Ptr = lib.imguiGizmo_getTransforms_vec4Ptr
 function imguiGizmo:getTransforms(a2,a3,a4,a5) -- generic version
-    if (ffi.istype('G3Dvec3*',a4) or ffi.istype('G3Dvec3',a4) or ffi.istype('G3Dvec3[]',a4)) then return self:getTransformsvec3Ptr(a2,a3,a4,a5) end
-    if (ffi.istype('G3Dvec4*',a4) or ffi.istype('G3Dvec4',a4) or ffi.istype('G3Dvec4[]',a4)) then return self:getTransformsvec4Ptr(a2,a3,a4,a5) end
+    if (ffi.istype('G3Dvec3*',a4) or ffi.istype('G3Dvec3',a4) or ffi.istype('G3Dvec3[]',a4)) then return self:getTransforms_vec3Ptr(a2,a3,a4,a5) end
+    if (ffi.istype('G3Dvec4*',a4) or ffi.istype('G3Dvec4',a4) or ffi.istype('G3Dvec4[]',a4)) then return self:getTransforms_vec4Ptr(a2,a3,a4,a5) end
     print(a2,a3,a4,a5)
     error'imguiGizmo:getTransforms could not find overloaded'
 end
@@ -2004,15 +2004,15 @@ M.imguiGizmo_restoreAxesSize = lib.imguiGizmo_restoreAxesSize
 M.imguiGizmo_restoreDirectionColor = lib.imguiGizmo_restoreDirectionColor
 M.imguiGizmo_restoreSolidSize = lib.imguiGizmo_restoreSolidSize
 M.imguiGizmo_restoreSphereColors = lib.imguiGizmo_restoreSphereColors
-M.imguiGizmo_setDirectionColorU32U32 = lib.imguiGizmo_setDirectionColorU32U32
-M.imguiGizmo_setDirectionColorVec4Vec4 = lib.imguiGizmo_setDirectionColorVec4Vec4
-M.imguiGizmo_setDirectionColorU32 = lib.imguiGizmo_setDirectionColorU32
-M.imguiGizmo_setDirectionColorVec4 = lib.imguiGizmo_setDirectionColorVec4
+M.imguiGizmo_setDirectionColor_U32U32 = lib.imguiGizmo_setDirectionColor_U32U32
+M.imguiGizmo_setDirectionColor_Vec4Vec4 = lib.imguiGizmo_setDirectionColor_Vec4Vec4
+M.imguiGizmo_setDirectionColor_U32 = lib.imguiGizmo_setDirectionColor_U32
+M.imguiGizmo_setDirectionColor_Vec4 = lib.imguiGizmo_setDirectionColor_Vec4
 function M.imguiGizmo_setDirectionColor(a1,a2) -- generic version
-    if (ffi.istype('ImU32',a1) or type(a1)=='number') and ffi.istype('const ImU32',a2) then return M.imguiGizmo_setDirectionColorU32U32(a1,a2) end
-    if ffi.istype('const ImVec4',a1) and ffi.istype('const ImVec4',a2) then return M.imguiGizmo_setDirectionColorVec4Vec4(a1,a2) end
-    if (ffi.istype('ImU32',a1) or type(a1)=='number') and a2==nil then return M.imguiGizmo_setDirectionColorU32(a1) end
-    if ffi.istype('const ImVec4',a1) and a2==nil then return M.imguiGizmo_setDirectionColorVec4(a1) end
+    if (ffi.istype('ImU32',a1) or type(a1)=='number') and ffi.istype('const ImU32',a2) then return M.imguiGizmo_setDirectionColor_U32U32(a1,a2) end
+    if ffi.istype('const ImVec4',a1) and ffi.istype('const ImVec4',a2) then return M.imguiGizmo_setDirectionColor_Vec4Vec4(a1,a2) end
+    if (ffi.istype('ImU32',a1) or type(a1)=='number') and a2==nil then return M.imguiGizmo_setDirectionColor_U32(a1) end
+    if ffi.istype('const ImVec4',a1) and a2==nil then return M.imguiGizmo_setDirectionColor_Vec4(a1) end
     print(a1,a2)
     error'M.imguiGizmo_setDirectionColor could not find overloaded'
 end
@@ -2022,11 +2022,11 @@ imguiGizmo.setDualMode = lib.imguiGizmo_setDualMode
 M.imguiGizmo_setGizmoFeelingRot = lib.imguiGizmo_setGizmoFeelingRot
 M.imguiGizmo_setPanModifier = lib.imguiGizmo_setPanModifier
 M.imguiGizmo_setPanScale = lib.imguiGizmo_setPanScale
-M.imguiGizmo_setSphereColorsVec4 = lib.imguiGizmo_setSphereColorsVec4
-M.imguiGizmo_setSphereColorsU32 = lib.imguiGizmo_setSphereColorsU32
+M.imguiGizmo_setSphereColors_Vec4 = lib.imguiGizmo_setSphereColors_Vec4
+M.imguiGizmo_setSphereColors_U32 = lib.imguiGizmo_setSphereColors_U32
 function M.imguiGizmo_setSphereColors(a1,a2) -- generic version
-    if ffi.istype('const ImVec4',a1) then return M.imguiGizmo_setSphereColorsVec4(a1,a2) end
-    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.imguiGizmo_setSphereColorsU32(a1,a2) end
+    if ffi.istype('const ImVec4',a1) then return M.imguiGizmo_setSphereColors_Vec4(a1,a2) end
+    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.imguiGizmo_setSphereColors_U32(a1,a2) end
     print(a1,a2)
     error'M.imguiGizmo_setSphereColors could not find overloaded'
 end
@@ -2038,11 +2038,11 @@ M.ImGuizmo_DecomposeMatrixToComponents = lib.ImGuizmo_DecomposeMatrixToComponent
 M.ImGuizmo_DrawCubes = lib.ImGuizmo_DrawCubes
 M.ImGuizmo_DrawGrid = lib.ImGuizmo_DrawGrid
 M.ImGuizmo_Enable = lib.ImGuizmo_Enable
-M.ImGuizmo_IsOverNil = lib.ImGuizmo_IsOverNil
-M.ImGuizmo_IsOverOPERATION = lib.ImGuizmo_IsOverOPERATION
+M.ImGuizmo_IsOver_Nil = lib.ImGuizmo_IsOver_Nil
+M.ImGuizmo_IsOver_OPERATION = lib.ImGuizmo_IsOver_OPERATION
 function M.ImGuizmo_IsOver(a1) -- generic version
-    if a1==nil then return M.ImGuizmo_IsOverNil() end
-    if ffi.istype('OPERATION',a1) then return M.ImGuizmo_IsOverOPERATION(a1) end
+    if a1==nil then return M.ImGuizmo_IsOver_Nil() end
+    if ffi.istype('OPERATION',a1) then return M.ImGuizmo_IsOver_OPERATION(a1) end
     print(a1)
     error'M.ImGuizmo_IsOver could not find overloaded'
 end
@@ -2088,17 +2088,17 @@ M.ImNodes_IsInputSlotKind = lib.ImNodes_IsInputSlotKind
 M.ImNodes_IsOutputSlotKind = lib.ImNodes_IsOutputSlotKind
 M.ImNodes_IsSlotCurveHovered = lib.ImNodes_IsSlotCurveHovered
 M.ImNodes_OutputSlotKind = lib.ImNodes_OutputSlotKind
-function M.ImPlot_AddColormapVec4Ptr(name,cols,size,qual)
+function M.ImPlot_AddColormap_Vec4Ptr(name,cols,size,qual)
     if qual == nil then qual = true end
-    return lib.ImPlot_AddColormapVec4Ptr(name,cols,size,qual)
+    return lib.ImPlot_AddColormap_Vec4Ptr(name,cols,size,qual)
 end
-function M.ImPlot_AddColormapU32Ptr(name,cols,size,qual)
+function M.ImPlot_AddColormap_U32Ptr(name,cols,size,qual)
     if qual == nil then qual = true end
-    return lib.ImPlot_AddColormapU32Ptr(name,cols,size,qual)
+    return lib.ImPlot_AddColormap_U32Ptr(name,cols,size,qual)
 end
 function M.ImPlot_AddColormap(a1,a2,a3,a4) -- generic version
-    if (ffi.istype('const ImVec4*',a2) or ffi.istype('const ImVec4',a2) or ffi.istype('const ImVec4[]',a2)) then return M.ImPlot_AddColormapVec4Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_AddColormapU32Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('const ImVec4*',a2) or ffi.istype('const ImVec4',a2) or ffi.istype('const ImVec4[]',a2)) then return M.ImPlot_AddColormap_Vec4Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_AddColormap_U32Ptr(a1,a2,a3,a4) end
     print(a1,a2,a3,a4)
     error'M.ImPlot_AddColormap could not find overloaded'
 end
@@ -2111,35 +2111,35 @@ M.ImPlot_AddTicksDefault = lib.ImPlot_AddTicksDefault
 M.ImPlot_AddTicksLogarithmic = lib.ImPlot_AddTicksLogarithmic
 M.ImPlot_AddTicksTime = lib.ImPlot_AddTicksTime
 M.ImPlot_AddTime = lib.ImPlot_AddTime
-M.ImPlot_AnnotateStr = lib.ImPlot_AnnotateStr
-M.ImPlot_AnnotateVec4 = lib.ImPlot_AnnotateVec4
+M.ImPlot_Annotate_Str = lib.ImPlot_Annotate_Str
+M.ImPlot_Annotate_Vec4 = lib.ImPlot_Annotate_Vec4
 function M.ImPlot_Annotate(a1,a2,a3,a4,...) -- generic version
-    if (ffi.istype('const char*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') then return M.ImPlot_AnnotateStr(a1,a2,a3,a4,...) end
-    if ffi.istype('const ImVec4',a4) then return M.ImPlot_AnnotateVec4(a1,a2,a3,a4,...) end
+    if (ffi.istype('const char*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') then return M.ImPlot_Annotate_Str(a1,a2,a3,a4,...) end
+    if ffi.istype('const ImVec4',a4) then return M.ImPlot_Annotate_Vec4(a1,a2,a3,a4,...) end
     print(a1,a2,a3,a4,...)
     error'M.ImPlot_Annotate could not find overloaded'
 end
-M.ImPlot_AnnotateClampedStr = lib.ImPlot_AnnotateClampedStr
-M.ImPlot_AnnotateClampedVec4 = lib.ImPlot_AnnotateClampedVec4
+M.ImPlot_AnnotateClamped_Str = lib.ImPlot_AnnotateClamped_Str
+M.ImPlot_AnnotateClamped_Vec4 = lib.ImPlot_AnnotateClamped_Vec4
 function M.ImPlot_AnnotateClamped(a1,a2,a3,a4,...) -- generic version
-    if (ffi.istype('const char*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') then return M.ImPlot_AnnotateClampedStr(a1,a2,a3,a4,...) end
-    if ffi.istype('const ImVec4',a4) then return M.ImPlot_AnnotateClampedVec4(a1,a2,a3,a4,...) end
+    if (ffi.istype('const char*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') then return M.ImPlot_AnnotateClamped_Str(a1,a2,a3,a4,...) end
+    if ffi.istype('const ImVec4',a4) then return M.ImPlot_AnnotateClamped_Vec4(a1,a2,a3,a4,...) end
     print(a1,a2,a3,a4,...)
     error'M.ImPlot_AnnotateClamped could not find overloaded'
 end
-M.ImPlot_AnnotateClampedVStr = lib.ImPlot_AnnotateClampedVStr
-M.ImPlot_AnnotateClampedVVec4 = lib.ImPlot_AnnotateClampedVVec4
+M.ImPlot_AnnotateClampedV_Str = lib.ImPlot_AnnotateClampedV_Str
+M.ImPlot_AnnotateClampedV_Vec4 = lib.ImPlot_AnnotateClampedV_Vec4
 function M.ImPlot_AnnotateClampedV(a1,a2,a3,a4,a5,a6) -- generic version
-    if (ffi.istype('const char*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') then return M.ImPlot_AnnotateClampedVStr(a1,a2,a3,a4,a5) end
-    if ffi.istype('const ImVec4',a4) then return M.ImPlot_AnnotateClampedVVec4(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const char*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') then return M.ImPlot_AnnotateClampedV_Str(a1,a2,a3,a4,a5) end
+    if ffi.istype('const ImVec4',a4) then return M.ImPlot_AnnotateClampedV_Vec4(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.ImPlot_AnnotateClampedV could not find overloaded'
 end
-M.ImPlot_AnnotateVStr = lib.ImPlot_AnnotateVStr
-M.ImPlot_AnnotateVVec4 = lib.ImPlot_AnnotateVVec4
+M.ImPlot_AnnotateV_Str = lib.ImPlot_AnnotateV_Str
+M.ImPlot_AnnotateV_Vec4 = lib.ImPlot_AnnotateV_Vec4
 function M.ImPlot_AnnotateV(a1,a2,a3,a4,a5,a6) -- generic version
-    if (ffi.istype('const char*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') then return M.ImPlot_AnnotateVStr(a1,a2,a3,a4,a5) end
-    if ffi.istype('const ImVec4',a4) then return M.ImPlot_AnnotateVVec4(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const char*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') then return M.ImPlot_AnnotateV_Str(a1,a2,a3,a4,a5) end
+    if ffi.istype('const ImVec4',a4) then return M.ImPlot_AnnotateV_Vec4(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.ImPlot_AnnotateV could not find overloaded'
 end
@@ -2202,11 +2202,11 @@ function M.ImPlot_CalcLegendSize(plot,pad,spacing,orientation)
     lib.ImPlot_CalcLegendSize(nonUDT_out,plot,pad,spacing,orientation)
     return nonUDT_out
 end
-M.ImPlot_CalcTextColorVec4 = lib.ImPlot_CalcTextColorVec4
-M.ImPlot_CalcTextColorU32 = lib.ImPlot_CalcTextColorU32
+M.ImPlot_CalcTextColor_Vec4 = lib.ImPlot_CalcTextColor_Vec4
+M.ImPlot_CalcTextColor_U32 = lib.ImPlot_CalcTextColor_U32
 function M.ImPlot_CalcTextColor(a1) -- generic version
-    if ffi.istype('const ImVec4',a1) then return M.ImPlot_CalcTextColorVec4(a1) end
-    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.ImPlot_CalcTextColorU32(a1) end
+    if ffi.istype('const ImVec4',a1) then return M.ImPlot_CalcTextColor_Vec4(a1) end
+    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.ImPlot_CalcTextColor_U32(a1) end
     print(a1)
     error'M.ImPlot_CalcTextColor could not find overloaded'
 end
@@ -2215,27 +2215,27 @@ function M.ImPlot_CalcTextSizeVertical(text)
     lib.ImPlot_CalcTextSizeVertical(nonUDT_out,text)
     return nonUDT_out
 end
-M.ImPlot_CalculateBinsFloatPtr = lib.ImPlot_CalculateBinsFloatPtr
-M.ImPlot_CalculateBinsdoublePtr = lib.ImPlot_CalculateBinsdoublePtr
-M.ImPlot_CalculateBinsS8Ptr = lib.ImPlot_CalculateBinsS8Ptr
-M.ImPlot_CalculateBinsU8Ptr = lib.ImPlot_CalculateBinsU8Ptr
-M.ImPlot_CalculateBinsS16Ptr = lib.ImPlot_CalculateBinsS16Ptr
-M.ImPlot_CalculateBinsU16Ptr = lib.ImPlot_CalculateBinsU16Ptr
-M.ImPlot_CalculateBinsS32Ptr = lib.ImPlot_CalculateBinsS32Ptr
-M.ImPlot_CalculateBinsU32Ptr = lib.ImPlot_CalculateBinsU32Ptr
-M.ImPlot_CalculateBinsS64Ptr = lib.ImPlot_CalculateBinsS64Ptr
-M.ImPlot_CalculateBinsU64Ptr = lib.ImPlot_CalculateBinsU64Ptr
+M.ImPlot_CalculateBins_FloatPtr = lib.ImPlot_CalculateBins_FloatPtr
+M.ImPlot_CalculateBins_doublePtr = lib.ImPlot_CalculateBins_doublePtr
+M.ImPlot_CalculateBins_S8Ptr = lib.ImPlot_CalculateBins_S8Ptr
+M.ImPlot_CalculateBins_U8Ptr = lib.ImPlot_CalculateBins_U8Ptr
+M.ImPlot_CalculateBins_S16Ptr = lib.ImPlot_CalculateBins_S16Ptr
+M.ImPlot_CalculateBins_U16Ptr = lib.ImPlot_CalculateBins_U16Ptr
+M.ImPlot_CalculateBins_S32Ptr = lib.ImPlot_CalculateBins_S32Ptr
+M.ImPlot_CalculateBins_U32Ptr = lib.ImPlot_CalculateBins_U32Ptr
+M.ImPlot_CalculateBins_S64Ptr = lib.ImPlot_CalculateBins_S64Ptr
+M.ImPlot_CalculateBins_U64Ptr = lib.ImPlot_CalculateBins_U64Ptr
 function M.ImPlot_CalculateBins(a1,a2,a3,a4,a5,a6) -- generic version
-    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_CalculateBinsFloatPtr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_CalculateBinsdoublePtr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_CalculateBinsS8Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_CalculateBinsU8Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_CalculateBinsS16Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_CalculateBinsU16Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_CalculateBinsS32Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_CalculateBinsU32Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_CalculateBinsS64Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_CalculateBinsU64Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_CalculateBins_FloatPtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_CalculateBins_doublePtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_CalculateBins_S8Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_CalculateBins_U8Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_CalculateBins_S16Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_CalculateBins_U16Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_CalculateBins_S32Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_CalculateBins_U32Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_CalculateBins_S64Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_CalculateBins_U64Ptr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.ImPlot_CalculateBins could not find overloaded'
 end
@@ -2291,27 +2291,27 @@ M.ImPlot_EndDragDropTarget = lib.ImPlot_EndDragDropTarget
 M.ImPlot_EndItem = lib.ImPlot_EndItem
 M.ImPlot_EndLegendPopup = lib.ImPlot_EndLegendPopup
 M.ImPlot_EndPlot = lib.ImPlot_EndPlot
-M.ImPlot_FillRangeVector_FloatPtr = lib.ImPlot_FillRangeVector_FloatPtr
-M.ImPlot_FillRangeVector_doublePtr = lib.ImPlot_FillRangeVector_doublePtr
-M.ImPlot_FillRangeVector_S8Ptr = lib.ImPlot_FillRangeVector_S8Ptr
-M.ImPlot_FillRangeVector_U8Ptr = lib.ImPlot_FillRangeVector_U8Ptr
-M.ImPlot_FillRangeVector_S16Ptr = lib.ImPlot_FillRangeVector_S16Ptr
-M.ImPlot_FillRangeVector_U16Ptr = lib.ImPlot_FillRangeVector_U16Ptr
-M.ImPlot_FillRangeVector_S32Ptr = lib.ImPlot_FillRangeVector_S32Ptr
-M.ImPlot_FillRangeVector_U32Ptr = lib.ImPlot_FillRangeVector_U32Ptr
-M.ImPlot_FillRangeVector_S64Ptr = lib.ImPlot_FillRangeVector_S64Ptr
-M.ImPlot_FillRangeVector_U64Ptr = lib.ImPlot_FillRangeVector_U64Ptr
+M.ImPlot_FillRange_Vector_FloatPtr = lib.ImPlot_FillRange_Vector_FloatPtr
+M.ImPlot_FillRange_Vector_doublePtr = lib.ImPlot_FillRange_Vector_doublePtr
+M.ImPlot_FillRange_Vector_S8Ptr = lib.ImPlot_FillRange_Vector_S8Ptr
+M.ImPlot_FillRange_Vector_U8Ptr = lib.ImPlot_FillRange_Vector_U8Ptr
+M.ImPlot_FillRange_Vector_S16Ptr = lib.ImPlot_FillRange_Vector_S16Ptr
+M.ImPlot_FillRange_Vector_U16Ptr = lib.ImPlot_FillRange_Vector_U16Ptr
+M.ImPlot_FillRange_Vector_S32Ptr = lib.ImPlot_FillRange_Vector_S32Ptr
+M.ImPlot_FillRange_Vector_U32Ptr = lib.ImPlot_FillRange_Vector_U32Ptr
+M.ImPlot_FillRange_Vector_S64Ptr = lib.ImPlot_FillRange_Vector_S64Ptr
+M.ImPlot_FillRange_Vector_U64Ptr = lib.ImPlot_FillRange_Vector_U64Ptr
 function M.ImPlot_FillRange(a1,a2,a3,a4) -- generic version
-    if (ffi.istype('ImVector_float*',a1) or ffi.istype('ImVector_float',a1) or ffi.istype('ImVector_float[]',a1)) then return M.ImPlot_FillRangeVector_FloatPtr(a1,a2,a3,a4) end
-    if (ffi.istype('ImVector_double*',a1) or ffi.istype('ImVector_double',a1) or ffi.istype('ImVector_double[]',a1)) then return M.ImPlot_FillRangeVector_doublePtr(a1,a2,a3,a4) end
-    if (ffi.istype('ImVector_ImS8*',a1) or ffi.istype('ImVector_ImS8',a1) or ffi.istype('ImVector_ImS8[]',a1)) then return M.ImPlot_FillRangeVector_S8Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('ImVector_ImU8*',a1) or ffi.istype('ImVector_ImU8',a1) or ffi.istype('ImVector_ImU8[]',a1)) then return M.ImPlot_FillRangeVector_U8Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('ImVector_ImS16*',a1) or ffi.istype('ImVector_ImS16',a1) or ffi.istype('ImVector_ImS16[]',a1)) then return M.ImPlot_FillRangeVector_S16Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('ImVector_ImU16*',a1) or ffi.istype('ImVector_ImU16',a1) or ffi.istype('ImVector_ImU16[]',a1)) then return M.ImPlot_FillRangeVector_U16Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('ImVector_ImS32*',a1) or ffi.istype('ImVector_ImS32',a1) or ffi.istype('ImVector_ImS32[]',a1)) then return M.ImPlot_FillRangeVector_S32Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('ImVector_ImU32*',a1) or ffi.istype('ImVector_ImU32',a1) or ffi.istype('ImVector_ImU32[]',a1)) then return M.ImPlot_FillRangeVector_U32Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('ImVector_ImS64*',a1) or ffi.istype('ImVector_ImS64',a1) or ffi.istype('ImVector_ImS64[]',a1)) then return M.ImPlot_FillRangeVector_S64Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('ImVector_ImU64*',a1) or ffi.istype('ImVector_ImU64',a1) or ffi.istype('ImVector_ImU64[]',a1)) then return M.ImPlot_FillRangeVector_U64Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_float*',a1) or ffi.istype('ImVector_float',a1) or ffi.istype('ImVector_float[]',a1)) then return M.ImPlot_FillRange_Vector_FloatPtr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_double*',a1) or ffi.istype('ImVector_double',a1) or ffi.istype('ImVector_double[]',a1)) then return M.ImPlot_FillRange_Vector_doublePtr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImS8*',a1) or ffi.istype('ImVector_ImS8',a1) or ffi.istype('ImVector_ImS8[]',a1)) then return M.ImPlot_FillRange_Vector_S8Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImU8*',a1) or ffi.istype('ImVector_ImU8',a1) or ffi.istype('ImVector_ImU8[]',a1)) then return M.ImPlot_FillRange_Vector_U8Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImS16*',a1) or ffi.istype('ImVector_ImS16',a1) or ffi.istype('ImVector_ImS16[]',a1)) then return M.ImPlot_FillRange_Vector_S16Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImU16*',a1) or ffi.istype('ImVector_ImU16',a1) or ffi.istype('ImVector_ImU16[]',a1)) then return M.ImPlot_FillRange_Vector_U16Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImS32*',a1) or ffi.istype('ImVector_ImS32',a1) or ffi.istype('ImVector_ImS32[]',a1)) then return M.ImPlot_FillRange_Vector_S32Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImU32*',a1) or ffi.istype('ImVector_ImU32',a1) or ffi.istype('ImVector_ImU32[]',a1)) then return M.ImPlot_FillRange_Vector_U32Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImS64*',a1) or ffi.istype('ImVector_ImS64',a1) or ffi.istype('ImVector_ImS64[]',a1)) then return M.ImPlot_FillRange_Vector_S64Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('ImVector_ImU64*',a1) or ffi.istype('ImVector_ImU64',a1) or ffi.istype('ImVector_ImU64[]',a1)) then return M.ImPlot_FillRange_Vector_U64Ptr(a1,a2,a3,a4) end
     print(a1,a2,a3,a4)
     error'M.ImPlot_FillRange could not find overloaded'
 end
@@ -2426,182 +2426,182 @@ M.ImPlot_ImConstrainLog = lib.ImPlot_ImConstrainLog
 M.ImPlot_ImConstrainNan = lib.ImPlot_ImConstrainNan
 M.ImPlot_ImConstrainTime = lib.ImPlot_ImConstrainTime
 M.ImPlot_ImLerpU32 = lib.ImPlot_ImLerpU32
-M.ImPlot_ImLog10Float = lib.ImPlot_ImLog10Float
-M.ImPlot_ImLog10double = lib.ImPlot_ImLog10double
+M.ImPlot_ImLog10_Float = lib.ImPlot_ImLog10_Float
+M.ImPlot_ImLog10_double = lib.ImPlot_ImLog10_double
 function M.ImPlot_ImLog10(a1) -- generic version
-    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImPlot_ImLog10Float(a1) end
-    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_ImLog10double(a1) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImPlot_ImLog10_Float(a1) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_ImLog10_double(a1) end
     print(a1)
     error'M.ImPlot_ImLog10 could not find overloaded'
 end
-M.ImPlot_ImMaxArrayFloatPtr = lib.ImPlot_ImMaxArrayFloatPtr
-M.ImPlot_ImMaxArraydoublePtr = lib.ImPlot_ImMaxArraydoublePtr
-M.ImPlot_ImMaxArrayS8Ptr = lib.ImPlot_ImMaxArrayS8Ptr
-M.ImPlot_ImMaxArrayU8Ptr = lib.ImPlot_ImMaxArrayU8Ptr
-M.ImPlot_ImMaxArrayS16Ptr = lib.ImPlot_ImMaxArrayS16Ptr
-M.ImPlot_ImMaxArrayU16Ptr = lib.ImPlot_ImMaxArrayU16Ptr
-M.ImPlot_ImMaxArrayS32Ptr = lib.ImPlot_ImMaxArrayS32Ptr
-M.ImPlot_ImMaxArrayU32Ptr = lib.ImPlot_ImMaxArrayU32Ptr
-M.ImPlot_ImMaxArrayS64Ptr = lib.ImPlot_ImMaxArrayS64Ptr
-M.ImPlot_ImMaxArrayU64Ptr = lib.ImPlot_ImMaxArrayU64Ptr
+M.ImPlot_ImMaxArray_FloatPtr = lib.ImPlot_ImMaxArray_FloatPtr
+M.ImPlot_ImMaxArray_doublePtr = lib.ImPlot_ImMaxArray_doublePtr
+M.ImPlot_ImMaxArray_S8Ptr = lib.ImPlot_ImMaxArray_S8Ptr
+M.ImPlot_ImMaxArray_U8Ptr = lib.ImPlot_ImMaxArray_U8Ptr
+M.ImPlot_ImMaxArray_S16Ptr = lib.ImPlot_ImMaxArray_S16Ptr
+M.ImPlot_ImMaxArray_U16Ptr = lib.ImPlot_ImMaxArray_U16Ptr
+M.ImPlot_ImMaxArray_S32Ptr = lib.ImPlot_ImMaxArray_S32Ptr
+M.ImPlot_ImMaxArray_U32Ptr = lib.ImPlot_ImMaxArray_U32Ptr
+M.ImPlot_ImMaxArray_S64Ptr = lib.ImPlot_ImMaxArray_S64Ptr
+M.ImPlot_ImMaxArray_U64Ptr = lib.ImPlot_ImMaxArray_U64Ptr
 function M.ImPlot_ImMaxArray(a1,a2) -- generic version
-    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_ImMaxArrayFloatPtr(a1,a2) end
-    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_ImMaxArraydoublePtr(a1,a2) end
-    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_ImMaxArrayS8Ptr(a1,a2) end
-    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_ImMaxArrayU8Ptr(a1,a2) end
-    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_ImMaxArrayS16Ptr(a1,a2) end
-    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_ImMaxArrayU16Ptr(a1,a2) end
-    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_ImMaxArrayS32Ptr(a1,a2) end
-    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_ImMaxArrayU32Ptr(a1,a2) end
-    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_ImMaxArrayS64Ptr(a1,a2) end
-    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_ImMaxArrayU64Ptr(a1,a2) end
+    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_ImMaxArray_FloatPtr(a1,a2) end
+    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_ImMaxArray_doublePtr(a1,a2) end
+    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_ImMaxArray_S8Ptr(a1,a2) end
+    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_ImMaxArray_U8Ptr(a1,a2) end
+    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_ImMaxArray_S16Ptr(a1,a2) end
+    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_ImMaxArray_U16Ptr(a1,a2) end
+    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_ImMaxArray_S32Ptr(a1,a2) end
+    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_ImMaxArray_U32Ptr(a1,a2) end
+    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_ImMaxArray_S64Ptr(a1,a2) end
+    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_ImMaxArray_U64Ptr(a1,a2) end
     print(a1,a2)
     error'M.ImPlot_ImMaxArray could not find overloaded'
 end
-M.ImPlot_ImMeanFloatPtr = lib.ImPlot_ImMeanFloatPtr
-M.ImPlot_ImMeandoublePtr = lib.ImPlot_ImMeandoublePtr
-M.ImPlot_ImMeanS8Ptr = lib.ImPlot_ImMeanS8Ptr
-M.ImPlot_ImMeanU8Ptr = lib.ImPlot_ImMeanU8Ptr
-M.ImPlot_ImMeanS16Ptr = lib.ImPlot_ImMeanS16Ptr
-M.ImPlot_ImMeanU16Ptr = lib.ImPlot_ImMeanU16Ptr
-M.ImPlot_ImMeanS32Ptr = lib.ImPlot_ImMeanS32Ptr
-M.ImPlot_ImMeanU32Ptr = lib.ImPlot_ImMeanU32Ptr
-M.ImPlot_ImMeanS64Ptr = lib.ImPlot_ImMeanS64Ptr
-M.ImPlot_ImMeanU64Ptr = lib.ImPlot_ImMeanU64Ptr
+M.ImPlot_ImMean_FloatPtr = lib.ImPlot_ImMean_FloatPtr
+M.ImPlot_ImMean_doublePtr = lib.ImPlot_ImMean_doublePtr
+M.ImPlot_ImMean_S8Ptr = lib.ImPlot_ImMean_S8Ptr
+M.ImPlot_ImMean_U8Ptr = lib.ImPlot_ImMean_U8Ptr
+M.ImPlot_ImMean_S16Ptr = lib.ImPlot_ImMean_S16Ptr
+M.ImPlot_ImMean_U16Ptr = lib.ImPlot_ImMean_U16Ptr
+M.ImPlot_ImMean_S32Ptr = lib.ImPlot_ImMean_S32Ptr
+M.ImPlot_ImMean_U32Ptr = lib.ImPlot_ImMean_U32Ptr
+M.ImPlot_ImMean_S64Ptr = lib.ImPlot_ImMean_S64Ptr
+M.ImPlot_ImMean_U64Ptr = lib.ImPlot_ImMean_U64Ptr
 function M.ImPlot_ImMean(a1,a2) -- generic version
-    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_ImMeanFloatPtr(a1,a2) end
-    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_ImMeandoublePtr(a1,a2) end
-    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_ImMeanS8Ptr(a1,a2) end
-    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_ImMeanU8Ptr(a1,a2) end
-    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_ImMeanS16Ptr(a1,a2) end
-    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_ImMeanU16Ptr(a1,a2) end
-    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_ImMeanS32Ptr(a1,a2) end
-    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_ImMeanU32Ptr(a1,a2) end
-    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_ImMeanS64Ptr(a1,a2) end
-    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_ImMeanU64Ptr(a1,a2) end
+    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_ImMean_FloatPtr(a1,a2) end
+    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_ImMean_doublePtr(a1,a2) end
+    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_ImMean_S8Ptr(a1,a2) end
+    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_ImMean_U8Ptr(a1,a2) end
+    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_ImMean_S16Ptr(a1,a2) end
+    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_ImMean_U16Ptr(a1,a2) end
+    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_ImMean_S32Ptr(a1,a2) end
+    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_ImMean_U32Ptr(a1,a2) end
+    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_ImMean_S64Ptr(a1,a2) end
+    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_ImMean_U64Ptr(a1,a2) end
     print(a1,a2)
     error'M.ImPlot_ImMean could not find overloaded'
 end
-M.ImPlot_ImMinArrayFloatPtr = lib.ImPlot_ImMinArrayFloatPtr
-M.ImPlot_ImMinArraydoublePtr = lib.ImPlot_ImMinArraydoublePtr
-M.ImPlot_ImMinArrayS8Ptr = lib.ImPlot_ImMinArrayS8Ptr
-M.ImPlot_ImMinArrayU8Ptr = lib.ImPlot_ImMinArrayU8Ptr
-M.ImPlot_ImMinArrayS16Ptr = lib.ImPlot_ImMinArrayS16Ptr
-M.ImPlot_ImMinArrayU16Ptr = lib.ImPlot_ImMinArrayU16Ptr
-M.ImPlot_ImMinArrayS32Ptr = lib.ImPlot_ImMinArrayS32Ptr
-M.ImPlot_ImMinArrayU32Ptr = lib.ImPlot_ImMinArrayU32Ptr
-M.ImPlot_ImMinArrayS64Ptr = lib.ImPlot_ImMinArrayS64Ptr
-M.ImPlot_ImMinArrayU64Ptr = lib.ImPlot_ImMinArrayU64Ptr
+M.ImPlot_ImMinArray_FloatPtr = lib.ImPlot_ImMinArray_FloatPtr
+M.ImPlot_ImMinArray_doublePtr = lib.ImPlot_ImMinArray_doublePtr
+M.ImPlot_ImMinArray_S8Ptr = lib.ImPlot_ImMinArray_S8Ptr
+M.ImPlot_ImMinArray_U8Ptr = lib.ImPlot_ImMinArray_U8Ptr
+M.ImPlot_ImMinArray_S16Ptr = lib.ImPlot_ImMinArray_S16Ptr
+M.ImPlot_ImMinArray_U16Ptr = lib.ImPlot_ImMinArray_U16Ptr
+M.ImPlot_ImMinArray_S32Ptr = lib.ImPlot_ImMinArray_S32Ptr
+M.ImPlot_ImMinArray_U32Ptr = lib.ImPlot_ImMinArray_U32Ptr
+M.ImPlot_ImMinArray_S64Ptr = lib.ImPlot_ImMinArray_S64Ptr
+M.ImPlot_ImMinArray_U64Ptr = lib.ImPlot_ImMinArray_U64Ptr
 function M.ImPlot_ImMinArray(a1,a2) -- generic version
-    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_ImMinArrayFloatPtr(a1,a2) end
-    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_ImMinArraydoublePtr(a1,a2) end
-    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_ImMinArrayS8Ptr(a1,a2) end
-    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_ImMinArrayU8Ptr(a1,a2) end
-    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_ImMinArrayS16Ptr(a1,a2) end
-    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_ImMinArrayU16Ptr(a1,a2) end
-    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_ImMinArrayS32Ptr(a1,a2) end
-    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_ImMinArrayU32Ptr(a1,a2) end
-    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_ImMinArrayS64Ptr(a1,a2) end
-    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_ImMinArrayU64Ptr(a1,a2) end
+    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_ImMinArray_FloatPtr(a1,a2) end
+    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_ImMinArray_doublePtr(a1,a2) end
+    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_ImMinArray_S8Ptr(a1,a2) end
+    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_ImMinArray_U8Ptr(a1,a2) end
+    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_ImMinArray_S16Ptr(a1,a2) end
+    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_ImMinArray_U16Ptr(a1,a2) end
+    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_ImMinArray_S32Ptr(a1,a2) end
+    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_ImMinArray_U32Ptr(a1,a2) end
+    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_ImMinArray_S64Ptr(a1,a2) end
+    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_ImMinArray_U64Ptr(a1,a2) end
     print(a1,a2)
     error'M.ImPlot_ImMinArray could not find overloaded'
 end
-M.ImPlot_ImMinMaxArrayFloatPtr = lib.ImPlot_ImMinMaxArrayFloatPtr
-M.ImPlot_ImMinMaxArraydoublePtr = lib.ImPlot_ImMinMaxArraydoublePtr
-M.ImPlot_ImMinMaxArrayS8Ptr = lib.ImPlot_ImMinMaxArrayS8Ptr
-M.ImPlot_ImMinMaxArrayU8Ptr = lib.ImPlot_ImMinMaxArrayU8Ptr
-M.ImPlot_ImMinMaxArrayS16Ptr = lib.ImPlot_ImMinMaxArrayS16Ptr
-M.ImPlot_ImMinMaxArrayU16Ptr = lib.ImPlot_ImMinMaxArrayU16Ptr
-M.ImPlot_ImMinMaxArrayS32Ptr = lib.ImPlot_ImMinMaxArrayS32Ptr
-M.ImPlot_ImMinMaxArrayU32Ptr = lib.ImPlot_ImMinMaxArrayU32Ptr
-M.ImPlot_ImMinMaxArrayS64Ptr = lib.ImPlot_ImMinMaxArrayS64Ptr
-M.ImPlot_ImMinMaxArrayU64Ptr = lib.ImPlot_ImMinMaxArrayU64Ptr
+M.ImPlot_ImMinMaxArray_FloatPtr = lib.ImPlot_ImMinMaxArray_FloatPtr
+M.ImPlot_ImMinMaxArray_doublePtr = lib.ImPlot_ImMinMaxArray_doublePtr
+M.ImPlot_ImMinMaxArray_S8Ptr = lib.ImPlot_ImMinMaxArray_S8Ptr
+M.ImPlot_ImMinMaxArray_U8Ptr = lib.ImPlot_ImMinMaxArray_U8Ptr
+M.ImPlot_ImMinMaxArray_S16Ptr = lib.ImPlot_ImMinMaxArray_S16Ptr
+M.ImPlot_ImMinMaxArray_U16Ptr = lib.ImPlot_ImMinMaxArray_U16Ptr
+M.ImPlot_ImMinMaxArray_S32Ptr = lib.ImPlot_ImMinMaxArray_S32Ptr
+M.ImPlot_ImMinMaxArray_U32Ptr = lib.ImPlot_ImMinMaxArray_U32Ptr
+M.ImPlot_ImMinMaxArray_S64Ptr = lib.ImPlot_ImMinMaxArray_S64Ptr
+M.ImPlot_ImMinMaxArray_U64Ptr = lib.ImPlot_ImMinMaxArray_U64Ptr
 function M.ImPlot_ImMinMaxArray(a1,a2,a3,a4) -- generic version
-    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_ImMinMaxArrayFloatPtr(a1,a2,a3,a4) end
-    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_ImMinMaxArraydoublePtr(a1,a2,a3,a4) end
-    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_ImMinMaxArrayS8Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_ImMinMaxArrayU8Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_ImMinMaxArrayS16Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_ImMinMaxArrayU16Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_ImMinMaxArrayS32Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_ImMinMaxArrayU32Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_ImMinMaxArrayS64Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_ImMinMaxArrayU64Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_ImMinMaxArray_FloatPtr(a1,a2,a3,a4) end
+    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_ImMinMaxArray_doublePtr(a1,a2,a3,a4) end
+    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_ImMinMaxArray_S8Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_ImMinMaxArray_U8Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_ImMinMaxArray_S16Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_ImMinMaxArray_U16Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_ImMinMaxArray_S32Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_ImMinMaxArray_U32Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_ImMinMaxArray_S64Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_ImMinMaxArray_U64Ptr(a1,a2,a3,a4) end
     print(a1,a2,a3,a4)
     error'M.ImPlot_ImMinMaxArray could not find overloaded'
 end
 M.ImPlot_ImMixU32 = lib.ImPlot_ImMixU32
 M.ImPlot_ImNanOrInf = lib.ImPlot_ImNanOrInf
 M.ImPlot_ImPosMod = lib.ImPlot_ImPosMod
-M.ImPlot_ImRemapFloat = lib.ImPlot_ImRemapFloat
-M.ImPlot_ImRemapdouble = lib.ImPlot_ImRemapdouble
-M.ImPlot_ImRemapS8 = lib.ImPlot_ImRemapS8
-M.ImPlot_ImRemapU8 = lib.ImPlot_ImRemapU8
-M.ImPlot_ImRemapS16 = lib.ImPlot_ImRemapS16
-M.ImPlot_ImRemapU16 = lib.ImPlot_ImRemapU16
-M.ImPlot_ImRemapS32 = lib.ImPlot_ImRemapS32
-M.ImPlot_ImRemapU32 = lib.ImPlot_ImRemapU32
-M.ImPlot_ImRemapS64 = lib.ImPlot_ImRemapS64
-M.ImPlot_ImRemapU64 = lib.ImPlot_ImRemapU64
+M.ImPlot_ImRemap_Float = lib.ImPlot_ImRemap_Float
+M.ImPlot_ImRemap_double = lib.ImPlot_ImRemap_double
+M.ImPlot_ImRemap_S8 = lib.ImPlot_ImRemap_S8
+M.ImPlot_ImRemap_U8 = lib.ImPlot_ImRemap_U8
+M.ImPlot_ImRemap_S16 = lib.ImPlot_ImRemap_S16
+M.ImPlot_ImRemap_U16 = lib.ImPlot_ImRemap_U16
+M.ImPlot_ImRemap_S32 = lib.ImPlot_ImRemap_S32
+M.ImPlot_ImRemap_U32 = lib.ImPlot_ImRemap_U32
+M.ImPlot_ImRemap_S64 = lib.ImPlot_ImRemap_S64
+M.ImPlot_ImRemap_U64 = lib.ImPlot_ImRemap_U64
 function M.ImPlot_ImRemap(a1,a2,a3,a4,a5) -- generic version
-    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImPlot_ImRemapFloat(a1,a2,a3,a4,a5) end
-    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_ImRemapdouble(a1,a2,a3,a4,a5) end
-    if ffi.istype('ImS8',a1) then return M.ImPlot_ImRemapS8(a1,a2,a3,a4,a5) end
-    if ffi.istype('ImU8',a1) then return M.ImPlot_ImRemapU8(a1,a2,a3,a4,a5) end
-    if ffi.istype('ImS16',a1) then return M.ImPlot_ImRemapS16(a1,a2,a3,a4,a5) end
-    if ffi.istype('ImU16',a1) then return M.ImPlot_ImRemapU16(a1,a2,a3,a4,a5) end
-    if (ffi.istype('ImS32',a1) or type(a1)=='number') then return M.ImPlot_ImRemapS32(a1,a2,a3,a4,a5) end
-    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.ImPlot_ImRemapU32(a1,a2,a3,a4,a5) end
-    if ffi.istype('ImS64',a1) then return M.ImPlot_ImRemapS64(a1,a2,a3,a4,a5) end
-    if ffi.istype('ImU64',a1) then return M.ImPlot_ImRemapU64(a1,a2,a3,a4,a5) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImPlot_ImRemap_Float(a1,a2,a3,a4,a5) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_ImRemap_double(a1,a2,a3,a4,a5) end
+    if ffi.istype('ImS8',a1) then return M.ImPlot_ImRemap_S8(a1,a2,a3,a4,a5) end
+    if ffi.istype('ImU8',a1) then return M.ImPlot_ImRemap_U8(a1,a2,a3,a4,a5) end
+    if ffi.istype('ImS16',a1) then return M.ImPlot_ImRemap_S16(a1,a2,a3,a4,a5) end
+    if ffi.istype('ImU16',a1) then return M.ImPlot_ImRemap_U16(a1,a2,a3,a4,a5) end
+    if (ffi.istype('ImS32',a1) or type(a1)=='number') then return M.ImPlot_ImRemap_S32(a1,a2,a3,a4,a5) end
+    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.ImPlot_ImRemap_U32(a1,a2,a3,a4,a5) end
+    if ffi.istype('ImS64',a1) then return M.ImPlot_ImRemap_S64(a1,a2,a3,a4,a5) end
+    if ffi.istype('ImU64',a1) then return M.ImPlot_ImRemap_U64(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5)
     error'M.ImPlot_ImRemap could not find overloaded'
 end
-M.ImPlot_ImRemap01Float = lib.ImPlot_ImRemap01Float
-M.ImPlot_ImRemap01double = lib.ImPlot_ImRemap01double
-M.ImPlot_ImRemap01S8 = lib.ImPlot_ImRemap01S8
-M.ImPlot_ImRemap01U8 = lib.ImPlot_ImRemap01U8
-M.ImPlot_ImRemap01S16 = lib.ImPlot_ImRemap01S16
-M.ImPlot_ImRemap01U16 = lib.ImPlot_ImRemap01U16
-M.ImPlot_ImRemap01S32 = lib.ImPlot_ImRemap01S32
-M.ImPlot_ImRemap01U32 = lib.ImPlot_ImRemap01U32
-M.ImPlot_ImRemap01S64 = lib.ImPlot_ImRemap01S64
-M.ImPlot_ImRemap01U64 = lib.ImPlot_ImRemap01U64
+M.ImPlot_ImRemap01_Float = lib.ImPlot_ImRemap01_Float
+M.ImPlot_ImRemap01_double = lib.ImPlot_ImRemap01_double
+M.ImPlot_ImRemap01_S8 = lib.ImPlot_ImRemap01_S8
+M.ImPlot_ImRemap01_U8 = lib.ImPlot_ImRemap01_U8
+M.ImPlot_ImRemap01_S16 = lib.ImPlot_ImRemap01_S16
+M.ImPlot_ImRemap01_U16 = lib.ImPlot_ImRemap01_U16
+M.ImPlot_ImRemap01_S32 = lib.ImPlot_ImRemap01_S32
+M.ImPlot_ImRemap01_U32 = lib.ImPlot_ImRemap01_U32
+M.ImPlot_ImRemap01_S64 = lib.ImPlot_ImRemap01_S64
+M.ImPlot_ImRemap01_U64 = lib.ImPlot_ImRemap01_U64
 function M.ImPlot_ImRemap01(a1,a2,a3) -- generic version
-    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImPlot_ImRemap01Float(a1,a2,a3) end
-    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_ImRemap01double(a1,a2,a3) end
-    if ffi.istype('ImS8',a1) then return M.ImPlot_ImRemap01S8(a1,a2,a3) end
-    if ffi.istype('ImU8',a1) then return M.ImPlot_ImRemap01U8(a1,a2,a3) end
-    if ffi.istype('ImS16',a1) then return M.ImPlot_ImRemap01S16(a1,a2,a3) end
-    if ffi.istype('ImU16',a1) then return M.ImPlot_ImRemap01U16(a1,a2,a3) end
-    if (ffi.istype('ImS32',a1) or type(a1)=='number') then return M.ImPlot_ImRemap01S32(a1,a2,a3) end
-    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.ImPlot_ImRemap01U32(a1,a2,a3) end
-    if ffi.istype('ImS64',a1) then return M.ImPlot_ImRemap01S64(a1,a2,a3) end
-    if ffi.istype('ImU64',a1) then return M.ImPlot_ImRemap01U64(a1,a2,a3) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImPlot_ImRemap01_Float(a1,a2,a3) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_ImRemap01_double(a1,a2,a3) end
+    if ffi.istype('ImS8',a1) then return M.ImPlot_ImRemap01_S8(a1,a2,a3) end
+    if ffi.istype('ImU8',a1) then return M.ImPlot_ImRemap01_U8(a1,a2,a3) end
+    if ffi.istype('ImS16',a1) then return M.ImPlot_ImRemap01_S16(a1,a2,a3) end
+    if ffi.istype('ImU16',a1) then return M.ImPlot_ImRemap01_U16(a1,a2,a3) end
+    if (ffi.istype('ImS32',a1) or type(a1)=='number') then return M.ImPlot_ImRemap01_S32(a1,a2,a3) end
+    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.ImPlot_ImRemap01_U32(a1,a2,a3) end
+    if ffi.istype('ImS64',a1) then return M.ImPlot_ImRemap01_S64(a1,a2,a3) end
+    if ffi.istype('ImU64',a1) then return M.ImPlot_ImRemap01_U64(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.ImPlot_ImRemap01 could not find overloaded'
 end
-M.ImPlot_ImStdDevFloatPtr = lib.ImPlot_ImStdDevFloatPtr
-M.ImPlot_ImStdDevdoublePtr = lib.ImPlot_ImStdDevdoublePtr
-M.ImPlot_ImStdDevS8Ptr = lib.ImPlot_ImStdDevS8Ptr
-M.ImPlot_ImStdDevU8Ptr = lib.ImPlot_ImStdDevU8Ptr
-M.ImPlot_ImStdDevS16Ptr = lib.ImPlot_ImStdDevS16Ptr
-M.ImPlot_ImStdDevU16Ptr = lib.ImPlot_ImStdDevU16Ptr
-M.ImPlot_ImStdDevS32Ptr = lib.ImPlot_ImStdDevS32Ptr
-M.ImPlot_ImStdDevU32Ptr = lib.ImPlot_ImStdDevU32Ptr
-M.ImPlot_ImStdDevS64Ptr = lib.ImPlot_ImStdDevS64Ptr
-M.ImPlot_ImStdDevU64Ptr = lib.ImPlot_ImStdDevU64Ptr
+M.ImPlot_ImStdDev_FloatPtr = lib.ImPlot_ImStdDev_FloatPtr
+M.ImPlot_ImStdDev_doublePtr = lib.ImPlot_ImStdDev_doublePtr
+M.ImPlot_ImStdDev_S8Ptr = lib.ImPlot_ImStdDev_S8Ptr
+M.ImPlot_ImStdDev_U8Ptr = lib.ImPlot_ImStdDev_U8Ptr
+M.ImPlot_ImStdDev_S16Ptr = lib.ImPlot_ImStdDev_S16Ptr
+M.ImPlot_ImStdDev_U16Ptr = lib.ImPlot_ImStdDev_U16Ptr
+M.ImPlot_ImStdDev_S32Ptr = lib.ImPlot_ImStdDev_S32Ptr
+M.ImPlot_ImStdDev_U32Ptr = lib.ImPlot_ImStdDev_U32Ptr
+M.ImPlot_ImStdDev_S64Ptr = lib.ImPlot_ImStdDev_S64Ptr
+M.ImPlot_ImStdDev_U64Ptr = lib.ImPlot_ImStdDev_U64Ptr
 function M.ImPlot_ImStdDev(a1,a2) -- generic version
-    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_ImStdDevFloatPtr(a1,a2) end
-    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_ImStdDevdoublePtr(a1,a2) end
-    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_ImStdDevS8Ptr(a1,a2) end
-    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_ImStdDevU8Ptr(a1,a2) end
-    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_ImStdDevS16Ptr(a1,a2) end
-    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_ImStdDevU16Ptr(a1,a2) end
-    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_ImStdDevS32Ptr(a1,a2) end
-    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_ImStdDevU32Ptr(a1,a2) end
-    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_ImStdDevS64Ptr(a1,a2) end
-    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_ImStdDevU64Ptr(a1,a2) end
+    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_ImStdDev_FloatPtr(a1,a2) end
+    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_ImStdDev_doublePtr(a1,a2) end
+    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_ImStdDev_S8Ptr(a1,a2) end
+    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_ImStdDev_U8Ptr(a1,a2) end
+    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_ImStdDev_S16Ptr(a1,a2) end
+    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_ImStdDev_U16Ptr(a1,a2) end
+    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_ImStdDev_S32Ptr(a1,a2) end
+    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_ImStdDev_U32Ptr(a1,a2) end
+    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_ImStdDev_S64Ptr(a1,a2) end
+    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_ImStdDev_U64Ptr(a1,a2) end
     print(a1,a2)
     error'M.ImPlot_ImStdDev could not find overloaded'
 end
@@ -2611,11 +2611,11 @@ function M.ImPlot_Intersection(a1,a2,b1,b2)
     lib.ImPlot_Intersection(nonUDT_out,a1,a2,b1,b2)
     return nonUDT_out
 end
-M.ImPlot_IsColorAutoVec4 = lib.ImPlot_IsColorAutoVec4
-M.ImPlot_IsColorAutoPlotCol = lib.ImPlot_IsColorAutoPlotCol
+M.ImPlot_IsColorAuto_Vec4 = lib.ImPlot_IsColorAuto_Vec4
+M.ImPlot_IsColorAuto_PlotCol = lib.ImPlot_IsColorAuto_PlotCol
 function M.ImPlot_IsColorAuto(a1) -- generic version
-    if ffi.istype('const ImVec4',a1) then return M.ImPlot_IsColorAutoVec4(a1) end
-    if (ffi.istype('ImPlotCol',a1) or type(a1)=='number') then return M.ImPlot_IsColorAutoPlotCol(a1) end
+    if ffi.istype('const ImVec4',a1) then return M.ImPlot_IsColorAuto_Vec4(a1) end
+    if (ffi.istype('ImPlotCol',a1) or type(a1)=='number') then return M.ImPlot_IsColorAuto_PlotCol(a1) end
     print(a1)
     error'M.ImPlot_IsColorAuto could not find overloaded'
 end
@@ -2628,11 +2628,11 @@ function M.ImPlot_IsPlotYAxisHovered(y_axis)
     y_axis = y_axis or 0
     return lib.ImPlot_IsPlotYAxisHovered(y_axis)
 end
-M.ImPlot_ItemIconVec4 = lib.ImPlot_ItemIconVec4
-M.ImPlot_ItemIconU32 = lib.ImPlot_ItemIconU32
+M.ImPlot_ItemIcon_Vec4 = lib.ImPlot_ItemIcon_Vec4
+M.ImPlot_ItemIcon_U32 = lib.ImPlot_ItemIcon_U32
 function M.ImPlot_ItemIcon(a1) -- generic version
-    if ffi.istype('const ImVec4',a1) then return M.ImPlot_ItemIconVec4(a1) end
-    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.ImPlot_ItemIconU32(a1) end
+    if ffi.istype('const ImVec4',a1) then return M.ImPlot_ItemIcon_Vec4(a1) end
+    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.ImPlot_ItemIcon_U32(a1) end
     print(a1)
     error'M.ImPlot_ItemIcon could not find overloaded'
 end
@@ -2665,191 +2665,191 @@ function M.ImPlot_NextColormapColor()
 end
 M.ImPlot_NextColormapColorU32 = lib.ImPlot_NextColormapColorU32
 M.ImPlot_NiceNum = lib.ImPlot_NiceNum
-M.ImPlot_OffsetAndStrideFloatPtr = lib.ImPlot_OffsetAndStrideFloatPtr
-M.ImPlot_OffsetAndStridedoublePtr = lib.ImPlot_OffsetAndStridedoublePtr
-M.ImPlot_OffsetAndStrideS8Ptr = lib.ImPlot_OffsetAndStrideS8Ptr
-M.ImPlot_OffsetAndStrideU8Ptr = lib.ImPlot_OffsetAndStrideU8Ptr
-M.ImPlot_OffsetAndStrideS16Ptr = lib.ImPlot_OffsetAndStrideS16Ptr
-M.ImPlot_OffsetAndStrideU16Ptr = lib.ImPlot_OffsetAndStrideU16Ptr
-M.ImPlot_OffsetAndStrideS32Ptr = lib.ImPlot_OffsetAndStrideS32Ptr
-M.ImPlot_OffsetAndStrideU32Ptr = lib.ImPlot_OffsetAndStrideU32Ptr
-M.ImPlot_OffsetAndStrideS64Ptr = lib.ImPlot_OffsetAndStrideS64Ptr
-M.ImPlot_OffsetAndStrideU64Ptr = lib.ImPlot_OffsetAndStrideU64Ptr
+M.ImPlot_OffsetAndStride_FloatPtr = lib.ImPlot_OffsetAndStride_FloatPtr
+M.ImPlot_OffsetAndStride_doublePtr = lib.ImPlot_OffsetAndStride_doublePtr
+M.ImPlot_OffsetAndStride_S8Ptr = lib.ImPlot_OffsetAndStride_S8Ptr
+M.ImPlot_OffsetAndStride_U8Ptr = lib.ImPlot_OffsetAndStride_U8Ptr
+M.ImPlot_OffsetAndStride_S16Ptr = lib.ImPlot_OffsetAndStride_S16Ptr
+M.ImPlot_OffsetAndStride_U16Ptr = lib.ImPlot_OffsetAndStride_U16Ptr
+M.ImPlot_OffsetAndStride_S32Ptr = lib.ImPlot_OffsetAndStride_S32Ptr
+M.ImPlot_OffsetAndStride_U32Ptr = lib.ImPlot_OffsetAndStride_U32Ptr
+M.ImPlot_OffsetAndStride_S64Ptr = lib.ImPlot_OffsetAndStride_S64Ptr
+M.ImPlot_OffsetAndStride_U64Ptr = lib.ImPlot_OffsetAndStride_U64Ptr
 function M.ImPlot_OffsetAndStride(a1,a2,a3,a4,a5) -- generic version
-    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_OffsetAndStrideFloatPtr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_OffsetAndStridedoublePtr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_OffsetAndStrideS8Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_OffsetAndStrideU8Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_OffsetAndStrideS16Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_OffsetAndStrideU16Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_OffsetAndStrideS32Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_OffsetAndStrideU32Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_OffsetAndStrideS64Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_OffsetAndStrideU64Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const float*',a1) or ffi.istype('float[]',a1)) then return M.ImPlot_OffsetAndStride_FloatPtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_OffsetAndStride_doublePtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS8*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_OffsetAndStride_S8Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU8*',a1) or ffi.istype('const ImU8',a1) or ffi.istype('const ImU8[]',a1)) then return M.ImPlot_OffsetAndStride_U8Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS16*',a1) or ffi.istype('const ImS16',a1) or ffi.istype('const ImS16[]',a1)) then return M.ImPlot_OffsetAndStride_S16Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU16*',a1) or ffi.istype('const ImU16',a1) or ffi.istype('const ImU16[]',a1)) then return M.ImPlot_OffsetAndStride_U16Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS32*',a1) or ffi.istype('const ImS32',a1) or ffi.istype('const ImS32[]',a1)) then return M.ImPlot_OffsetAndStride_S32Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU32*',a1) or ffi.istype('const ImU32',a1) or ffi.istype('const ImU32[]',a1)) then return M.ImPlot_OffsetAndStride_U32Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS64*',a1) or ffi.istype('const ImS64',a1) or ffi.istype('const ImS64[]',a1)) then return M.ImPlot_OffsetAndStride_S64Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU64*',a1) or ffi.istype('const ImU64',a1) or ffi.istype('const ImU64[]',a1)) then return M.ImPlot_OffsetAndStride_U64Ptr(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5)
     error'M.ImPlot_OffsetAndStride could not find overloaded'
 end
 M.ImPlot_OrderOfMagnitude = lib.ImPlot_OrderOfMagnitude
 M.ImPlot_OrderToPrecision = lib.ImPlot_OrderToPrecision
-function M.ImPlot_PixelsToPlotVec2(pix,y_axis)
+function M.ImPlot_PixelsToPlot_Vec2(pix,y_axis)
     y_axis = y_axis or -1
     local nonUDT_out = ffi.new("ImPlotPoint")
-    lib.ImPlot_PixelsToPlotVec2(nonUDT_out,pix,y_axis)
+    lib.ImPlot_PixelsToPlot_Vec2(nonUDT_out,pix,y_axis)
     return nonUDT_out
 end
-function M.ImPlot_PixelsToPlotFloat(x,y,y_axis)
+function M.ImPlot_PixelsToPlot_Float(x,y,y_axis)
     y_axis = y_axis or -1
     local nonUDT_out = ffi.new("ImPlotPoint")
-    lib.ImPlot_PixelsToPlotFloat(nonUDT_out,x,y,y_axis)
+    lib.ImPlot_PixelsToPlot_Float(nonUDT_out,x,y,y_axis)
     return nonUDT_out
 end
 function M.ImPlot_PixelsToPlot(a2,a3,a4) -- generic version
-    if ffi.istype('const ImVec2',a2) then return M.ImPlot_PixelsToPlotVec2(a2,a3) end
-    if (ffi.istype('float',a2) or type(a2)=='number') then return M.ImPlot_PixelsToPlotFloat(a2,a3,a4) end
+    if ffi.istype('const ImVec2',a2) then return M.ImPlot_PixelsToPlot_Vec2(a2,a3) end
+    if (ffi.istype('float',a2) or type(a2)=='number') then return M.ImPlot_PixelsToPlot_Float(a2,a3,a4) end
     print(a2,a3,a4)
     error'M.ImPlot_PixelsToPlot could not find overloaded'
 end
-function M.ImPlot_PlotBarsFloatPtrInt(label_id,values,count,width,shift,offset,stride)
+function M.ImPlot_PlotBars_FloatPtrInt(label_id,values,count,width,shift,offset,stride)
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("float")
     width = width or 0.67
-    return lib.ImPlot_PlotBarsFloatPtrInt(label_id,values,count,width,shift,offset,stride)
+    return lib.ImPlot_PlotBars_FloatPtrInt(label_id,values,count,width,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsdoublePtrInt(label_id,values,count,width,shift,offset,stride)
+function M.ImPlot_PlotBars_doublePtrInt(label_id,values,count,width,shift,offset,stride)
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("double")
     width = width or 0.67
-    return lib.ImPlot_PlotBarsdoublePtrInt(label_id,values,count,width,shift,offset,stride)
+    return lib.ImPlot_PlotBars_doublePtrInt(label_id,values,count,width,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsS8PtrInt(label_id,values,count,width,shift,offset,stride)
+function M.ImPlot_PlotBars_S8PtrInt(label_id,values,count,width,shift,offset,stride)
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImS8")
     width = width or 0.67
-    return lib.ImPlot_PlotBarsS8PtrInt(label_id,values,count,width,shift,offset,stride)
+    return lib.ImPlot_PlotBars_S8PtrInt(label_id,values,count,width,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsU8PtrInt(label_id,values,count,width,shift,offset,stride)
+function M.ImPlot_PlotBars_U8PtrInt(label_id,values,count,width,shift,offset,stride)
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImU8")
     width = width or 0.67
-    return lib.ImPlot_PlotBarsU8PtrInt(label_id,values,count,width,shift,offset,stride)
+    return lib.ImPlot_PlotBars_U8PtrInt(label_id,values,count,width,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsS16PtrInt(label_id,values,count,width,shift,offset,stride)
+function M.ImPlot_PlotBars_S16PtrInt(label_id,values,count,width,shift,offset,stride)
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImS16")
     width = width or 0.67
-    return lib.ImPlot_PlotBarsS16PtrInt(label_id,values,count,width,shift,offset,stride)
+    return lib.ImPlot_PlotBars_S16PtrInt(label_id,values,count,width,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsU16PtrInt(label_id,values,count,width,shift,offset,stride)
+function M.ImPlot_PlotBars_U16PtrInt(label_id,values,count,width,shift,offset,stride)
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImU16")
     width = width or 0.67
-    return lib.ImPlot_PlotBarsU16PtrInt(label_id,values,count,width,shift,offset,stride)
+    return lib.ImPlot_PlotBars_U16PtrInt(label_id,values,count,width,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsS32PtrInt(label_id,values,count,width,shift,offset,stride)
+function M.ImPlot_PlotBars_S32PtrInt(label_id,values,count,width,shift,offset,stride)
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImS32")
     width = width or 0.67
-    return lib.ImPlot_PlotBarsS32PtrInt(label_id,values,count,width,shift,offset,stride)
+    return lib.ImPlot_PlotBars_S32PtrInt(label_id,values,count,width,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsU32PtrInt(label_id,values,count,width,shift,offset,stride)
+function M.ImPlot_PlotBars_U32PtrInt(label_id,values,count,width,shift,offset,stride)
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImU32")
     width = width or 0.67
-    return lib.ImPlot_PlotBarsU32PtrInt(label_id,values,count,width,shift,offset,stride)
+    return lib.ImPlot_PlotBars_U32PtrInt(label_id,values,count,width,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsS64PtrInt(label_id,values,count,width,shift,offset,stride)
+function M.ImPlot_PlotBars_S64PtrInt(label_id,values,count,width,shift,offset,stride)
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImS64")
     width = width or 0.67
-    return lib.ImPlot_PlotBarsS64PtrInt(label_id,values,count,width,shift,offset,stride)
+    return lib.ImPlot_PlotBars_S64PtrInt(label_id,values,count,width,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsU64PtrInt(label_id,values,count,width,shift,offset,stride)
+function M.ImPlot_PlotBars_U64PtrInt(label_id,values,count,width,shift,offset,stride)
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImU64")
     width = width or 0.67
-    return lib.ImPlot_PlotBarsU64PtrInt(label_id,values,count,width,shift,offset,stride)
+    return lib.ImPlot_PlotBars_U64PtrInt(label_id,values,count,width,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsFloatPtrFloatPtr(label_id,xs,ys,count,width,offset,stride)
+function M.ImPlot_PlotBars_FloatPtrFloatPtr(label_id,xs,ys,count,width,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotBarsFloatPtrFloatPtr(label_id,xs,ys,count,width,offset,stride)
+    return lib.ImPlot_PlotBars_FloatPtrFloatPtr(label_id,xs,ys,count,width,offset,stride)
 end
-function M.ImPlot_PlotBarsdoublePtrdoublePtr(label_id,xs,ys,count,width,offset,stride)
+function M.ImPlot_PlotBars_doublePtrdoublePtr(label_id,xs,ys,count,width,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotBarsdoublePtrdoublePtr(label_id,xs,ys,count,width,offset,stride)
+    return lib.ImPlot_PlotBars_doublePtrdoublePtr(label_id,xs,ys,count,width,offset,stride)
 end
-function M.ImPlot_PlotBarsS8PtrS8Ptr(label_id,xs,ys,count,width,offset,stride)
+function M.ImPlot_PlotBars_S8PtrS8Ptr(label_id,xs,ys,count,width,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotBarsS8PtrS8Ptr(label_id,xs,ys,count,width,offset,stride)
+    return lib.ImPlot_PlotBars_S8PtrS8Ptr(label_id,xs,ys,count,width,offset,stride)
 end
-function M.ImPlot_PlotBarsU8PtrU8Ptr(label_id,xs,ys,count,width,offset,stride)
+function M.ImPlot_PlotBars_U8PtrU8Ptr(label_id,xs,ys,count,width,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotBarsU8PtrU8Ptr(label_id,xs,ys,count,width,offset,stride)
+    return lib.ImPlot_PlotBars_U8PtrU8Ptr(label_id,xs,ys,count,width,offset,stride)
 end
-function M.ImPlot_PlotBarsS16PtrS16Ptr(label_id,xs,ys,count,width,offset,stride)
+function M.ImPlot_PlotBars_S16PtrS16Ptr(label_id,xs,ys,count,width,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotBarsS16PtrS16Ptr(label_id,xs,ys,count,width,offset,stride)
+    return lib.ImPlot_PlotBars_S16PtrS16Ptr(label_id,xs,ys,count,width,offset,stride)
 end
-function M.ImPlot_PlotBarsU16PtrU16Ptr(label_id,xs,ys,count,width,offset,stride)
+function M.ImPlot_PlotBars_U16PtrU16Ptr(label_id,xs,ys,count,width,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotBarsU16PtrU16Ptr(label_id,xs,ys,count,width,offset,stride)
+    return lib.ImPlot_PlotBars_U16PtrU16Ptr(label_id,xs,ys,count,width,offset,stride)
 end
-function M.ImPlot_PlotBarsS32PtrS32Ptr(label_id,xs,ys,count,width,offset,stride)
+function M.ImPlot_PlotBars_S32PtrS32Ptr(label_id,xs,ys,count,width,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotBarsS32PtrS32Ptr(label_id,xs,ys,count,width,offset,stride)
+    return lib.ImPlot_PlotBars_S32PtrS32Ptr(label_id,xs,ys,count,width,offset,stride)
 end
-function M.ImPlot_PlotBarsU32PtrU32Ptr(label_id,xs,ys,count,width,offset,stride)
+function M.ImPlot_PlotBars_U32PtrU32Ptr(label_id,xs,ys,count,width,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotBarsU32PtrU32Ptr(label_id,xs,ys,count,width,offset,stride)
+    return lib.ImPlot_PlotBars_U32PtrU32Ptr(label_id,xs,ys,count,width,offset,stride)
 end
-function M.ImPlot_PlotBarsS64PtrS64Ptr(label_id,xs,ys,count,width,offset,stride)
+function M.ImPlot_PlotBars_S64PtrS64Ptr(label_id,xs,ys,count,width,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotBarsS64PtrS64Ptr(label_id,xs,ys,count,width,offset,stride)
+    return lib.ImPlot_PlotBars_S64PtrS64Ptr(label_id,xs,ys,count,width,offset,stride)
 end
-function M.ImPlot_PlotBarsU64PtrU64Ptr(label_id,xs,ys,count,width,offset,stride)
+function M.ImPlot_PlotBars_U64PtrU64Ptr(label_id,xs,ys,count,width,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotBarsU64PtrU64Ptr(label_id,xs,ys,count,width,offset,stride)
+    return lib.ImPlot_PlotBars_U64PtrU64Ptr(label_id,xs,ys,count,width,offset,stride)
 end
 function M.ImPlot_PlotBars(a1,a2,a3,a4,a5,a6,a7) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsS8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsU8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsS16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsU16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsS32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsU32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsS64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsU64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotBarsFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotBarsdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.ImPlot_PlotBarsS8PtrS8Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) then return M.ImPlot_PlotBarsU8PtrU8Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) then return M.ImPlot_PlotBarsS16PtrS16Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) then return M.ImPlot_PlotBarsU16PtrU16Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) then return M.ImPlot_PlotBarsS32PtrS32Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) then return M.ImPlot_PlotBarsU32PtrU32Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) then return M.ImPlot_PlotBarsS64PtrS64Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) then return M.ImPlot_PlotBarsU64PtrU64Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBars_FloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBars_doublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBars_S8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBars_U8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBars_S16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBars_U16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBars_S32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBars_U32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBars_S64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBars_U64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotBars_FloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotBars_doublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.ImPlot_PlotBars_S8PtrS8Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) then return M.ImPlot_PlotBars_U8PtrU8Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) then return M.ImPlot_PlotBars_S16PtrS16Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) then return M.ImPlot_PlotBars_U16PtrU16Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) then return M.ImPlot_PlotBars_S32PtrS32Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) then return M.ImPlot_PlotBars_U32PtrU32Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) then return M.ImPlot_PlotBars_S64PtrS64Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) then return M.ImPlot_PlotBars_U64PtrU64Ptr(a1,a2,a3,a4,a5,a6,a7) end
     print(a1,a2,a3,a4,a5,a6,a7)
     error'M.ImPlot_PlotBars could not find overloaded'
 end
@@ -2857,147 +2857,147 @@ function M.ImPlot_PlotBarsG(label_id,getter,data,count,width,offset)
     offset = offset or 0
     return lib.ImPlot_PlotBarsG(label_id,getter,data,count,width,offset)
 end
-function M.ImPlot_PlotBarsHFloatPtrInt(label_id,values,count,height,shift,offset,stride)
+function M.ImPlot_PlotBarsH_FloatPtrInt(label_id,values,count,height,shift,offset,stride)
     height = height or 0.67
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotBarsHFloatPtrInt(label_id,values,count,height,shift,offset,stride)
+    return lib.ImPlot_PlotBarsH_FloatPtrInt(label_id,values,count,height,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsHdoublePtrInt(label_id,values,count,height,shift,offset,stride)
+function M.ImPlot_PlotBarsH_doublePtrInt(label_id,values,count,height,shift,offset,stride)
     height = height or 0.67
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotBarsHdoublePtrInt(label_id,values,count,height,shift,offset,stride)
+    return lib.ImPlot_PlotBarsH_doublePtrInt(label_id,values,count,height,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsHS8PtrInt(label_id,values,count,height,shift,offset,stride)
+function M.ImPlot_PlotBarsH_S8PtrInt(label_id,values,count,height,shift,offset,stride)
     height = height or 0.67
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotBarsHS8PtrInt(label_id,values,count,height,shift,offset,stride)
+    return lib.ImPlot_PlotBarsH_S8PtrInt(label_id,values,count,height,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsHU8PtrInt(label_id,values,count,height,shift,offset,stride)
+function M.ImPlot_PlotBarsH_U8PtrInt(label_id,values,count,height,shift,offset,stride)
     height = height or 0.67
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotBarsHU8PtrInt(label_id,values,count,height,shift,offset,stride)
+    return lib.ImPlot_PlotBarsH_U8PtrInt(label_id,values,count,height,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsHS16PtrInt(label_id,values,count,height,shift,offset,stride)
+function M.ImPlot_PlotBarsH_S16PtrInt(label_id,values,count,height,shift,offset,stride)
     height = height or 0.67
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotBarsHS16PtrInt(label_id,values,count,height,shift,offset,stride)
+    return lib.ImPlot_PlotBarsH_S16PtrInt(label_id,values,count,height,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsHU16PtrInt(label_id,values,count,height,shift,offset,stride)
+function M.ImPlot_PlotBarsH_U16PtrInt(label_id,values,count,height,shift,offset,stride)
     height = height or 0.67
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotBarsHU16PtrInt(label_id,values,count,height,shift,offset,stride)
+    return lib.ImPlot_PlotBarsH_U16PtrInt(label_id,values,count,height,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsHS32PtrInt(label_id,values,count,height,shift,offset,stride)
+function M.ImPlot_PlotBarsH_S32PtrInt(label_id,values,count,height,shift,offset,stride)
     height = height or 0.67
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotBarsHS32PtrInt(label_id,values,count,height,shift,offset,stride)
+    return lib.ImPlot_PlotBarsH_S32PtrInt(label_id,values,count,height,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsHU32PtrInt(label_id,values,count,height,shift,offset,stride)
+function M.ImPlot_PlotBarsH_U32PtrInt(label_id,values,count,height,shift,offset,stride)
     height = height or 0.67
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotBarsHU32PtrInt(label_id,values,count,height,shift,offset,stride)
+    return lib.ImPlot_PlotBarsH_U32PtrInt(label_id,values,count,height,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsHS64PtrInt(label_id,values,count,height,shift,offset,stride)
+function M.ImPlot_PlotBarsH_S64PtrInt(label_id,values,count,height,shift,offset,stride)
     height = height or 0.67
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotBarsHS64PtrInt(label_id,values,count,height,shift,offset,stride)
+    return lib.ImPlot_PlotBarsH_S64PtrInt(label_id,values,count,height,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsHU64PtrInt(label_id,values,count,height,shift,offset,stride)
+function M.ImPlot_PlotBarsH_U64PtrInt(label_id,values,count,height,shift,offset,stride)
     height = height or 0.67
     offset = offset or 0
     shift = shift or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotBarsHU64PtrInt(label_id,values,count,height,shift,offset,stride)
+    return lib.ImPlot_PlotBarsH_U64PtrInt(label_id,values,count,height,shift,offset,stride)
 end
-function M.ImPlot_PlotBarsHFloatPtrFloatPtr(label_id,xs,ys,count,height,offset,stride)
+function M.ImPlot_PlotBarsH_FloatPtrFloatPtr(label_id,xs,ys,count,height,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotBarsHFloatPtrFloatPtr(label_id,xs,ys,count,height,offset,stride)
+    return lib.ImPlot_PlotBarsH_FloatPtrFloatPtr(label_id,xs,ys,count,height,offset,stride)
 end
-function M.ImPlot_PlotBarsHdoublePtrdoublePtr(label_id,xs,ys,count,height,offset,stride)
+function M.ImPlot_PlotBarsH_doublePtrdoublePtr(label_id,xs,ys,count,height,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotBarsHdoublePtrdoublePtr(label_id,xs,ys,count,height,offset,stride)
+    return lib.ImPlot_PlotBarsH_doublePtrdoublePtr(label_id,xs,ys,count,height,offset,stride)
 end
-function M.ImPlot_PlotBarsHS8PtrS8Ptr(label_id,xs,ys,count,height,offset,stride)
+function M.ImPlot_PlotBarsH_S8PtrS8Ptr(label_id,xs,ys,count,height,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotBarsHS8PtrS8Ptr(label_id,xs,ys,count,height,offset,stride)
+    return lib.ImPlot_PlotBarsH_S8PtrS8Ptr(label_id,xs,ys,count,height,offset,stride)
 end
-function M.ImPlot_PlotBarsHU8PtrU8Ptr(label_id,xs,ys,count,height,offset,stride)
+function M.ImPlot_PlotBarsH_U8PtrU8Ptr(label_id,xs,ys,count,height,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotBarsHU8PtrU8Ptr(label_id,xs,ys,count,height,offset,stride)
+    return lib.ImPlot_PlotBarsH_U8PtrU8Ptr(label_id,xs,ys,count,height,offset,stride)
 end
-function M.ImPlot_PlotBarsHS16PtrS16Ptr(label_id,xs,ys,count,height,offset,stride)
+function M.ImPlot_PlotBarsH_S16PtrS16Ptr(label_id,xs,ys,count,height,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotBarsHS16PtrS16Ptr(label_id,xs,ys,count,height,offset,stride)
+    return lib.ImPlot_PlotBarsH_S16PtrS16Ptr(label_id,xs,ys,count,height,offset,stride)
 end
-function M.ImPlot_PlotBarsHU16PtrU16Ptr(label_id,xs,ys,count,height,offset,stride)
+function M.ImPlot_PlotBarsH_U16PtrU16Ptr(label_id,xs,ys,count,height,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotBarsHU16PtrU16Ptr(label_id,xs,ys,count,height,offset,stride)
+    return lib.ImPlot_PlotBarsH_U16PtrU16Ptr(label_id,xs,ys,count,height,offset,stride)
 end
-function M.ImPlot_PlotBarsHS32PtrS32Ptr(label_id,xs,ys,count,height,offset,stride)
+function M.ImPlot_PlotBarsH_S32PtrS32Ptr(label_id,xs,ys,count,height,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotBarsHS32PtrS32Ptr(label_id,xs,ys,count,height,offset,stride)
+    return lib.ImPlot_PlotBarsH_S32PtrS32Ptr(label_id,xs,ys,count,height,offset,stride)
 end
-function M.ImPlot_PlotBarsHU32PtrU32Ptr(label_id,xs,ys,count,height,offset,stride)
+function M.ImPlot_PlotBarsH_U32PtrU32Ptr(label_id,xs,ys,count,height,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotBarsHU32PtrU32Ptr(label_id,xs,ys,count,height,offset,stride)
+    return lib.ImPlot_PlotBarsH_U32PtrU32Ptr(label_id,xs,ys,count,height,offset,stride)
 end
-function M.ImPlot_PlotBarsHS64PtrS64Ptr(label_id,xs,ys,count,height,offset,stride)
+function M.ImPlot_PlotBarsH_S64PtrS64Ptr(label_id,xs,ys,count,height,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotBarsHS64PtrS64Ptr(label_id,xs,ys,count,height,offset,stride)
+    return lib.ImPlot_PlotBarsH_S64PtrS64Ptr(label_id,xs,ys,count,height,offset,stride)
 end
-function M.ImPlot_PlotBarsHU64PtrU64Ptr(label_id,xs,ys,count,height,offset,stride)
+function M.ImPlot_PlotBarsH_U64PtrU64Ptr(label_id,xs,ys,count,height,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotBarsHU64PtrU64Ptr(label_id,xs,ys,count,height,offset,stride)
+    return lib.ImPlot_PlotBarsH_U64PtrU64Ptr(label_id,xs,ys,count,height,offset,stride)
 end
 function M.ImPlot_PlotBarsH(a1,a2,a3,a4,a5,a6,a7) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsHFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsHdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsHS8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsHU8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsHS16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsHU16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsHS32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsHU32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsHS64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsHU64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotBarsHFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotBarsHdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.ImPlot_PlotBarsHS8PtrS8Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) then return M.ImPlot_PlotBarsHU8PtrU8Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) then return M.ImPlot_PlotBarsHS16PtrS16Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) then return M.ImPlot_PlotBarsHU16PtrU16Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) then return M.ImPlot_PlotBarsHS32PtrS32Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) then return M.ImPlot_PlotBarsHU32PtrU32Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) then return M.ImPlot_PlotBarsHS64PtrS64Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) then return M.ImPlot_PlotBarsHU64PtrU64Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsH_FloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsH_doublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsH_S8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsH_U8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsH_S16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsH_U16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsH_S32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsH_U32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsH_S64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotBarsH_U64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotBarsH_FloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotBarsH_doublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.ImPlot_PlotBarsH_S8PtrS8Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) then return M.ImPlot_PlotBarsH_U8PtrU8Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) then return M.ImPlot_PlotBarsH_S16PtrS16Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) then return M.ImPlot_PlotBarsH_U16PtrU16Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) then return M.ImPlot_PlotBarsH_S32PtrS32Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) then return M.ImPlot_PlotBarsH_U32PtrU32Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) then return M.ImPlot_PlotBarsH_S64PtrS64Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) then return M.ImPlot_PlotBarsH_U64PtrU64Ptr(a1,a2,a3,a4,a5,a6,a7) end
     print(a1,a2,a3,a4,a5,a6,a7)
     error'M.ImPlot_PlotBarsH could not find overloaded'
 end
@@ -3005,67 +3005,67 @@ function M.ImPlot_PlotBarsHG(label_id,getter,data,count,height,offset)
     offset = offset or 0
     return lib.ImPlot_PlotBarsHG(label_id,getter,data,count,height,offset)
 end
-function M.ImPlot_PlotDigitalFloatPtr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotDigital_FloatPtr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotDigitalFloatPtr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotDigital_FloatPtr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotDigitaldoublePtr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotDigital_doublePtr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotDigitaldoublePtr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotDigital_doublePtr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotDigitalS8Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotDigital_S8Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotDigitalS8Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotDigital_S8Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotDigitalU8Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotDigital_U8Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotDigitalU8Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotDigital_U8Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotDigitalS16Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotDigital_S16Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotDigitalS16Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotDigital_S16Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotDigitalU16Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotDigital_U16Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotDigitalU16Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotDigital_U16Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotDigitalS32Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotDigital_S32Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotDigitalS32Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotDigital_S32Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotDigitalU32Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotDigital_U32Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotDigitalU32Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotDigital_U32Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotDigitalS64Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotDigital_S64Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotDigitalS64Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotDigital_S64Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotDigitalU64Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotDigital_U64Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotDigitalU64Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotDigital_U64Ptr(label_id,xs,ys,count,offset,stride)
 end
 function M.ImPlot_PlotDigital(a1,a2,a3,a4,a5,a6) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotDigitalFloatPtr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotDigitaldoublePtr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotDigitalS8Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotDigitalU8Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotDigitalS16Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotDigitalU16Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotDigitalS32Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotDigitalU32Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotDigitalS64Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotDigitalU64Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotDigital_FloatPtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotDigital_doublePtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotDigital_S8Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotDigital_U8Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotDigital_S16Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotDigital_U16Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotDigital_S32Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotDigital_U32Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotDigital_S64Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotDigital_U64Ptr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.ImPlot_PlotDigital could not find overloaded'
 end
@@ -3074,607 +3074,607 @@ function M.ImPlot_PlotDigitalG(label_id,getter,data,count,offset)
     return lib.ImPlot_PlotDigitalG(label_id,getter,data,count,offset)
 end
 M.ImPlot_PlotDummy = lib.ImPlot_PlotDummy
-function M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBars_FloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_FloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBars_doublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_doublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsS8PtrS8PtrS8PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBars_S8PtrS8PtrS8PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotErrorBarsS8PtrS8PtrS8PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_S8PtrS8PtrS8PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsU8PtrU8PtrU8PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBars_U8PtrU8PtrU8PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotErrorBarsU8PtrU8PtrU8PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_U8PtrU8PtrU8PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsS16PtrS16PtrS16PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBars_S16PtrS16PtrS16PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotErrorBarsS16PtrS16PtrS16PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_S16PtrS16PtrS16PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsU16PtrU16PtrU16PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBars_U16PtrU16PtrU16PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotErrorBarsU16PtrU16PtrU16PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_U16PtrU16PtrU16PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsS32PtrS32PtrS32PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBars_S32PtrS32PtrS32PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotErrorBarsS32PtrS32PtrS32PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_S32PtrS32PtrS32PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsU32PtrU32PtrU32PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBars_U32PtrU32PtrU32PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotErrorBarsU32PtrU32PtrU32PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_U32PtrU32PtrU32PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsS64PtrS64PtrS64PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBars_S64PtrS64PtrS64PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotErrorBarsS64PtrS64PtrS64PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_S64PtrS64PtrS64PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsU64PtrU64PtrU64PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBars_U64PtrU64PtrU64PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotErrorBarsU64PtrU64PtrU64PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_U64PtrU64PtrU64PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBars_FloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_FloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBars_doublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_doublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsS8PtrS8PtrS8PtrS8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBars_S8PtrS8PtrS8PtrS8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotErrorBarsS8PtrS8PtrS8PtrS8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_S8PtrS8PtrS8PtrS8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsU8PtrU8PtrU8PtrU8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBars_U8PtrU8PtrU8PtrU8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotErrorBarsU8PtrU8PtrU8PtrU8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_U8PtrU8PtrU8PtrU8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsS16PtrS16PtrS16PtrS16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBars_S16PtrS16PtrS16PtrS16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotErrorBarsS16PtrS16PtrS16PtrS16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_S16PtrS16PtrS16PtrS16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsU16PtrU16PtrU16PtrU16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBars_U16PtrU16PtrU16PtrU16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotErrorBarsU16PtrU16PtrU16PtrU16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_U16PtrU16PtrU16PtrU16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsS32PtrS32PtrS32PtrS32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBars_S32PtrS32PtrS32PtrS32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotErrorBarsS32PtrS32PtrS32PtrS32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_S32PtrS32PtrS32PtrS32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsU32PtrU32PtrU32PtrU32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBars_U32PtrU32PtrU32PtrU32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotErrorBarsU32PtrU32PtrU32PtrU32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_U32PtrU32PtrU32PtrU32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsS64PtrS64PtrS64PtrS64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBars_S64PtrS64PtrS64PtrS64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotErrorBarsS64PtrS64PtrS64PtrS64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_S64PtrS64PtrS64PtrS64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsU64PtrU64PtrU64PtrU64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBars_U64PtrU64PtrU64PtrU64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotErrorBarsU64PtrU64PtrU64PtrU64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBars_U64PtrU64PtrU64PtrU64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
 function M.ImPlot_PlotErrorBars(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('const ImS8*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsS8PtrS8PtrS8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('const ImU8*',a4) or ffi.istype('const ImU8',a4) or ffi.istype('const ImU8[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsU8PtrU8PtrU8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('const ImS16*',a4) or ffi.istype('const ImS16',a4) or ffi.istype('const ImS16[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsS16PtrS16PtrS16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('const ImU16*',a4) or ffi.istype('const ImU16',a4) or ffi.istype('const ImU16[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsU16PtrU16PtrU16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('const ImS32*',a4) or ffi.istype('const ImS32',a4) or ffi.istype('const ImS32[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsS32PtrS32PtrS32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('const ImU32*',a4) or ffi.istype('const ImU32',a4) or ffi.istype('const ImU32[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsU32PtrU32PtrU32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('const ImS64*',a4) or ffi.istype('const ImS64',a4) or ffi.istype('const ImS64[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsS64PtrS64PtrS64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('const ImU64*',a4) or ffi.istype('const ImU64',a4) or ffi.istype('const ImU64[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsU64PtrU64PtrU64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('const float*',a5) or ffi.istype('float[]',a5)) then return M.ImPlot_PlotErrorBarsFloatPtrFloatPtrFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) and (ffi.istype('const double*',a5) or ffi.istype('double[]',a5)) then return M.ImPlot_PlotErrorBarsdoublePtrdoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('const ImS8*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') and (ffi.istype('const ImS8*',a5) or ffi.istype('char[]',a5) or type(a5)=='string') then return M.ImPlot_PlotErrorBarsS8PtrS8PtrS8PtrS8Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('const ImU8*',a4) or ffi.istype('const ImU8',a4) or ffi.istype('const ImU8[]',a4)) and (ffi.istype('const ImU8*',a5) or ffi.istype('const ImU8',a5) or ffi.istype('const ImU8[]',a5)) then return M.ImPlot_PlotErrorBarsU8PtrU8PtrU8PtrU8Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('const ImS16*',a4) or ffi.istype('const ImS16',a4) or ffi.istype('const ImS16[]',a4)) and (ffi.istype('const ImS16*',a5) or ffi.istype('const ImS16',a5) or ffi.istype('const ImS16[]',a5)) then return M.ImPlot_PlotErrorBarsS16PtrS16PtrS16PtrS16Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('const ImU16*',a4) or ffi.istype('const ImU16',a4) or ffi.istype('const ImU16[]',a4)) and (ffi.istype('const ImU16*',a5) or ffi.istype('const ImU16',a5) or ffi.istype('const ImU16[]',a5)) then return M.ImPlot_PlotErrorBarsU16PtrU16PtrU16PtrU16Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('const ImS32*',a4) or ffi.istype('const ImS32',a4) or ffi.istype('const ImS32[]',a4)) and (ffi.istype('const ImS32*',a5) or ffi.istype('const ImS32',a5) or ffi.istype('const ImS32[]',a5)) then return M.ImPlot_PlotErrorBarsS32PtrS32PtrS32PtrS32Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('const ImU32*',a4) or ffi.istype('const ImU32',a4) or ffi.istype('const ImU32[]',a4)) and (ffi.istype('const ImU32*',a5) or ffi.istype('const ImU32',a5) or ffi.istype('const ImU32[]',a5)) then return M.ImPlot_PlotErrorBarsU32PtrU32PtrU32PtrU32Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('const ImS64*',a4) or ffi.istype('const ImS64',a4) or ffi.istype('const ImS64[]',a4)) and (ffi.istype('const ImS64*',a5) or ffi.istype('const ImS64',a5) or ffi.istype('const ImS64[]',a5)) then return M.ImPlot_PlotErrorBarsS64PtrS64PtrS64PtrS64Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('const ImU64*',a4) or ffi.istype('const ImU64',a4) or ffi.istype('const ImU64[]',a4)) and (ffi.istype('const ImU64*',a5) or ffi.istype('const ImU64',a5) or ffi.istype('const ImU64[]',a5)) then return M.ImPlot_PlotErrorBarsU64PtrU64PtrU64PtrU64Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBars_FloatPtrFloatPtrFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBars_doublePtrdoublePtrdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('const ImS8*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBars_S8PtrS8PtrS8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('const ImU8*',a4) or ffi.istype('const ImU8',a4) or ffi.istype('const ImU8[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBars_U8PtrU8PtrU8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('const ImS16*',a4) or ffi.istype('const ImS16',a4) or ffi.istype('const ImS16[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBars_S16PtrS16PtrS16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('const ImU16*',a4) or ffi.istype('const ImU16',a4) or ffi.istype('const ImU16[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBars_U16PtrU16PtrU16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('const ImS32*',a4) or ffi.istype('const ImS32',a4) or ffi.istype('const ImS32[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBars_S32PtrS32PtrS32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('const ImU32*',a4) or ffi.istype('const ImU32',a4) or ffi.istype('const ImU32[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBars_U32PtrU32PtrU32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('const ImS64*',a4) or ffi.istype('const ImS64',a4) or ffi.istype('const ImS64[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBars_S64PtrS64PtrS64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('const ImU64*',a4) or ffi.istype('const ImU64',a4) or ffi.istype('const ImU64[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBars_U64PtrU64PtrU64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('const float*',a5) or ffi.istype('float[]',a5)) then return M.ImPlot_PlotErrorBars_FloatPtrFloatPtrFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) and (ffi.istype('const double*',a5) or ffi.istype('double[]',a5)) then return M.ImPlot_PlotErrorBars_doublePtrdoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('const ImS8*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') and (ffi.istype('const ImS8*',a5) or ffi.istype('char[]',a5) or type(a5)=='string') then return M.ImPlot_PlotErrorBars_S8PtrS8PtrS8PtrS8Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('const ImU8*',a4) or ffi.istype('const ImU8',a4) or ffi.istype('const ImU8[]',a4)) and (ffi.istype('const ImU8*',a5) or ffi.istype('const ImU8',a5) or ffi.istype('const ImU8[]',a5)) then return M.ImPlot_PlotErrorBars_U8PtrU8PtrU8PtrU8Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('const ImS16*',a4) or ffi.istype('const ImS16',a4) or ffi.istype('const ImS16[]',a4)) and (ffi.istype('const ImS16*',a5) or ffi.istype('const ImS16',a5) or ffi.istype('const ImS16[]',a5)) then return M.ImPlot_PlotErrorBars_S16PtrS16PtrS16PtrS16Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('const ImU16*',a4) or ffi.istype('const ImU16',a4) or ffi.istype('const ImU16[]',a4)) and (ffi.istype('const ImU16*',a5) or ffi.istype('const ImU16',a5) or ffi.istype('const ImU16[]',a5)) then return M.ImPlot_PlotErrorBars_U16PtrU16PtrU16PtrU16Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('const ImS32*',a4) or ffi.istype('const ImS32',a4) or ffi.istype('const ImS32[]',a4)) and (ffi.istype('const ImS32*',a5) or ffi.istype('const ImS32',a5) or ffi.istype('const ImS32[]',a5)) then return M.ImPlot_PlotErrorBars_S32PtrS32PtrS32PtrS32Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('const ImU32*',a4) or ffi.istype('const ImU32',a4) or ffi.istype('const ImU32[]',a4)) and (ffi.istype('const ImU32*',a5) or ffi.istype('const ImU32',a5) or ffi.istype('const ImU32[]',a5)) then return M.ImPlot_PlotErrorBars_U32PtrU32PtrU32PtrU32Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('const ImS64*',a4) or ffi.istype('const ImS64',a4) or ffi.istype('const ImS64[]',a4)) and (ffi.istype('const ImS64*',a5) or ffi.istype('const ImS64',a5) or ffi.istype('const ImS64[]',a5)) then return M.ImPlot_PlotErrorBars_S64PtrS64PtrS64PtrS64Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('const ImU64*',a4) or ffi.istype('const ImU64',a4) or ffi.istype('const ImU64[]',a4)) and (ffi.istype('const ImU64*',a5) or ffi.istype('const ImU64',a5) or ffi.istype('const ImU64[]',a5)) then return M.ImPlot_PlotErrorBars_U64PtrU64PtrU64PtrU64Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
     print(a1,a2,a3,a4,a5,a6,a7,a8)
     error'M.ImPlot_PlotErrorBars could not find overloaded'
 end
-function M.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_FloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_FloatPtrFloatPtrFloatPtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_doublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_doublePtrdoublePtrdoublePtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHS8PtrS8PtrS8PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_S8PtrS8PtrS8PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotErrorBarsHS8PtrS8PtrS8PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_S8PtrS8PtrS8PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHU8PtrU8PtrU8PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_U8PtrU8PtrU8PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotErrorBarsHU8PtrU8PtrU8PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_U8PtrU8PtrU8PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHS16PtrS16PtrS16PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_S16PtrS16PtrS16PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotErrorBarsHS16PtrS16PtrS16PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_S16PtrS16PtrS16PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHU16PtrU16PtrU16PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_U16PtrU16PtrU16PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotErrorBarsHU16PtrU16PtrU16PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_U16PtrU16PtrU16PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHS32PtrS32PtrS32PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_S32PtrS32PtrS32PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotErrorBarsHS32PtrS32PtrS32PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_S32PtrS32PtrS32PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHU32PtrU32PtrU32PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_U32PtrU32PtrU32PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotErrorBarsHU32PtrU32PtrU32PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_U32PtrU32PtrU32PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHS64PtrS64PtrS64PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_S64PtrS64PtrS64PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotErrorBarsHS64PtrS64PtrS64PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_S64PtrS64PtrS64PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHU64PtrU64PtrU64PtrInt(label_id,xs,ys,err,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_U64PtrU64PtrU64PtrInt(label_id,xs,ys,err,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotErrorBarsHU64PtrU64PtrU64PtrInt(label_id,xs,ys,err,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_U64PtrU64PtrU64PtrInt(label_id,xs,ys,err,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_FloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_FloatPtrFloatPtrFloatPtrFloatPtr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_doublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_doublePtrdoublePtrdoublePtrdoublePtr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHS8PtrS8PtrS8PtrS8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_S8PtrS8PtrS8PtrS8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotErrorBarsHS8PtrS8PtrS8PtrS8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_S8PtrS8PtrS8PtrS8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHU8PtrU8PtrU8PtrU8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_U8PtrU8PtrU8PtrU8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotErrorBarsHU8PtrU8PtrU8PtrU8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_U8PtrU8PtrU8PtrU8Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHS16PtrS16PtrS16PtrS16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_S16PtrS16PtrS16PtrS16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotErrorBarsHS16PtrS16PtrS16PtrS16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_S16PtrS16PtrS16PtrS16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHU16PtrU16PtrU16PtrU16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_U16PtrU16PtrU16PtrU16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotErrorBarsHU16PtrU16PtrU16PtrU16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_U16PtrU16PtrU16PtrU16Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHS32PtrS32PtrS32PtrS32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_S32PtrS32PtrS32PtrS32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotErrorBarsHS32PtrS32PtrS32PtrS32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_S32PtrS32PtrS32PtrS32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHU32PtrU32PtrU32PtrU32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_U32PtrU32PtrU32PtrU32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotErrorBarsHU32PtrU32PtrU32PtrU32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_U32PtrU32PtrU32PtrU32Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHS64PtrS64PtrS64PtrS64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_S64PtrS64PtrS64PtrS64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotErrorBarsHS64PtrS64PtrS64PtrS64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_S64PtrS64PtrS64PtrS64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
-function M.ImPlot_PlotErrorBarsHU64PtrU64PtrU64PtrU64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+function M.ImPlot_PlotErrorBarsH_U64PtrU64PtrU64PtrU64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotErrorBarsHU64PtrU64PtrU64PtrU64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
+    return lib.ImPlot_PlotErrorBarsH_U64PtrU64PtrU64PtrU64Ptr(label_id,xs,ys,neg,pos,count,offset,stride)
 end
 function M.ImPlot_PlotErrorBarsH(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('const ImS8*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHS8PtrS8PtrS8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('const ImU8*',a4) or ffi.istype('const ImU8',a4) or ffi.istype('const ImU8[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHU8PtrU8PtrU8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('const ImS16*',a4) or ffi.istype('const ImS16',a4) or ffi.istype('const ImS16[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHS16PtrS16PtrS16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('const ImU16*',a4) or ffi.istype('const ImU16',a4) or ffi.istype('const ImU16[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHU16PtrU16PtrU16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('const ImS32*',a4) or ffi.istype('const ImS32',a4) or ffi.istype('const ImS32[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHS32PtrS32PtrS32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('const ImU32*',a4) or ffi.istype('const ImU32',a4) or ffi.istype('const ImU32[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHU32PtrU32PtrU32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('const ImS64*',a4) or ffi.istype('const ImS64',a4) or ffi.istype('const ImS64[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHS64PtrS64PtrS64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('const ImU64*',a4) or ffi.istype('const ImU64',a4) or ffi.istype('const ImU64[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsHU64PtrU64PtrU64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('const float*',a5) or ffi.istype('float[]',a5)) then return M.ImPlot_PlotErrorBarsHFloatPtrFloatPtrFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) and (ffi.istype('const double*',a5) or ffi.istype('double[]',a5)) then return M.ImPlot_PlotErrorBarsHdoublePtrdoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('const ImS8*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') and (ffi.istype('const ImS8*',a5) or ffi.istype('char[]',a5) or type(a5)=='string') then return M.ImPlot_PlotErrorBarsHS8PtrS8PtrS8PtrS8Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('const ImU8*',a4) or ffi.istype('const ImU8',a4) or ffi.istype('const ImU8[]',a4)) and (ffi.istype('const ImU8*',a5) or ffi.istype('const ImU8',a5) or ffi.istype('const ImU8[]',a5)) then return M.ImPlot_PlotErrorBarsHU8PtrU8PtrU8PtrU8Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('const ImS16*',a4) or ffi.istype('const ImS16',a4) or ffi.istype('const ImS16[]',a4)) and (ffi.istype('const ImS16*',a5) or ffi.istype('const ImS16',a5) or ffi.istype('const ImS16[]',a5)) then return M.ImPlot_PlotErrorBarsHS16PtrS16PtrS16PtrS16Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('const ImU16*',a4) or ffi.istype('const ImU16',a4) or ffi.istype('const ImU16[]',a4)) and (ffi.istype('const ImU16*',a5) or ffi.istype('const ImU16',a5) or ffi.istype('const ImU16[]',a5)) then return M.ImPlot_PlotErrorBarsHU16PtrU16PtrU16PtrU16Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('const ImS32*',a4) or ffi.istype('const ImS32',a4) or ffi.istype('const ImS32[]',a4)) and (ffi.istype('const ImS32*',a5) or ffi.istype('const ImS32',a5) or ffi.istype('const ImS32[]',a5)) then return M.ImPlot_PlotErrorBarsHS32PtrS32PtrS32PtrS32Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('const ImU32*',a4) or ffi.istype('const ImU32',a4) or ffi.istype('const ImU32[]',a4)) and (ffi.istype('const ImU32*',a5) or ffi.istype('const ImU32',a5) or ffi.istype('const ImU32[]',a5)) then return M.ImPlot_PlotErrorBarsHU32PtrU32PtrU32PtrU32Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('const ImS64*',a4) or ffi.istype('const ImS64',a4) or ffi.istype('const ImS64[]',a4)) and (ffi.istype('const ImS64*',a5) or ffi.istype('const ImS64',a5) or ffi.istype('const ImS64[]',a5)) then return M.ImPlot_PlotErrorBarsHS64PtrS64PtrS64PtrS64Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('const ImU64*',a4) or ffi.istype('const ImU64',a4) or ffi.istype('const ImU64[]',a4)) and (ffi.istype('const ImU64*',a5) or ffi.istype('const ImU64',a5) or ffi.istype('const ImU64[]',a5)) then return M.ImPlot_PlotErrorBarsHU64PtrU64PtrU64PtrU64Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsH_FloatPtrFloatPtrFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsH_doublePtrdoublePtrdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('const ImS8*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsH_S8PtrS8PtrS8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('const ImU8*',a4) or ffi.istype('const ImU8',a4) or ffi.istype('const ImU8[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsH_U8PtrU8PtrU8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('const ImS16*',a4) or ffi.istype('const ImS16',a4) or ffi.istype('const ImS16[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsH_S16PtrS16PtrS16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('const ImU16*',a4) or ffi.istype('const ImU16',a4) or ffi.istype('const ImU16[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsH_U16PtrU16PtrU16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('const ImS32*',a4) or ffi.istype('const ImS32',a4) or ffi.istype('const ImS32[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsH_S32PtrS32PtrS32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('const ImU32*',a4) or ffi.istype('const ImU32',a4) or ffi.istype('const ImU32[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsH_U32PtrU32PtrU32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('const ImS64*',a4) or ffi.istype('const ImS64',a4) or ffi.istype('const ImS64[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsH_S64PtrS64PtrS64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('const ImU64*',a4) or ffi.istype('const ImU64',a4) or ffi.istype('const ImU64[]',a4)) and (ffi.istype('int',a5) or type(a5)=='number') then return M.ImPlot_PlotErrorBarsH_U64PtrU64PtrU64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) and (ffi.istype('const float*',a5) or ffi.istype('float[]',a5)) then return M.ImPlot_PlotErrorBarsH_FloatPtrFloatPtrFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) and (ffi.istype('const double*',a5) or ffi.istype('double[]',a5)) then return M.ImPlot_PlotErrorBarsH_doublePtrdoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('const ImS8*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') and (ffi.istype('const ImS8*',a5) or ffi.istype('char[]',a5) or type(a5)=='string') then return M.ImPlot_PlotErrorBarsH_S8PtrS8PtrS8PtrS8Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('const ImU8*',a4) or ffi.istype('const ImU8',a4) or ffi.istype('const ImU8[]',a4)) and (ffi.istype('const ImU8*',a5) or ffi.istype('const ImU8',a5) or ffi.istype('const ImU8[]',a5)) then return M.ImPlot_PlotErrorBarsH_U8PtrU8PtrU8PtrU8Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('const ImS16*',a4) or ffi.istype('const ImS16',a4) or ffi.istype('const ImS16[]',a4)) and (ffi.istype('const ImS16*',a5) or ffi.istype('const ImS16',a5) or ffi.istype('const ImS16[]',a5)) then return M.ImPlot_PlotErrorBarsH_S16PtrS16PtrS16PtrS16Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('const ImU16*',a4) or ffi.istype('const ImU16',a4) or ffi.istype('const ImU16[]',a4)) and (ffi.istype('const ImU16*',a5) or ffi.istype('const ImU16',a5) or ffi.istype('const ImU16[]',a5)) then return M.ImPlot_PlotErrorBarsH_U16PtrU16PtrU16PtrU16Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('const ImS32*',a4) or ffi.istype('const ImS32',a4) or ffi.istype('const ImS32[]',a4)) and (ffi.istype('const ImS32*',a5) or ffi.istype('const ImS32',a5) or ffi.istype('const ImS32[]',a5)) then return M.ImPlot_PlotErrorBarsH_S32PtrS32PtrS32PtrS32Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('const ImU32*',a4) or ffi.istype('const ImU32',a4) or ffi.istype('const ImU32[]',a4)) and (ffi.istype('const ImU32*',a5) or ffi.istype('const ImU32',a5) or ffi.istype('const ImU32[]',a5)) then return M.ImPlot_PlotErrorBarsH_U32PtrU32PtrU32PtrU32Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('const ImS64*',a4) or ffi.istype('const ImS64',a4) or ffi.istype('const ImS64[]',a4)) and (ffi.istype('const ImS64*',a5) or ffi.istype('const ImS64',a5) or ffi.istype('const ImS64[]',a5)) then return M.ImPlot_PlotErrorBarsH_S64PtrS64PtrS64PtrS64Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('const ImU64*',a4) or ffi.istype('const ImU64',a4) or ffi.istype('const ImU64[]',a4)) and (ffi.istype('const ImU64*',a5) or ffi.istype('const ImU64',a5) or ffi.istype('const ImU64[]',a5)) then return M.ImPlot_PlotErrorBarsH_U64PtrU64PtrU64PtrU64Ptr(a1,a2,a3,a4,a5,a6,a7,a8) end
     print(a1,a2,a3,a4,a5,a6,a7,a8)
     error'M.ImPlot_PlotErrorBarsH could not find overloaded'
 end
-function M.ImPlot_PlotHLinesFloatPtr(label_id,ys,count,offset,stride)
+function M.ImPlot_PlotHLines_FloatPtr(label_id,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotHLinesFloatPtr(label_id,ys,count,offset,stride)
+    return lib.ImPlot_PlotHLines_FloatPtr(label_id,ys,count,offset,stride)
 end
-function M.ImPlot_PlotHLinesdoublePtr(label_id,ys,count,offset,stride)
+function M.ImPlot_PlotHLines_doublePtr(label_id,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotHLinesdoublePtr(label_id,ys,count,offset,stride)
+    return lib.ImPlot_PlotHLines_doublePtr(label_id,ys,count,offset,stride)
 end
-function M.ImPlot_PlotHLinesS8Ptr(label_id,ys,count,offset,stride)
+function M.ImPlot_PlotHLines_S8Ptr(label_id,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotHLinesS8Ptr(label_id,ys,count,offset,stride)
+    return lib.ImPlot_PlotHLines_S8Ptr(label_id,ys,count,offset,stride)
 end
-function M.ImPlot_PlotHLinesU8Ptr(label_id,ys,count,offset,stride)
+function M.ImPlot_PlotHLines_U8Ptr(label_id,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotHLinesU8Ptr(label_id,ys,count,offset,stride)
+    return lib.ImPlot_PlotHLines_U8Ptr(label_id,ys,count,offset,stride)
 end
-function M.ImPlot_PlotHLinesS16Ptr(label_id,ys,count,offset,stride)
+function M.ImPlot_PlotHLines_S16Ptr(label_id,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotHLinesS16Ptr(label_id,ys,count,offset,stride)
+    return lib.ImPlot_PlotHLines_S16Ptr(label_id,ys,count,offset,stride)
 end
-function M.ImPlot_PlotHLinesU16Ptr(label_id,ys,count,offset,stride)
+function M.ImPlot_PlotHLines_U16Ptr(label_id,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotHLinesU16Ptr(label_id,ys,count,offset,stride)
+    return lib.ImPlot_PlotHLines_U16Ptr(label_id,ys,count,offset,stride)
 end
-function M.ImPlot_PlotHLinesS32Ptr(label_id,ys,count,offset,stride)
+function M.ImPlot_PlotHLines_S32Ptr(label_id,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotHLinesS32Ptr(label_id,ys,count,offset,stride)
+    return lib.ImPlot_PlotHLines_S32Ptr(label_id,ys,count,offset,stride)
 end
-function M.ImPlot_PlotHLinesU32Ptr(label_id,ys,count,offset,stride)
+function M.ImPlot_PlotHLines_U32Ptr(label_id,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotHLinesU32Ptr(label_id,ys,count,offset,stride)
+    return lib.ImPlot_PlotHLines_U32Ptr(label_id,ys,count,offset,stride)
 end
-function M.ImPlot_PlotHLinesS64Ptr(label_id,ys,count,offset,stride)
+function M.ImPlot_PlotHLines_S64Ptr(label_id,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotHLinesS64Ptr(label_id,ys,count,offset,stride)
+    return lib.ImPlot_PlotHLines_S64Ptr(label_id,ys,count,offset,stride)
 end
-function M.ImPlot_PlotHLinesU64Ptr(label_id,ys,count,offset,stride)
+function M.ImPlot_PlotHLines_U64Ptr(label_id,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotHLinesU64Ptr(label_id,ys,count,offset,stride)
+    return lib.ImPlot_PlotHLines_U64Ptr(label_id,ys,count,offset,stride)
 end
 function M.ImPlot_PlotHLines(a1,a2,a3,a4,a5) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotHLinesFloatPtr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotHLinesdoublePtr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotHLinesS8Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotHLinesU8Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotHLinesS16Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotHLinesU16Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotHLinesS32Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotHLinesU32Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotHLinesS64Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotHLinesU64Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotHLines_FloatPtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotHLines_doublePtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotHLines_S8Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotHLines_U8Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotHLines_S16Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotHLines_U16Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotHLines_S32Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotHLines_U32Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotHLines_S64Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotHLines_U64Ptr(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5)
     error'M.ImPlot_PlotHLines could not find overloaded'
 end
-function M.ImPlot_PlotHeatmapFloatPtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+function M.ImPlot_PlotHeatmap_FloatPtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
     bounds_max = bounds_max or ImPlotPoint(1,1)
     bounds_min = bounds_min or ImPlotPoint(0,0)
     label_fmt = label_fmt or "%.1f"
     scale_max = scale_max or 0
     scale_min = scale_min or 0
-    return lib.ImPlot_PlotHeatmapFloatPtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+    return lib.ImPlot_PlotHeatmap_FloatPtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
 end
-function M.ImPlot_PlotHeatmapdoublePtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+function M.ImPlot_PlotHeatmap_doublePtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
     bounds_max = bounds_max or ImPlotPoint(1,1)
     bounds_min = bounds_min or ImPlotPoint(0,0)
     label_fmt = label_fmt or "%.1f"
     scale_max = scale_max or 0
     scale_min = scale_min or 0
-    return lib.ImPlot_PlotHeatmapdoublePtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+    return lib.ImPlot_PlotHeatmap_doublePtr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
 end
-function M.ImPlot_PlotHeatmapS8Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+function M.ImPlot_PlotHeatmap_S8Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
     bounds_max = bounds_max or ImPlotPoint(1,1)
     bounds_min = bounds_min or ImPlotPoint(0,0)
     label_fmt = label_fmt or "%.1f"
     scale_max = scale_max or 0
     scale_min = scale_min or 0
-    return lib.ImPlot_PlotHeatmapS8Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+    return lib.ImPlot_PlotHeatmap_S8Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
 end
-function M.ImPlot_PlotHeatmapU8Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+function M.ImPlot_PlotHeatmap_U8Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
     bounds_max = bounds_max or ImPlotPoint(1,1)
     bounds_min = bounds_min or ImPlotPoint(0,0)
     label_fmt = label_fmt or "%.1f"
     scale_max = scale_max or 0
     scale_min = scale_min or 0
-    return lib.ImPlot_PlotHeatmapU8Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+    return lib.ImPlot_PlotHeatmap_U8Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
 end
-function M.ImPlot_PlotHeatmapS16Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+function M.ImPlot_PlotHeatmap_S16Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
     bounds_max = bounds_max or ImPlotPoint(1,1)
     bounds_min = bounds_min or ImPlotPoint(0,0)
     label_fmt = label_fmt or "%.1f"
     scale_max = scale_max or 0
     scale_min = scale_min or 0
-    return lib.ImPlot_PlotHeatmapS16Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+    return lib.ImPlot_PlotHeatmap_S16Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
 end
-function M.ImPlot_PlotHeatmapU16Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+function M.ImPlot_PlotHeatmap_U16Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
     bounds_max = bounds_max or ImPlotPoint(1,1)
     bounds_min = bounds_min or ImPlotPoint(0,0)
     label_fmt = label_fmt or "%.1f"
     scale_max = scale_max or 0
     scale_min = scale_min or 0
-    return lib.ImPlot_PlotHeatmapU16Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+    return lib.ImPlot_PlotHeatmap_U16Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
 end
-function M.ImPlot_PlotHeatmapS32Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+function M.ImPlot_PlotHeatmap_S32Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
     bounds_max = bounds_max or ImPlotPoint(1,1)
     bounds_min = bounds_min or ImPlotPoint(0,0)
     label_fmt = label_fmt or "%.1f"
     scale_max = scale_max or 0
     scale_min = scale_min or 0
-    return lib.ImPlot_PlotHeatmapS32Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+    return lib.ImPlot_PlotHeatmap_S32Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
 end
-function M.ImPlot_PlotHeatmapU32Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+function M.ImPlot_PlotHeatmap_U32Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
     bounds_max = bounds_max or ImPlotPoint(1,1)
     bounds_min = bounds_min or ImPlotPoint(0,0)
     label_fmt = label_fmt or "%.1f"
     scale_max = scale_max or 0
     scale_min = scale_min or 0
-    return lib.ImPlot_PlotHeatmapU32Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+    return lib.ImPlot_PlotHeatmap_U32Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
 end
-function M.ImPlot_PlotHeatmapS64Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+function M.ImPlot_PlotHeatmap_S64Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
     bounds_max = bounds_max or ImPlotPoint(1,1)
     bounds_min = bounds_min or ImPlotPoint(0,0)
     label_fmt = label_fmt or "%.1f"
     scale_max = scale_max or 0
     scale_min = scale_min or 0
-    return lib.ImPlot_PlotHeatmapS64Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+    return lib.ImPlot_PlotHeatmap_S64Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
 end
-function M.ImPlot_PlotHeatmapU64Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+function M.ImPlot_PlotHeatmap_U64Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
     bounds_max = bounds_max or ImPlotPoint(1,1)
     bounds_min = bounds_min or ImPlotPoint(0,0)
     label_fmt = label_fmt or "%.1f"
     scale_max = scale_max or 0
     scale_min = scale_min or 0
-    return lib.ImPlot_PlotHeatmapU64Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
+    return lib.ImPlot_PlotHeatmap_U64Ptr(label_id,values,rows,cols,scale_min,scale_max,label_fmt,bounds_min,bounds_max)
 end
 function M.ImPlot_PlotHeatmap(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotHeatmapFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotHeatmapdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotHeatmapS8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotHeatmapU8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotHeatmapS16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotHeatmapU16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotHeatmapS32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotHeatmapU32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotHeatmapS64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotHeatmapU64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotHeatmap_FloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotHeatmap_doublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotHeatmap_S8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotHeatmap_U8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotHeatmap_S16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotHeatmap_U16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotHeatmap_S32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotHeatmap_U32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotHeatmap_S64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotHeatmap_U64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
     print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
     error'M.ImPlot_PlotHeatmap could not find overloaded'
 end
-function M.ImPlot_PlotHistogramFloatPtr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+function M.ImPlot_PlotHistogram_FloatPtr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
     bar_scale = bar_scale or 1
     bins = bins or -2
     cumulative = cumulative or false
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotRange()
-    return lib.ImPlot_PlotHistogramFloatPtr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+    return lib.ImPlot_PlotHistogram_FloatPtr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
 end
-function M.ImPlot_PlotHistogramdoublePtr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+function M.ImPlot_PlotHistogram_doublePtr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
     bar_scale = bar_scale or 1
     bins = bins or -2
     cumulative = cumulative or false
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotRange()
-    return lib.ImPlot_PlotHistogramdoublePtr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+    return lib.ImPlot_PlotHistogram_doublePtr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
 end
-function M.ImPlot_PlotHistogramS8Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+function M.ImPlot_PlotHistogram_S8Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
     bar_scale = bar_scale or 1
     bins = bins or -2
     cumulative = cumulative or false
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotRange()
-    return lib.ImPlot_PlotHistogramS8Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+    return lib.ImPlot_PlotHistogram_S8Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
 end
-function M.ImPlot_PlotHistogramU8Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+function M.ImPlot_PlotHistogram_U8Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
     bar_scale = bar_scale or 1
     bins = bins or -2
     cumulative = cumulative or false
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotRange()
-    return lib.ImPlot_PlotHistogramU8Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+    return lib.ImPlot_PlotHistogram_U8Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
 end
-function M.ImPlot_PlotHistogramS16Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+function M.ImPlot_PlotHistogram_S16Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
     bar_scale = bar_scale or 1
     bins = bins or -2
     cumulative = cumulative or false
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotRange()
-    return lib.ImPlot_PlotHistogramS16Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+    return lib.ImPlot_PlotHistogram_S16Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
 end
-function M.ImPlot_PlotHistogramU16Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+function M.ImPlot_PlotHistogram_U16Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
     bar_scale = bar_scale or 1
     bins = bins or -2
     cumulative = cumulative or false
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotRange()
-    return lib.ImPlot_PlotHistogramU16Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+    return lib.ImPlot_PlotHistogram_U16Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
 end
-function M.ImPlot_PlotHistogramS32Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+function M.ImPlot_PlotHistogram_S32Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
     bar_scale = bar_scale or 1
     bins = bins or -2
     cumulative = cumulative or false
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotRange()
-    return lib.ImPlot_PlotHistogramS32Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+    return lib.ImPlot_PlotHistogram_S32Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
 end
-function M.ImPlot_PlotHistogramU32Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+function M.ImPlot_PlotHistogram_U32Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
     bar_scale = bar_scale or 1
     bins = bins or -2
     cumulative = cumulative or false
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotRange()
-    return lib.ImPlot_PlotHistogramU32Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+    return lib.ImPlot_PlotHistogram_U32Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
 end
-function M.ImPlot_PlotHistogramS64Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+function M.ImPlot_PlotHistogram_S64Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
     bar_scale = bar_scale or 1
     bins = bins or -2
     cumulative = cumulative or false
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotRange()
-    return lib.ImPlot_PlotHistogramS64Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+    return lib.ImPlot_PlotHistogram_S64Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
 end
-function M.ImPlot_PlotHistogramU64Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+function M.ImPlot_PlotHistogram_U64Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
     bar_scale = bar_scale or 1
     bins = bins or -2
     cumulative = cumulative or false
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotRange()
-    return lib.ImPlot_PlotHistogramU64Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
+    return lib.ImPlot_PlotHistogram_U64Ptr(label_id,values,count,bins,cumulative,density,range,outliers,bar_scale)
 end
 function M.ImPlot_PlotHistogram(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotHistogramFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotHistogramdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotHistogramS8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotHistogramU8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotHistogramS16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotHistogramU16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotHistogramS32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotHistogramU32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotHistogramS64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotHistogramU64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotHistogram_FloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotHistogram_doublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotHistogram_S8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotHistogram_U8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotHistogram_S16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotHistogram_U16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotHistogram_S32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotHistogram_U32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotHistogram_S64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotHistogram_U64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
     print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
     error'M.ImPlot_PlotHistogram could not find overloaded'
 end
-function M.ImPlot_PlotHistogram2DFloatPtr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+function M.ImPlot_PlotHistogram2D_FloatPtr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotLimits()
     x_bins = x_bins or -2
     y_bins = y_bins or -2
-    return lib.ImPlot_PlotHistogram2DFloatPtr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+    return lib.ImPlot_PlotHistogram2D_FloatPtr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
 end
-function M.ImPlot_PlotHistogram2DdoublePtr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+function M.ImPlot_PlotHistogram2D_doublePtr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotLimits()
     x_bins = x_bins or -2
     y_bins = y_bins or -2
-    return lib.ImPlot_PlotHistogram2DdoublePtr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+    return lib.ImPlot_PlotHistogram2D_doublePtr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
 end
-function M.ImPlot_PlotHistogram2DS8Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+function M.ImPlot_PlotHistogram2D_S8Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotLimits()
     x_bins = x_bins or -2
     y_bins = y_bins or -2
-    return lib.ImPlot_PlotHistogram2DS8Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+    return lib.ImPlot_PlotHistogram2D_S8Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
 end
-function M.ImPlot_PlotHistogram2DU8Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+function M.ImPlot_PlotHistogram2D_U8Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotLimits()
     x_bins = x_bins or -2
     y_bins = y_bins or -2
-    return lib.ImPlot_PlotHistogram2DU8Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+    return lib.ImPlot_PlotHistogram2D_U8Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
 end
-function M.ImPlot_PlotHistogram2DS16Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+function M.ImPlot_PlotHistogram2D_S16Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotLimits()
     x_bins = x_bins or -2
     y_bins = y_bins or -2
-    return lib.ImPlot_PlotHistogram2DS16Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+    return lib.ImPlot_PlotHistogram2D_S16Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
 end
-function M.ImPlot_PlotHistogram2DU16Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+function M.ImPlot_PlotHistogram2D_U16Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotLimits()
     x_bins = x_bins or -2
     y_bins = y_bins or -2
-    return lib.ImPlot_PlotHistogram2DU16Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+    return lib.ImPlot_PlotHistogram2D_U16Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
 end
-function M.ImPlot_PlotHistogram2DS32Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+function M.ImPlot_PlotHistogram2D_S32Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotLimits()
     x_bins = x_bins or -2
     y_bins = y_bins or -2
-    return lib.ImPlot_PlotHistogram2DS32Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+    return lib.ImPlot_PlotHistogram2D_S32Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
 end
-function M.ImPlot_PlotHistogram2DU32Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+function M.ImPlot_PlotHistogram2D_U32Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotLimits()
     x_bins = x_bins or -2
     y_bins = y_bins or -2
-    return lib.ImPlot_PlotHistogram2DU32Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+    return lib.ImPlot_PlotHistogram2D_U32Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
 end
-function M.ImPlot_PlotHistogram2DS64Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+function M.ImPlot_PlotHistogram2D_S64Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotLimits()
     x_bins = x_bins or -2
     y_bins = y_bins or -2
-    return lib.ImPlot_PlotHistogram2DS64Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+    return lib.ImPlot_PlotHistogram2D_S64Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
 end
-function M.ImPlot_PlotHistogram2DU64Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+function M.ImPlot_PlotHistogram2D_U64Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
     density = density or false
     if outliers == nil then outliers = true end
     range = range or ImPlotLimits()
     x_bins = x_bins or -2
     y_bins = y_bins or -2
-    return lib.ImPlot_PlotHistogram2DU64Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
+    return lib.ImPlot_PlotHistogram2D_U64Ptr(label_id,xs,ys,count,x_bins,y_bins,density,range,outliers)
 end
 function M.ImPlot_PlotHistogram2D(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotHistogram2DFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotHistogram2DdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotHistogram2DS8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotHistogram2DU8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotHistogram2DS16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotHistogram2DU16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotHistogram2DS32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotHistogram2DU32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotHistogram2DS64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotHistogram2DU64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotHistogram2D_FloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotHistogram2D_doublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotHistogram2D_S8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotHistogram2D_U8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotHistogram2D_S16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotHistogram2D_U16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotHistogram2D_S32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotHistogram2D_U32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotHistogram2D_S64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotHistogram2D_U64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
     print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
     error'M.ImPlot_PlotHistogram2D could not find overloaded'
 end
@@ -3684,147 +3684,147 @@ function M.ImPlot_PlotImage(label_id,user_texture_id,bounds_min,bounds_max,uv0,u
     uv1 = uv1 or ImVec2(1,1)
     return lib.ImPlot_PlotImage(label_id,user_texture_id,bounds_min,bounds_max,uv0,uv1,tint_col)
 end
-function M.ImPlot_PlotLineFloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotLine_FloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotLineFloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotLine_FloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotLinedoublePtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotLine_doublePtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotLinedoublePtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotLine_doublePtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotLineS8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotLine_S8PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotLineS8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotLine_S8PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotLineU8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotLine_U8PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotLineU8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotLine_U8PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotLineS16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotLine_S16PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotLineS16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotLine_S16PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotLineU16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotLine_U16PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotLineU16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotLine_U16PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotLineS32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotLine_S32PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotLineS32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotLine_S32PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotLineU32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotLine_U32PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotLineU32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotLine_U32PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotLineS64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotLine_S64PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotLineS64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotLine_S64PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotLineU64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotLine_U64PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotLineU64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotLine_U64PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotLineFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotLine_FloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotLineFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotLine_FloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotLinedoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotLine_doublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotLinedoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotLine_doublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotLineS8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotLine_S8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotLineS8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotLine_S8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotLineU8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotLine_U8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotLineU8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotLine_U8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotLineS16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotLine_S16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotLineS16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotLine_S16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotLineU16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotLine_U16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotLineU16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotLine_U16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotLineS32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotLine_S32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotLineS32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotLine_S32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotLineU32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotLine_U32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotLineU32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotLine_U32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotLineS64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotLine_S64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotLineS64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotLine_S64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotLineU64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotLine_U64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotLineU64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotLine_U64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
 end
 function M.ImPlot_PlotLine(a1,a2,a3,a4,a5,a6,a7) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLineFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLinedoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLineS8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLineU8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLineS16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLineU16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLineS32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLineU32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLineS64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLineU64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotLineFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotLinedoublePtrdoublePtr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.ImPlot_PlotLineS8PtrS8Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) then return M.ImPlot_PlotLineU8PtrU8Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) then return M.ImPlot_PlotLineS16PtrS16Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) then return M.ImPlot_PlotLineU16PtrU16Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) then return M.ImPlot_PlotLineS32PtrS32Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) then return M.ImPlot_PlotLineU32PtrU32Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) then return M.ImPlot_PlotLineS64PtrS64Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) then return M.ImPlot_PlotLineU64PtrU64Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLine_FloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLine_doublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLine_S8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLine_U8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLine_S16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLine_U16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLine_S32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLine_U32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLine_S64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotLine_U64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotLine_FloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotLine_doublePtrdoublePtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.ImPlot_PlotLine_S8PtrS8Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) then return M.ImPlot_PlotLine_U8PtrU8Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) then return M.ImPlot_PlotLine_S16PtrS16Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) then return M.ImPlot_PlotLine_U16PtrU16Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) then return M.ImPlot_PlotLine_S32PtrS32Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) then return M.ImPlot_PlotLine_U32PtrU32Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) then return M.ImPlot_PlotLine_S64PtrS64Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) then return M.ImPlot_PlotLine_U64PtrU64Ptr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6,a7)
     error'M.ImPlot_PlotLine could not find overloaded'
 end
@@ -3832,221 +3832,221 @@ function M.ImPlot_PlotLineG(label_id,getter,data,count,offset)
     offset = offset or 0
     return lib.ImPlot_PlotLineG(label_id,getter,data,count,offset)
 end
-function M.ImPlot_PlotPieChartFloatPtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+function M.ImPlot_PlotPieChart_FloatPtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
     angle0 = angle0 or 90
     label_fmt = label_fmt or "%.1f"
     normalize = normalize or false
-    return lib.ImPlot_PlotPieChartFloatPtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+    return lib.ImPlot_PlotPieChart_FloatPtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
-function M.ImPlot_PlotPieChartdoublePtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+function M.ImPlot_PlotPieChart_doublePtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
     angle0 = angle0 or 90
     label_fmt = label_fmt or "%.1f"
     normalize = normalize or false
-    return lib.ImPlot_PlotPieChartdoublePtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+    return lib.ImPlot_PlotPieChart_doublePtr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
-function M.ImPlot_PlotPieChartS8Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+function M.ImPlot_PlotPieChart_S8Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
     angle0 = angle0 or 90
     label_fmt = label_fmt or "%.1f"
     normalize = normalize or false
-    return lib.ImPlot_PlotPieChartS8Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+    return lib.ImPlot_PlotPieChart_S8Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
-function M.ImPlot_PlotPieChartU8Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+function M.ImPlot_PlotPieChart_U8Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
     angle0 = angle0 or 90
     label_fmt = label_fmt or "%.1f"
     normalize = normalize or false
-    return lib.ImPlot_PlotPieChartU8Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+    return lib.ImPlot_PlotPieChart_U8Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
-function M.ImPlot_PlotPieChartS16Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+function M.ImPlot_PlotPieChart_S16Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
     angle0 = angle0 or 90
     label_fmt = label_fmt or "%.1f"
     normalize = normalize or false
-    return lib.ImPlot_PlotPieChartS16Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+    return lib.ImPlot_PlotPieChart_S16Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
-function M.ImPlot_PlotPieChartU16Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+function M.ImPlot_PlotPieChart_U16Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
     angle0 = angle0 or 90
     label_fmt = label_fmt or "%.1f"
     normalize = normalize or false
-    return lib.ImPlot_PlotPieChartU16Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+    return lib.ImPlot_PlotPieChart_U16Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
-function M.ImPlot_PlotPieChartS32Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+function M.ImPlot_PlotPieChart_S32Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
     angle0 = angle0 or 90
     label_fmt = label_fmt or "%.1f"
     normalize = normalize or false
-    return lib.ImPlot_PlotPieChartS32Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+    return lib.ImPlot_PlotPieChart_S32Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
-function M.ImPlot_PlotPieChartU32Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+function M.ImPlot_PlotPieChart_U32Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
     angle0 = angle0 or 90
     label_fmt = label_fmt or "%.1f"
     normalize = normalize or false
-    return lib.ImPlot_PlotPieChartU32Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+    return lib.ImPlot_PlotPieChart_U32Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
-function M.ImPlot_PlotPieChartS64Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+function M.ImPlot_PlotPieChart_S64Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
     angle0 = angle0 or 90
     label_fmt = label_fmt or "%.1f"
     normalize = normalize or false
-    return lib.ImPlot_PlotPieChartS64Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+    return lib.ImPlot_PlotPieChart_S64Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
-function M.ImPlot_PlotPieChartU64Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+function M.ImPlot_PlotPieChart_U64Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
     angle0 = angle0 or 90
     label_fmt = label_fmt or "%.1f"
     normalize = normalize or false
-    return lib.ImPlot_PlotPieChartU64Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
+    return lib.ImPlot_PlotPieChart_U64Ptr(label_ids,values,count,x,y,radius,normalize,label_fmt,angle0)
 end
 function M.ImPlot_PlotPieChart(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotPieChartFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotPieChartdoublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotPieChartS8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotPieChartU8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotPieChartS16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotPieChartU16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotPieChartS32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotPieChartU32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotPieChartS64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotPieChartU64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotPieChart_FloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotPieChart_doublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotPieChart_S8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotPieChart_U8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotPieChart_S16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotPieChart_U16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotPieChart_S32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotPieChart_U32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotPieChart_S64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotPieChart_U64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
     print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
     error'M.ImPlot_PlotPieChart could not find overloaded'
 end
-function M.ImPlot_PlotScatterFloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotScatter_FloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotScatterFloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotScatter_FloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotScatterdoublePtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotScatter_doublePtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotScatterdoublePtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotScatter_doublePtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotScatterS8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotScatter_S8PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotScatterS8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotScatter_S8PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotScatterU8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotScatter_U8PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotScatterU8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotScatter_U8PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotScatterS16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotScatter_S16PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotScatterS16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotScatter_S16PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotScatterU16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotScatter_U16PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotScatterU16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotScatter_U16PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotScatterS32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotScatter_S32PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotScatterS32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotScatter_S32PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotScatterU32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotScatter_U32PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotScatterU32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotScatter_U32PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotScatterS64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotScatter_S64PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotScatterS64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotScatter_S64PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotScatterU64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotScatter_U64PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotScatterU64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotScatter_U64PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotScatterFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotScatter_FloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotScatterFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotScatter_FloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotScatterdoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotScatter_doublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotScatterdoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotScatter_doublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotScatterS8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotScatter_S8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotScatterS8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotScatter_S8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotScatterU8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotScatter_U8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotScatterU8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotScatter_U8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotScatterS16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotScatter_S16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotScatterS16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotScatter_S16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotScatterU16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotScatter_U16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotScatterU16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotScatter_U16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotScatterS32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotScatter_S32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotScatterS32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotScatter_S32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotScatterU32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotScatter_U32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotScatterU32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotScatter_U32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotScatterS64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotScatter_S64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotScatterS64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotScatter_S64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotScatterU64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotScatter_U64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotScatterU64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotScatter_U64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
 end
 function M.ImPlot_PlotScatter(a1,a2,a3,a4,a5,a6,a7) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterS8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterU8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterS16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterU16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterS32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterU32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterS64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatterU64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotScatterFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotScatterdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.ImPlot_PlotScatterS8PtrS8Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) then return M.ImPlot_PlotScatterU8PtrU8Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) then return M.ImPlot_PlotScatterS16PtrS16Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) then return M.ImPlot_PlotScatterU16PtrU16Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) then return M.ImPlot_PlotScatterS32PtrS32Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) then return M.ImPlot_PlotScatterU32PtrU32Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) then return M.ImPlot_PlotScatterS64PtrS64Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) then return M.ImPlot_PlotScatterU64PtrU64Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatter_FloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatter_doublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatter_S8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatter_U8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatter_S16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatter_U16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatter_S32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatter_U32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatter_S64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotScatter_U64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotScatter_FloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotScatter_doublePtrdoublePtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.ImPlot_PlotScatter_S8PtrS8Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) then return M.ImPlot_PlotScatter_U8PtrU8Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) then return M.ImPlot_PlotScatter_S16PtrS16Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) then return M.ImPlot_PlotScatter_U16PtrU16Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) then return M.ImPlot_PlotScatter_S32PtrS32Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) then return M.ImPlot_PlotScatter_U32PtrU32Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) then return M.ImPlot_PlotScatter_S64PtrS64Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) then return M.ImPlot_PlotScatter_U64PtrU64Ptr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6,a7)
     error'M.ImPlot_PlotScatter could not find overloaded'
 end
@@ -4054,227 +4054,227 @@ function M.ImPlot_PlotScatterG(label_id,getter,data,count,offset)
     offset = offset or 0
     return lib.ImPlot_PlotScatterG(label_id,getter,data,count,offset)
 end
-function M.ImPlot_PlotShadedFloatPtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShaded_FloatPtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedFloatPtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShaded_FloatPtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadeddoublePtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShaded_doublePtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadeddoublePtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShaded_doublePtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedS8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShaded_S8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShaded_S8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedU8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShaded_U8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShaded_U8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedS16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShaded_S16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShaded_S16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedU16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShaded_U16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShaded_U16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedS32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShaded_S32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShaded_S32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedU32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShaded_U32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShaded_U32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedS64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShaded_S64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShaded_S64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedU64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotShaded_U64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotShaded_U64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotShadedFloatPtrFloatPtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShaded_FloatPtrFloatPtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedFloatPtrFloatPtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShaded_FloatPtrFloatPtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadeddoublePtrdoublePtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShaded_doublePtrdoublePtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadeddoublePtrdoublePtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShaded_doublePtrdoublePtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedS8PtrS8PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShaded_S8PtrS8PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS8PtrS8PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShaded_S8PtrS8PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedU8PtrU8PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShaded_U8PtrU8PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU8PtrU8PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShaded_U8PtrU8PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedS16PtrS16PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShaded_S16PtrS16PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS16PtrS16PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShaded_S16PtrS16PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedU16PtrU16PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShaded_U16PtrU16PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU16PtrU16PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShaded_U16PtrU16PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedS32PtrS32PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShaded_S32PtrS32PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS32PtrS32PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShaded_S32PtrS32PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedU32PtrU32PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShaded_U32PtrU32PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU32PtrU32PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShaded_U32PtrU32PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedS64PtrS64PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShaded_S64PtrS64PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedS64PtrS64PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShaded_S64PtrS64PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedU64PtrU64PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotShaded_U64PtrU64PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotShadedU64PtrU64PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotShaded_U64PtrU64PtrInt(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotShadedFloatPtrFloatPtrFloatPtr(label_id,xs,ys1,ys2,count,offset,stride)
+function M.ImPlot_PlotShaded_FloatPtrFloatPtrFloatPtr(label_id,xs,ys1,ys2,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotShadedFloatPtrFloatPtrFloatPtr(label_id,xs,ys1,ys2,count,offset,stride)
+    return lib.ImPlot_PlotShaded_FloatPtrFloatPtrFloatPtr(label_id,xs,ys1,ys2,count,offset,stride)
 end
-function M.ImPlot_PlotShadeddoublePtrdoublePtrdoublePtr(label_id,xs,ys1,ys2,count,offset,stride)
+function M.ImPlot_PlotShaded_doublePtrdoublePtrdoublePtr(label_id,xs,ys1,ys2,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotShadeddoublePtrdoublePtrdoublePtr(label_id,xs,ys1,ys2,count,offset,stride)
+    return lib.ImPlot_PlotShaded_doublePtrdoublePtrdoublePtr(label_id,xs,ys1,ys2,count,offset,stride)
 end
-function M.ImPlot_PlotShadedS8PtrS8PtrS8Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+function M.ImPlot_PlotShaded_S8PtrS8PtrS8Ptr(label_id,xs,ys1,ys2,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotShadedS8PtrS8PtrS8Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+    return lib.ImPlot_PlotShaded_S8PtrS8PtrS8Ptr(label_id,xs,ys1,ys2,count,offset,stride)
 end
-function M.ImPlot_PlotShadedU8PtrU8PtrU8Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+function M.ImPlot_PlotShaded_U8PtrU8PtrU8Ptr(label_id,xs,ys1,ys2,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotShadedU8PtrU8PtrU8Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+    return lib.ImPlot_PlotShaded_U8PtrU8PtrU8Ptr(label_id,xs,ys1,ys2,count,offset,stride)
 end
-function M.ImPlot_PlotShadedS16PtrS16PtrS16Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+function M.ImPlot_PlotShaded_S16PtrS16PtrS16Ptr(label_id,xs,ys1,ys2,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotShadedS16PtrS16PtrS16Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+    return lib.ImPlot_PlotShaded_S16PtrS16PtrS16Ptr(label_id,xs,ys1,ys2,count,offset,stride)
 end
-function M.ImPlot_PlotShadedU16PtrU16PtrU16Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+function M.ImPlot_PlotShaded_U16PtrU16PtrU16Ptr(label_id,xs,ys1,ys2,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotShadedU16PtrU16PtrU16Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+    return lib.ImPlot_PlotShaded_U16PtrU16PtrU16Ptr(label_id,xs,ys1,ys2,count,offset,stride)
 end
-function M.ImPlot_PlotShadedS32PtrS32PtrS32Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+function M.ImPlot_PlotShaded_S32PtrS32PtrS32Ptr(label_id,xs,ys1,ys2,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotShadedS32PtrS32PtrS32Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+    return lib.ImPlot_PlotShaded_S32PtrS32PtrS32Ptr(label_id,xs,ys1,ys2,count,offset,stride)
 end
-function M.ImPlot_PlotShadedU32PtrU32PtrU32Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+function M.ImPlot_PlotShaded_U32PtrU32PtrU32Ptr(label_id,xs,ys1,ys2,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotShadedU32PtrU32PtrU32Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+    return lib.ImPlot_PlotShaded_U32PtrU32PtrU32Ptr(label_id,xs,ys1,ys2,count,offset,stride)
 end
-function M.ImPlot_PlotShadedS64PtrS64PtrS64Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+function M.ImPlot_PlotShaded_S64PtrS64PtrS64Ptr(label_id,xs,ys1,ys2,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotShadedS64PtrS64PtrS64Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+    return lib.ImPlot_PlotShaded_S64PtrS64PtrS64Ptr(label_id,xs,ys1,ys2,count,offset,stride)
 end
-function M.ImPlot_PlotShadedU64PtrU64PtrU64Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+function M.ImPlot_PlotShaded_U64PtrU64PtrU64Ptr(label_id,xs,ys1,ys2,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotShadedU64PtrU64PtrU64Ptr(label_id,xs,ys1,ys2,count,offset,stride)
+    return lib.ImPlot_PlotShaded_U64PtrU64PtrU64Ptr(label_id,xs,ys1,ys2,count,offset,stride)
 end
 function M.ImPlot_PlotShaded(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedFloatPtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadeddoublePtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedS8PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedU8PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedS16PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedU16PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedS32PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedU32PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedS64PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShadedU64PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedFloatPtrFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadeddoublePtrdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedS8PtrS8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedU8PtrU8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedS16PtrS16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedU16PtrU16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedS32PtrS32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedU32PtrU32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedS64PtrS64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShadedU64PtrU64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) then return M.ImPlot_PlotShadedFloatPtrFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) then return M.ImPlot_PlotShadeddoublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('const ImS8*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') then return M.ImPlot_PlotShadedS8PtrS8PtrS8Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('const ImU8*',a4) or ffi.istype('const ImU8',a4) or ffi.istype('const ImU8[]',a4)) then return M.ImPlot_PlotShadedU8PtrU8PtrU8Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('const ImS16*',a4) or ffi.istype('const ImS16',a4) or ffi.istype('const ImS16[]',a4)) then return M.ImPlot_PlotShadedS16PtrS16PtrS16Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('const ImU16*',a4) or ffi.istype('const ImU16',a4) or ffi.istype('const ImU16[]',a4)) then return M.ImPlot_PlotShadedU16PtrU16PtrU16Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('const ImS32*',a4) or ffi.istype('const ImS32',a4) or ffi.istype('const ImS32[]',a4)) then return M.ImPlot_PlotShadedS32PtrS32PtrS32Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('const ImU32*',a4) or ffi.istype('const ImU32',a4) or ffi.istype('const ImU32[]',a4)) then return M.ImPlot_PlotShadedU32PtrU32PtrU32Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('const ImS64*',a4) or ffi.istype('const ImS64',a4) or ffi.istype('const ImS64[]',a4)) then return M.ImPlot_PlotShadedS64PtrS64PtrS64Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('const ImU64*',a4) or ffi.istype('const ImU64',a4) or ffi.istype('const ImU64[]',a4)) then return M.ImPlot_PlotShadedU64PtrU64PtrU64Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShaded_FloatPtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShaded_doublePtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShaded_S8PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShaded_U8PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShaded_S16PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShaded_U16PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShaded_S32PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShaded_U32PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShaded_S64PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') and ((ffi.istype('double',a4) or type(a4)=='number') or type(a4)=='nil') and ((ffi.istype('double',a6) or type(a6)=='number') or type(a6)=='nil') and ((ffi.istype('int',a8) or type(a8)=='number') or type(a8)=='nil') then return M.ImPlot_PlotShaded_U64PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShaded_FloatPtrFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShaded_doublePtrdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShaded_S8PtrS8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShaded_U8PtrU8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShaded_S16PtrS16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShaded_U16PtrU16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShaded_S32PtrS32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShaded_U32PtrU32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShaded_S64PtrS64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('int',a4) or type(a4)=='number') and ((ffi.istype('int',a6) or type(a6)=='number') or type(a6)=='nil') and a8==nil then return M.ImPlot_PlotShaded_U64PtrU64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) and (ffi.istype('const float*',a4) or ffi.istype('float[]',a4)) then return M.ImPlot_PlotShaded_FloatPtrFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) and (ffi.istype('const double*',a4) or ffi.istype('double[]',a4)) then return M.ImPlot_PlotShaded_doublePtrdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') and (ffi.istype('const ImS8*',a4) or ffi.istype('char[]',a4) or type(a4)=='string') then return M.ImPlot_PlotShaded_S8PtrS8PtrS8Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) and (ffi.istype('const ImU8*',a4) or ffi.istype('const ImU8',a4) or ffi.istype('const ImU8[]',a4)) then return M.ImPlot_PlotShaded_U8PtrU8PtrU8Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) and (ffi.istype('const ImS16*',a4) or ffi.istype('const ImS16',a4) or ffi.istype('const ImS16[]',a4)) then return M.ImPlot_PlotShaded_S16PtrS16PtrS16Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) and (ffi.istype('const ImU16*',a4) or ffi.istype('const ImU16',a4) or ffi.istype('const ImU16[]',a4)) then return M.ImPlot_PlotShaded_U16PtrU16PtrU16Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) and (ffi.istype('const ImS32*',a4) or ffi.istype('const ImS32',a4) or ffi.istype('const ImS32[]',a4)) then return M.ImPlot_PlotShaded_S32PtrS32PtrS32Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) and (ffi.istype('const ImU32*',a4) or ffi.istype('const ImU32',a4) or ffi.istype('const ImU32[]',a4)) then return M.ImPlot_PlotShaded_U32PtrU32PtrU32Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) and (ffi.istype('const ImS64*',a4) or ffi.istype('const ImS64',a4) or ffi.istype('const ImS64[]',a4)) then return M.ImPlot_PlotShaded_S64PtrS64PtrS64Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) and (ffi.istype('const ImU64*',a4) or ffi.istype('const ImU64',a4) or ffi.istype('const ImU64[]',a4)) then return M.ImPlot_PlotShaded_U64PtrU64PtrU64Ptr(a1,a2,a3,a4,a5,a6,a7) end
     print(a1,a2,a3,a4,a5,a6,a7,a8)
     error'M.ImPlot_PlotShaded could not find overloaded'
 end
@@ -4282,147 +4282,147 @@ function M.ImPlot_PlotShadedG(label_id,getter1,data1,getter2,data2,count,offset)
     offset = offset or 0
     return lib.ImPlot_PlotShadedG(label_id,getter1,data1,getter2,data2,count,offset)
 end
-function M.ImPlot_PlotStairsFloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotStairs_FloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotStairsFloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStairs_FloatPtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStairsdoublePtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotStairs_doublePtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotStairsdoublePtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStairs_doublePtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStairsS8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotStairs_S8PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotStairsS8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStairs_S8PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStairsU8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotStairs_U8PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotStairsU8PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStairs_U8PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStairsS16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotStairs_S16PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotStairsS16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStairs_S16PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStairsU16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotStairs_U16PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotStairsU16PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStairs_U16PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStairsS32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotStairs_S32PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotStairsS32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStairs_S32PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStairsU32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotStairs_U32PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotStairsU32PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStairs_U32PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStairsS64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotStairs_S64PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotStairsS64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStairs_S64PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStairsU64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+function M.ImPlot_PlotStairs_U64PtrInt(label_id,values,count,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
     x0 = x0 or 0
     xscale = xscale or 1
-    return lib.ImPlot_PlotStairsU64PtrInt(label_id,values,count,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStairs_U64PtrInt(label_id,values,count,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStairsFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotStairs_FloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotStairsFloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotStairs_FloatPtrFloatPtr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotStairsdoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotStairs_doublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotStairsdoublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotStairs_doublePtrdoublePtr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotStairsS8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotStairs_S8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotStairsS8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotStairs_S8PtrS8Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotStairsU8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotStairs_U8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotStairsU8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotStairs_U8PtrU8Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotStairsS16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotStairs_S16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotStairsS16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotStairs_S16PtrS16Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotStairsU16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotStairs_U16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotStairsU16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotStairs_U16PtrU16Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotStairsS32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotStairs_S32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotStairsS32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotStairs_S32PtrS32Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotStairsU32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotStairs_U32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotStairsU32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotStairs_U32PtrU32Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotStairsS64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotStairs_S64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotStairsS64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotStairs_S64PtrS64Ptr(label_id,xs,ys,count,offset,stride)
 end
-function M.ImPlot_PlotStairsU64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
+function M.ImPlot_PlotStairs_U64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotStairsU64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
+    return lib.ImPlot_PlotStairs_U64PtrU64Ptr(label_id,xs,ys,count,offset,stride)
 end
 function M.ImPlot_PlotStairs(a1,a2,a3,a4,a5,a6,a7) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsFloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsdoublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsS8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsU8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsS16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsU16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsS32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsU32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsS64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairsU64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotStairsFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotStairsdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.ImPlot_PlotStairsS8PtrS8Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) then return M.ImPlot_PlotStairsU8PtrU8Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) then return M.ImPlot_PlotStairsS16PtrS16Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) then return M.ImPlot_PlotStairsU16PtrU16Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) then return M.ImPlot_PlotStairsS32PtrS32Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) then return M.ImPlot_PlotStairsU32PtrU32Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) then return M.ImPlot_PlotStairsS64PtrS64Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) then return M.ImPlot_PlotStairsU64PtrU64Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairs_FloatPtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairs_doublePtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairs_S8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairs_U8PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairs_S16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairs_U16PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairs_S32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairs_U32PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairs_S64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStairs_U64PtrInt(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotStairs_FloatPtrFloatPtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotStairs_doublePtrdoublePtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.ImPlot_PlotStairs_S8PtrS8Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) then return M.ImPlot_PlotStairs_U8PtrU8Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) then return M.ImPlot_PlotStairs_S16PtrS16Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) then return M.ImPlot_PlotStairs_U16PtrU16Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) then return M.ImPlot_PlotStairs_S32PtrS32Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) then return M.ImPlot_PlotStairs_U32PtrU32Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) then return M.ImPlot_PlotStairs_S64PtrS64Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) then return M.ImPlot_PlotStairs_U64PtrU64Ptr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6,a7)
     error'M.ImPlot_PlotStairs could not find overloaded'
 end
@@ -4430,167 +4430,167 @@ function M.ImPlot_PlotStairsG(label_id,getter,data,count,offset)
     offset = offset or 0
     return lib.ImPlot_PlotStairsG(label_id,getter,data,count,offset)
 end
-function M.ImPlot_PlotStemsFloatPtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotStems_FloatPtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsFloatPtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStems_FloatPtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStemsdoublePtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotStems_doublePtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsdoublePtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStems_doublePtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStemsS8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotStems_S8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsS8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStems_S8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStemsU8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotStems_U8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsU8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStems_U8PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStemsS16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotStems_S16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsS16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStems_S16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStemsU16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotStems_U16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsU16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStems_U16PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStemsS32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotStems_S32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsS32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStems_S32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStemsU32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotStems_U32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsU32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStems_U32PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStemsS64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotStems_S64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsS64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStems_S64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStemsU64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+function M.ImPlot_PlotStems_U64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
     x0 = x0 or 0
     xscale = xscale or 1
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsU64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
+    return lib.ImPlot_PlotStems_U64PtrInt(label_id,values,count,y_ref,xscale,x0,offset,stride)
 end
-function M.ImPlot_PlotStemsFloatPtrFloatPtr(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotStems_FloatPtrFloatPtr(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsFloatPtrFloatPtr(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotStems_FloatPtrFloatPtr(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotStemsdoublePtrdoublePtr(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotStems_doublePtrdoublePtr(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsdoublePtrdoublePtr(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotStems_doublePtrdoublePtr(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotStemsS8PtrS8Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotStems_S8PtrS8Ptr(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsS8PtrS8Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotStems_S8PtrS8Ptr(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotStemsU8PtrU8Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotStems_U8PtrU8Ptr(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsU8PtrU8Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotStems_U8PtrU8Ptr(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotStemsS16PtrS16Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotStems_S16PtrS16Ptr(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsS16PtrS16Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotStems_S16PtrS16Ptr(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotStemsU16PtrU16Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotStems_U16PtrU16Ptr(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsU16PtrU16Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotStems_U16PtrU16Ptr(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotStemsS32PtrS32Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotStems_S32PtrS32Ptr(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsS32PtrS32Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotStems_S32PtrS32Ptr(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotStemsU32PtrU32Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotStems_U32PtrU32Ptr(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsU32PtrU32Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotStems_U32PtrU32Ptr(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotStemsS64PtrS64Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotStems_S64PtrS64Ptr(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsS64PtrS64Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotStems_S64PtrS64Ptr(label_id,xs,ys,count,y_ref,offset,stride)
 end
-function M.ImPlot_PlotStemsU64PtrU64Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+function M.ImPlot_PlotStems_U64PtrU64Ptr(label_id,xs,ys,count,y_ref,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
     y_ref = y_ref or 0
-    return lib.ImPlot_PlotStemsU64PtrU64Ptr(label_id,xs,ys,count,y_ref,offset,stride)
+    return lib.ImPlot_PlotStems_U64PtrU64Ptr(label_id,xs,ys,count,y_ref,offset,stride)
 end
 function M.ImPlot_PlotStems(a1,a2,a3,a4,a5,a6,a7,a8) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStemsFloatPtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStemsdoublePtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStemsS8PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStemsU8PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStemsS16PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStemsU16PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStemsS32PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStemsU32PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStemsS64PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStemsU64PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotStemsFloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotStemsdoublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.ImPlot_PlotStemsS8PtrS8Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) then return M.ImPlot_PlotStemsU8PtrU8Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) then return M.ImPlot_PlotStemsS16PtrS16Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) then return M.ImPlot_PlotStemsU16PtrU16Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) then return M.ImPlot_PlotStemsS32PtrS32Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) then return M.ImPlot_PlotStemsU32PtrU32Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) then return M.ImPlot_PlotStemsS64PtrS64Ptr(a1,a2,a3,a4,a5,a6,a7) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) then return M.ImPlot_PlotStemsU64PtrU64Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStems_FloatPtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStems_doublePtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStems_S8PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStems_U8PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStems_S16PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStems_U16PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStems_S32PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStems_U32PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStems_S64PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('int',a3) or type(a3)=='number') then return M.ImPlot_PlotStems_U64PtrInt(a1,a2,a3,a4,a5,a6,a7,a8) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) and (ffi.istype('const float*',a3) or ffi.istype('float[]',a3)) then return M.ImPlot_PlotStems_FloatPtrFloatPtr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) and (ffi.istype('const double*',a3) or ffi.istype('double[]',a3)) then return M.ImPlot_PlotStems_doublePtrdoublePtr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and (ffi.istype('const ImS8*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.ImPlot_PlotStems_S8PtrS8Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) and (ffi.istype('const ImU8*',a3) or ffi.istype('const ImU8',a3) or ffi.istype('const ImU8[]',a3)) then return M.ImPlot_PlotStems_U8PtrU8Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) and (ffi.istype('const ImS16*',a3) or ffi.istype('const ImS16',a3) or ffi.istype('const ImS16[]',a3)) then return M.ImPlot_PlotStems_S16PtrS16Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) and (ffi.istype('const ImU16*',a3) or ffi.istype('const ImU16',a3) or ffi.istype('const ImU16[]',a3)) then return M.ImPlot_PlotStems_U16PtrU16Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) and (ffi.istype('const ImS32*',a3) or ffi.istype('const ImS32',a3) or ffi.istype('const ImS32[]',a3)) then return M.ImPlot_PlotStems_S32PtrS32Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) and (ffi.istype('const ImU32*',a3) or ffi.istype('const ImU32',a3) or ffi.istype('const ImU32[]',a3)) then return M.ImPlot_PlotStems_U32PtrU32Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) and (ffi.istype('const ImS64*',a3) or ffi.istype('const ImS64',a3) or ffi.istype('const ImS64[]',a3)) then return M.ImPlot_PlotStems_S64PtrS64Ptr(a1,a2,a3,a4,a5,a6,a7) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) and (ffi.istype('const ImU64*',a3) or ffi.istype('const ImU64',a3) or ffi.istype('const ImU64[]',a3)) then return M.ImPlot_PlotStems_U64PtrU64Ptr(a1,a2,a3,a4,a5,a6,a7) end
     print(a1,a2,a3,a4,a5,a6,a7,a8)
     error'M.ImPlot_PlotStems could not find overloaded'
 end
@@ -4599,85 +4599,85 @@ function M.ImPlot_PlotText(text,x,y,vertical,pix_offset)
     vertical = vertical or false
     return lib.ImPlot_PlotText(text,x,y,vertical,pix_offset)
 end
-function M.ImPlot_PlotToPixelsPlotPoInt(plt,y_axis)
+function M.ImPlot_PlotToPixels_PlotPoInt(plt,y_axis)
     y_axis = y_axis or -1
     local nonUDT_out = ffi.new("ImVec2")
-    lib.ImPlot_PlotToPixelsPlotPoInt(nonUDT_out,plt,y_axis)
+    lib.ImPlot_PlotToPixels_PlotPoInt(nonUDT_out,plt,y_axis)
     return nonUDT_out
 end
-function M.ImPlot_PlotToPixelsdouble(x,y,y_axis)
+function M.ImPlot_PlotToPixels_double(x,y,y_axis)
     y_axis = y_axis or -1
     local nonUDT_out = ffi.new("ImVec2")
-    lib.ImPlot_PlotToPixelsdouble(nonUDT_out,x,y,y_axis)
+    lib.ImPlot_PlotToPixels_double(nonUDT_out,x,y,y_axis)
     return nonUDT_out
 end
 function M.ImPlot_PlotToPixels(a2,a3,a4) -- generic version
-    if ffi.istype('const ImPlotPoint',a2) then return M.ImPlot_PlotToPixelsPlotPoInt(a2,a3) end
-    if (ffi.istype('double',a2) or type(a2)=='number') then return M.ImPlot_PlotToPixelsdouble(a2,a3,a4) end
+    if ffi.istype('const ImPlotPoint',a2) then return M.ImPlot_PlotToPixels_PlotPoInt(a2,a3) end
+    if (ffi.istype('double',a2) or type(a2)=='number') then return M.ImPlot_PlotToPixels_double(a2,a3,a4) end
     print(a2,a3,a4)
     error'M.ImPlot_PlotToPixels could not find overloaded'
 end
-function M.ImPlot_PlotVLinesFloatPtr(label_id,xs,count,offset,stride)
+function M.ImPlot_PlotVLines_FloatPtr(label_id,xs,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("float")
-    return lib.ImPlot_PlotVLinesFloatPtr(label_id,xs,count,offset,stride)
+    return lib.ImPlot_PlotVLines_FloatPtr(label_id,xs,count,offset,stride)
 end
-function M.ImPlot_PlotVLinesdoublePtr(label_id,xs,count,offset,stride)
+function M.ImPlot_PlotVLines_doublePtr(label_id,xs,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("double")
-    return lib.ImPlot_PlotVLinesdoublePtr(label_id,xs,count,offset,stride)
+    return lib.ImPlot_PlotVLines_doublePtr(label_id,xs,count,offset,stride)
 end
-function M.ImPlot_PlotVLinesS8Ptr(label_id,xs,count,offset,stride)
+function M.ImPlot_PlotVLines_S8Ptr(label_id,xs,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS8")
-    return lib.ImPlot_PlotVLinesS8Ptr(label_id,xs,count,offset,stride)
+    return lib.ImPlot_PlotVLines_S8Ptr(label_id,xs,count,offset,stride)
 end
-function M.ImPlot_PlotVLinesU8Ptr(label_id,xs,count,offset,stride)
+function M.ImPlot_PlotVLines_U8Ptr(label_id,xs,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU8")
-    return lib.ImPlot_PlotVLinesU8Ptr(label_id,xs,count,offset,stride)
+    return lib.ImPlot_PlotVLines_U8Ptr(label_id,xs,count,offset,stride)
 end
-function M.ImPlot_PlotVLinesS16Ptr(label_id,xs,count,offset,stride)
+function M.ImPlot_PlotVLines_S16Ptr(label_id,xs,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS16")
-    return lib.ImPlot_PlotVLinesS16Ptr(label_id,xs,count,offset,stride)
+    return lib.ImPlot_PlotVLines_S16Ptr(label_id,xs,count,offset,stride)
 end
-function M.ImPlot_PlotVLinesU16Ptr(label_id,xs,count,offset,stride)
+function M.ImPlot_PlotVLines_U16Ptr(label_id,xs,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU16")
-    return lib.ImPlot_PlotVLinesU16Ptr(label_id,xs,count,offset,stride)
+    return lib.ImPlot_PlotVLines_U16Ptr(label_id,xs,count,offset,stride)
 end
-function M.ImPlot_PlotVLinesS32Ptr(label_id,xs,count,offset,stride)
+function M.ImPlot_PlotVLines_S32Ptr(label_id,xs,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS32")
-    return lib.ImPlot_PlotVLinesS32Ptr(label_id,xs,count,offset,stride)
+    return lib.ImPlot_PlotVLines_S32Ptr(label_id,xs,count,offset,stride)
 end
-function M.ImPlot_PlotVLinesU32Ptr(label_id,xs,count,offset,stride)
+function M.ImPlot_PlotVLines_U32Ptr(label_id,xs,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU32")
-    return lib.ImPlot_PlotVLinesU32Ptr(label_id,xs,count,offset,stride)
+    return lib.ImPlot_PlotVLines_U32Ptr(label_id,xs,count,offset,stride)
 end
-function M.ImPlot_PlotVLinesS64Ptr(label_id,xs,count,offset,stride)
+function M.ImPlot_PlotVLines_S64Ptr(label_id,xs,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImS64")
-    return lib.ImPlot_PlotVLinesS64Ptr(label_id,xs,count,offset,stride)
+    return lib.ImPlot_PlotVLines_S64Ptr(label_id,xs,count,offset,stride)
 end
-function M.ImPlot_PlotVLinesU64Ptr(label_id,xs,count,offset,stride)
+function M.ImPlot_PlotVLines_U64Ptr(label_id,xs,count,offset,stride)
     offset = offset or 0
     stride = stride or ffi.sizeof("ImU64")
-    return lib.ImPlot_PlotVLinesU64Ptr(label_id,xs,count,offset,stride)
+    return lib.ImPlot_PlotVLines_U64Ptr(label_id,xs,count,offset,stride)
 end
 function M.ImPlot_PlotVLines(a1,a2,a3,a4,a5) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotVLinesFloatPtr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotVLinesdoublePtr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotVLinesS8Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotVLinesU8Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotVLinesS16Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotVLinesU16Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotVLinesS32Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotVLinesU32Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotVLinesS64Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotVLinesU64Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotVLines_FloatPtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotVLines_doublePtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotVLines_S8Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU8*',a2) or ffi.istype('const ImU8',a2) or ffi.istype('const ImU8[]',a2)) then return M.ImPlot_PlotVLines_U8Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS16*',a2) or ffi.istype('const ImS16',a2) or ffi.istype('const ImS16[]',a2)) then return M.ImPlot_PlotVLines_S16Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU16*',a2) or ffi.istype('const ImU16',a2) or ffi.istype('const ImU16[]',a2)) then return M.ImPlot_PlotVLines_U16Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS32*',a2) or ffi.istype('const ImS32',a2) or ffi.istype('const ImS32[]',a2)) then return M.ImPlot_PlotVLines_S32Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU32*',a2) or ffi.istype('const ImU32',a2) or ffi.istype('const ImU32[]',a2)) then return M.ImPlot_PlotVLines_U32Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImS64*',a2) or ffi.istype('const ImS64',a2) or ffi.istype('const ImS64[]',a2)) then return M.ImPlot_PlotVLines_S64Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const ImU64*',a2) or ffi.istype('const ImU64',a2) or ffi.istype('const ImU64[]',a2)) then return M.ImPlot_PlotVLines_U64Ptr(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5)
     error'M.ImPlot_PlotVLines could not find overloaded'
 end
@@ -4696,31 +4696,31 @@ function M.ImPlot_PopStyleVar(count)
 end
 M.ImPlot_Precision = lib.ImPlot_Precision
 M.ImPlot_PullLinkedAxis = lib.ImPlot_PullLinkedAxis
-M.ImPlot_PushColormapPlotColormap = lib.ImPlot_PushColormapPlotColormap
-M.ImPlot_PushColormapStr = lib.ImPlot_PushColormapStr
+M.ImPlot_PushColormap_PlotColormap = lib.ImPlot_PushColormap_PlotColormap
+M.ImPlot_PushColormap_Str = lib.ImPlot_PushColormap_Str
 function M.ImPlot_PushColormap(a1) -- generic version
-    if (ffi.istype('ImPlotColormap',a1) or type(a1)=='number') then return M.ImPlot_PushColormapPlotColormap(a1) end
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_PushColormapStr(a1) end
+    if (ffi.istype('ImPlotColormap',a1) or type(a1)=='number') then return M.ImPlot_PushColormap_PlotColormap(a1) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.ImPlot_PushColormap_Str(a1) end
     print(a1)
     error'M.ImPlot_PushColormap could not find overloaded'
 end
 M.ImPlot_PushLinkedAxis = lib.ImPlot_PushLinkedAxis
 M.ImPlot_PushPlotClipRect = lib.ImPlot_PushPlotClipRect
-M.ImPlot_PushStyleColorU32 = lib.ImPlot_PushStyleColorU32
-M.ImPlot_PushStyleColorVec4 = lib.ImPlot_PushStyleColorVec4
+M.ImPlot_PushStyleColor_U32 = lib.ImPlot_PushStyleColor_U32
+M.ImPlot_PushStyleColor_Vec4 = lib.ImPlot_PushStyleColor_Vec4
 function M.ImPlot_PushStyleColor(a1,a2) -- generic version
-    if (ffi.istype('ImU32',a2) or type(a2)=='number') then return M.ImPlot_PushStyleColorU32(a1,a2) end
-    if ffi.istype('const ImVec4',a2) then return M.ImPlot_PushStyleColorVec4(a1,a2) end
+    if (ffi.istype('ImU32',a2) or type(a2)=='number') then return M.ImPlot_PushStyleColor_U32(a1,a2) end
+    if ffi.istype('const ImVec4',a2) then return M.ImPlot_PushStyleColor_Vec4(a1,a2) end
     print(a1,a2)
     error'M.ImPlot_PushStyleColor could not find overloaded'
 end
-M.ImPlot_PushStyleVarFloat = lib.ImPlot_PushStyleVarFloat
-M.ImPlot_PushStyleVarInt = lib.ImPlot_PushStyleVarInt
-M.ImPlot_PushStyleVarVec2 = lib.ImPlot_PushStyleVarVec2
+M.ImPlot_PushStyleVar_Float = lib.ImPlot_PushStyleVar_Float
+M.ImPlot_PushStyleVar_Int = lib.ImPlot_PushStyleVar_Int
+M.ImPlot_PushStyleVar_Vec2 = lib.ImPlot_PushStyleVar_Vec2
 function M.ImPlot_PushStyleVar(a1,a2) -- generic version
-    if (ffi.istype('float',a2) or type(a2)=='number') then return M.ImPlot_PushStyleVarFloat(a1,a2) end
-    if (ffi.istype('int',a2) or type(a2)=='number') then return M.ImPlot_PushStyleVarInt(a1,a2) end
-    if ffi.istype('const ImVec2',a2) then return M.ImPlot_PushStyleVarVec2(a1,a2) end
+    if (ffi.istype('float',a2) or type(a2)=='number') then return M.ImPlot_PushStyleVar_Float(a1,a2) end
+    if (ffi.istype('int',a2) or type(a2)=='number') then return M.ImPlot_PushStyleVar_Int(a1,a2) end
+    if ffi.istype('const ImVec2',a2) then return M.ImPlot_PushStyleVar_Vec2(a1,a2) end
     print(a1,a2)
     error'M.ImPlot_PushStyleVar could not find overloaded'
 end
@@ -4784,37 +4784,37 @@ function M.ImPlot_SetNextPlotLimitsY(ymin,ymax,cond,y_axis)
     y_axis = y_axis or 0
     return lib.ImPlot_SetNextPlotLimitsY(ymin,ymax,cond,y_axis)
 end
-function M.ImPlot_SetNextPlotTicksXdoublePtr(values,n_ticks,labels,show_default)
+function M.ImPlot_SetNextPlotTicksX_doublePtr(values,n_ticks,labels,show_default)
     labels = labels or nil
     show_default = show_default or false
-    return lib.ImPlot_SetNextPlotTicksXdoublePtr(values,n_ticks,labels,show_default)
+    return lib.ImPlot_SetNextPlotTicksX_doublePtr(values,n_ticks,labels,show_default)
 end
-function M.ImPlot_SetNextPlotTicksXdouble(x_min,x_max,n_ticks,labels,show_default)
+function M.ImPlot_SetNextPlotTicksX_double(x_min,x_max,n_ticks,labels,show_default)
     labels = labels or nil
     show_default = show_default or false
-    return lib.ImPlot_SetNextPlotTicksXdouble(x_min,x_max,n_ticks,labels,show_default)
+    return lib.ImPlot_SetNextPlotTicksX_double(x_min,x_max,n_ticks,labels,show_default)
 end
 function M.ImPlot_SetNextPlotTicksX(a1,a2,a3,a4,a5) -- generic version
-    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_SetNextPlotTicksXdoublePtr(a1,a2,a3,a4) end
-    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_SetNextPlotTicksXdouble(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_SetNextPlotTicksX_doublePtr(a1,a2,a3,a4) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_SetNextPlotTicksX_double(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5)
     error'M.ImPlot_SetNextPlotTicksX could not find overloaded'
 end
-function M.ImPlot_SetNextPlotTicksYdoublePtr(values,n_ticks,labels,show_default,y_axis)
+function M.ImPlot_SetNextPlotTicksY_doublePtr(values,n_ticks,labels,show_default,y_axis)
     labels = labels or nil
     show_default = show_default or false
     y_axis = y_axis or 0
-    return lib.ImPlot_SetNextPlotTicksYdoublePtr(values,n_ticks,labels,show_default,y_axis)
+    return lib.ImPlot_SetNextPlotTicksY_doublePtr(values,n_ticks,labels,show_default,y_axis)
 end
-function M.ImPlot_SetNextPlotTicksYdouble(y_min,y_max,n_ticks,labels,show_default,y_axis)
+function M.ImPlot_SetNextPlotTicksY_double(y_min,y_max,n_ticks,labels,show_default,y_axis)
     labels = labels or nil
     show_default = show_default or false
     y_axis = y_axis or 0
-    return lib.ImPlot_SetNextPlotTicksYdouble(y_min,y_max,n_ticks,labels,show_default,y_axis)
+    return lib.ImPlot_SetNextPlotTicksY_double(y_min,y_max,n_ticks,labels,show_default,y_axis)
 end
 function M.ImPlot_SetNextPlotTicksY(a1,a2,a3,a4,a5,a6) -- generic version
-    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_SetNextPlotTicksYdoublePtr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_SetNextPlotTicksYdouble(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const double*',a1) or ffi.istype('double[]',a1)) then return M.ImPlot_SetNextPlotTicksY_doublePtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPlot_SetNextPlotTicksY_double(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.ImPlot_SetNextPlotTicksY could not find overloaded'
 end
@@ -4887,21 +4887,21 @@ function M.Begin(name,p_open,flags)
     p_open = p_open or nil
     return lib.igBegin(name,p_open,flags)
 end
-function M.BeginChildStr(str_id,size,border,flags)
+function M.BeginChild_Str(str_id,size,border,flags)
     border = border or false
     flags = flags or 0
     size = size or ImVec2(0,0)
-    return lib.igBeginChildStr(str_id,size,border,flags)
+    return lib.igBeginChild_Str(str_id,size,border,flags)
 end
-function M.BeginChildID(id,size,border,flags)
+function M.BeginChild_ID(id,size,border,flags)
     border = border or false
     flags = flags or 0
     size = size or ImVec2(0,0)
-    return lib.igBeginChildID(id,size,border,flags)
+    return lib.igBeginChild_ID(id,size,border,flags)
 end
 function M.BeginChild(a1,a2,a3,a4) -- generic version
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.BeginChildStr(a1,a2,a3,a4) end
-    if ffi.istype('ImGuiID',a1) then return M.BeginChildID(a1,a2,a3,a4) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.BeginChild_Str(a1,a2,a3,a4) end
+    if ffi.istype('ImGuiID',a1) then return M.BeginChild_ID(a1,a2,a3,a4) end
     print(a1,a2,a3,a4)
     error'M.BeginChild could not find overloaded'
 end
@@ -5038,15 +5038,15 @@ function M.CaptureMouseFromApp(want_capture_mouse_value)
     return lib.igCaptureMouseFromApp(want_capture_mouse_value)
 end
 M.Checkbox = lib.igCheckbox
-M.CheckboxFlagsIntPtr = lib.igCheckboxFlagsIntPtr
-M.CheckboxFlagsUintPtr = lib.igCheckboxFlagsUintPtr
-M.CheckboxFlagsS64Ptr = lib.igCheckboxFlagsS64Ptr
-M.CheckboxFlagsU64Ptr = lib.igCheckboxFlagsU64Ptr
+M.CheckboxFlags_IntPtr = lib.igCheckboxFlags_IntPtr
+M.CheckboxFlags_UintPtr = lib.igCheckboxFlags_UintPtr
+M.CheckboxFlags_S64Ptr = lib.igCheckboxFlags_S64Ptr
+M.CheckboxFlags_U64Ptr = lib.igCheckboxFlags_U64Ptr
 function M.CheckboxFlags(a1,a2,a3) -- generic version
-    if (ffi.istype('int*',a2) or ffi.istype('int[]',a2)) then return M.CheckboxFlagsIntPtr(a1,a2,a3) end
-    if (ffi.istype('unsigned int*',a2) or ffi.istype('unsigned int',a2) or ffi.istype('unsigned int[]',a2)) then return M.CheckboxFlagsUintPtr(a1,a2,a3) end
-    if (ffi.istype('ImS64*',a2) or ffi.istype('ImS64',a2) or ffi.istype('ImS64[]',a2)) then return M.CheckboxFlagsS64Ptr(a1,a2,a3) end
-    if (ffi.istype('ImU64*',a2) or ffi.istype('ImU64',a2) or ffi.istype('ImU64[]',a2)) then return M.CheckboxFlagsU64Ptr(a1,a2,a3) end
+    if (ffi.istype('int*',a2) or ffi.istype('int[]',a2)) then return M.CheckboxFlags_IntPtr(a1,a2,a3) end
+    if (ffi.istype('unsigned int*',a2) or ffi.istype('unsigned int',a2) or ffi.istype('unsigned int[]',a2)) then return M.CheckboxFlags_UintPtr(a1,a2,a3) end
+    if (ffi.istype('ImS64*',a2) or ffi.istype('ImS64',a2) or ffi.istype('ImS64[]',a2)) then return M.CheckboxFlags_S64Ptr(a1,a2,a3) end
+    if (ffi.istype('ImU64*',a2) or ffi.istype('ImU64',a2) or ffi.istype('ImU64[]',a2)) then return M.CheckboxFlags_U64Ptr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.CheckboxFlags could not find overloaded'
 end
@@ -5058,17 +5058,17 @@ M.CloseCurrentPopup = lib.igCloseCurrentPopup
 M.ClosePopupToLevel = lib.igClosePopupToLevel
 M.ClosePopupsOverWindow = lib.igClosePopupsOverWindow
 M.CollapseButton = lib.igCollapseButton
-function M.CollapsingHeaderTreeNodeFlags(label,flags)
+function M.CollapsingHeader_TreeNodeFlags(label,flags)
     flags = flags or 0
-    return lib.igCollapsingHeaderTreeNodeFlags(label,flags)
+    return lib.igCollapsingHeader_TreeNodeFlags(label,flags)
 end
-function M.CollapsingHeaderBoolPtr(label,p_visible,flags)
+function M.CollapsingHeader_BoolPtr(label,p_visible,flags)
     flags = flags or 0
-    return lib.igCollapsingHeaderBoolPtr(label,p_visible,flags)
+    return lib.igCollapsingHeader_BoolPtr(label,p_visible,flags)
 end
 function M.CollapsingHeader(a1,a2,a3) -- generic version
-    if ((ffi.istype('ImGuiTreeNodeFlags',a2) or type(a2)=='number') or type(a2)=='nil') then return M.CollapsingHeaderTreeNodeFlags(a1,a2) end
-    if (ffi.istype('bool*',a2) or ffi.istype('bool',a2) or ffi.istype('bool[]',a2)) then return M.CollapsingHeaderBoolPtr(a1,a2,a3) end
+    if ((ffi.istype('ImGuiTreeNodeFlags',a2) or type(a2)=='number') or type(a2)=='nil') then return M.CollapsingHeader_TreeNodeFlags(a1,a2) end
+    if (ffi.istype('bool*',a2) or ffi.istype('bool',a2) or ffi.istype('bool[]',a2)) then return M.CollapsingHeader_BoolPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.CollapsingHeader could not find overloaded'
 end
@@ -5111,22 +5111,22 @@ function M.Columns(count,id,border)
     id = id or nil
     return lib.igColumns(count,id,border)
 end
-function M.ComboStr_arr(label,current_item,items,items_count,popup_max_height_in_items)
+function M.Combo_Str_arr(label,current_item,items,items_count,popup_max_height_in_items)
     popup_max_height_in_items = popup_max_height_in_items or -1
-    return lib.igComboStr_arr(label,current_item,items,items_count,popup_max_height_in_items)
+    return lib.igCombo_Str_arr(label,current_item,items,items_count,popup_max_height_in_items)
 end
-function M.ComboStr(label,current_item,items_separated_by_zeros,popup_max_height_in_items)
+function M.Combo_Str(label,current_item,items_separated_by_zeros,popup_max_height_in_items)
     popup_max_height_in_items = popup_max_height_in_items or -1
-    return lib.igComboStr(label,current_item,items_separated_by_zeros,popup_max_height_in_items)
+    return lib.igCombo_Str(label,current_item,items_separated_by_zeros,popup_max_height_in_items)
 end
-function M.ComboFnBoolPtr(label,current_item,items_getter,data,items_count,popup_max_height_in_items)
+function M.Combo_FnBoolPtr(label,current_item,items_getter,data,items_count,popup_max_height_in_items)
     popup_max_height_in_items = popup_max_height_in_items or -1
-    return lib.igComboFnBoolPtr(label,current_item,items_getter,data,items_count,popup_max_height_in_items)
+    return lib.igCombo_FnBoolPtr(label,current_item,items_getter,data,items_count,popup_max_height_in_items)
 end
 function M.Combo(a1,a2,a3,a4,a5,a6) -- generic version
-    if (ffi.istype('const char* const[]',a3) or ffi.istype('const char const[]',a3) or ffi.istype('const char const[][]',a3)) then return M.ComboStr_arr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('const char*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.ComboStr(a1,a2,a3,a4) end
-    if ffi.istype('bool(*)(void* data,int idx,const char** out_text)',a3) then return M.ComboFnBoolPtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const char* const[]',a3) or ffi.istype('const char const[]',a3) or ffi.istype('const char const[][]',a3)) then return M.Combo_Str_arr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const char*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.Combo_Str(a1,a2,a3,a4) end
+    if ffi.istype('bool(*)(void* data,int idx,const char** out_text)',a3) then return M.Combo_FnBoolPtr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.Combo could not find overloaded'
 end
@@ -5365,25 +5365,25 @@ M.GcCompactTransientMiscBuffers = lib.igGcCompactTransientMiscBuffers
 M.GcCompactTransientWindowBuffers = lib.igGcCompactTransientWindowBuffers
 M.GetActiveID = lib.igGetActiveID
 M.GetAllocatorFunctions = lib.igGetAllocatorFunctions
-M.GetBackgroundDrawListNil = lib.igGetBackgroundDrawListNil
-M.GetBackgroundDrawListViewportPtr = lib.igGetBackgroundDrawListViewportPtr
+M.GetBackgroundDrawList_Nil = lib.igGetBackgroundDrawList_Nil
+M.GetBackgroundDrawList_ViewportPtr = lib.igGetBackgroundDrawList_ViewportPtr
 function M.GetBackgroundDrawList(a1) -- generic version
-    if a1==nil then return M.GetBackgroundDrawListNil() end
-    if (ffi.istype('ImGuiViewport*',a1) or ffi.istype('ImGuiViewport',a1) or ffi.istype('ImGuiViewport[]',a1)) then return M.GetBackgroundDrawListViewportPtr(a1) end
+    if a1==nil then return M.GetBackgroundDrawList_Nil() end
+    if (ffi.istype('ImGuiViewport*',a1) or ffi.istype('ImGuiViewport',a1) or ffi.istype('ImGuiViewport[]',a1)) then return M.GetBackgroundDrawList_ViewportPtr(a1) end
     print(a1)
     error'M.GetBackgroundDrawList could not find overloaded'
 end
 M.GetClipboardText = lib.igGetClipboardText
-function M.GetColorU32Col(idx,alpha_mul)
+function M.GetColorU32_Col(idx,alpha_mul)
     alpha_mul = alpha_mul or 1.0
-    return lib.igGetColorU32Col(idx,alpha_mul)
+    return lib.igGetColorU32_Col(idx,alpha_mul)
 end
-M.GetColorU32Vec4 = lib.igGetColorU32Vec4
-M.GetColorU32U32 = lib.igGetColorU32U32
+M.GetColorU32_Vec4 = lib.igGetColorU32_Vec4
+M.GetColorU32_U32 = lib.igGetColorU32_U32
 function M.GetColorU32(a1,a2) -- generic version
-    if (ffi.istype('ImGuiCol',a1) or type(a1)=='number') then return M.GetColorU32Col(a1,a2) end
-    if ffi.istype('const ImVec4',a1) then return M.GetColorU32Vec4(a1) end
-    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.GetColorU32U32(a1) end
+    if (ffi.istype('ImGuiCol',a1) or type(a1)=='number') then return M.GetColorU32_Col(a1,a2) end
+    if ffi.istype('const ImVec4',a1) then return M.GetColorU32_Vec4(a1) end
+    if (ffi.istype('ImU32',a1) or type(a1)=='number') then return M.GetColorU32_U32(a1) end
     print(a1,a2)
     error'M.GetColorU32 could not find overloaded'
 end
@@ -5450,13 +5450,13 @@ function M.GetFontTexUvWhitePixel()
     lib.igGetFontTexUvWhitePixel(nonUDT_out)
     return nonUDT_out
 end
-M.GetForegroundDrawListNil = lib.igGetForegroundDrawListNil
-M.GetForegroundDrawListViewportPtr = lib.igGetForegroundDrawListViewportPtr
-M.GetForegroundDrawListWindowPtr = lib.igGetForegroundDrawListWindowPtr
+M.GetForegroundDrawList_Nil = lib.igGetForegroundDrawList_Nil
+M.GetForegroundDrawList_ViewportPtr = lib.igGetForegroundDrawList_ViewportPtr
+M.GetForegroundDrawList_WindowPtr = lib.igGetForegroundDrawList_WindowPtr
 function M.GetForegroundDrawList(a1) -- generic version
-    if a1==nil then return M.GetForegroundDrawListNil() end
-    if (ffi.istype('ImGuiViewport*',a1) or ffi.istype('ImGuiViewport',a1) or ffi.istype('ImGuiViewport[]',a1)) then return M.GetForegroundDrawListViewportPtr(a1) end
-    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.GetForegroundDrawListWindowPtr(a1) end
+    if a1==nil then return M.GetForegroundDrawList_Nil() end
+    if (ffi.istype('ImGuiViewport*',a1) or ffi.istype('ImGuiViewport',a1) or ffi.istype('ImGuiViewport[]',a1)) then return M.GetForegroundDrawList_ViewportPtr(a1) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.GetForegroundDrawList_WindowPtr(a1) end
     print(a1)
     error'M.GetForegroundDrawList could not find overloaded'
 end
@@ -5464,13 +5464,13 @@ M.GetFrameCount = lib.igGetFrameCount
 M.GetFrameHeight = lib.igGetFrameHeight
 M.GetFrameHeightWithSpacing = lib.igGetFrameHeightWithSpacing
 M.GetHoveredID = lib.igGetHoveredID
-M.GetIDStr = lib.igGetIDStr
-M.GetIDStrStr = lib.igGetIDStrStr
-M.GetIDPtr = lib.igGetIDPtr
+M.GetID_Str = lib.igGetID_Str
+M.GetID_StrStr = lib.igGetID_StrStr
+M.GetID_Ptr = lib.igGetID_Ptr
 function M.GetID(a1,a2) -- generic version
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and a2==nil then return M.GetIDStr(a1) end
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and (ffi.istype('const char*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.GetIDStrStr(a1,a2) end
-    if ffi.istype('const void*',a1) then return M.GetIDPtr(a1) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and a2==nil then return M.GetID_Str(a1) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and (ffi.istype('const char*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.GetID_StrStr(a1,a2) end
+    if ffi.istype('const void*',a1) then return M.GetID_Ptr(a1) end
     print(a1,a2)
     error'M.GetID could not find overloaded'
 end
@@ -5582,11 +5582,11 @@ function M.GetWindowSize()
 end
 M.GetWindowViewport = lib.igGetWindowViewport
 M.GetWindowWidth = lib.igGetWindowWidth
-M.ImAbsFloat = lib.igImAbsFloat
-M.ImAbsdouble = lib.igImAbsdouble
+M.ImAbs_Float = lib.igImAbs_Float
+M.ImAbs_double = lib.igImAbs_double
 function M.ImAbs(a1) -- generic version
-    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImAbsFloat(a1) end
-    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImAbsdouble(a1) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImAbs_Float(a1) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImAbs_double(a1) end
     print(a1)
     error'M.ImAbs could not find overloaded'
 end
@@ -5633,15 +5633,15 @@ end
 M.ImFileOpen = lib.igImFileOpen
 M.ImFileRead = lib.igImFileRead
 M.ImFileWrite = lib.igImFileWrite
-M.ImFloorFloat = lib.igImFloorFloat
-function M.ImFloorVec2(v)
+M.ImFloor_Float = lib.igImFloor_Float
+function M.ImFloor_Vec2(v)
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igImFloorVec2(nonUDT_out,v)
+    lib.igImFloor_Vec2(nonUDT_out,v)
     return nonUDT_out
 end
 function M.ImFloor(a1,a2) -- generic version
-    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImFloorFloat(a1) end
-    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1) or ffi.istype('ImVec2[]',a1)) then return M.ImFloorVec2(a2) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImFloor_Float(a1) end
+    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1) or ffi.istype('ImVec2[]',a1)) then return M.ImFloor_Vec2(a2) end
     print(a1,a2)
     error'M.ImFloor could not find overloaded'
 end
@@ -5667,41 +5667,41 @@ function M.ImHashStr(data,data_size,seed)
     return lib.igImHashStr(data,data_size,seed)
 end
 M.ImInvLength = lib.igImInvLength
-M.ImIsPowerOfTwoInt = lib.igImIsPowerOfTwoInt
-M.ImIsPowerOfTwoU64 = lib.igImIsPowerOfTwoU64
+M.ImIsPowerOfTwo_Int = lib.igImIsPowerOfTwo_Int
+M.ImIsPowerOfTwo_U64 = lib.igImIsPowerOfTwo_U64
 function M.ImIsPowerOfTwo(a1) -- generic version
-    if (ffi.istype('int',a1) or type(a1)=='number') then return M.ImIsPowerOfTwoInt(a1) end
-    if ffi.istype('ImU64',a1) then return M.ImIsPowerOfTwoU64(a1) end
+    if (ffi.istype('int',a1) or type(a1)=='number') then return M.ImIsPowerOfTwo_Int(a1) end
+    if ffi.istype('ImU64',a1) then return M.ImIsPowerOfTwo_U64(a1) end
     print(a1)
     error'M.ImIsPowerOfTwo could not find overloaded'
 end
-M.ImLengthSqrVec2 = lib.igImLengthSqrVec2
-M.ImLengthSqrVec4 = lib.igImLengthSqrVec4
+M.ImLengthSqr_Vec2 = lib.igImLengthSqr_Vec2
+M.ImLengthSqr_Vec4 = lib.igImLengthSqr_Vec4
 function M.ImLengthSqr(a1) -- generic version
-    if ffi.istype('const ImVec2',a1) then return M.ImLengthSqrVec2(a1) end
-    if ffi.istype('const ImVec4',a1) then return M.ImLengthSqrVec4(a1) end
+    if ffi.istype('const ImVec2',a1) then return M.ImLengthSqr_Vec2(a1) end
+    if ffi.istype('const ImVec4',a1) then return M.ImLengthSqr_Vec4(a1) end
     print(a1)
     error'M.ImLengthSqr could not find overloaded'
 end
-function M.ImLerpVec2Float(a,b,t)
+function M.ImLerp_Vec2Float(a,b,t)
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igImLerpVec2Float(nonUDT_out,a,b,t)
+    lib.igImLerp_Vec2Float(nonUDT_out,a,b,t)
     return nonUDT_out
 end
-function M.ImLerpVec2Vec2(a,b,t)
+function M.ImLerp_Vec2Vec2(a,b,t)
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igImLerpVec2Vec2(nonUDT_out,a,b,t)
+    lib.igImLerp_Vec2Vec2(nonUDT_out,a,b,t)
     return nonUDT_out
 end
-function M.ImLerpVec4(a,b,t)
+function M.ImLerp_Vec4(a,b,t)
     local nonUDT_out = ffi.new("ImVec4")
-    lib.igImLerpVec4(nonUDT_out,a,b,t)
+    lib.igImLerp_Vec4(nonUDT_out,a,b,t)
     return nonUDT_out
 end
 function M.ImLerp(a2,a3,a4) -- generic version
-    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1) or ffi.istype('ImVec2[]',a1)) and (ffi.istype('float',a4) or type(a4)=='number') then return M.ImLerpVec2Float(a2,a3,a4) end
-    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1) or ffi.istype('ImVec2[]',a1)) and ffi.istype('const ImVec2',a4) then return M.ImLerpVec2Vec2(a2,a3,a4) end
-    if (ffi.istype('ImVec4*',a1) or ffi.istype('ImVec4',a1) or ffi.istype('ImVec4[]',a1)) then return M.ImLerpVec4(a2,a3,a4) end
+    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1) or ffi.istype('ImVec2[]',a1)) and (ffi.istype('float',a4) or type(a4)=='number') then return M.ImLerp_Vec2Float(a2,a3,a4) end
+    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1) or ffi.istype('ImVec2[]',a1)) and ffi.istype('const ImVec2',a4) then return M.ImLerp_Vec2Vec2(a2,a3,a4) end
+    if (ffi.istype('ImVec4*',a1) or ffi.istype('ImVec4',a1) or ffi.istype('ImVec4[]',a1)) then return M.ImLerp_Vec4(a2,a3,a4) end
     print(a2,a3,a4)
     error'M.ImLerp could not find overloaded'
 end
@@ -5711,11 +5711,11 @@ function M.ImLineClosestPoint(a,b,p)
     return nonUDT_out
 end
 M.ImLinearSweep = lib.igImLinearSweep
-M.ImLogFloat = lib.igImLogFloat
-M.ImLogdouble = lib.igImLogdouble
+M.ImLog_Float = lib.igImLog_Float
+M.ImLog_double = lib.igImLog_double
 function M.ImLog(a1) -- generic version
-    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImLogFloat(a1) end
-    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImLogdouble(a1) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImLog_Float(a1) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImLog_double(a1) end
     print(a1)
     error'M.ImLog could not find overloaded'
 end
@@ -5739,11 +5739,11 @@ M.ImParseFormatFindEnd = lib.igImParseFormatFindEnd
 M.ImParseFormatFindStart = lib.igImParseFormatFindStart
 M.ImParseFormatPrecision = lib.igImParseFormatPrecision
 M.ImParseFormatTrimDecorations = lib.igImParseFormatTrimDecorations
-M.ImPowFloat = lib.igImPowFloat
-M.ImPowdouble = lib.igImPowdouble
+M.ImPow_Float = lib.igImPow_Float
+M.ImPow_double = lib.igImPow_double
 function M.ImPow(a1,a2) -- generic version
-    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImPowFloat(a1,a2) end
-    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPowdouble(a1,a2) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImPow_Float(a1,a2) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImPow_double(a1,a2) end
     print(a1,a2)
     error'M.ImPow could not find overloaded'
 end
@@ -5753,11 +5753,11 @@ function M.ImRotate(v,cos_a,sin_a)
     return nonUDT_out
 end
 M.ImSaturate = lib.igImSaturate
-M.ImSignFloat = lib.igImSignFloat
-M.ImSigndouble = lib.igImSigndouble
+M.ImSign_Float = lib.igImSign_Float
+M.ImSign_double = lib.igImSign_double
 function M.ImSign(a1) -- generic version
-    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImSignFloat(a1) end
-    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImSigndouble(a1) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImSign_Float(a1) end
+    if (ffi.istype('double',a1) or type(a1)=='number') then return M.ImSign_double(a1) end
     print(a1)
     error'M.ImSign could not find overloaded'
 end
@@ -5962,22 +5962,22 @@ end
 M.IsMouseReleased = lib.igIsMouseReleased
 M.IsNavInputDown = lib.igIsNavInputDown
 M.IsNavInputTest = lib.igIsNavInputTest
-function M.IsPopupOpenStr(str_id,flags)
+function M.IsPopupOpen_Str(str_id,flags)
     flags = flags or 0
-    return lib.igIsPopupOpenStr(str_id,flags)
+    return lib.igIsPopupOpen_Str(str_id,flags)
 end
-M.IsPopupOpenID = lib.igIsPopupOpenID
+M.IsPopupOpen_ID = lib.igIsPopupOpen_ID
 function M.IsPopupOpen(a1,a2) -- generic version
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.IsPopupOpenStr(a1,a2) end
-    if ffi.istype('ImGuiID',a1) then return M.IsPopupOpenID(a1,a2) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.IsPopupOpen_Str(a1,a2) end
+    if ffi.istype('ImGuiID',a1) then return M.IsPopupOpen_ID(a1,a2) end
     print(a1,a2)
     error'M.IsPopupOpen could not find overloaded'
 end
-M.IsRectVisibleNil = lib.igIsRectVisibleNil
-M.IsRectVisibleVec2 = lib.igIsRectVisibleVec2
+M.IsRectVisible_Nil = lib.igIsRectVisible_Nil
+M.IsRectVisible_Vec2 = lib.igIsRectVisible_Vec2
 function M.IsRectVisible(a1,a2) -- generic version
-    if a2==nil then return M.IsRectVisibleNil(a1) end
-    if ffi.istype('const ImVec2',a2) then return M.IsRectVisibleVec2(a1,a2) end
+    if a2==nil then return M.IsRectVisible_Nil(a1) end
+    if ffi.istype('const ImVec2',a2) then return M.IsRectVisible_Vec2(a1,a2) end
     print(a1,a2)
     error'M.IsRectVisible could not find overloaded'
 end
@@ -6000,34 +6000,34 @@ function M.ItemAdd(bb,id,nav_bb)
     return lib.igItemAdd(bb,id,nav_bb)
 end
 M.ItemHoverable = lib.igItemHoverable
-function M.ItemSizeVec2(size,text_baseline_y)
+function M.ItemSize_Vec2(size,text_baseline_y)
     text_baseline_y = text_baseline_y or -1.0
-    return lib.igItemSizeVec2(size,text_baseline_y)
+    return lib.igItemSize_Vec2(size,text_baseline_y)
 end
-function M.ItemSizeRect(bb,text_baseline_y)
+function M.ItemSize_Rect(bb,text_baseline_y)
     text_baseline_y = text_baseline_y or -1.0
-    return lib.igItemSizeRect(bb,text_baseline_y)
+    return lib.igItemSize_Rect(bb,text_baseline_y)
 end
 function M.ItemSize(a1,a2) -- generic version
-    if ffi.istype('const ImVec2',a1) then return M.ItemSizeVec2(a1,a2) end
-    if ffi.istype('const ImRect',a1) then return M.ItemSizeRect(a1,a2) end
+    if ffi.istype('const ImVec2',a1) then return M.ItemSize_Vec2(a1,a2) end
+    if ffi.istype('const ImRect',a1) then return M.ItemSize_Rect(a1,a2) end
     print(a1,a2)
     error'M.ItemSize could not find overloaded'
 end
 M.KeepAliveID = lib.igKeepAliveID
 M.LabelText = lib.igLabelText
 M.LabelTextV = lib.igLabelTextV
-function M.ListBoxStr_arr(label,current_item,items,items_count,height_in_items)
+function M.ListBox_Str_arr(label,current_item,items,items_count,height_in_items)
     height_in_items = height_in_items or -1
-    return lib.igListBoxStr_arr(label,current_item,items,items_count,height_in_items)
+    return lib.igListBox_Str_arr(label,current_item,items,items_count,height_in_items)
 end
-function M.ListBoxFnBoolPtr(label,current_item,items_getter,data,items_count,height_in_items)
+function M.ListBox_FnBoolPtr(label,current_item,items_getter,data,items_count,height_in_items)
     height_in_items = height_in_items or -1
-    return lib.igListBoxFnBoolPtr(label,current_item,items_getter,data,items_count,height_in_items)
+    return lib.igListBox_FnBoolPtr(label,current_item,items_getter,data,items_count,height_in_items)
 end
 function M.ListBox(a1,a2,a3,a4,a5,a6) -- generic version
-    if (ffi.istype('const char* const[]',a3) or ffi.istype('const char const[]',a3) or ffi.istype('const char const[][]',a3)) then return M.ListBoxStr_arr(a1,a2,a3,a4,a5) end
-    if ffi.istype('bool(*)(void* data,int idx,const char** out_text)',a3) then return M.ListBoxFnBoolPtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('const char* const[]',a3) or ffi.istype('const char const[]',a3) or ffi.istype('const char const[][]',a3)) then return M.ListBox_Str_arr(a1,a2,a3,a4,a5) end
+    if ffi.istype('bool(*)(void* data,int idx,const char** out_text)',a3) then return M.ListBox_FnBoolPtr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.ListBox could not find overloaded'
 end
@@ -6063,30 +6063,30 @@ function M.LogToTTY(auto_open_depth)
     auto_open_depth = auto_open_depth or -1
     return lib.igLogToTTY(auto_open_depth)
 end
-M.MarkIniSettingsDirtyNil = lib.igMarkIniSettingsDirtyNil
-M.MarkIniSettingsDirtyWindowPtr = lib.igMarkIniSettingsDirtyWindowPtr
+M.MarkIniSettingsDirty_Nil = lib.igMarkIniSettingsDirty_Nil
+M.MarkIniSettingsDirty_WindowPtr = lib.igMarkIniSettingsDirty_WindowPtr
 function M.MarkIniSettingsDirty(a1) -- generic version
-    if a1==nil then return M.MarkIniSettingsDirtyNil() end
-    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.MarkIniSettingsDirtyWindowPtr(a1) end
+    if a1==nil then return M.MarkIniSettingsDirty_Nil() end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.MarkIniSettingsDirty_WindowPtr(a1) end
     print(a1)
     error'M.MarkIniSettingsDirty could not find overloaded'
 end
 M.MarkItemEdited = lib.igMarkItemEdited
 M.MemAlloc = lib.igMemAlloc
 M.MemFree = lib.igMemFree
-function M.MenuItemBool(label,shortcut,selected,enabled)
+function M.MenuItem_Bool(label,shortcut,selected,enabled)
     if enabled == nil then enabled = true end
     selected = selected or false
     shortcut = shortcut or nil
-    return lib.igMenuItemBool(label,shortcut,selected,enabled)
+    return lib.igMenuItem_Bool(label,shortcut,selected,enabled)
 end
-function M.MenuItemBoolPtr(label,shortcut,p_selected,enabled)
+function M.MenuItem_BoolPtr(label,shortcut,p_selected,enabled)
     if enabled == nil then enabled = true end
-    return lib.igMenuItemBoolPtr(label,shortcut,p_selected,enabled)
+    return lib.igMenuItem_BoolPtr(label,shortcut,p_selected,enabled)
 end
 function M.MenuItem(a1,a2,a3,a4) -- generic version
-    if ((ffi.istype('bool',a3) or type(a3)=='boolean') or type(a3)=='nil') then return M.MenuItemBool(a1,a2,a3,a4) end
-    if (ffi.istype('bool*',a3) or ffi.istype('bool',a3) or ffi.istype('bool[]',a3)) then return M.MenuItemBoolPtr(a1,a2,a3,a4) end
+    if ((ffi.istype('bool',a3) or type(a3)=='boolean') or type(a3)=='nil') then return M.MenuItem_Bool(a1,a2,a3,a4) end
+    if (ffi.istype('bool*',a3) or ffi.istype('bool',a3) or ffi.istype('bool[]',a3)) then return M.MenuItem_BoolPtr(a1,a2,a3,a4) end
     print(a1,a2,a3,a4)
     error'M.MenuItem could not find overloaded'
 end
@@ -6112,49 +6112,49 @@ function M.OpenPopupOnItemClick(str_id,popup_flags)
     return lib.igOpenPopupOnItemClick(str_id,popup_flags)
 end
 M.PlotEx = lib.igPlotEx
-function M.PlotHistogramFloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
+function M.PlotHistogram_FloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
     graph_size = graph_size or ImVec2(0,0)
     overlay_text = overlay_text or nil
     scale_max = scale_max or M.FLT_MAX
     scale_min = scale_min or M.FLT_MAX
     stride = stride or ffi.sizeof("float")
     values_offset = values_offset or 0
-    return lib.igPlotHistogramFloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
+    return lib.igPlotHistogram_FloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
 end
-function M.PlotHistogramFnFloatPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
+function M.PlotHistogram_FnFloatPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
     graph_size = graph_size or ImVec2(0,0)
     overlay_text = overlay_text or nil
     scale_max = scale_max or M.FLT_MAX
     scale_min = scale_min or M.FLT_MAX
     values_offset = values_offset or 0
-    return lib.igPlotHistogramFnFloatPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
+    return lib.igPlotHistogram_FnFloatPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
 end
 function M.PlotHistogram(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.PlotHistogramFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if ffi.istype('float(*)(void* data,int idx)',a2) then return M.PlotHistogramFnFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.PlotHistogram_FloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.istype('float(*)(void* data,int idx)',a2) then return M.PlotHistogram_FnFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
     print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
     error'M.PlotHistogram could not find overloaded'
 end
-function M.PlotLinesFloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
+function M.PlotLines_FloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
     graph_size = graph_size or ImVec2(0,0)
     overlay_text = overlay_text or nil
     scale_max = scale_max or M.FLT_MAX
     scale_min = scale_min or M.FLT_MAX
     stride = stride or ffi.sizeof("float")
     values_offset = values_offset or 0
-    return lib.igPlotLinesFloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
+    return lib.igPlotLines_FloatPtr(label,values,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size,stride)
 end
-function M.PlotLinesFnFloatPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
+function M.PlotLines_FnFloatPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
     graph_size = graph_size or ImVec2(0,0)
     overlay_text = overlay_text or nil
     scale_max = scale_max or M.FLT_MAX
     scale_min = scale_min or M.FLT_MAX
     values_offset = values_offset or 0
-    return lib.igPlotLinesFnFloatPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
+    return lib.igPlotLines_FnFloatPtr(label,values_getter,data,values_count,values_offset,overlay_text,scale_min,scale_max,graph_size)
 end
 function M.PlotLines(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
-    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.PlotLinesFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if ffi.istype('float(*)(void* data,int idx)',a2) then return M.PlotLinesFnFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.PlotLines_FloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.istype('float(*)(void* data,int idx)',a2) then return M.PlotLines_FnFloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
     print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
     error'M.PlotLines could not find overloaded'
 end
@@ -6188,15 +6188,15 @@ M.PushColumnClipRect = lib.igPushColumnClipRect
 M.PushColumnsBackground = lib.igPushColumnsBackground
 M.PushFocusScope = lib.igPushFocusScope
 M.PushFont = lib.igPushFont
-M.PushIDStr = lib.igPushIDStr
-M.PushIDStrStr = lib.igPushIDStrStr
-M.PushIDPtr = lib.igPushIDPtr
-M.PushIDInt = lib.igPushIDInt
+M.PushID_Str = lib.igPushID_Str
+M.PushID_StrStr = lib.igPushID_StrStr
+M.PushID_Ptr = lib.igPushID_Ptr
+M.PushID_Int = lib.igPushID_Int
 function M.PushID(a1,a2) -- generic version
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and a2==nil then return M.PushIDStr(a1) end
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and (ffi.istype('const char*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.PushIDStrStr(a1,a2) end
-    if ffi.istype('const void*',a1) then return M.PushIDPtr(a1) end
-    if (ffi.istype('int',a1) or type(a1)=='number') then return M.PushIDInt(a1) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and a2==nil then return M.PushID_Str(a1) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and (ffi.istype('const char*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.PushID_StrStr(a1,a2) end
+    if ffi.istype('const void*',a1) then return M.PushID_Ptr(a1) end
+    if (ffi.istype('int',a1) or type(a1)=='number') then return M.PushID_Int(a1) end
     print(a1,a2)
     error'M.PushID could not find overloaded'
 end
@@ -6204,19 +6204,19 @@ M.PushItemFlag = lib.igPushItemFlag
 M.PushItemWidth = lib.igPushItemWidth
 M.PushMultiItemsWidths = lib.igPushMultiItemsWidths
 M.PushOverrideID = lib.igPushOverrideID
-M.PushStyleColorU32 = lib.igPushStyleColorU32
-M.PushStyleColorVec4 = lib.igPushStyleColorVec4
+M.PushStyleColor_U32 = lib.igPushStyleColor_U32
+M.PushStyleColor_Vec4 = lib.igPushStyleColor_Vec4
 function M.PushStyleColor(a1,a2) -- generic version
-    if (ffi.istype('ImU32',a2) or type(a2)=='number') then return M.PushStyleColorU32(a1,a2) end
-    if ffi.istype('const ImVec4',a2) then return M.PushStyleColorVec4(a1,a2) end
+    if (ffi.istype('ImU32',a2) or type(a2)=='number') then return M.PushStyleColor_U32(a1,a2) end
+    if ffi.istype('const ImVec4',a2) then return M.PushStyleColor_Vec4(a1,a2) end
     print(a1,a2)
     error'M.PushStyleColor could not find overloaded'
 end
-M.PushStyleVarFloat = lib.igPushStyleVarFloat
-M.PushStyleVarVec2 = lib.igPushStyleVarVec2
+M.PushStyleVar_Float = lib.igPushStyleVar_Float
+M.PushStyleVar_Vec2 = lib.igPushStyleVar_Vec2
 function M.PushStyleVar(a1,a2) -- generic version
-    if (ffi.istype('float',a2) or type(a2)=='number') then return M.PushStyleVarFloat(a1,a2) end
-    if ffi.istype('const ImVec2',a2) then return M.PushStyleVarVec2(a1,a2) end
+    if (ffi.istype('float',a2) or type(a2)=='number') then return M.PushStyleVar_Float(a1,a2) end
+    if ffi.istype('const ImVec2',a2) then return M.PushStyleVar_Vec2(a1,a2) end
     print(a1,a2)
     error'M.PushStyleVar could not find overloaded'
 end
@@ -6224,11 +6224,11 @@ function M.PushTextWrapPos(wrap_local_pos_x)
     wrap_local_pos_x = wrap_local_pos_x or 0.0
     return lib.igPushTextWrapPos(wrap_local_pos_x)
 end
-M.RadioButtonBool = lib.igRadioButtonBool
-M.RadioButtonIntPtr = lib.igRadioButtonIntPtr
+M.RadioButton_Bool = lib.igRadioButton_Bool
+M.RadioButton_IntPtr = lib.igRadioButton_IntPtr
 function M.RadioButton(a1,a2,a3) -- generic version
-    if (ffi.istype('bool',a2) or type(a2)=='boolean') then return M.RadioButtonBool(a1,a2) end
-    if (ffi.istype('int*',a2) or ffi.istype('int[]',a2)) then return M.RadioButtonIntPtr(a1,a2,a3) end
+    if (ffi.istype('bool',a2) or type(a2)=='boolean') then return M.RadioButton_Bool(a1,a2) end
+    if (ffi.istype('int*',a2) or ffi.istype('int[]',a2)) then return M.RadioButton_IntPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.RadioButton could not find overloaded'
 end
@@ -6307,20 +6307,20 @@ function M.ScrollToBringRectIntoView(window,item_rect)
 end
 M.Scrollbar = lib.igScrollbar
 M.ScrollbarEx = lib.igScrollbarEx
-function M.SelectableBool(label,selected,flags,size)
+function M.Selectable_Bool(label,selected,flags,size)
     flags = flags or 0
     selected = selected or false
     size = size or ImVec2(0,0)
-    return lib.igSelectableBool(label,selected,flags,size)
+    return lib.igSelectable_Bool(label,selected,flags,size)
 end
-function M.SelectableBoolPtr(label,p_selected,flags,size)
+function M.Selectable_BoolPtr(label,p_selected,flags,size)
     flags = flags or 0
     size = size or ImVec2(0,0)
-    return lib.igSelectableBoolPtr(label,p_selected,flags,size)
+    return lib.igSelectable_BoolPtr(label,p_selected,flags,size)
 end
 function M.Selectable(a1,a2,a3,a4) -- generic version
-    if ((ffi.istype('bool',a2) or type(a2)=='boolean') or type(a2)=='nil') then return M.SelectableBool(a1,a2,a3,a4) end
-    if (ffi.istype('bool*',a2) or ffi.istype('bool',a2) or ffi.istype('bool[]',a2)) then return M.SelectableBoolPtr(a1,a2,a3,a4) end
+    if ((ffi.istype('bool',a2) or type(a2)=='boolean') or type(a2)=='nil') then return M.Selectable_Bool(a1,a2,a3,a4) end
+    if (ffi.istype('bool*',a2) or ffi.istype('bool',a2) or ffi.istype('bool[]',a2)) then return M.Selectable_BoolPtr(a1,a2,a3,a4) end
     print(a1,a2,a3,a4)
     error'M.Selectable could not find overloaded'
 end
@@ -6390,25 +6390,25 @@ function M.SetNextWindowSizeConstraints(size_min,size_max,custom_callback,custom
     return lib.igSetNextWindowSizeConstraints(size_min,size_max,custom_callback,custom_callback_data)
 end
 M.SetNextWindowViewport = lib.igSetNextWindowViewport
-function M.SetScrollFromPosXFloat(local_x,center_x_ratio)
+function M.SetScrollFromPosX_Float(local_x,center_x_ratio)
     center_x_ratio = center_x_ratio or 0.5
-    return lib.igSetScrollFromPosXFloat(local_x,center_x_ratio)
+    return lib.igSetScrollFromPosX_Float(local_x,center_x_ratio)
 end
-M.SetScrollFromPosXWindowPtr = lib.igSetScrollFromPosXWindowPtr
+M.SetScrollFromPosX_WindowPtr = lib.igSetScrollFromPosX_WindowPtr
 function M.SetScrollFromPosX(a1,a2,a3) -- generic version
-    if (ffi.istype('float',a1) or type(a1)=='number') then return M.SetScrollFromPosXFloat(a1,a2) end
-    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetScrollFromPosXWindowPtr(a1,a2,a3) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.SetScrollFromPosX_Float(a1,a2) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetScrollFromPosX_WindowPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.SetScrollFromPosX could not find overloaded'
 end
-function M.SetScrollFromPosYFloat(local_y,center_y_ratio)
+function M.SetScrollFromPosY_Float(local_y,center_y_ratio)
     center_y_ratio = center_y_ratio or 0.5
-    return lib.igSetScrollFromPosYFloat(local_y,center_y_ratio)
+    return lib.igSetScrollFromPosY_Float(local_y,center_y_ratio)
 end
-M.SetScrollFromPosYWindowPtr = lib.igSetScrollFromPosYWindowPtr
+M.SetScrollFromPosY_WindowPtr = lib.igSetScrollFromPosY_WindowPtr
 function M.SetScrollFromPosY(a1,a2,a3) -- generic version
-    if (ffi.istype('float',a1) or type(a1)=='number') then return M.SetScrollFromPosYFloat(a1,a2) end
-    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetScrollFromPosYWindowPtr(a1,a2,a3) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.SetScrollFromPosY_Float(a1,a2) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetScrollFromPosY_WindowPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.SetScrollFromPosY could not find overloaded'
 end
@@ -6420,19 +6420,19 @@ function M.SetScrollHereY(center_y_ratio)
     center_y_ratio = center_y_ratio or 0.5
     return lib.igSetScrollHereY(center_y_ratio)
 end
-M.SetScrollXFloat = lib.igSetScrollXFloat
-M.SetScrollXWindowPtr = lib.igSetScrollXWindowPtr
+M.SetScrollX_Float = lib.igSetScrollX_Float
+M.SetScrollX_WindowPtr = lib.igSetScrollX_WindowPtr
 function M.SetScrollX(a1,a2) -- generic version
-    if (ffi.istype('float',a1) or type(a1)=='number') then return M.SetScrollXFloat(a1) end
-    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetScrollXWindowPtr(a1,a2) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.SetScrollX_Float(a1) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetScrollX_WindowPtr(a1,a2) end
     print(a1,a2)
     error'M.SetScrollX could not find overloaded'
 end
-M.SetScrollYFloat = lib.igSetScrollYFloat
-M.SetScrollYWindowPtr = lib.igSetScrollYWindowPtr
+M.SetScrollY_Float = lib.igSetScrollY_Float
+M.SetScrollY_WindowPtr = lib.igSetScrollY_WindowPtr
 function M.SetScrollY(a1,a2) -- generic version
-    if (ffi.istype('float',a1) or type(a1)=='number') then return M.SetScrollYFloat(a1) end
-    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetScrollYWindowPtr(a1,a2) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.SetScrollY_Float(a1) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetScrollY_WindowPtr(a1,a2) end
     print(a1,a2)
     error'M.SetScrollY could not find overloaded'
 end
@@ -6441,71 +6441,71 @@ M.SetTabItemClosed = lib.igSetTabItemClosed
 M.SetTooltip = lib.igSetTooltip
 M.SetTooltipV = lib.igSetTooltipV
 M.SetWindowClipRectBeforeSetChannel = lib.igSetWindowClipRectBeforeSetChannel
-function M.SetWindowCollapsedBool(collapsed,cond)
+function M.SetWindowCollapsed_Bool(collapsed,cond)
     cond = cond or 0
-    return lib.igSetWindowCollapsedBool(collapsed,cond)
+    return lib.igSetWindowCollapsed_Bool(collapsed,cond)
 end
-function M.SetWindowCollapsedStr(name,collapsed,cond)
+function M.SetWindowCollapsed_Str(name,collapsed,cond)
     cond = cond or 0
-    return lib.igSetWindowCollapsedStr(name,collapsed,cond)
+    return lib.igSetWindowCollapsed_Str(name,collapsed,cond)
 end
-function M.SetWindowCollapsedWindowPtr(window,collapsed,cond)
+function M.SetWindowCollapsed_WindowPtr(window,collapsed,cond)
     cond = cond or 0
-    return lib.igSetWindowCollapsedWindowPtr(window,collapsed,cond)
+    return lib.igSetWindowCollapsed_WindowPtr(window,collapsed,cond)
 end
 function M.SetWindowCollapsed(a1,a2,a3) -- generic version
-    if (ffi.istype('bool',a1) or type(a1)=='boolean') then return M.SetWindowCollapsedBool(a1,a2) end
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.SetWindowCollapsedStr(a1,a2,a3) end
-    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetWindowCollapsedWindowPtr(a1,a2,a3) end
+    if (ffi.istype('bool',a1) or type(a1)=='boolean') then return M.SetWindowCollapsed_Bool(a1,a2) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.SetWindowCollapsed_Str(a1,a2,a3) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetWindowCollapsed_WindowPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.SetWindowCollapsed could not find overloaded'
 end
 M.SetWindowDock = lib.igSetWindowDock
-M.SetWindowFocusNil = lib.igSetWindowFocusNil
-M.SetWindowFocusStr = lib.igSetWindowFocusStr
+M.SetWindowFocus_Nil = lib.igSetWindowFocus_Nil
+M.SetWindowFocus_Str = lib.igSetWindowFocus_Str
 function M.SetWindowFocus(a1) -- generic version
-    if a1==nil then return M.SetWindowFocusNil() end
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.SetWindowFocusStr(a1) end
+    if a1==nil then return M.SetWindowFocus_Nil() end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.SetWindowFocus_Str(a1) end
     print(a1)
     error'M.SetWindowFocus could not find overloaded'
 end
 M.SetWindowFontScale = lib.igSetWindowFontScale
 M.SetWindowHitTestHole = lib.igSetWindowHitTestHole
-function M.SetWindowPosVec2(pos,cond)
+function M.SetWindowPos_Vec2(pos,cond)
     cond = cond or 0
-    return lib.igSetWindowPosVec2(pos,cond)
+    return lib.igSetWindowPos_Vec2(pos,cond)
 end
-function M.SetWindowPosStr(name,pos,cond)
+function M.SetWindowPos_Str(name,pos,cond)
     cond = cond or 0
-    return lib.igSetWindowPosStr(name,pos,cond)
+    return lib.igSetWindowPos_Str(name,pos,cond)
 end
-function M.SetWindowPosWindowPtr(window,pos,cond)
+function M.SetWindowPos_WindowPtr(window,pos,cond)
     cond = cond or 0
-    return lib.igSetWindowPosWindowPtr(window,pos,cond)
+    return lib.igSetWindowPos_WindowPtr(window,pos,cond)
 end
 function M.SetWindowPos(a1,a2,a3) -- generic version
-    if ffi.istype('const ImVec2',a1) then return M.SetWindowPosVec2(a1,a2) end
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.SetWindowPosStr(a1,a2,a3) end
-    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetWindowPosWindowPtr(a1,a2,a3) end
+    if ffi.istype('const ImVec2',a1) then return M.SetWindowPos_Vec2(a1,a2) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.SetWindowPos_Str(a1,a2,a3) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetWindowPos_WindowPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.SetWindowPos could not find overloaded'
 end
-function M.SetWindowSizeVec2(size,cond)
+function M.SetWindowSize_Vec2(size,cond)
     cond = cond or 0
-    return lib.igSetWindowSizeVec2(size,cond)
+    return lib.igSetWindowSize_Vec2(size,cond)
 end
-function M.SetWindowSizeStr(name,size,cond)
+function M.SetWindowSize_Str(name,size,cond)
     cond = cond or 0
-    return lib.igSetWindowSizeStr(name,size,cond)
+    return lib.igSetWindowSize_Str(name,size,cond)
 end
-function M.SetWindowSizeWindowPtr(window,size,cond)
+function M.SetWindowSize_WindowPtr(window,size,cond)
     cond = cond or 0
-    return lib.igSetWindowSizeWindowPtr(window,size,cond)
+    return lib.igSetWindowSize_WindowPtr(window,size,cond)
 end
 function M.SetWindowSize(a1,a2,a3) -- generic version
-    if ffi.istype('const ImVec2',a1) then return M.SetWindowSizeVec2(a1,a2) end
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.SetWindowSizeStr(a1,a2,a3) end
-    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetWindowSizeWindowPtr(a1,a2,a3) end
+    if ffi.istype('const ImVec2',a1) then return M.SetWindowSize_Vec2(a1,a2) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.SetWindowSize_Str(a1,a2,a3) end
+    if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.SetWindowSize_WindowPtr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.SetWindowSize could not find overloaded'
 end
@@ -6654,14 +6654,14 @@ function M.TableGetColumnFlags(column_n)
     return lib.igTableGetColumnFlags(column_n)
 end
 M.TableGetColumnIndex = lib.igTableGetColumnIndex
-function M.TableGetColumnNameInt(column_n)
+function M.TableGetColumnName_Int(column_n)
     column_n = column_n or -1
-    return lib.igTableGetColumnNameInt(column_n)
+    return lib.igTableGetColumnName_Int(column_n)
 end
-M.TableGetColumnNameTablePtr = lib.igTableGetColumnNameTablePtr
+M.TableGetColumnName_TablePtr = lib.igTableGetColumnName_TablePtr
 function M.TableGetColumnName(a1,a2) -- generic version
-    if ((ffi.istype('int',a1) or type(a1)=='number') or type(a1)=='nil') then return M.TableGetColumnNameInt(a1) end
-    if (ffi.istype('const ImGuiTable*',a1) or ffi.istype('const ImGuiTable',a1) or ffi.istype('const ImGuiTable[]',a1)) then return M.TableGetColumnNameTablePtr(a1,a2) end
+    if ((ffi.istype('int',a1) or type(a1)=='number') or type(a1)=='nil') then return M.TableGetColumnName_Int(a1) end
+    if (ffi.istype('const ImGuiTable*',a1) or ffi.istype('const ImGuiTable',a1) or ffi.istype('const ImGuiTable[]',a1)) then return M.TableGetColumnName_TablePtr(a1,a2) end
     print(a1,a2)
     error'M.TableGetColumnName could not find overloaded'
 end
@@ -6746,13 +6746,13 @@ M.TextV = lib.igTextV
 M.TextWrapped = lib.igTextWrapped
 M.TextWrappedV = lib.igTextWrappedV
 M.TranslateWindowsInViewport = lib.igTranslateWindowsInViewport
-M.TreeNodeStr = lib.igTreeNodeStr
-M.TreeNodeStrStr = lib.igTreeNodeStrStr
-M.TreeNodePtr = lib.igTreeNodePtr
+M.TreeNode_Str = lib.igTreeNode_Str
+M.TreeNode_StrStr = lib.igTreeNode_StrStr
+M.TreeNode_Ptr = lib.igTreeNode_Ptr
 function M.TreeNode(a1,a2,...) -- generic version
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and a2==nil then return M.TreeNodeStr(a1) end
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and (ffi.istype('const char*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.TreeNodeStrStr(a1,a2,...) end
-    if ffi.istype('const void*',a1) then return M.TreeNodePtr(a1,a2,...) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and a2==nil then return M.TreeNode_Str(a1) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and (ffi.istype('const char*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.TreeNode_StrStr(a1,a2,...) end
+    if ffi.istype('const void*',a1) then return M.TreeNode_Ptr(a1,a2,...) end
     print(a1,a2,...)
     error'M.TreeNode could not find overloaded'
 end
@@ -6764,44 +6764,44 @@ function M.TreeNodeBehaviorIsOpen(id,flags)
     flags = flags or 0
     return lib.igTreeNodeBehaviorIsOpen(id,flags)
 end
-function M.TreeNodeExStr(label,flags)
+function M.TreeNodeEx_Str(label,flags)
     flags = flags or 0
-    return lib.igTreeNodeExStr(label,flags)
+    return lib.igTreeNodeEx_Str(label,flags)
 end
-M.TreeNodeExStrStr = lib.igTreeNodeExStrStr
-M.TreeNodeExPtr = lib.igTreeNodeExPtr
+M.TreeNodeEx_StrStr = lib.igTreeNodeEx_StrStr
+M.TreeNodeEx_Ptr = lib.igTreeNodeEx_Ptr
 function M.TreeNodeEx(a1,a2,a3,...) -- generic version
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and a3==nil then return M.TreeNodeExStr(a1,a2) end
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and (ffi.istype('const char*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.TreeNodeExStrStr(a1,a2,a3,...) end
-    if ffi.istype('const void*',a1) then return M.TreeNodeExPtr(a1,a2,a3,...) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and a3==nil then return M.TreeNodeEx_Str(a1,a2) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and (ffi.istype('const char*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.TreeNodeEx_StrStr(a1,a2,a3,...) end
+    if ffi.istype('const void*',a1) then return M.TreeNodeEx_Ptr(a1,a2,a3,...) end
     print(a1,a2,a3,...)
     error'M.TreeNodeEx could not find overloaded'
 end
-M.TreeNodeExVStr = lib.igTreeNodeExVStr
-M.TreeNodeExVPtr = lib.igTreeNodeExVPtr
+M.TreeNodeExV_Str = lib.igTreeNodeExV_Str
+M.TreeNodeExV_Ptr = lib.igTreeNodeExV_Ptr
 function M.TreeNodeExV(a1,a2,a3,a4) -- generic version
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.TreeNodeExVStr(a1,a2,a3,a4) end
-    if ffi.istype('const void*',a1) then return M.TreeNodeExVPtr(a1,a2,a3,a4) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.TreeNodeExV_Str(a1,a2,a3,a4) end
+    if ffi.istype('const void*',a1) then return M.TreeNodeExV_Ptr(a1,a2,a3,a4) end
     print(a1,a2,a3,a4)
     error'M.TreeNodeExV could not find overloaded'
 end
-M.TreeNodeVStr = lib.igTreeNodeVStr
-M.TreeNodeVPtr = lib.igTreeNodeVPtr
+M.TreeNodeV_Str = lib.igTreeNodeV_Str
+M.TreeNodeV_Ptr = lib.igTreeNodeV_Ptr
 function M.TreeNodeV(a1,a2,a3) -- generic version
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.TreeNodeVStr(a1,a2,a3) end
-    if ffi.istype('const void*',a1) then return M.TreeNodeVPtr(a1,a2,a3) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.TreeNodeV_Str(a1,a2,a3) end
+    if ffi.istype('const void*',a1) then return M.TreeNodeV_Ptr(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.TreeNodeV could not find overloaded'
 end
 M.TreePop = lib.igTreePop
-M.TreePushStr = lib.igTreePushStr
-function M.TreePushPtr(ptr_id)
+M.TreePush_Str = lib.igTreePush_Str
+function M.TreePush_Ptr(ptr_id)
     ptr_id = ptr_id or nil
-    return lib.igTreePushPtr(ptr_id)
+    return lib.igTreePush_Ptr(ptr_id)
 end
 function M.TreePush(a1) -- generic version
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.TreePushStr(a1) end
-    if (ffi.istype('const void*',a1) or type(a1)=='nil') then return M.TreePushPtr(a1) end
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.TreePush_Str(a1) end
+    if (ffi.istype('const void*',a1) or type(a1)=='nil') then return M.TreePush_Ptr(a1) end
     print(a1)
     error'M.TreePush could not find overloaded'
 end
@@ -6830,82 +6830,82 @@ function M.VSliderScalar(label,size,data_type,p_data,p_min,p_max,format,flags)
     format = format or nil
     return lib.igVSliderScalar(label,size,data_type,p_data,p_min,p_max,format,flags)
 end
-M.ValueBool = lib.igValueBool
-M.ValueInt = lib.igValueInt
-M.ValueUint = lib.igValueUint
-function M.ValueFloat(prefix,v,float_format)
+M.Value_Bool = lib.igValue_Bool
+M.Value_Int = lib.igValue_Int
+M.Value_Uint = lib.igValue_Uint
+function M.Value_Float(prefix,v,float_format)
     float_format = float_format or nil
-    return lib.igValueFloat(prefix,v,float_format)
+    return lib.igValue_Float(prefix,v,float_format)
 end
 function M.Value(a1,a2,a3) -- generic version
-    if (ffi.istype('bool',a2) or type(a2)=='boolean') then return M.ValueBool(a1,a2) end
-    if (ffi.istype('int',a2) or type(a2)=='number') then return M.ValueInt(a1,a2) end
-    if ffi.istype('unsigned int',a2) then return M.ValueUint(a1,a2) end
-    if (ffi.istype('float',a2) or type(a2)=='number') then return M.ValueFloat(a1,a2,a3) end
+    if (ffi.istype('bool',a2) or type(a2)=='boolean') then return M.Value_Bool(a1,a2) end
+    if (ffi.istype('int',a2) or type(a2)=='number') then return M.Value_Int(a1,a2) end
+    if ffi.istype('unsigned int',a2) then return M.Value_Uint(a1,a2) end
+    if (ffi.istype('float',a2) or type(a2)=='number') then return M.Value_Float(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.Value could not find overloaded'
 end
-function M.gizmo3DquatPtrFloat(noname1,noname2,noname3,noname4)
+function M.gizmo3D_quatPtrFloat(noname1,noname2,noname3,noname4)
     noname4 = noname4 or 257
-    return lib.iggizmo3DquatPtrFloat(noname1,noname2,noname3,noname4)
+    return lib.iggizmo3D_quatPtrFloat(noname1,noname2,noname3,noname4)
 end
-function M.gizmo3Dvec4Ptr(noname1,noname2,noname3,noname4)
+function M.gizmo3D_vec4Ptr(noname1,noname2,noname3,noname4)
     noname4 = noname4 or 257
-    return lib.iggizmo3Dvec4Ptr(noname1,noname2,noname3,noname4)
+    return lib.iggizmo3D_vec4Ptr(noname1,noname2,noname3,noname4)
 end
-function M.gizmo3Dvec3PtrFloat(noname1,noname2,noname3,noname4)
+function M.gizmo3D_vec3PtrFloat(noname1,noname2,noname3,noname4)
     noname4 = noname4 or 2
-    return lib.iggizmo3Dvec3PtrFloat(noname1,noname2,noname3,noname4)
+    return lib.iggizmo3D_vec3PtrFloat(noname1,noname2,noname3,noname4)
 end
-function M.gizmo3DquatPtrquatPtr(noname1,noname2,noname3,noname4,noname5)
+function M.gizmo3D_quatPtrquatPtr(noname1,noname2,noname3,noname4,noname5)
     noname5 = noname5 or 264
-    return lib.iggizmo3DquatPtrquatPtr(noname1,noname2,noname3,noname4,noname5)
+    return lib.iggizmo3D_quatPtrquatPtr(noname1,noname2,noname3,noname4,noname5)
 end
-function M.gizmo3DquatPtrvec4Ptr(noname1,noname2,noname3,noname4,noname5)
+function M.gizmo3D_quatPtrvec4Ptr(noname1,noname2,noname3,noname4,noname5)
     noname5 = noname5 or 264
-    return lib.iggizmo3DquatPtrvec4Ptr(noname1,noname2,noname3,noname4,noname5)
+    return lib.iggizmo3D_quatPtrvec4Ptr(noname1,noname2,noname3,noname4,noname5)
 end
-function M.gizmo3DquatPtrvec3Ptr(noname1,noname2,noname3,noname4,noname5)
+function M.gizmo3D_quatPtrvec3Ptr(noname1,noname2,noname3,noname4,noname5)
     noname5 = noname5 or 264
-    return lib.iggizmo3DquatPtrvec3Ptr(noname1,noname2,noname3,noname4,noname5)
+    return lib.iggizmo3D_quatPtrvec3Ptr(noname1,noname2,noname3,noname4,noname5)
 end
-function M.gizmo3Dvec3PtrquatPtrFloat(noname1,noname2,noname3,noname4,noname5)
+function M.gizmo3D_vec3PtrquatPtrFloat(noname1,noname2,noname3,noname4,noname5)
     noname5 = noname5 or 257
-    return lib.iggizmo3Dvec3PtrquatPtrFloat(noname1,noname2,noname3,noname4,noname5)
+    return lib.iggizmo3D_vec3PtrquatPtrFloat(noname1,noname2,noname3,noname4,noname5)
 end
-function M.gizmo3Dvec3Ptrvec4Ptr(noname1,noname2,noname3,noname4,noname5)
+function M.gizmo3D_vec3Ptrvec4Ptr(noname1,noname2,noname3,noname4,noname5)
     noname5 = noname5 or 257
-    return lib.iggizmo3Dvec3Ptrvec4Ptr(noname1,noname2,noname3,noname4,noname5)
+    return lib.iggizmo3D_vec3Ptrvec4Ptr(noname1,noname2,noname3,noname4,noname5)
 end
-function M.gizmo3Dvec3Ptrvec3Ptr(noname1,noname2,noname3,noname4,noname5)
+function M.gizmo3D_vec3Ptrvec3Ptr(noname1,noname2,noname3,noname4,noname5)
     noname5 = noname5 or 2
-    return lib.iggizmo3Dvec3Ptrvec3Ptr(noname1,noname2,noname3,noname4,noname5)
+    return lib.iggizmo3D_vec3Ptrvec3Ptr(noname1,noname2,noname3,noname4,noname5)
 end
-function M.gizmo3Dvec3PtrquatPtrquatPtr(noname1,noname2,noname3,noname4,noname5,noname6)
+function M.gizmo3D_vec3PtrquatPtrquatPtr(noname1,noname2,noname3,noname4,noname5,noname6)
     noname6 = noname6 or 264
-    return lib.iggizmo3Dvec3PtrquatPtrquatPtr(noname1,noname2,noname3,noname4,noname5,noname6)
+    return lib.iggizmo3D_vec3PtrquatPtrquatPtr(noname1,noname2,noname3,noname4,noname5,noname6)
 end
-function M.gizmo3Dvec3PtrquatPtrvec4Ptr(noname1,noname2,noname3,noname4,noname5,noname6)
+function M.gizmo3D_vec3PtrquatPtrvec4Ptr(noname1,noname2,noname3,noname4,noname5,noname6)
     noname6 = noname6 or 264
-    return lib.iggizmo3Dvec3PtrquatPtrvec4Ptr(noname1,noname2,noname3,noname4,noname5,noname6)
+    return lib.iggizmo3D_vec3PtrquatPtrvec4Ptr(noname1,noname2,noname3,noname4,noname5,noname6)
 end
-function M.gizmo3Dvec3PtrquatPtrvec3Ptr(noname1,noname2,noname3,noname4,noname5,noname6)
+function M.gizmo3D_vec3PtrquatPtrvec3Ptr(noname1,noname2,noname3,noname4,noname5,noname6)
     noname6 = noname6 or 264
-    return lib.iggizmo3Dvec3PtrquatPtrvec3Ptr(noname1,noname2,noname3,noname4,noname5,noname6)
+    return lib.iggizmo3D_vec3PtrquatPtrvec3Ptr(noname1,noname2,noname3,noname4,noname5,noname6)
 end
 function M.gizmo3D(a1,a2,a3,a4,a5,a6) -- generic version
-    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('float',a3) or type(a3)=='number') and ((ffi.istype('const int',a4) or type(a4)=='number') or type(a4)=='nil') and a5==nil then return M.gizmo3DquatPtrFloat(a1,a2,a3,a4) end
-    if (ffi.istype('G3Dvec4*',a2) or ffi.istype('G3Dvec4',a2) or ffi.istype('G3Dvec4[]',a2)) then return M.gizmo3Dvec4Ptr(a1,a2,a3,a4) end
-    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('float',a3) or type(a3)=='number') and ((ffi.istype('const int',a4) or type(a4)=='number') or type(a4)=='nil') and a5==nil then return M.gizmo3Dvec3PtrFloat(a1,a2,a3,a4) end
-    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3DquatPtrquatPtr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('G3Dvec4*',a3) or ffi.istype('G3Dvec4',a3) or ffi.istype('G3Dvec4[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3DquatPtrvec4Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('G3Dvec3*',a3) or ffi.istype('G3Dvec3',a3) or ffi.istype('G3Dvec3[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3DquatPtrvec3Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3Dvec3PtrquatPtrFloat(a1,a2,a3,a4,a5) end
-    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('G3Dvec4*',a3) or ffi.istype('G3Dvec4',a3) or ffi.istype('G3Dvec4[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3Dvec3Ptrvec4Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('G3Dvec3*',a3) or ffi.istype('G3Dvec3',a3) or ffi.istype('G3Dvec3[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3Dvec3Ptrvec3Ptr(a1,a2,a3,a4,a5) end
-    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('quat*',a4) or ffi.istype('quat',a4) or ffi.istype('quat[]',a4)) then return M.gizmo3Dvec3PtrquatPtrquatPtr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('G3Dvec4*',a4) or ffi.istype('G3Dvec4',a4) or ffi.istype('G3Dvec4[]',a4)) then return M.gizmo3Dvec3PtrquatPtrvec4Ptr(a1,a2,a3,a4,a5,a6) end
-    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('G3Dvec3*',a4) or ffi.istype('G3Dvec3',a4) or ffi.istype('G3Dvec3[]',a4)) then return M.gizmo3Dvec3PtrquatPtrvec3Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('float',a3) or type(a3)=='number') and ((ffi.istype('const int',a4) or type(a4)=='number') or type(a4)=='nil') and a5==nil then return M.gizmo3D_quatPtrFloat(a1,a2,a3,a4) end
+    if (ffi.istype('G3Dvec4*',a2) or ffi.istype('G3Dvec4',a2) or ffi.istype('G3Dvec4[]',a2)) then return M.gizmo3D_vec4Ptr(a1,a2,a3,a4) end
+    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('float',a3) or type(a3)=='number') and ((ffi.istype('const int',a4) or type(a4)=='number') or type(a4)=='nil') and a5==nil then return M.gizmo3D_vec3PtrFloat(a1,a2,a3,a4) end
+    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3D_quatPtrquatPtr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('G3Dvec4*',a3) or ffi.istype('G3Dvec4',a3) or ffi.istype('G3Dvec4[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3D_quatPtrvec4Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('quat*',a2) or ffi.istype('quat',a2) or ffi.istype('quat[]',a2)) and (ffi.istype('G3Dvec3*',a3) or ffi.istype('G3Dvec3',a3) or ffi.istype('G3Dvec3[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3D_quatPtrvec3Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3D_vec3PtrquatPtrFloat(a1,a2,a3,a4,a5) end
+    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('G3Dvec4*',a3) or ffi.istype('G3Dvec4',a3) or ffi.istype('G3Dvec4[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3D_vec3Ptrvec4Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('G3Dvec3*',a3) or ffi.istype('G3Dvec3',a3) or ffi.istype('G3Dvec3[]',a3)) and (ffi.istype('float',a4) or type(a4)=='number') and ((ffi.istype('const int',a5) or type(a5)=='number') or type(a5)=='nil') then return M.gizmo3D_vec3Ptrvec3Ptr(a1,a2,a3,a4,a5) end
+    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('quat*',a4) or ffi.istype('quat',a4) or ffi.istype('quat[]',a4)) then return M.gizmo3D_vec3PtrquatPtrquatPtr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('G3Dvec4*',a4) or ffi.istype('G3Dvec4',a4) or ffi.istype('G3Dvec4[]',a4)) then return M.gizmo3D_vec3PtrquatPtrvec4Ptr(a1,a2,a3,a4,a5,a6) end
+    if (ffi.istype('G3Dvec3*',a2) or ffi.istype('G3Dvec3',a2) or ffi.istype('G3Dvec3[]',a2)) and (ffi.istype('quat*',a3) or ffi.istype('quat',a3) or ffi.istype('quat[]',a3)) and (ffi.istype('G3Dvec3*',a4) or ffi.istype('G3Dvec3',a4) or ffi.istype('G3Dvec3[]',a4)) then return M.gizmo3D_vec3PtrquatPtrvec3Ptr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.gizmo3D could not find overloaded'
 end
@@ -6975,17 +6975,17 @@ function M.imnodes_IsAnyAttributeActive(attribute_id)
 end
 M.imnodes_IsAttributeActive = lib.imnodes_IsAttributeActive
 M.imnodes_IsEditorHovered = lib.imnodes_IsEditorHovered
-function M.imnodes_IsLinkCreatedBoolPtr(started_at_attribute_id,ended_at_attribute_id,created_from_snap)
+function M.imnodes_IsLinkCreated_BoolPtr(started_at_attribute_id,ended_at_attribute_id,created_from_snap)
     created_from_snap = created_from_snap or nil
-    return lib.imnodes_IsLinkCreatedBoolPtr(started_at_attribute_id,ended_at_attribute_id,created_from_snap)
+    return lib.imnodes_IsLinkCreated_BoolPtr(started_at_attribute_id,ended_at_attribute_id,created_from_snap)
 end
-function M.imnodes_IsLinkCreatedIntPtr(started_at_node_id,started_at_attribute_id,ended_at_node_id,ended_at_attribute_id,created_from_snap)
+function M.imnodes_IsLinkCreated_IntPtr(started_at_node_id,started_at_attribute_id,ended_at_node_id,ended_at_attribute_id,created_from_snap)
     created_from_snap = created_from_snap or nil
-    return lib.imnodes_IsLinkCreatedIntPtr(started_at_node_id,started_at_attribute_id,ended_at_node_id,ended_at_attribute_id,created_from_snap)
+    return lib.imnodes_IsLinkCreated_IntPtr(started_at_node_id,started_at_attribute_id,ended_at_node_id,ended_at_attribute_id,created_from_snap)
 end
 function M.imnodes_IsLinkCreated(a1,a2,a3,a4,a5) -- generic version
-    if ((ffi.istype('bool*',a3) or ffi.istype('bool',a3) or ffi.istype('bool[]',a3)) or type(a3)=='nil') then return M.imnodes_IsLinkCreatedBoolPtr(a1,a2,a3) end
-    if (ffi.istype('int*',a3) or ffi.istype('int[]',a3)) then return M.imnodes_IsLinkCreatedIntPtr(a1,a2,a3,a4,a5) end
+    if ((ffi.istype('bool*',a3) or ffi.istype('bool',a3) or ffi.istype('bool[]',a3)) or type(a3)=='nil') then return M.imnodes_IsLinkCreated_BoolPtr(a1,a2,a3) end
+    if (ffi.istype('int*',a3) or ffi.istype('int[]',a3)) then return M.imnodes_IsLinkCreated_IntPtr(a1,a2,a3,a4,a5) end
     print(a1,a2,a3,a4,a5)
     error'M.imnodes_IsLinkCreated could not find overloaded'
 end
