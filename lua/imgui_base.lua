@@ -315,7 +315,7 @@ function Log:Draw(title)
 end
 M.Log = ffi.metatype("Log",Log)
 ------------convenience function
-function M.U32(a,b,c,d) return lib.igGetColorU32Vec4(ImVec4(a,b,c,d or 1)) end
+function M.U32(a,b,c,d) return lib.igGetColorU32_Vec4(ImVec4(a,b,c,d or 1)) end
 
 -------------ImGuiZMO.quat
 

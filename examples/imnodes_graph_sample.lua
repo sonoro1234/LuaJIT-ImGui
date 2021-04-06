@@ -453,7 +453,7 @@ local nodetypes = {
     input_names = {"r","g","b"},
     is_root = true,
     show = function(self,v,i)
-        ig.PushStyleColorU32(ig.lib.ImGuiCol_WindowBg, v);
+        ig.PushStyleColor(ig.lib.ImGuiCol_WindowBg, v);
         ig.Begin("output color"..i);
         ig.End();
         ig.PopStyleColor();
