@@ -24,19 +24,19 @@ ffi.cdef(cdecl)
 local lib = ffi.load(cimguimodule)
 
 -----------ImStr definition
-local ImStr
-if pcall(function() local a = ffi.new("ImStr")end) then
+local ImStrv
+if pcall(function() local a = ffi.new("ImStrv")end) then
 
-ImStr= {}
-function ImStr.__new(ctype,a,b)
+ImStrv= {}
+function ImStrv.__new(ctype,a,b)
 	b = b or ffi.new("const char*",a) + (a and #a or 0)
 	return ffi.new(ctype,a,b)
 end
-function ImStr.__tostring(is)
+function ImStrv.__tostring(is)
 	return is.Begin~=nil and ffi.string(is.Begin,is.End~=nil and is.End-is.Begin or nil) or nil
 end
-ImStr.__index = ImStr
-ImStr = ffi.metatype("ImStr",ImStr)
+ImStrv.__index = ImStrv
+ImStrv = ffi.metatype("ImStrv",ImStrv)
 
 end
 -----------ImVec2 definition
@@ -61,7 +61,7 @@ local ImVec4= {}
 ImVec4.__index = ImVec4
 ImVec4 = ffi.metatype("ImVec4",ImVec4)
 --the module
-local M = {ImVec2 = ImVec2, ImVec4 = ImVec4 , ImStr = ImStr, lib = lib}
+local M = {ImVec2 = ImVec2, ImVec4 = ImVec4 , ImStrv = ImStrv, lib = lib}
 
 if jit.os == "Windows" then
     function M.ToUTF(unc_str)
@@ -1799,7 +1799,11 @@ M.ImPlotTickCollection = ffi.metatype("ImPlotTickCollection",ImPlotTickCollectio
 --------------------------ImPlotTime----------------------------
 local ImPlotTime= {}
 ImPlotTime.__index = ImPlotTime
-M.ImPlotTime_FromDouble = lib.ImPlotTime_FromDouble
+function M.ImPlotTime_FromDouble(t)
+    local nonUDT_out = ffi.new("ImPlotTime")
+    lib.ImPlotTime_FromDouble(nonUDT_out,t)
+    return nonUDT_out
+end
 function ImPlotTime.ImPlotTime_Nil()
     local ptr = lib.ImPlotTime_ImPlotTime_Nil()
     return ffi.gc(ptr,lib.ImPlotTime_destroy)
@@ -2110,7 +2114,11 @@ M.ImPlot_AddTicksCustom = lib.ImPlot_AddTicksCustom
 M.ImPlot_AddTicksDefault = lib.ImPlot_AddTicksDefault
 M.ImPlot_AddTicksLogarithmic = lib.ImPlot_AddTicksLogarithmic
 M.ImPlot_AddTicksTime = lib.ImPlot_AddTicksTime
-M.ImPlot_AddTime = lib.ImPlot_AddTime
+function M.ImPlot_AddTime(t,unit,count)
+    local nonUDT_out = ffi.new("ImPlotTime")
+    lib.ImPlot_AddTime(nonUDT_out,t,unit,count)
+    return nonUDT_out
+end
 M.ImPlot_Annotate_Str = lib.ImPlot_Annotate_Str
 M.ImPlot_Annotate_Vec4 = lib.ImPlot_Annotate_Vec4
 function M.ImPlot_Annotate(a1,a2,a3,a4,...) -- generic version
@@ -2239,7 +2247,11 @@ function M.ImPlot_CalculateBins(a1,a2,a3,a4,a5,a6) -- generic version
     print(a1,a2,a3,a4,a5,a6)
     error'M.ImPlot_CalculateBins could not find overloaded'
 end
-M.ImPlot_CeilTime = lib.ImPlot_CeilTime
+function M.ImPlot_CeilTime(t,unit)
+    local nonUDT_out = ffi.new("ImPlotTime")
+    lib.ImPlot_CeilTime(nonUDT_out,t,unit)
+    return nonUDT_out
+end
 function M.ImPlot_ClampLabelPos(pos,size,Min,Max)
     local nonUDT_out = ffi.new("ImVec2")
     lib.ImPlot_ClampLabelPos(nonUDT_out,pos,size,Min,Max)
@@ -2262,7 +2274,11 @@ function M.ImPlot_ColormapSlider(label,t,out,format,cmap)
     out = out or nil
     return lib.ImPlot_ColormapSlider(label,t,out,format,cmap)
 end
-M.ImPlot_CombineDateTime = lib.ImPlot_CombineDateTime
+function M.ImPlot_CombineDateTime(date_part,time_part)
+    local nonUDT_out = ffi.new("ImPlotTime")
+    lib.ImPlot_CombineDateTime(nonUDT_out,date_part,time_part)
+    return nonUDT_out
+end
 M.ImPlot_CreateContext = lib.ImPlot_CreateContext
 function M.ImPlot_DestroyContext(ctx)
     ctx = ctx or nil
@@ -2326,7 +2342,11 @@ M.ImPlot_FitPoint = lib.ImPlot_FitPoint
 M.ImPlot_FitPointX = lib.ImPlot_FitPointX
 M.ImPlot_FitPointY = lib.ImPlot_FitPointY
 M.ImPlot_FitThisFrame = lib.ImPlot_FitThisFrame
-M.ImPlot_FloorTime = lib.ImPlot_FloorTime
+function M.ImPlot_FloorTime(t,unit)
+    local nonUDT_out = ffi.new("ImPlotTime")
+    lib.ImPlot_FloorTime(nonUDT_out,t,unit)
+    return nonUDT_out
+end
 M.ImPlot_FormatDate = lib.ImPlot_FormatDate
 M.ImPlot_FormatDateTime = lib.ImPlot_FormatDateTime
 M.ImPlot_FormatTime = lib.ImPlot_FormatTime
@@ -2654,10 +2674,20 @@ function M.ImPlot_MakeTime(year,month,day,hour,min,sec,us)
     month = month or 0
     sec = sec or 0
     us = us or 0
-    return lib.ImPlot_MakeTime(year,month,day,hour,min,sec,us)
+    local nonUDT_out = ffi.new("ImPlotTime")
+    lib.ImPlot_MakeTime(nonUDT_out,year,month,day,hour,min,sec,us)
+    return nonUDT_out
 end
-M.ImPlot_MkGmtTime = lib.ImPlot_MkGmtTime
-M.ImPlot_MkLocTime = lib.ImPlot_MkLocTime
+function M.ImPlot_MkGmtTime(ptm)
+    local nonUDT_out = ffi.new("ImPlotTime")
+    lib.ImPlot_MkGmtTime(nonUDT_out,ptm)
+    return nonUDT_out
+end
+function M.ImPlot_MkLocTime(ptm)
+    local nonUDT_out = ffi.new("ImPlotTime")
+    lib.ImPlot_MkLocTime(nonUDT_out,ptm)
+    return nonUDT_out
+end
 function M.ImPlot_NextColormapColor()
     local nonUDT_out = ffi.new("ImVec4")
     lib.ImPlot_NextColormapColor(nonUDT_out)
@@ -4731,7 +4761,11 @@ function M.ImPlot_RegisterOrGetItem(label_id,just_created)
 end
 M.ImPlot_RenderColorBar = lib.ImPlot_RenderColorBar
 M.ImPlot_Reset = lib.ImPlot_Reset
-M.ImPlot_RoundTime = lib.ImPlot_RoundTime
+function M.ImPlot_RoundTime(t,unit)
+    local nonUDT_out = ffi.new("ImPlotTime")
+    lib.ImPlot_RoundTime(nonUDT_out,t,unit)
+    return nonUDT_out
+end
 function M.ImPlot_SampleColormap(t,cmap)
     cmap = cmap or -1
     local nonUDT_out = ffi.new("ImVec4")
