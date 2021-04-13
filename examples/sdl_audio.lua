@@ -20,13 +20,14 @@ local sampleHz = 48000
 
 local function MyAudioCallback()
 local ffi = require"ffi"
+local sin = math.sin
 return function(ud,stream,len)
 	local buf = ffi.cast("float*",stream)
 	local udc = ffi.cast("struct {double Phase;double dPhase;}*",ud)
 	local lenf = len/ffi.sizeof"float"
 
 	for i=0,lenf-2,2 do
-		local sample = math.sin(udc.Phase)*0.05
+		local sample = sin(udc.Phase)*0.05
 		udc.Phase = udc.Phase + udc.dPhase
 		buf[i] = sample
 		buf[i+1] = sample
