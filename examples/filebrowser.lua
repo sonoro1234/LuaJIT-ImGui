@@ -122,6 +122,9 @@ function gui.FileBrowser(filename_p, args, funcOK)
                     end
             end
         end
+		-- needed in linux
+		table.sort(curr_dir_dirs, function(a,b) return a.name < b.name end)
+		table.sort(curr_dir_files, function(a,b) return a.name < b.name end)
     end
     
     local yesnoD = gui.YesNo("overwrite?")

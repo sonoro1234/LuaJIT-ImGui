@@ -114,7 +114,7 @@ local ffi = require"ffi"
 local fontsize = ffi.new("float[1]",13)
 local fontscale = ffi.new("float[1]",1)
 local fontcps 
-local init_dir = jit.os=="Windows" and [[c:/windows/Fonts]] or ""
+local init_dir = jit.os=="Windows" and [[c:/windows/Fonts]] or "/"
 local font_file
 --init_dir = [[c:/anima/lua/anima/fonts]]
 local fB = gui.FileBrowser(nil,{curr_dir=init_dir,pattern=[[%.ttf$]]},function(f)
