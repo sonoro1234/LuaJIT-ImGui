@@ -1,7 +1,7 @@
 local igwin = require"imgui.window"
 
---local win = igwin:SDL(800,400, "cimnodes_r",{vsync=true})
-local win = igwin:GLFW(800,400, "cimnodes_r",{vsync=true})
+local win = igwin:SDL(800,400, "cimnodes_r",{vsync=true})
+--local win = igwin:GLFW(800,400, "cimnodes_r",{vsync=true})
 local ig = win.ig
 local ffi = require"ffi"
 local serializer = require"serializer"
@@ -153,8 +153,7 @@ local function Editor(name, nodetypes)
     E.draw = show_editor
 
     function E:save_str()
-        local str = [[local ffi = require"ffi"]]
-        str = str .. "\n" .. [[local ig = require"imgui.]] .. win.kind .. [["
+        local str = [[local ffi = require"ffi"
         ]]
         for k,node in pairs(self.nodes) do
             str = str .. node:save_str("node"..k) .. "\n"
@@ -186,7 +185,9 @@ local function Editor(name, nodetypes)
     end
     function E:load_str(str)
         self.nodes = {}
-        local loadedE = loadstring(str)()
+        local f = loadstring(str)
+        setfenv(f,setmetatable({ig=ig},{ __index = _G}))
+        local loadedE = f()
         for k,v in pairs(loadedE.nodes) do
             local node = Node(0,self,nil,v)
             self.nodes[idtokey(node.id)] = node

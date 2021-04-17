@@ -88,7 +88,6 @@ function M:GLFW(w,h,title,args)
     
     W.window = window
     W.start = startGLFW
-    W.kind = "glfw"
     return W
 end
 
@@ -203,7 +202,6 @@ function M:SDL(w,h,title,args)
 
     W.window = window
     W.start = startSDL
-    W.kind = "sdl"
     return W
 end
 

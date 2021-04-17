@@ -225,7 +225,7 @@ local function Editor(name, nodetypes)
     end
     function E:save_str()
         local str = [[local ffi = require"ffi"]]
-        str = str .. "\n" .. [[local ig = require"imgui.]] .. win.kind .. [["]]
+        str = str .. "\n"
         for k,node in pairs(self.nodes) do
             str = str .. node:save_str("node"..k) .. "\n"
         end
@@ -262,7 +262,9 @@ local function Editor(name, nodetypes)
     function E:load_str(str)
         self.nodes = {}
         self.links = {}
-        local loadedE = loadstring(str)()
+        local f = loadstring(str)
+        setfenv(f,setmetatable({ig=ig},{ __index = _G}))
+        local loadedE = f()
         for k,v in pairs(loadedE.nodes) do
             local node = Node(0,self,nil,v)
             self.nodes[node.id] = node

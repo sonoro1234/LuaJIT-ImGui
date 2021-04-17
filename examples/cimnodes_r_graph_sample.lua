@@ -320,8 +320,7 @@ local function Editor(name, nodetypes)
 
     function E:save_str()
         local str = [[local ffi = require"ffi"]]
-        str = str .. "\n" .. [[local ig = require"imgui.]] .. win.kind .. [["
-        ]]
+        str = str .. "\n"
         for k,node in pairs(self.nodes) do
             str = str .. node:save_str("node"..k) .. "\n"
         end
@@ -353,7 +352,9 @@ local function Editor(name, nodetypes)
     end
     function E:load_str(str)
         self.nodes = {}
-        local loadedE = loadstring(str)()
+        local f = loadstring(str)
+        setfenv(f,setmetatable({ig=ig},{ __index = _G}))
+        local loadedE = f()
         for k,v in pairs(loadedE.nodes) do
             local node = Node(0,self,nil,v)
             self.nodes[idtokey(node.id)] = node
@@ -369,7 +370,7 @@ local function Editor(name, nodetypes)
             end
         end
         self.current_id = loadedE.current_id
-        self.name = loadedE.name
+        --self.name = loadedE.name
         self.root_nodes = loadedE.root_nodes
     end
     E.context = ig.CanvasState();
