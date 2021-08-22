@@ -1,6 +1,6 @@
 local igwin = require"imgui.window"
 --local win = igwin:SDL(800,600, "imGuizmo",{vsync=true})
-local win = igwin:GLFW(800,600, "imGuizmo",{vsync=true})
+local win = igwin:GLFW(800,600, "imGuizmo",{vsync=true,gl2=true})
 
 
 local ffi = require"ffi"

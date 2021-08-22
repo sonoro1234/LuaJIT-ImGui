@@ -19,7 +19,7 @@ function win:draw(ig)
     ig.ImPlot_ShowDemoWindow()
     ig.Begin("Ploters")
     if (ig.ImPlot_BeginPlot("Line Plot", "x", "f(x)", ig.ImVec2(-1,-1))) then
-        ig.ImPlot_PlotLineG("Line Plot",gettercb,nil,1000,0)
+        ig.ImPlot_PlotLineG("Line Plot",gettercb,nil,1000)
         ig.ImPlot_AnnotateClamped(0.25,1.1,ig.ImVec2(15,15),ig.ImPlot_GetLastItemColor(),"function %f %s",1,"hello");
         ig.ImPlot_SetNextMarkerStyle(ig.lib.ImPlotMarker_Circle);
         ig.ImPlot_PlotLine("x^2", xs2, ys2, 11);

@@ -75,10 +75,10 @@ if(IMGUI_FREETYPE)
 endif(IMGUI_FREETYPE)
 
 if(IMPL_OPENGL3)
-    list(APPEND IMGUI_SOURCES ${BAKENDS_FOLDER}imgui_impl_opengl3.cpp
-    ./cimgui/imgui/examples/libs/gl3w/GL/gl3w.c)
+    list(APPEND IMGUI_SOURCES ${BAKENDS_FOLDER}imgui_impl_opengl3.cpp)
+    #./cimgui/imgui/examples/libs/gl3w/GL/gl3w.c)
     list(APPEND IMGUI_SOURCES ./extras/cimgui_extras.cpp)
-    include_directories(cimgui/imgui/examples/libs/gl3w)
+    #include_directories(cimgui/imgui/examples/libs/gl3w)
 	if(WIN32)
         list(APPEND IMGUI_LIBRARIES opengl32)
 	else(WIN32)#Unix
