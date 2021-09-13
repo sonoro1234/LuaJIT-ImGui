@@ -297,10 +297,10 @@ local editor2 = Editor("editor2",nodetypes)
 editor1:load()
 editor2:load()
 
-ig.imnodes_PushAttributeFlag(ig.lib.AttributeFlags_EnableLinkDetachWithDragClick);
+ig.imnodes_PushAttributeFlag(ig.lib.ImNodesAttributeFlags_EnableLinkDetachWithDragClick);
 local iog = ig.imnodes_GetIO();
 local KeyCtrlPtr = ffi.cast("bool*", ffi.cast("char*",ig.GetIO()) + ffi.offsetof("ImGuiIO","KeyCtrl"))
-iog.link_detach_with_modifier_click.modifier = KeyCtrlPtr --ig.lib.getIOKeyCtrlPtr();
+iog.LinkDetachWithModifierClick.Modifier = KeyCtrlPtr --ig.lib.getIOKeyCtrlPtr();
 
 function win:draw(ig)
     editor1:draw()
