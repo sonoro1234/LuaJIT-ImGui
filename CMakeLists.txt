@@ -10,7 +10,7 @@ include_directories(cimguizmo/ImGuizmo)
 include_directories(./cimguizmo_quat/imGuIZMO.quat/imGuIZMO.quat)
 include_directories(cimnodes/imnodes)
 #add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
-
+add_definitions(-DIMNODES_NAMESPACE=imnodes)
 include_directories(cimgui)
 set(IMGUI_SOURCES ./cimgui/cimgui.cpp 
 ./cimgui/imgui/imgui.cpp 
