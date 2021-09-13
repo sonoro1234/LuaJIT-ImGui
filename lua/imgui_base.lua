@@ -158,7 +158,7 @@ end
 
 function Imgui_Impl_SDL_opengl3:NewFrame()
     lib.ImGui_ImplOpenGL3_NewFrame();
-    lib.ImGui_ImplSDL2_NewFrame(self.window);
+    lib.ImGui_ImplSDL2_NewFrame();
     lib.igNewFrame();
 end
 
@@ -189,7 +189,7 @@ end
 
 function Imgui_Impl_SDL_opengl2:NewFrame()
     lib.ImGui_ImplOpenGL2_NewFrame();
-    lib.ImGui_ImplSDL2_NewFrame(self.window);
+    lib.ImGui_ImplSDL2_NewFrame();
     lib.igNewFrame();
 end
 

@@ -159,7 +159,7 @@ end
 
 function Imgui_Impl_SDL_opengl3:NewFrame()
     lib.ImGui_ImplOpenGL3_NewFrame();
-    lib.ImGui_ImplSDL2_NewFrame(self.window);
+    lib.ImGui_ImplSDL2_NewFrame();
     lib.igNewFrame();
 end
 
@@ -190,7 +190,7 @@ end
 
 function Imgui_Impl_SDL_opengl2:NewFrame()
     lib.ImGui_ImplOpenGL2_NewFrame();
-    lib.ImGui_ImplSDL2_NewFrame(self.window);
+    lib.ImGui_ImplSDL2_NewFrame();
     lib.igNewFrame();
 end
 
@@ -540,14 +540,6 @@ function EmulateThreeButtonMouse.__new(ctype)
     return ffi.gc(ptr,lib.EmulateThreeButtonMouse_destroy)
 end
 M.EmulateThreeButtonMouse = ffi.metatype("EmulateThreeButtonMouse",EmulateThreeButtonMouse)
---------------------------IO----------------------------
-local IO= {}
-IO.__index = IO
-function IO.__new(ctype)
-    local ptr = lib.IO_IO()
-    return ffi.gc(ptr,lib.IO_destroy)
-end
-M.IO = ffi.metatype("IO",IO)
 --------------------------ImBitVector----------------------------
 local ImBitVector= {}
 ImBitVector.__index = ImBitVector
@@ -1585,6 +1577,22 @@ function ImGuiWindowSettings.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiWindowSettings_destroy)
 end
 M.ImGuiWindowSettings = ffi.metatype("ImGuiWindowSettings",ImGuiWindowSettings)
+--------------------------ImNodesIO----------------------------
+local ImNodesIO= {}
+ImNodesIO.__index = ImNodesIO
+function ImNodesIO.__new(ctype)
+    local ptr = lib.ImNodesIO_ImNodesIO()
+    return ffi.gc(ptr,lib.ImNodesIO_destroy)
+end
+M.ImNodesIO = ffi.metatype("ImNodesIO",ImNodesIO)
+--------------------------ImNodesStyle----------------------------
+local ImNodesStyle= {}
+ImNodesStyle.__index = ImNodesStyle
+function ImNodesStyle.__new(ctype)
+    local ptr = lib.ImNodesStyle_ImNodesStyle()
+    return ffi.gc(ptr,lib.ImNodesStyle_destroy)
+end
+M.ImNodesStyle = ffi.metatype("ImNodesStyle",ImNodesStyle)
 --------------------------ImPlotAlignmentData----------------------------
 local ImPlotAlignmentData= {}
 ImPlotAlignmentData.__index = ImPlotAlignmentData
@@ -2061,14 +2069,6 @@ function LinkDetachWithModifierClick.__new(ctype)
     return ffi.gc(ptr,lib.LinkDetachWithModifierClick_destroy)
 end
 M.LinkDetachWithModifierClick = ffi.metatype("LinkDetachWithModifierClick",LinkDetachWithModifierClick)
---------------------------Style----------------------------
-local Style= {}
-Style.__index = Style
-function Style.__new(ctype)
-    local ptr = lib.Style_Style()
-    return ffi.gc(ptr,lib.Style_destroy)
-end
-M.Style = ffi.metatype("Style",Style)
 --------------------------imguiGizmo----------------------------
 local imguiGizmo= {}
 imguiGizmo.__index = imguiGizmo
@@ -7125,8 +7125,22 @@ function M.imnodes_BeginOutputAttribute(id,shape)
     return lib.imnodes_BeginOutputAttribute(id,shape)
 end
 M.imnodes_BeginStaticAttribute = lib.imnodes_BeginStaticAttribute
-M.imnodes_ClearLinkSelection = lib.imnodes_ClearLinkSelection
-M.imnodes_ClearNodeSelection = lib.imnodes_ClearNodeSelection
+M.imnodes_ClearLinkSelection_Nil = lib.imnodes_ClearLinkSelection_Nil
+M.imnodes_ClearLinkSelection_Int = lib.imnodes_ClearLinkSelection_Int
+function M.imnodes_ClearLinkSelection(a1) -- generic version
+    if a1==nil then return M.imnodes_ClearLinkSelection_Nil() end
+    if (ffi.istype('int',a1) or type(a1)=='number') then return M.imnodes_ClearLinkSelection_Int(a1) end
+    print(a1)
+    error'M.imnodes_ClearLinkSelection could not find overloaded'
+end
+M.imnodes_ClearNodeSelection_Nil = lib.imnodes_ClearNodeSelection_Nil
+M.imnodes_ClearNodeSelection_Int = lib.imnodes_ClearNodeSelection_Int
+function M.imnodes_ClearNodeSelection(a1) -- generic version
+    if a1==nil then return M.imnodes_ClearNodeSelection_Nil() end
+    if (ffi.istype('int',a1) or type(a1)=='number') then return M.imnodes_ClearNodeSelection_Int(a1) end
+    print(a1)
+    error'M.imnodes_ClearNodeSelection could not find overloaded'
+end
 M.imnodes_CreateContext = lib.imnodes_CreateContext
 function M.imnodes_DestroyContext(ctx)
     ctx = ctx or nil
@@ -7200,14 +7214,23 @@ function M.imnodes_IsLinkDropped(started_at_attribute_id,including_detached_link
     return lib.imnodes_IsLinkDropped(started_at_attribute_id,including_detached_links)
 end
 M.imnodes_IsLinkHovered = lib.imnodes_IsLinkHovered
+M.imnodes_IsLinkSelected = lib.imnodes_IsLinkSelected
 M.imnodes_IsLinkStarted = lib.imnodes_IsLinkStarted
 M.imnodes_IsNodeHovered = lib.imnodes_IsNodeHovered
+M.imnodes_IsNodeSelected = lib.imnodes_IsNodeSelected
 M.imnodes_IsPinHovered = lib.imnodes_IsPinHovered
 M.imnodes_Link = lib.imnodes_Link
 M.imnodes_LoadCurrentEditorStateFromIniFile = lib.imnodes_LoadCurrentEditorStateFromIniFile
 M.imnodes_LoadCurrentEditorStateFromIniString = lib.imnodes_LoadCurrentEditorStateFromIniString
 M.imnodes_LoadEditorStateFromIniFile = lib.imnodes_LoadEditorStateFromIniFile
 M.imnodes_LoadEditorStateFromIniString = lib.imnodes_LoadEditorStateFromIniString
+function M.imnodes_MiniMap(minimap_size_fraction,location,node_hovering_callback,node_hovering_callback_data)
+    location = location or 2
+    minimap_size_fraction = minimap_size_fraction or 0.2
+    node_hovering_callback = node_hovering_callback or nil
+    node_hovering_callback_data = node_hovering_callback_data or nil
+    return lib.imnodes_MiniMap(minimap_size_fraction,location,node_hovering_callback,node_hovering_callback_data)
+end
 M.imnodes_NumSelectedLinks = lib.imnodes_NumSelectedLinks
 M.imnodes_NumSelectedNodes = lib.imnodes_NumSelectedNodes
 M.imnodes_PopAttributeFlag = lib.imnodes_PopAttributeFlag
@@ -7226,6 +7249,8 @@ function M.imnodes_SaveEditorStateToIniString(editor,data_size)
     data_size = data_size or nil
     return lib.imnodes_SaveEditorStateToIniString(editor,data_size)
 end
+M.imnodes_SelectLink = lib.imnodes_SelectLink
+M.imnodes_SelectNode = lib.imnodes_SelectNode
 M.imnodes_SetCurrentContext = lib.imnodes_SetCurrentContext
 M.imnodes_SetImGuiContext = lib.imnodes_SetImGuiContext
 M.imnodes_SetNodeDraggable = lib.imnodes_SetNodeDraggable
