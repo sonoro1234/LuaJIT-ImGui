@@ -131,7 +131,7 @@ local function show_editor(editor)
     for _, link in pairs(editor.links) do
         ig.imnodes_Link(link.id, link.start_attr[0], link.end_attr[0]);
     end
-
+    ig.imnodes_MiniMap()
     ig.imnodes_EndNodeEditor();
 
     --[[
@@ -301,6 +301,7 @@ ig.imnodes_PushAttributeFlag(ig.lib.ImNodesAttributeFlags_EnableLinkDetachWithDr
 local iog = ig.imnodes_GetIO();
 local KeyCtrlPtr = ffi.cast("bool*", ffi.cast("char*",ig.GetIO()) + ffi.offsetof("ImGuiIO","KeyCtrl"))
 iog.LinkDetachWithModifierClick.Modifier = KeyCtrlPtr --ig.lib.getIOKeyCtrlPtr();
+iog.EmulateThreeButtonMouse.Modifier = KeyCtrlPtr
 
 function win:draw(ig)
     editor1:draw()
