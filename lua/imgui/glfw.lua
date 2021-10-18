@@ -1212,6 +1212,14 @@ function ImGuiSettingsHandler.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiSettingsHandler_destroy)
 end
 M.ImGuiSettingsHandler = ffi.metatype("ImGuiSettingsHandler",ImGuiSettingsHandler)
+--------------------------ImGuiStackLevelInfo----------------------------
+local ImGuiStackLevelInfo= {}
+ImGuiStackLevelInfo.__index = ImGuiStackLevelInfo
+function ImGuiStackLevelInfo.__new(ctype)
+    local ptr = lib.ImGuiStackLevelInfo_ImGuiStackLevelInfo()
+    return ffi.gc(ptr,lib.ImGuiStackLevelInfo_destroy)
+end
+M.ImGuiStackLevelInfo = ffi.metatype("ImGuiStackLevelInfo",ImGuiStackLevelInfo)
 --------------------------ImGuiStackSizes----------------------------
 local ImGuiStackSizes= {}
 ImGuiStackSizes.__index = ImGuiStackSizes
@@ -1222,6 +1230,14 @@ function ImGuiStackSizes.__new(ctype)
 end
 ImGuiStackSizes.SetToCurrentState = lib.ImGuiStackSizes_SetToCurrentState
 M.ImGuiStackSizes = ffi.metatype("ImGuiStackSizes",ImGuiStackSizes)
+--------------------------ImGuiStackTool----------------------------
+local ImGuiStackTool= {}
+ImGuiStackTool.__index = ImGuiStackTool
+function ImGuiStackTool.__new(ctype)
+    local ptr = lib.ImGuiStackTool_ImGuiStackTool()
+    return ffi.gc(ptr,lib.ImGuiStackTool_destroy)
+end
+M.ImGuiStackTool = ffi.metatype("ImGuiStackTool",ImGuiStackTool)
 --------------------------ImGuiStorage----------------------------
 local ImGuiStorage= {}
 ImGuiStorage.__index = ImGuiStorage
@@ -5095,6 +5111,10 @@ function M.BeginMenu(label,enabled)
     return lib.igBeginMenu(label,enabled)
 end
 M.BeginMenuBar = lib.igBeginMenuBar
+function M.BeginMenuEx(label,icon,enabled)
+    if enabled == nil then enabled = true end
+    return lib.igBeginMenuEx(label,icon,enabled)
+end
 function M.BeginPopup(str_id,flags)
     flags = flags or 0
     return lib.igBeginPopup(str_id,flags)
@@ -5214,6 +5234,7 @@ M.ClearIniSettings = lib.igClearIniSettings
 M.CloseButton = lib.igCloseButton
 M.CloseCurrentPopup = lib.igCloseCurrentPopup
 M.ClosePopupToLevel = lib.igClosePopupToLevel
+M.ClosePopupsExceptModals = lib.igClosePopupsExceptModals
 M.ClosePopupsOverWindow = lib.igClosePopupsOverWindow
 M.CollapseButton = lib.igCollapseButton
 function M.CollapsingHeader_TreeNodeFlags(label,flags)
@@ -5304,6 +5325,7 @@ function M.DebugDrawItemRect(col)
     col = col or 4278190335
     return lib.igDebugDrawItemRect(col)
 end
+M.DebugHookIdInfo = lib.igDebugHookIdInfo
 M.DebugNodeColumns = lib.igDebugNodeColumns
 M.DebugNodeDockNode = lib.igDebugNodeDockNode
 M.DebugNodeDrawCmdShowMeshAndBoundingBox = lib.igDebugNodeDrawCmdShowMeshAndBoundingBox
@@ -5497,6 +5519,10 @@ M.EndTooltip = lib.igEndTooltip
 function M.ErrorCheckEndFrameRecover(log_callback,user_data)
     user_data = user_data or nil
     return lib.igErrorCheckEndFrameRecover(log_callback,user_data)
+end
+function M.ErrorCheckEndWindowRecover(log_callback,user_data)
+    user_data = user_data or nil
+    return lib.igErrorCheckEndWindowRecover(log_callback,user_data)
 end
 function M.FindBestWindowPosForPopup(window)
     local nonUDT_out = ffi.new("ImVec2")
@@ -5719,7 +5745,6 @@ function M.GetWindowContentRegionMin()
     lib.igGetWindowContentRegionMin(nonUDT_out)
     return nonUDT_out
 end
-M.GetWindowContentRegionWidth = lib.igGetWindowContentRegionWidth
 M.GetWindowDockID = lib.igGetWindowDockID
 M.GetWindowDockNode = lib.igGetWindowDockNode
 M.GetWindowDpiScale = lib.igGetWindowDpiScale
@@ -6170,13 +6195,13 @@ function M.IsWindowHovered(flags)
     return lib.igIsWindowHovered(flags)
 end
 M.IsWindowNavFocusable = lib.igIsWindowNavFocusable
-function M.ItemAdd(bb,id,nav_bb,flags)
-    flags = flags or 0
+function M.ItemAdd(bb,id,nav_bb,extra_flags)
+    extra_flags = extra_flags or 0
     nav_bb = nav_bb or nil
-    return lib.igItemAdd(bb,id,nav_bb,flags)
+    return lib.igItemAdd(bb,id,nav_bb,extra_flags)
 end
-M.ItemFocusable = lib.igItemFocusable
 M.ItemHoverable = lib.igItemHoverable
+M.ItemInputable = lib.igItemInputable
 function M.ItemSize_Vec2(size,text_baseline_y)
     text_baseline_y = text_baseline_y or -1.0
     return lib.igItemSize_Vec2(size,text_baseline_y)
@@ -6273,10 +6298,14 @@ function M.MenuItemEx(label,icon,shortcut,selected,enabled)
     shortcut = shortcut or nil
     return lib.igMenuItemEx(label,icon,shortcut,selected,enabled)
 end
+M.NavInitRequestApplyResult = lib.igNavInitRequestApplyResult
 M.NavInitWindow = lib.igNavInitWindow
+M.NavMoveRequestApplyResult = lib.igNavMoveRequestApplyResult
 M.NavMoveRequestButNoResultYet = lib.igNavMoveRequestButNoResultYet
 M.NavMoveRequestCancel = lib.igNavMoveRequestCancel
 M.NavMoveRequestForward = lib.igNavMoveRequestForward
+M.NavMoveRequestResolveWithLastItem = lib.igNavMoveRequestResolveWithLastItem
+M.NavMoveRequestSubmit = lib.igNavMoveRequestSubmit
 M.NavMoveRequestTryWrapping = lib.igNavMoveRequestTryWrapping
 M.NewFrame = lib.igNewFrame
 M.NewLine = lib.igNewLine
@@ -6493,9 +6522,19 @@ function M.SaveIniSettingsToMemory(out_ini_size)
     return lib.igSaveIniSettingsToMemory(out_ini_size)
 end
 M.ScaleWindowsInViewport = lib.igScaleWindowsInViewport
-function M.ScrollToBringRectIntoView(window,item_rect)
+M.ScrollToBringRectIntoView = lib.igScrollToBringRectIntoView
+function M.ScrollToItem(flags)
+    flags = flags or 0
+    return lib.igScrollToItem(flags)
+end
+function M.ScrollToRect(window,rect,flags)
+    flags = flags or 0
+    return lib.igScrollToRect(window,rect,flags)
+end
+function M.ScrollToRectEx(window,rect,flags)
+    flags = flags or 0
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igScrollToBringRectIntoView(nonUDT_out,window,item_rect)
+    lib.igScrollToRectEx(nonUDT_out,window,rect,flags)
     return nonUDT_out
 end
 M.Scrollbar = lib.igScrollbar
@@ -6719,6 +6758,10 @@ M.ShowFontSelector = lib.igShowFontSelector
 function M.ShowMetricsWindow(p_open)
     p_open = p_open or nil
     return lib.igShowMetricsWindow(p_open)
+end
+function M.ShowStackToolWindow(p_open)
+    p_open = p_open or nil
+    return lib.igShowStackToolWindow(p_open)
 end
 function M.ShowStyleEditor(ref)
     ref = ref or nil
