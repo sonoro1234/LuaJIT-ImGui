@@ -187,6 +187,7 @@ function win:draw(ig)
 						end
 					end
 				end
+				clipper:End()
 				ig.PopClipRect()
 			end
 			ig.EndChild()
