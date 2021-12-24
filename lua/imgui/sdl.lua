@@ -1074,12 +1074,28 @@ function ImGuiListClipper:Begin(items_count,items_height)
     return lib.ImGuiListClipper_Begin(self,items_count,items_height)
 end
 ImGuiListClipper.End = lib.ImGuiListClipper_End
+ImGuiListClipper.ForceDisplayRangeByIndices = lib.ImGuiListClipper_ForceDisplayRangeByIndices
 function ImGuiListClipper.__new(ctype)
     local ptr = lib.ImGuiListClipper_ImGuiListClipper()
     return ffi.gc(ptr,lib.ImGuiListClipper_destroy)
 end
 ImGuiListClipper.Step = lib.ImGuiListClipper_Step
 M.ImGuiListClipper = ffi.metatype("ImGuiListClipper",ImGuiListClipper)
+--------------------------ImGuiListClipperData----------------------------
+local ImGuiListClipperData= {}
+ImGuiListClipperData.__index = ImGuiListClipperData
+function ImGuiListClipperData.__new(ctype)
+    local ptr = lib.ImGuiListClipperData_ImGuiListClipperData()
+    return ffi.gc(ptr,lib.ImGuiListClipperData_destroy)
+end
+ImGuiListClipperData.Reset = lib.ImGuiListClipperData_Reset
+M.ImGuiListClipperData = ffi.metatype("ImGuiListClipperData",ImGuiListClipperData)
+--------------------------ImGuiListClipperRange----------------------------
+local ImGuiListClipperRange= {}
+ImGuiListClipperRange.__index = ImGuiListClipperRange
+M.ImGuiListClipperRange_FromIndices = lib.ImGuiListClipperRange_FromIndices
+M.ImGuiListClipperRange_FromPositions = lib.ImGuiListClipperRange_FromPositions
+M.ImGuiListClipperRange = ffi.metatype("ImGuiListClipperRange",ImGuiListClipperRange)
 --------------------------ImGuiMenuColumns----------------------------
 local ImGuiMenuColumns= {}
 ImGuiMenuColumns.__index = ImGuiMenuColumns
@@ -5166,6 +5182,7 @@ M.BeginTooltip = lib.igBeginTooltip
 M.BeginTooltipEx = lib.igBeginTooltipEx
 M.BeginViewportSideBar = lib.igBeginViewportSideBar
 M.BringWindowToDisplayBack = lib.igBringWindowToDisplayBack
+M.BringWindowToDisplayBehind = lib.igBringWindowToDisplayBehind
 M.BringWindowToDisplayFront = lib.igBringWindowToDisplayFront
 M.BringWindowToFocusFront = lib.igBringWindowToFocusFront
 M.Bullet = lib.igBullet
@@ -5190,7 +5207,7 @@ function M.CalcItemSize(size,default_w,default_h)
     return nonUDT_out
 end
 M.CalcItemWidth = lib.igCalcItemWidth
-M.CalcListClipping = lib.igCalcListClipping
+M.CalcRoundingFlagsForRectInRect = lib.igCalcRoundingFlagsForRectInRect
 function M.CalcTextSize(text,text_end,hide_text_after_double_hash,wrap_width)
     hide_text_after_double_hash = hide_text_after_double_hash or false
     text_end = text_end or nil
@@ -5339,6 +5356,7 @@ M.DebugNodeViewport = lib.igDebugNodeViewport
 M.DebugNodeWindow = lib.igDebugNodeWindow
 M.DebugNodeWindowSettings = lib.igDebugNodeWindowSettings
 M.DebugNodeWindowsList = lib.igDebugNodeWindowsList
+M.DebugNodeWindowsListByBeginStackParent = lib.igDebugNodeWindowsListByBeginStackParent
 M.DebugRenderViewportThumbnail = lib.igDebugRenderViewportThumbnail
 M.DebugStartItemPicker = lib.igDebugStartItemPicker
 function M.DestroyContext(ctx)
@@ -5370,6 +5388,7 @@ M.DockBuilderSetNodeSize = lib.igDockBuilderSetNodeSize
 M.DockBuilderSplitNode = lib.igDockBuilderSplitNode
 M.DockContextCalcDropPosForDocking = lib.igDockContextCalcDropPosForDocking
 M.DockContextClearNodes = lib.igDockContextClearNodes
+M.DockContextEndFrame = lib.igDockContextEndFrame
 M.DockContextGenNodeID = lib.igDockContextGenNodeID
 M.DockContextInitialize = lib.igDockContextInitialize
 M.DockContextNewFrameUpdateDocking = lib.igDockContextNewFrameUpdateDocking
@@ -5384,6 +5403,7 @@ M.DockNodeEndAmendTabBar = lib.igDockNodeEndAmendTabBar
 M.DockNodeGetDepth = lib.igDockNodeGetDepth
 M.DockNodeGetRootNode = lib.igDockNodeGetRootNode
 M.DockNodeGetWindowMenuButtonId = lib.igDockNodeGetWindowMenuButtonId
+M.DockNodeIsInHierarchyOf = lib.igDockNodeIsInHierarchyOf
 function M.DockSpace(id,size,flags,window_class)
     flags = flags or 0
     size = size or ImVec2(0,0)
@@ -5534,6 +5554,7 @@ function M.FindBestWindowPosForPopupEx(ref_pos,size,last_dir,r_outer,r_avoid,pol
     lib.igFindBestWindowPosForPopupEx(nonUDT_out,ref_pos,size,last_dir,r_outer,r_avoid,policy)
     return nonUDT_out
 end
+M.FindBottomMostVisibleWindowWithinBeginStack = lib.igFindBottomMostVisibleWindowWithinBeginStack
 M.FindOrCreateColumns = lib.igFindOrCreateColumns
 M.FindOrCreateWindowSettings = lib.igFindOrCreateWindowSettings
 function M.FindRenderedTextEnd(text,text_end)
@@ -5545,6 +5566,7 @@ M.FindViewportByID = lib.igFindViewportByID
 M.FindViewportByPlatformHandle = lib.igFindViewportByPlatformHandle
 M.FindWindowByID = lib.igFindWindowByID
 M.FindWindowByName = lib.igFindWindowByName
+M.FindWindowDisplayIndex = lib.igFindWindowDisplayIndex
 M.FindWindowSettings = lib.igFindWindowSettings
 M.FocusTopMostWindowUnderOne = lib.igFocusTopMostWindowUnderOne
 M.FocusWindow = lib.igFocusWindow
@@ -5687,6 +5709,7 @@ M.GetKeyIndex = lib.igGetKeyIndex
 M.GetKeyPressedAmount = lib.igGetKeyPressedAmount
 M.GetMainViewport = lib.igGetMainViewport
 M.GetMergedKeyModFlags = lib.igGetMergedKeyModFlags
+M.GetMouseClickedCount = lib.igGetMouseClickedCount
 M.GetMouseCursor = lib.igGetMouseCursor
 function M.GetMouseDragDelta(button,lock_threshold)
     button = button or 0
@@ -5730,6 +5753,7 @@ M.GetStyleColorVec4 = lib.igGetStyleColorVec4
 M.GetTextLineHeight = lib.igGetTextLineHeight
 M.GetTextLineHeightWithSpacing = lib.igGetTextLineHeightWithSpacing
 M.GetTime = lib.igGetTime
+M.GetTopMostAndVisiblePopupModal = lib.igGetTopMostAndVisiblePopupModal
 M.GetTopMostPopupModal = lib.igGetTopMostPopupModal
 M.GetTreeNodeToLabelSpacing = lib.igGetTreeNodeToLabelSpacing
 M.GetVersion = lib.igGetVersion
@@ -5858,6 +5882,7 @@ function M.ImHashStr(data,data_size,seed)
     return lib.igImHashStr(data,data_size,seed)
 end
 M.ImInvLength = lib.igImInvLength
+M.ImIsFloatAboveGuaranteedIntegerPrecision = lib.igImIsFloatAboveGuaranteedIntegerPrecision
 M.ImIsPowerOfTwo_Int = lib.igImIsPowerOfTwo_Int
 M.ImIsPowerOfTwo_U64 = lib.igImIsPowerOfTwo_U64
 function M.ImIsPowerOfTwo(a1) -- generic version
@@ -5938,6 +5963,7 @@ function M.ImPow(a1,a2) -- generic version
     print(a1,a2)
     error'M.ImPow could not find overloaded'
 end
+M.ImQsort = lib.igImQsort
 function M.ImRotate(v,cos_a,sin_a)
     local nonUDT_out = ffi.new("ImVec2")
     lib.igImRotate(nonUDT_out,v,cos_a,sin_a)
@@ -6195,13 +6221,13 @@ function M.IsWindowHovered(flags)
     return lib.igIsWindowHovered(flags)
 end
 M.IsWindowNavFocusable = lib.igIsWindowNavFocusable
+M.IsWindowWithinBeginStackOf = lib.igIsWindowWithinBeginStackOf
 function M.ItemAdd(bb,id,nav_bb,extra_flags)
     extra_flags = extra_flags or 0
     nav_bb = nav_bb or nil
     return lib.igItemAdd(bb,id,nav_bb,extra_flags)
 end
 M.ItemHoverable = lib.igItemHoverable
-M.ItemInputable = lib.igItemInputable
 function M.ItemSize_Vec2(size,text_baseline_y)
     text_baseline_y = text_baseline_y or -1.0
     return lib.igItemSize_Vec2(size,text_baseline_y)
@@ -6831,10 +6857,11 @@ function M.SliderScalarN(label,data_type,p_data,components,p_min,p_max,format,fl
 end
 M.SmallButton = lib.igSmallButton
 M.Spacing = lib.igSpacing
-function M.SplitterBehavior(bb,id,axis,size1,size2,min_size1,min_size2,hover_extend,hover_visibility_delay)
+function M.SplitterBehavior(bb,id,axis,size1,size2,min_size1,min_size2,hover_extend,hover_visibility_delay,bg_col)
+    bg_col = bg_col or 0
     hover_extend = hover_extend or 0.0
     hover_visibility_delay = hover_visibility_delay or 0.0
-    return lib.igSplitterBehavior(bb,id,axis,size1,size2,min_size1,min_size2,hover_extend,hover_visibility_delay)
+    return lib.igSplitterBehavior(bb,id,axis,size1,size2,min_size1,min_size2,hover_extend,hover_visibility_delay,bg_col)
 end
 M.StartMouseMovingWindow = lib.igStartMouseMovingWindow
 M.StartMouseMovingWindowOrNode = lib.igStartMouseMovingWindowOrNode
@@ -7091,6 +7118,16 @@ function M.Value(a1,a2,a3) -- generic version
     if (ffi.istype('float',a2) or type(a2)=='number') then return M.Value_Float(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.Value could not find overloaded'
+end
+function M.WindowRectAbsToRel(window,r)
+    local nonUDT_out = ffi.new("ImRect")
+    lib.igWindowRectAbsToRel(nonUDT_out,window,r)
+    return nonUDT_out
+end
+function M.WindowRectRelToAbs(window,r)
+    local nonUDT_out = ffi.new("ImRect")
+    lib.igWindowRectRelToAbs(nonUDT_out,window,r)
+    return nonUDT_out
 end
 function M.gizmo3D_quatPtrFloat(noname1,noname2,noname3,noname4)
     noname4 = noname4 or 257

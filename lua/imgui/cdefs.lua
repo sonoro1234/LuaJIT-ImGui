@@ -36,6 +36,8 @@ typedef struct ImGuiStackTool ImGuiStackTool;
 typedef struct ImGuiStackLevelInfo ImGuiStackLevelInfo;
 typedef struct ImGuiViewportP ImGuiViewportP;
 typedef struct ImGuiWindowDockStyle ImGuiWindowDockStyle;
+typedef struct ImGuiListClipperData ImGuiListClipperData;
+typedef struct ImGuiListClipperRange ImGuiListClipperRange;
 typedef struct ImGuiPtrOrIndex ImGuiPtrOrIndex;
 typedef struct ImGuiShrinkWidthItem ImGuiShrinkWidthItem;
 typedef struct ImGuiWindowStackData ImGuiWindowStackData;
@@ -286,6 +288,8 @@ typedef struct ImVector_ImGuiDockRequest {int Size;int Capacity;ImGuiDockRequest
 typedef struct ImVector_ImGuiGroupData {int Size;int Capacity;ImGuiGroupData* Data;} ImVector_ImGuiGroupData;
 typedef struct ImVector_ImGuiID {int Size;int Capacity;ImGuiID* Data;} ImVector_ImGuiID;
 typedef struct ImVector_ImGuiItemFlags {int Size;int Capacity;ImGuiItemFlags* Data;} ImVector_ImGuiItemFlags;
+typedef struct ImVector_ImGuiListClipperData {int Size;int Capacity;ImGuiListClipperData* Data;} ImVector_ImGuiListClipperData;
+typedef struct ImVector_ImGuiListClipperRange {int Size;int Capacity;ImGuiListClipperRange* Data;} ImVector_ImGuiListClipperRange;
 typedef struct ImVector_ImGuiOldColumnData {int Size;int Capacity;ImGuiOldColumnData* Data;} ImVector_ImGuiOldColumnData;
 typedef struct ImVector_ImGuiOldColumns {int Size;int Capacity;ImGuiOldColumns* Data;} ImVector_ImGuiOldColumns;
 typedef struct ImVector_ImGuiPlatformMonitor {int Size;int Capacity;ImGuiPlatformMonitor* Data;} ImVector_ImGuiPlatformMonitor;
@@ -961,10 +965,11 @@ struct ImGuiIO
     double MouseClickedTime[5];
        _Bool         MouseClicked[5];
        _Bool         MouseDoubleClicked[5];
+    ImU16 MouseClickedCount[5];
+    ImU16 MouseClickedLastCount[5];
        _Bool         MouseReleased[5];
        _Bool         MouseDownOwned[5];
        _Bool         MouseDownOwnedUnlessPopupClose[5];
-       _Bool         MouseDownWasDoubleClick[5];
     float MouseDownDuration[5];
     float MouseDownDurationPrev[5];
     ImVec2 MouseDragMaxDistanceAbs[5];
@@ -1072,10 +1077,9 @@ struct ImGuiListClipper
     int DisplayStart;
     int DisplayEnd;
     int ItemsCount;
-    int StepNo;
-    int ItemsFrozen;
     float ItemsHeight;
     float StartPosY;
+    void* TempData;
 };
 struct ImColor
 {
@@ -1602,8 +1606,6 @@ struct ImGuiInputTextState
        _Bool         SelectedAllMouseLock;
        _Bool         Edited;
     ImGuiInputTextFlags Flags;
-    ImGuiInputTextCallback UserCallback;
-    void* UserCallbackData;
 };
 struct ImGuiPopupData
 {
@@ -1702,6 +1704,22 @@ struct ImGuiPtrOrIndex
     void* Ptr;
     int Index;
 };
+struct ImGuiListClipperRange
+{
+    int Min;
+    int Max;
+       _Bool         PosToIndexConvert;
+    ImS8 PosToIndexOffsetMin;
+    ImS8 PosToIndexOffsetMax;
+};
+struct ImGuiListClipperData
+{
+    ImGuiListClipper* ListClipper;
+    float LossynessOffset;
+    int StepNo;
+    int ItemsFrozen;
+    ImVector_ImGuiListClipperRange Ranges;
+};
 typedef enum {
     ImGuiActivateFlags_None = 0,
     ImGuiActivateFlags_PreferInput = 1 << 0,
@@ -1729,9 +1747,10 @@ typedef enum {
 }ImGuiNavHighlightFlags_;
 typedef enum {
     ImGuiNavDirSourceFlags_None = 0,
-    ImGuiNavDirSourceFlags_Keyboard = 1 << 0,
-    ImGuiNavDirSourceFlags_PadDPad = 1 << 1,
-    ImGuiNavDirSourceFlags_PadLStick = 1 << 2
+    ImGuiNavDirSourceFlags_RawKeyboard = 1 << 0,
+    ImGuiNavDirSourceFlags_Keyboard = 1 << 1,
+    ImGuiNavDirSourceFlags_PadDPad = 1 << 2,
+    ImGuiNavDirSourceFlags_PadLStick = 1 << 3
 }ImGuiNavDirSourceFlags_;
 typedef enum {
     ImGuiNavMoveFlags_None = 0,
@@ -1744,9 +1763,10 @@ typedef enum {
     ImGuiNavMoveFlags_ScrollToEdgeY = 1 << 6,
     ImGuiNavMoveFlags_Forwarded = 1 << 7,
     ImGuiNavMoveFlags_DebugNoResult = 1 << 8,
-    ImGuiNavMoveFlags_Tabbing = 1 << 9,
-    ImGuiNavMoveFlags_Activate = 1 << 10,
-    ImGuiNavMoveFlags_DontSetNavHighlight = 1 << 11
+    ImGuiNavMoveFlags_FocusApi = 1 << 9,
+    ImGuiNavMoveFlags_Tabbing = 1 << 10,
+    ImGuiNavMoveFlags_Activate = 1 << 11,
+    ImGuiNavMoveFlags_DontSetNavHighlight = 1 << 12
 }ImGuiNavMoveFlags_;
 typedef enum {
     ImGuiNavLayer_Main = 0,
@@ -1846,6 +1866,7 @@ struct ImGuiDockNode
     ImVec2 SizeRef;
     ImGuiAxis SplitAxis;
     ImGuiWindowClass WindowClass;
+    ImU32 LastBgColor;
     ImGuiWindow* HostWindow;
     ImGuiWindow* VisibleWindow;
     ImGuiDockNode* CentralNode;
@@ -1862,6 +1883,7 @@ struct ImGuiDockNode
     ImGuiDataAuthority AuthorityForViewport :3;
        _Bool         IsVisible :1;
        _Bool         IsFocused :1;
+       _Bool         IsBgDrawnThisFrame :1;
        _Bool         HasCloseButton :1;
        _Bool         HasWindowMenuButton :1;
        _Bool         HasCentralNodeChild :1;
@@ -1870,7 +1892,6 @@ struct ImGuiDockNode
        _Bool         WantMouseMove :1;
        _Bool         WantHiddenTabBarUpdate :1;
        _Bool         WantHiddenTabBarToggle :1;
-       _Bool         MarkedForPosSizeWrite :1;
 };
 typedef enum {
     ImGuiWindowDockStyleCol_Text,
@@ -2060,6 +2081,7 @@ struct ImGuiContext
     ImVector_ImGuiGroupData GroupStack;
     ImVector_ImGuiPopupData OpenPopupStack;
     ImVector_ImGuiPopupData BeginPopupStack;
+    int BeginMenuCount;
     ImVector_ImGuiViewportPPtr Viewports;
     float CurrentDpiScale;
     ImGuiViewportP* CurrentViewport;
@@ -2076,7 +2098,6 @@ struct ImGuiContext
     ImGuiID NavActivatePressedId;
     ImGuiID NavActivateInputId;
     ImGuiActivateFlags NavActivateFlags;
-    ImGuiID NavJustTabbedId;
     ImGuiID NavJustMovedToId;
     ImGuiID NavJustMovedToFocusScopeId;
     ImGuiKeyModFlags NavJustMovedToKeyMods;
@@ -2084,7 +2105,6 @@ struct ImGuiContext
     ImGuiActivateFlags NavNextActivateFlags;
     ImGuiInputSource NavInputSource;
     ImGuiNavLayer NavLayer;
-    int NavIdTabCounter;
        _Bool         NavIdIsAlive;
        _Bool         NavMousePosDirty;
        _Bool         NavDisableHighlight;
@@ -2104,22 +2124,20 @@ struct ImGuiContext
     ImGuiDir NavMoveDirForDebug;
     ImGuiDir NavMoveClipDir;
     ImRect NavScoringRect;
+    ImRect NavScoringNoClipRect;
     int NavScoringDebugCount;
-    int NavTabbingInputableRemaining;
+    int NavTabbingDir;
+    int NavTabbingCounter;
     ImGuiNavItemData NavMoveResultLocal;
     ImGuiNavItemData NavMoveResultLocalVisible;
     ImGuiNavItemData NavMoveResultOther;
+    ImGuiNavItemData NavTabbingResultFirst;
     ImGuiWindow* NavWindowingTarget;
     ImGuiWindow* NavWindowingTargetAnim;
     ImGuiWindow* NavWindowingListWindow;
     float NavWindowingTimer;
     float NavWindowingHighlightAlpha;
        _Bool         NavWindowingToggleLayer;
-    ImGuiWindow* TabFocusRequestCurrWindow;
-    ImGuiWindow* TabFocusRequestNextWindow;
-    int TabFocusRequestCurrCounterTabStop;
-    int TabFocusRequestNextCounterTabStop;
-       _Bool         TabFocusPressed;
     float DimBgRatio;
     ImGuiMouseCursor MouseCursor;
        _Bool         DragDropActive;
@@ -2139,10 +2157,12 @@ struct ImGuiContext
     ImGuiID DragDropHoldJustPressedId;
     ImVector_unsigned_char DragDropPayloadBufHeap;
     unsigned char DragDropPayloadBufLocal[16];
+    int ClipperTempDataStacked;
+    ImVector_ImGuiListClipperData ClipperTempData;
     ImGuiTable* CurrentTable;
-    int CurrentTableStackIdx;
+    int TablesTempDataStacked;
+    ImVector_ImGuiTableTempData TablesTempData;
     ImPool_ImGuiTable Tables;
-    ImVector_ImGuiTableTempData TablesTempDataStack;
     ImVector_float TablesLastTimeActive;
     ImVector_ImDrawChannel DrawChannelsTempMergeBuffer;
     ImGuiTabBar* CurrentTabBar;
@@ -2222,6 +2242,7 @@ struct ImGuiWindowTempData
     ImVec1 Indent;
     ImVec1 ColumnsOffset;
     ImVec1 GroupOffset;
+    ImVec2 CursorStartPosLossyness;
     ImGuiNavLayer NavLayerCurrent;
     short NavLayersActiveMask;
     short NavLayersActiveMaskNext;
@@ -2239,7 +2260,6 @@ struct ImGuiWindowTempData
     int CurrentTableIdx;
     ImGuiLayoutType LayoutType;
     ImGuiLayoutType ParentLayoutType;
-    int FocusCounterTabStop;
     float ItemWidth;
     float TextWrapPos;
     ImVector_float ItemWidthStack;
@@ -2284,6 +2304,7 @@ struct ImGuiWindow
        _Bool         Appearing;
        _Bool         Hidden;
        _Bool         IsFallbackWindow;
+       _Bool         IsExplicitChild;
        _Bool         HasCloseButton;
     signed char ResizeBorderHeld;
     short BeginCount;
@@ -2328,6 +2349,7 @@ struct ImGuiWindow
     ImDrawList* DrawList;
     ImDrawList DrawListInst;
     ImGuiWindow* ParentWindow;
+    ImGuiWindow* ParentWindowInBeginStack;
     ImGuiWindow* RootWindow;
     ImGuiWindow* RootWindowPopupTree;
     ImGuiWindow* RootWindowDockTree;
@@ -2954,7 +2976,6 @@ ImDrawListSharedData* igGetDrawListSharedData(void);
 const char* igGetStyleColorName(ImGuiCol idx);
 void igSetStateStorage(ImGuiStorage* storage);
 ImGuiStorage* igGetStateStorage(void);
-void igCalcListClipping(int items_count,float items_height,int* out_items_display_start,int* out_items_display_end);
 _Bool                igBeginChildFrame(ImGuiID id,const ImVec2 size,ImGuiWindowFlags flags);
 void igEndChildFrame(void);
 void igCalcTextSize(ImVec2 *pOut,const char* text,const char* text_end,                                                                                 _Bool                                                                                       hide_text_after_double_hash,float wrap_width);
@@ -2972,6 +2993,7 @@ _Bool                igIsMouseDown(ImGuiMouseButton button);
 _Bool                igIsMouseClicked(ImGuiMouseButton button,                                                        _Bool                                                              repeat);
 _Bool                igIsMouseReleased(ImGuiMouseButton button);
 _Bool                igIsMouseDoubleClicked(ImGuiMouseButton button);
+int igGetMouseClickedCount(ImGuiMouseButton button);
 _Bool                igIsMouseHoveringRect(const ImVec2 r_min,const ImVec2 r_max,                                                                           _Bool                                                                                 clip);
 _Bool                igIsMousePosValid(const ImVec2* mouse_pos);
 _Bool                igIsAnyMouseDown(void);
@@ -3079,6 +3101,7 @@ void ImGuiListClipper_destroy(ImGuiListClipper* self);
 void ImGuiListClipper_Begin(ImGuiListClipper* self,int items_count,float items_height);
 void ImGuiListClipper_End(ImGuiListClipper* self);
 _Bool                ImGuiListClipper_Step(ImGuiListClipper* self);
+void ImGuiListClipper_ForceDisplayRangeByIndices(ImGuiListClipper* self,int item_min,int item_max);
 ImColor* ImColor_ImColor_Nil(void);
 void ImColor_destroy(ImColor* self);
 ImColor* ImColor_ImColor_Int(int r,int g,int b,int a);
@@ -3238,6 +3261,7 @@ ImGuiPlatformMonitor* ImGuiPlatformMonitor_ImGuiPlatformMonitor(void);
 void ImGuiPlatformMonitor_destroy(ImGuiPlatformMonitor* self);
 ImGuiID igImHashData(const void* data,size_t data_size,ImU32 seed);
 ImGuiID igImHashStr(const char* data,size_t data_size,ImU32 seed);
+void igImQsort(void* base,size_t count,size_t size_of_element,int(*compare_func)(void const*,void const*));
 ImU32 igImAlphaBlendColors(ImU32 col_a,ImU32 col_b);
 _Bool                igImIsPowerOfTwo_Int(int v);
 _Bool                igImIsPowerOfTwo_U64(ImU64 v);
@@ -3304,6 +3328,7 @@ float igImDot(const ImVec2 a,const ImVec2 b);
 void igImRotate(ImVec2 *pOut,const ImVec2 v,float cos_a,float sin_a);
 float igImLinearSweep(float current,float target,float speed);
 void igImMul(ImVec2 *pOut,const ImVec2 lhs,const ImVec2 rhs);
+_Bool                igImIsFloatAboveGuaranteedIntegerPrecision(float f);
 void igImBezierCubicCalc(ImVec2 *pOut,const ImVec2 p1,const ImVec2 p2,const ImVec2 p3,const ImVec2 p4,float t);
 void igImBezierCubicClosestPoint(ImVec2 *pOut,const ImVec2 p1,const ImVec2 p2,const ImVec2 p3,const ImVec2 p4,const ImVec2 p,int num_segments);
 void igImBezierCubicClosestPointCasteljau(ImVec2 *pOut,const ImVec2 p1,const ImVec2 p2,const ImVec2 p3,const ImVec2 p4,const ImVec2 p,float tess_tol);
@@ -3409,6 +3434,11 @@ void ImGuiStackSizes_CompareWithCurrentState(ImGuiStackSizes* self);
 ImGuiPtrOrIndex* ImGuiPtrOrIndex_ImGuiPtrOrIndex_Ptr(void* ptr);
 void ImGuiPtrOrIndex_destroy(ImGuiPtrOrIndex* self);
 ImGuiPtrOrIndex* ImGuiPtrOrIndex_ImGuiPtrOrIndex_Int(int index);
+ImGuiListClipperRange ImGuiListClipperRange_FromIndices(int min,int max);
+ImGuiListClipperRange ImGuiListClipperRange_FromPositions(float y1,float y2,int off_min,int off_max);
+ImGuiListClipperData* ImGuiListClipperData_ImGuiListClipperData(void);
+void ImGuiListClipperData_destroy(ImGuiListClipperData* self);
+void ImGuiListClipperData_Reset(ImGuiListClipperData* self,ImGuiListClipper* clipper);
 ImGuiNavItemData* ImGuiNavItemData_ImGuiNavItemData(void);
 void ImGuiNavItemData_destroy(ImGuiNavItemData* self);
 void ImGuiNavItemData_Clear(ImGuiNavItemData* self);
@@ -3495,17 +3525,23 @@ ImGuiWindow* igFindWindowByName(const char* name);
 void igUpdateWindowParentAndRootLinks(ImGuiWindow* window,ImGuiWindowFlags flags,ImGuiWindow* parent_window);
 void igCalcWindowNextAutoFitSize(ImVec2 *pOut,ImGuiWindow* window);
 _Bool                igIsWindowChildOf(ImGuiWindow* window,ImGuiWindow* potential_parent,                                                                                   _Bool                                                                                         popup_hierarchy,                                                                                                        _Bool                                                                                                              dock_hierarchy);
+_Bool                igIsWindowWithinBeginStackOf(ImGuiWindow* window,ImGuiWindow* potential_parent);
 _Bool                igIsWindowAbove(ImGuiWindow* potential_above,ImGuiWindow* potential_below);
 _Bool                igIsWindowNavFocusable(ImGuiWindow* window);
 void igSetWindowPos_WindowPtr(ImGuiWindow* window,const ImVec2 pos,ImGuiCond cond);
 void igSetWindowSize_WindowPtr(ImGuiWindow* window,const ImVec2 size,ImGuiCond cond);
 void igSetWindowCollapsed_WindowPtr(ImGuiWindow* window,                                                                  _Bool                                                                        collapsed,ImGuiCond cond);
 void igSetWindowHitTestHole(ImGuiWindow* window,const ImVec2 pos,const ImVec2 size);
+void igWindowRectAbsToRel(ImRect *pOut,ImGuiWindow* window,const ImRect r);
+void igWindowRectRelToAbs(ImRect *pOut,ImGuiWindow* window,const ImRect r);
 void igFocusWindow(ImGuiWindow* window);
 void igFocusTopMostWindowUnderOne(ImGuiWindow* under_this_window,ImGuiWindow* ignore_window);
 void igBringWindowToFocusFront(ImGuiWindow* window);
 void igBringWindowToDisplayFront(ImGuiWindow* window);
 void igBringWindowToDisplayBack(ImGuiWindow* window);
+void igBringWindowToDisplayBehind(ImGuiWindow* window,ImGuiWindow* above_window);
+int igFindWindowDisplayIndex(ImGuiWindow* window);
+ImGuiWindow* igFindBottomMostVisibleWindowWithinBeginStack(ImGuiWindow* window);
 void igSetCurrentFont(ImFont* font);
 ImFont* igGetDefaultFont(void);
 ImDrawList* igGetForegroundDrawList_WindowPtr(ImGuiWindow* window);
@@ -3558,7 +3594,6 @@ void igItemSize_Vec2(const ImVec2 size,float text_baseline_y);
 void igItemSize_Rect(const ImRect bb,float text_baseline_y);
 _Bool                igItemAdd(const ImRect bb,ImGuiID id,const ImRect* nav_bb,ImGuiItemFlags extra_flags);
 _Bool                igItemHoverable(const ImRect bb,ImGuiID id);
-void igItemInputable(ImGuiWindow* window,ImGuiID id);
 _Bool                igIsClippedEx(const ImRect bb,ImGuiID id);
 void igSetLastItemData(ImGuiID item_id,ImGuiItemFlags in_flags,ImGuiItemStatusFlags status_flags,const ImRect item_rect);
 void igCalcItemSize(ImVec2 *pOut,ImVec2 size,float default_w,float default_h);
@@ -3580,9 +3615,10 @@ void igClosePopupsOverWindow(ImGuiWindow* ref_window,                           
 void igClosePopupsExceptModals(void);
 _Bool                igIsPopupOpen_ID(ImGuiID id,ImGuiPopupFlags popup_flags);
 _Bool                igBeginPopupEx(ImGuiID id,ImGuiWindowFlags extra_flags);
-void igBeginTooltipEx(ImGuiWindowFlags extra_flags,ImGuiTooltipFlags tooltip_flags);
+void igBeginTooltipEx(ImGuiTooltipFlags tooltip_flags,ImGuiWindowFlags extra_window_flags);
 void igGetPopupAllowedExtentRect(ImRect *pOut,ImGuiWindow* window);
 ImGuiWindow* igGetTopMostPopupModal(void);
+ImGuiWindow* igGetTopMostAndVisiblePopupModal(void);
 void igFindBestWindowPosForPopup(ImVec2 *pOut,ImGuiWindow* window);
 void igFindBestWindowPosForPopupEx(ImVec2 *pOut,const ImVec2 ref_pos,const ImVec2 size,ImGuiDir* last_dir,const ImRect r_outer,const ImRect r_avoid,ImGuiPopupPositionPolicy policy);
 _Bool                igBeginViewportSideBar(const char* name,ImGuiViewport* viewport,ImGuiDir dir,float size,ImGuiWindowFlags window_flags);
@@ -3596,7 +3632,7 @@ void igNavInitRequestApplyResult(void);
 _Bool                igNavMoveRequestButNoResultYet(void);
 void igNavMoveRequestSubmit(ImGuiDir move_dir,ImGuiDir clip_dir,ImGuiNavMoveFlags move_flags,ImGuiScrollFlags scroll_flags);
 void igNavMoveRequestForward(ImGuiDir move_dir,ImGuiDir clip_dir,ImGuiNavMoveFlags move_flags,ImGuiScrollFlags scroll_flags);
-void igNavMoveRequestResolveWithLastItem(void);
+void igNavMoveRequestResolveWithLastItem(ImGuiNavItemData* result);
 void igNavMoveRequestCancel(void);
 void igNavMoveRequestApplyResult(void);
 void igNavMoveRequestTryWrapping(ImGuiWindow* window,ImGuiNavMoveFlags move_flags);
@@ -3625,6 +3661,7 @@ void igDockContextClearNodes(ImGuiContext* ctx,ImGuiID root_id,                 
 void igDockContextRebuildNodes(ImGuiContext* ctx);
 void igDockContextNewFrameUpdateUndocking(ImGuiContext* ctx);
 void igDockContextNewFrameUpdateDocking(ImGuiContext* ctx);
+void igDockContextEndFrame(ImGuiContext* ctx);
 ImGuiID igDockContextGenNodeID(ImGuiContext* ctx);
 void igDockContextQueueDock(ImGuiContext* ctx,ImGuiWindow* target,ImGuiDockNode* target_node,ImGuiWindow* payload,ImGuiDir split_dir,float split_ratio,                                                                                                                                                                 _Bool                                                                                                                                                                       split_outer);
 void igDockContextQueueUndockWindow(ImGuiContext* ctx,ImGuiWindow* window);
@@ -3633,6 +3670,7 @@ _Bool                igDockContextCalcDropPosForDocking(ImGuiWindow* target,ImGu
 _Bool                igDockNodeBeginAmendTabBar(ImGuiDockNode* node);
 void igDockNodeEndAmendTabBar(void);
 ImGuiDockNode* igDockNodeGetRootNode(ImGuiDockNode* node);
+_Bool                igDockNodeIsInHierarchyOf(ImGuiDockNode* node,ImGuiDockNode* parent);
 int igDockNodeGetDepth(const ImGuiDockNode* node);
 ImGuiID igDockNodeGetWindowMenuButtonId(const ImGuiDockNode* node);
 ImGuiDockNode* igGetWindowDockNode(void);
@@ -3744,13 +3782,14 @@ void igRenderArrowPointingAt(ImDrawList* draw_list,ImVec2 pos,ImVec2 half_sz,ImG
 void igRenderArrowDockMenu(ImDrawList* draw_list,ImVec2 p_min,float sz,ImU32 col);
 void igRenderRectFilledRangeH(ImDrawList* draw_list,const ImRect rect,ImU32 col,float x_start_norm,float x_end_norm,float rounding);
 void igRenderRectFilledWithHole(ImDrawList* draw_list,ImRect outer,ImRect inner,ImU32 col,float rounding);
+ImDrawFlags igCalcRoundingFlagsForRectInRect(const ImRect r_in,const ImRect r_outer,float threshold);
 void igTextEx(const char* text,const char* text_end,ImGuiTextFlags flags);
 _Bool                igButtonEx(const char* label,const ImVec2 size_arg,ImGuiButtonFlags flags);
 _Bool                igCloseButton(ImGuiID id,const ImVec2 pos);
 _Bool                igCollapseButton(ImGuiID id,const ImVec2 pos,ImGuiDockNode* dock_node);
 _Bool                igArrowButtonEx(const char* str_id,ImGuiDir dir,ImVec2 size_arg,ImGuiButtonFlags flags);
 void igScrollbar(ImGuiAxis axis);
-_Bool                igScrollbarEx(const ImRect bb,ImGuiID id,ImGuiAxis axis,float* p_scroll_v,float avail_v,float contents_v,ImDrawFlags flags);
+_Bool                igScrollbarEx(const ImRect bb,ImGuiID id,ImGuiAxis axis,ImS64* p_scroll_v,ImS64 avail_v,ImS64 contents_v,ImDrawFlags flags);
 _Bool                igImageButtonEx(ImGuiID id,ImTextureID texture_id,const ImVec2 size,const ImVec2 uv0,const ImVec2 uv1,const ImVec2 padding,const ImVec4 bg_col,const ImVec4 tint_col);
 void igGetWindowScrollbarRect(ImRect *pOut,ImGuiWindow* window,ImGuiAxis axis);
 ImGuiID igGetWindowScrollbarID(ImGuiWindow* window,ImGuiAxis axis);
@@ -3762,7 +3801,7 @@ _Bool                igCheckboxFlags_U64Ptr(const char* label,ImU64* flags,ImU64
 _Bool                igButtonBehavior(const ImRect bb,ImGuiID id,                                                           _Bool                                                               * out_hovered,                                                                             _Bool                                                                                 * out_held,ImGuiButtonFlags flags);
 _Bool                igDragBehavior(ImGuiID id,ImGuiDataType data_type,void* p_v,float v_speed,const void* p_min,const void* p_max,const char* format,ImGuiSliderFlags flags);
 _Bool                igSliderBehavior(const ImRect bb,ImGuiID id,ImGuiDataType data_type,void* p_v,const void* p_min,const void* p_max,const char* format,ImGuiSliderFlags flags,ImRect* out_grab_bb);
-_Bool                igSplitterBehavior(const ImRect bb,ImGuiID id,ImGuiAxis axis,float* size1,float* size2,float min_size1,float min_size2,float hover_extend,float hover_visibility_delay);
+_Bool                igSplitterBehavior(const ImRect bb,ImGuiID id,ImGuiAxis axis,float* size1,float* size2,float min_size1,float min_size2,float hover_extend,float hover_visibility_delay,ImU32 bg_col);
 _Bool                igTreeNodeBehavior(ImGuiID id,ImGuiTreeNodeFlags flags,const char* label,const char* label_end);
 _Bool                igTreeNodeBehaviorIsOpen(ImGuiID id,ImGuiTreeNodeFlags flags);
 void igTreePushOverrideID(ImGuiID id);
@@ -3804,6 +3843,7 @@ void igDebugNodeTableSettings(ImGuiTableSettings* settings);
 void igDebugNodeWindow(ImGuiWindow* window,const char* label);
 void igDebugNodeWindowSettings(ImGuiWindowSettings* settings);
 void igDebugNodeWindowsList(ImVector_ImGuiWindowPtr* windows,const char* label);
+void igDebugNodeWindowsListByBeginStackParent(ImGuiWindow** windows,int windows_size,ImGuiWindow* parent_in_begin_stack);
 void igDebugNodeViewport(ImGuiViewportP* viewport);
 void igDebugRenderViewportThumbnail(ImDrawList* draw_list,ImGuiViewportP* viewport,const ImRect bb);
 const ImFontBuilderIO* igImFontAtlasGetBuilderForStbTruetype(void);
