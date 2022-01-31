@@ -5,7 +5,20 @@
 -----------------------------------------------
 package.path = package.path.."../cimgui/generator/?.lua"
 local cpp2ffi = require"cpp2ffi"
+local ffi = require"ffi"
 --utility functions
+local ffi_cdef = function(code)
+    local ret,err = pcall(ffi.cdef,code)
+    if not ret then
+        local lineN = 1
+        for line in code:gmatch("([^\n\r]*)\r?\n") do
+            print(lineN, line)
+            lineN = lineN + 1
+        end
+        print(err)
+        error"bad cdef"
+    end
+end
 function strsplit(str, pat)
     local t = {} 
     local fpat = "(.-)" .. pat
@@ -262,8 +275,7 @@ local function function_gen(code,def)
 end
 
 local cdefs = dofile("./imgui/cdefs.lua")
-local ffi = require"ffi"
-ffi.cdef(cdefs)
+ffi_cdef(cdefs)
 local function checktype(typ,va)
 	if ffi.typeof(typ)==ffi.typeof"int" or 
 		ffi.typeof(typ)==ffi.typeof"const int" or
