@@ -30,10 +30,10 @@ end)
 function win:draw(ig)
     ig.ImPlot_ShowDemoWindow()
     ig.Begin("Ploters")
-    if (ig.ImPlot_BeginPlot("Line Plot", "x", "f(x)", ig.ImVec2(-1,-1))) then
+    if (ig.ImPlot_BeginPlot("Line Plot", ig.ImVec2(0,0))) then
         ig.ImPlot_PlotLineG("Line Plot",gettercb,nil,1000)
         ig.ImPlot_PlotLineG("Polar Plot",gettercb2,dataplot,1000)
-        ig.ImPlot_AnnotateClamped(0.25,1.1,ig.ImVec2(15,15),ig.ImPlot_GetLastItemColor(),"function %f %s",1,"hello");
+        ig.ImPlot_Annotation(0.25,1.1,ig.ImPlot_GetLastItemColor(),ig.ImVec2(15,15),true,"function %f %s",1,"hello")
         ig.ImPlot_SetNextMarkerStyle(ig.lib.ImPlotMarker_Circle);
         ig.ImPlot_PlotLine("x^2", xs2, ys2, 11);
         ig.ImPlot_EndPlot();
