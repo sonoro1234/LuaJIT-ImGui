@@ -206,6 +206,8 @@ local function show_editor(editor)
 
     ig.imnodes_EditorContextSet(editor.context);
 
+    ig.SetNextWindowSizeConstraints(ig.ImVec2(300, 300), ig.ImVec2(ig.FLT_MAX, ig.FLT_MAX));
+	ig.SetNextWindowPos(ig.ImVec2(0, 150), ig.lib.ImGuiCond_FirstUseEver);
     ig.Begin(editor.name);
 
     ig.TextUnformatted("A -- add node");
@@ -456,6 +458,8 @@ local nodetypes = {
     is_root = true,
     show = function(self,v,i)
         ig.PushStyleColor(ig.lib.ImGuiCol_WindowBg, v);
+		ig.SetNextWindowPos(ig.ImVec2(0, 0), ig.lib.ImGuiCond_FirstUseEver);
+		ig.SetNextWindowSizeConstraints(ig.ImVec2(100, 100), ig.ImVec2(ig.FLT_MAX, ig.FLT_MAX));
         ig.Begin("output color"..i);
         ig.End();
         ig.PopStyleColor();
@@ -472,6 +476,8 @@ local nodetypes = {
         local lisaS = 30
         self.lisamem = self.lisamem or {}
         local lisamem = self.lisamem
+		ig.SetNextWindowSizeConstraints(ig.ImVec2(150, 150), ig.ImVec2(ig.FLT_MAX, ig.FLT_MAX));
+		ig.SetNextWindowPos(ig.ImVec2(100, 0), ig.lib.ImGuiCond_FirstUseEver);
         ig.Begin("output lisa"..i);
         ig.Text("x: %f, y: %f",v[1],v[2])
         local canvas_p0 = ig.GetCursorScreenPos();      -- ImDrawList API uses screen coordinates!

@@ -5430,13 +5430,14 @@ typedef enum {
     ImNodesCol_MiniMapNodeOutline,
     ImNodesCol_MiniMapLink,
     ImNodesCol_MiniMapLinkSelected,
+    ImNodesCol_MiniMapCanvas,
+    ImNodesCol_MiniMapCanvasOutline,
     ImNodesCol_COUNT
 }ImNodesCol_;
 typedef enum {
     ImNodesStyleVar_GridSpacing = 0,
     ImNodesStyleVar_NodeCornerRounding,
-    ImNodesStyleVar_NodePaddingHorizontal,
-    ImNodesStyleVar_NodePaddingVertical,
+    ImNodesStyleVar_NodePadding,
     ImNodesStyleVar_NodeBorderThickness,
     ImNodesStyleVar_LinkThickness,
     ImNodesStyleVar_LinkLineSegmentsPerLength,
@@ -5446,7 +5447,10 @@ typedef enum {
     ImNodesStyleVar_PinTriangleSideLength,
     ImNodesStyleVar_PinLineThickness,
     ImNodesStyleVar_PinHoverRadius,
-    ImNodesStyleVar_PinOffset
+    ImNodesStyleVar_PinOffset,
+    ImNodesStyleVar_MiniMapPadding,
+    ImNodesStyleVar_MiniMapOffset,
+    ImNodesStyleVar_COUNT
 }ImNodesStyleVar_;
 typedef enum {
     ImNodesStyleFlags_None = 0,
@@ -5482,6 +5486,7 @@ struct ImNodesIO
     EmulateThreeButtonMouse EmulateThreeButtonMouse;
     LinkDetachWithModifierClick LinkDetachWithModifierClick;
     int AltMouseButton;
+    float AutoPanningSpeed;
 };
 typedef struct EmulateThreeButtonMouse EmulateThreeButtonMouse;
 typedef struct LinkDetachWithModifierClick LinkDetachWithModifierClick;
@@ -5490,8 +5495,7 @@ struct ImNodesStyle
 {
     float GridSpacing;
     float NodeCornerRounding;
-    float NodePaddingHorizontal;
-    float NodePaddingVertical;
+    ImVec2 NodePadding;
     float NodeBorderThickness;
     float LinkThickness;
     float LinkLineSegmentsPerLength;
@@ -5502,6 +5506,8 @@ struct ImNodesStyle
     float PinLineThickness;
     float PinHoverRadius;
     float PinOffset;
+    ImVec2 MiniMapPadding;
+    ImVec2 MiniMapOffset;
     ImNodesStyleFlags Flags;
     unsigned int Colors[ImNodesCol_COUNT];
 };
@@ -5516,6 +5522,7 @@ struct ImVec2;
 struct ImNodesContext;
 struct ImNodesEditorContext;
 typedef void (*ImNodesMiniMapNodeHoveringCallback)(int, void*);
+typedef void* ImNodesMiniMapNodeHoveringCallbackUserData;
 EmulateThreeButtonMouse* EmulateThreeButtonMouse_EmulateThreeButtonMouse(void);
 void EmulateThreeButtonMouse_destroy(EmulateThreeButtonMouse* self);
 LinkDetachWithModifierClick* LinkDetachWithModifierClick_LinkDetachWithModifierClick(void);
@@ -5542,11 +5549,12 @@ void imnodes_StyleColorsClassic(void);
 void imnodes_StyleColorsLight(void);
 void imnodes_BeginNodeEditor(void);
 void imnodes_EndNodeEditor(void);
-void imnodes_MiniMap(const float minimap_size_fraction,const ImNodesMiniMapLocation location,const ImNodesMiniMapNodeHoveringCallback node_hovering_callback,void* node_hovering_callback_data);
+void imnodes_MiniMap(const float minimap_size_fraction,const ImNodesMiniMapLocation location,const ImNodesMiniMapNodeHoveringCallback node_hovering_callback,const ImNodesMiniMapNodeHoveringCallbackUserData node_hovering_callback_data);
 void imnodes_PushColorStyle(ImNodesCol item,unsigned int color);
 void imnodes_PopColorStyle(void);
-void imnodes_PushStyleVar(ImNodesStyleVar style_item,float value);
-void imnodes_PopStyleVar(void);
+void imnodes_PushStyleVar_Float(ImNodesStyleVar style_item,float value);
+void imnodes_PushStyleVar_Vec2(ImNodesStyleVar style_item,const ImVec2 value);
+void imnodes_PopStyleVar(int count);
 void imnodes_BeginNode(int id);
 void imnodes_EndNode(void);
 void imnodes_GetNodeDimensions(ImVec2 *pOut,int id);

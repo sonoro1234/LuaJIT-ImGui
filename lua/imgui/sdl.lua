@@ -7502,10 +7502,20 @@ M.imnodes_NumSelectedLinks = lib.imnodes_NumSelectedLinks
 M.imnodes_NumSelectedNodes = lib.imnodes_NumSelectedNodes
 M.imnodes_PopAttributeFlag = lib.imnodes_PopAttributeFlag
 M.imnodes_PopColorStyle = lib.imnodes_PopColorStyle
-M.imnodes_PopStyleVar = lib.imnodes_PopStyleVar
+function M.imnodes_PopStyleVar(count)
+    count = count or 1
+    return lib.imnodes_PopStyleVar(count)
+end
 M.imnodes_PushAttributeFlag = lib.imnodes_PushAttributeFlag
 M.imnodes_PushColorStyle = lib.imnodes_PushColorStyle
-M.imnodes_PushStyleVar = lib.imnodes_PushStyleVar
+M.imnodes_PushStyleVar_Float = lib.imnodes_PushStyleVar_Float
+M.imnodes_PushStyleVar_Vec2 = lib.imnodes_PushStyleVar_Vec2
+function M.imnodes_PushStyleVar(a1,a2) -- generic version
+    if (ffi.istype('float',a2) or type(a2)=='number') then return M.imnodes_PushStyleVar_Float(a1,a2) end
+    if ffi.istype('const ImVec2',a2) then return M.imnodes_PushStyleVar_Vec2(a1,a2) end
+    print(a1,a2)
+    error'M.imnodes_PushStyleVar could not find overloaded'
+end
 M.imnodes_SaveCurrentEditorStateToIniFile = lib.imnodes_SaveCurrentEditorStateToIniFile
 function M.imnodes_SaveCurrentEditorStateToIniString(data_size)
     data_size = data_size or nil
