@@ -1004,13 +1004,31 @@ ImGuiIO.AddFocusEvent = lib.ImGuiIO_AddFocusEvent
 ImGuiIO.AddInputCharacter = lib.ImGuiIO_AddInputCharacter
 ImGuiIO.AddInputCharacterUTF16 = lib.ImGuiIO_AddInputCharacterUTF16
 ImGuiIO.AddInputCharactersUTF8 = lib.ImGuiIO_AddInputCharactersUTF8
+ImGuiIO.AddKeyAnalogEvent = lib.ImGuiIO_AddKeyAnalogEvent
+ImGuiIO.AddKeyEvent = lib.ImGuiIO_AddKeyEvent
+ImGuiIO.AddMouseButtonEvent = lib.ImGuiIO_AddMouseButtonEvent
+ImGuiIO.AddMousePosEvent = lib.ImGuiIO_AddMousePosEvent
+ImGuiIO.AddMouseViewportEvent = lib.ImGuiIO_AddMouseViewportEvent
+ImGuiIO.AddMouseWheelEvent = lib.ImGuiIO_AddMouseWheelEvent
 ImGuiIO.ClearInputCharacters = lib.ImGuiIO_ClearInputCharacters
 ImGuiIO.ClearInputKeys = lib.ImGuiIO_ClearInputKeys
 function ImGuiIO.__new(ctype)
     local ptr = lib.ImGuiIO_ImGuiIO()
     return ffi.gc(ptr,lib.ImGuiIO_destroy)
 end
+function ImGuiIO:SetKeyEventNativeData(key,native_keycode,native_scancode,native_legacy_index)
+    native_legacy_index = native_legacy_index or -1
+    return lib.ImGuiIO_SetKeyEventNativeData(self,key,native_keycode,native_scancode,native_legacy_index)
+end
 M.ImGuiIO = ffi.metatype("ImGuiIO",ImGuiIO)
+--------------------------ImGuiInputEvent----------------------------
+local ImGuiInputEvent= {}
+ImGuiInputEvent.__index = ImGuiInputEvent
+function ImGuiInputEvent.__new(ctype)
+    local ptr = lib.ImGuiInputEvent_ImGuiInputEvent()
+    return ffi.gc(ptr,lib.ImGuiInputEvent_destroy)
+end
+M.ImGuiInputEvent = ffi.metatype("ImGuiInputEvent",ImGuiInputEvent)
 --------------------------ImGuiInputTextCallbackData----------------------------
 local ImGuiInputTextCallbackData= {}
 ImGuiInputTextCallbackData.__index = ImGuiInputTextCallbackData
@@ -1176,6 +1194,14 @@ function ImGuiPlatformIO.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiPlatformIO_destroy)
 end
 M.ImGuiPlatformIO = ffi.metatype("ImGuiPlatformIO",ImGuiPlatformIO)
+--------------------------ImGuiPlatformImeData----------------------------
+local ImGuiPlatformImeData= {}
+ImGuiPlatformImeData.__index = ImGuiPlatformImeData
+function ImGuiPlatformImeData.__new(ctype)
+    local ptr = lib.ImGuiPlatformImeData_ImGuiPlatformImeData()
+    return ffi.gc(ptr,lib.ImGuiPlatformImeData_destroy)
+end
+M.ImGuiPlatformImeData = ffi.metatype("ImGuiPlatformImeData",ImGuiPlatformImeData)
 --------------------------ImGuiPlatformMonitor----------------------------
 local ImGuiPlatformMonitor= {}
 ImGuiPlatformMonitor.__index = ImGuiPlatformMonitor
@@ -5518,8 +5544,8 @@ function M.CreateContext(shared_font_atlas)
     return lib.igCreateContext(shared_font_atlas)
 end
 M.CreateNewWindowSettings = lib.igCreateNewWindowSettings
+M.DataTypeApplyFromText = lib.igDataTypeApplyFromText
 M.DataTypeApplyOp = lib.igDataTypeApplyOp
-M.DataTypeApplyOpFromText = lib.igDataTypeApplyOpFromText
 M.DataTypeClamp = lib.igDataTypeClamp
 M.DataTypeCompare = lib.igDataTypeCompare
 M.DataTypeFormatString = lib.igDataTypeFormatString
@@ -5742,6 +5768,7 @@ function M.FindBestWindowPosForPopupEx(ref_pos,size,last_dir,r_outer,r_avoid,pol
     return nonUDT_out
 end
 M.FindBottomMostVisibleWindowWithinBeginStack = lib.igFindBottomMostVisibleWindowWithinBeginStack
+M.FindHoveredViewportFromPlatformWindowStack = lib.igFindHoveredViewportFromPlatformWindowStack
 M.FindOrCreateColumns = lib.igFindOrCreateColumns
 M.FindOrCreateWindowSettings = lib.igFindOrCreateWindowSettings
 function M.FindRenderedTextEnd(text,text_end)
@@ -5892,7 +5919,9 @@ function M.GetItemRectSize()
     return nonUDT_out
 end
 M.GetItemStatusFlags = lib.igGetItemStatusFlags
+M.GetKeyData = lib.igGetKeyData
 M.GetKeyIndex = lib.igGetKeyIndex
+M.GetKeyName = lib.igGetKeyName
 M.GetKeyPressedAmount = lib.igGetKeyPressedAmount
 M.GetMainViewport = lib.igGetMainViewport
 M.GetMergedKeyModFlags = lib.igGetMergedKeyModFlags
@@ -5923,6 +5952,7 @@ function M.GetNavInputAmount2d(dir_sources,mode,slow_factor,fast_factor)
     lib.igGetNavInputAmount2d(nonUDT_out,dir_sources,mode,slow_factor,fast_factor)
     return nonUDT_out
 end
+M.GetNavInputName = lib.igGetNavInputName
 M.GetPlatformIO = lib.igGetPlatformIO
 function M.GetPopupAllowedExtentRect(window)
     local nonUDT_out = ffi.new("ImRect")
@@ -6046,7 +6076,18 @@ function M.ImFloor(a1,a2) -- generic version
     print(a1,a2)
     error'M.ImFloor could not find overloaded'
 end
-M.ImFloorSigned = lib.igImFloorSigned
+M.ImFloorSigned_Float = lib.igImFloorSigned_Float
+function M.ImFloorSigned_Vec2(v)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.igImFloorSigned_Vec2(nonUDT_out,v)
+    return nonUDT_out
+end
+function M.ImFloorSigned(a1,a2) -- generic version
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImFloorSigned_Float(a1) end
+    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1) or ffi.istype('ImVec2[]',a1)) then return M.ImFloorSigned_Vec2(a2) end
+    print(a1,a2)
+    error'M.ImFloorSigned could not find overloaded'
+end
 M.ImFontAtlasBuildFinish = lib.igImFontAtlasBuildFinish
 M.ImFontAtlasBuildInit = lib.igImFontAtlasBuildInit
 M.ImFontAtlasBuildMultiplyCalcLookupTable = lib.igImFontAtlasBuildMultiplyCalcLookupTable
@@ -6323,6 +6364,7 @@ M.IsAnyItemHovered = lib.igIsAnyItemHovered
 M.IsAnyMouseDown = lib.igIsAnyMouseDown
 M.IsClippedEx = lib.igIsClippedEx
 M.IsDragDropPayloadBeingAccepted = lib.igIsDragDropPayloadBeingAccepted
+M.IsGamepadKey = lib.igIsGamepadKey
 M.IsItemActivated = lib.igIsItemActivated
 M.IsItemActive = lib.igIsItemActive
 function M.IsItemClicked(mouse_button)
@@ -6341,15 +6383,16 @@ M.IsItemToggledOpen = lib.igIsItemToggledOpen
 M.IsItemToggledSelection = lib.igIsItemToggledSelection
 M.IsItemVisible = lib.igIsItemVisible
 M.IsKeyDown = lib.igIsKeyDown
-function M.IsKeyPressed(user_key_index,_repeat)
+function M.IsKeyPressed(key,_repeat)
     if _repeat == nil then _repeat = true end
-    return lib.igIsKeyPressed(user_key_index,_repeat)
+    return lib.igIsKeyPressed(key,_repeat)
 end
 function M.IsKeyPressedMap(key,_repeat)
     if _repeat == nil then _repeat = true end
     return lib.igIsKeyPressedMap(key,_repeat)
 end
 M.IsKeyReleased = lib.igIsKeyReleased
+M.IsLegacyKey = lib.igIsLegacyKey
 function M.IsMouseClicked(button,_repeat)
     _repeat = _repeat or false
     return lib.igIsMouseClicked(button,_repeat)
@@ -6373,6 +6416,7 @@ function M.IsMousePosValid(mouse_pos)
     return lib.igIsMousePosValid(mouse_pos)
 end
 M.IsMouseReleased = lib.igIsMouseReleased
+M.IsNamedKey = lib.igIsNamedKey
 M.IsNavInputDown = lib.igIsNavInputDown
 M.IsNavInputTest = lib.igIsNavInputTest
 function M.IsPopupOpen_Str(str_id,flags)
@@ -6772,6 +6816,7 @@ end
 M.Separator = lib.igSeparator
 M.SeparatorEx = lib.igSeparatorEx
 M.SetActiveID = lib.igSetActiveID
+M.SetActiveIdUsingKey = lib.igSetActiveIdUsingKey
 M.SetActiveIdUsingNavAndKeys = lib.igSetActiveIdUsingNavAndKeys
 function M.SetAllocatorFunctions(alloc_func,free_func,user_data)
     user_data = user_data or nil
@@ -7272,6 +7317,7 @@ function M.Unindent(indent_w)
     return lib.igUnindent(indent_w)
 end
 M.UpdateHoveredWindowAndCaptureFlags = lib.igUpdateHoveredWindowAndCaptureFlags
+M.UpdateInputEvents = lib.igUpdateInputEvents
 M.UpdateMouseMovingWindowEndFrame = lib.igUpdateMouseMovingWindowEndFrame
 M.UpdateMouseMovingWindowNewFrame = lib.igUpdateMouseMovingWindowNewFrame
 M.UpdatePlatformWindows = lib.igUpdatePlatformWindows
