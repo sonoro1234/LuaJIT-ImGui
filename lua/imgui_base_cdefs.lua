@@ -5,7 +5,6 @@ local cdecl = cdecl or ''
 cdecl = cdecl..[[
 
 //////////////// glfw3 gl3 custom multiwindow Implementation
-int Do_gl3wInit(void);
 typedef struct GLFWwindow GLFWwindow;
 typedef struct {
     // Data

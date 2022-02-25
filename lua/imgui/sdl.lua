@@ -86,12 +86,8 @@ M.FLT_MIN = lib.igGET_FLT_MIN()
 local ImGui_ImplGlfwGL3 = {}
 ImGui_ImplGlfwGL3.__index = ImGui_ImplGlfwGL3
 
-local gl3w_inited = false
+
 function ImGui_ImplGlfwGL3.__new()
-    if gl3w_inited == false then
-        lib.Do_gl3wInit()
-        gl3w_inited = true
-    end
     local ptr = lib.ImGui_ImplGlfwGL3_new()
     ffi.gc(ptr,lib.ImGui_ImplGlfwGL3_delete)
     return ptr
@@ -137,10 +133,6 @@ local Imgui_Impl_SDL_opengl3 = {}
 Imgui_Impl_SDL_opengl3.__index = Imgui_Impl_SDL_opengl3
 
 function Imgui_Impl_SDL_opengl3.__call()
-    if gl3w_inited == false then
-        lib.Do_gl3wInit()
-        gl3w_inited = true
-    end
     return setmetatable({ctx = lib.igCreateContext(nil)},Imgui_Impl_SDL_opengl3)
 end
 
@@ -204,10 +196,6 @@ local Imgui_Impl_glfw_opengl3 = {}
 Imgui_Impl_glfw_opengl3.__index = Imgui_Impl_glfw_opengl3
 
 function Imgui_Impl_glfw_opengl3.__call()
-    if gl3w_inited == false then
-        lib.Do_gl3wInit()
-        gl3w_inited = true
-    end
     return setmetatable({ctx = lib.igCreateContext(nil)},Imgui_Impl_glfw_opengl3)
 end
 
