@@ -50,6 +50,7 @@ ImVec2 = {
         return ImVec2(a.x * b, a.y * b) end
         return ImVec2(a * b.x, a * b.y)
     end,
+	__len = function(a) return math.sqrt(a.x*a.x+a.y*a.y) end,
 	norm = function(a)
 		return math.sqrt(a.x*a.x+a.y*a.y)
 	end,
