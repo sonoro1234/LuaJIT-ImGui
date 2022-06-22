@@ -5541,11 +5541,10 @@ void ImPlot_Locator_Time(ImPlotTicker* ticker,const ImPlotRange range,float pixe
 void ImPlot_Locator_Log10(ImPlotTicker* ticker,const ImPlotRange range,float pixels,                                                                                              _Bool                                                                                                    vertical,ImPlotFormatter formatter,void* formatter_data);
 void ImPlot_Locator_SymLog(ImPlotTicker* ticker,const ImPlotRange range,float pixels,                                                                                               _Bool                                                                                                     vertical,ImPlotFormatter formatter,void* formatter_data);
 typedef void *(*ImPlotPoint_getter)(void* data, int idx, ImPlotPoint *point);
-void ImPlot_PlotLineG(const char* label_id,ImPlotPoint_getter getter,void* data,int count);
+void ImPlot_PlotLineG(const char* label_id,ImPlotPoint_getter getter,void* data,int count,ImPlotLineFlags flags);
 void ImPlot_PlotScatterG(const char* label_id, ImPlotPoint_getter getter, void* data, int count);
 void ImPlot_PlotShadedG(const char* label_id, ImPlotPoint_getter getter1, void* data1, ImPlotPoint_getter getter2, void* data2, int count);
 void ImPlot_PlotBarsG(const char* label_id, ImPlotPoint_getter getter, void* data, int count, double width);
-void ImPlot_PlotBarsHG(const char* label_id, ImPlotPoint_getter getter, void* data, int count, double height);
 void ImPlot_PlotDigitalG(const char* label_id, ImPlotPoint_getter getter, void* data, int count);
 typedef enum {
       TRANSLATE_X = (1u << 0),
