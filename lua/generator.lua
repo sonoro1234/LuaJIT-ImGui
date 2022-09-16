@@ -1,81 +1,9 @@
+package.path = package.path..";../cimgui/generator/?.lua"
+local cpp2ffi = require"cpp2ffi"
+local save_data = cpp2ffi.save_data
+local read_data = cpp2ffi.read_data
+local location = cpp2ffi.location
 ----utility functions
-local function save_data(filename,...)
-    local file,err = io.open(filename,"w")
-    if not file then error(err) end
-    for i=1, select('#', ...) do
-        local data = select(i, ...)
-        file:write(data)
-    end
-    file:close()
-end
-----------------------------------------
-local function  read_data(filename)
-    local hfile,err = io.open(filename,"r")
-    if not hfile then error(err) end
-    local hstrfile = hfile:read"*a"
-    hfile:close()
-    return hstrfile
-end
-
---iterates lines from a gcc -E in a specific location
-local function location(file,locpathT)
-    local location_re = '^# (%d+) "([^"]*)"'
-    local path_reT = {}
-    for i,locpath in ipairs(locpathT) do
-        table.insert(path_reT,'^(.*[\\/])('..locpath..')%.h$')
-    end
-    local in_location = false
-    local which_location = ""
-	local loc_num
-	local loc_num_incr
-	local lineold = "" 
-	local which_locationold,loc_num_realold
-	local lastdumped = false
-    local function location_it()
-        repeat
-            local line = file:read"*l"
-            if not line then
-				if not lastdumped then
-					lastdumped = true
-					return lineold, which_locationold,loc_num_realold
-				else
-					return nil
-				end
-			end
-            if line:sub(1,1) == "#" then
-                -- Is this a location pragma?
-                local loc_num_t,location_match = line:match(location_re)
-                if location_match then
-                    in_location = false
-                    for i,path_re in ipairs(path_reT) do
-                        if location_match:match(path_re) then 
-                            in_location = true;
-							loc_num = loc_num_t
-							loc_num_incr = 0
-                            which_location = locpathT[i]
-                            break 
-                        end
-                    end
-                end
-            elseif in_location then
-				local loc_num_real = loc_num + loc_num_incr
-				loc_num_incr = loc_num_incr + 1
-				if loc_num_realold and loc_num_realold < loc_num_real then
-					--old line complete
-					local lineR,which_locationR,loc_num_realR = lineold, which_locationold,loc_num_realold
-					lineold, which_locationold,loc_num_realold = line,which_location,loc_num_real
-					return lineR,which_locationR,loc_num_realR
-				else
-					lineold=lineold..line
-					which_locationold,loc_num_realold = which_location,loc_num_real
-                --return line,loc_num_real, which_location
-				end
-            end
-        until false
-    end
-    return location_it
-end
-
 local function get_cdefs(gccline,locat,cdef)
 	cdef = cdef or {}
 	local pipe,err = io.popen(gccline,"r")
