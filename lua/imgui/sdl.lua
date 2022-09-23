@@ -1638,6 +1638,14 @@ end
 ImPlotAlignmentData.Reset = lib.ImPlotAlignmentData_Reset
 ImPlotAlignmentData.Update = lib.ImPlotAlignmentData_Update
 M.ImPlotAlignmentData = ffi.metatype("ImPlotAlignmentData",ImPlotAlignmentData)
+--------------------------ImPlotAnnotation----------------------------
+local ImPlotAnnotation= {}
+ImPlotAnnotation.__index = ImPlotAnnotation
+function ImPlotAnnotation.__new(ctype)
+    local ptr = lib.ImPlotAnnotation_ImPlotAnnotation()
+    return ffi.gc(ptr,lib.ImPlotAnnotation_destroy)
+end
+M.ImPlotAnnotation = ffi.metatype("ImPlotAnnotation",ImPlotAnnotation)
 --------------------------ImPlotAnnotationCollection----------------------------
 local ImPlotAnnotationCollection= {}
 ImPlotAnnotationCollection.__index = ImPlotAnnotationCollection
@@ -2493,9 +2501,9 @@ function M.ImPlot_DragPoint(id,x,y,col,size,flags)
     size = size or 4
     return lib.ImPlot_DragPoint(id,x,y,col,size,flags)
 end
-function M.ImPlot_DragRect(id,x_min,y_min,x_max,y_max,col,flags)
+function M.ImPlot_DragRect(id,x1,y1,x2,y2,col,flags)
     flags = flags or 0
-    return lib.ImPlot_DragRect(id,x_min,y_min,x_max,y_max,col,flags)
+    return lib.ImPlot_DragRect(id,x1,y1,x2,y2,col,flags)
 end
 M.ImPlot_EndAlignedPlots = lib.ImPlot_EndAlignedPlots
 M.ImPlot_EndDragDropSource = lib.ImPlot_EndDragDropSource
