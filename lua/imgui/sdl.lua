@@ -875,6 +875,7 @@ ImFontAtlas.GetGlyphRangesChineseFull = lib.ImFontAtlas_GetGlyphRangesChineseFul
 ImFontAtlas.GetGlyphRangesChineseSimplifiedCommon = lib.ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon
 ImFontAtlas.GetGlyphRangesCyrillic = lib.ImFontAtlas_GetGlyphRangesCyrillic
 ImFontAtlas.GetGlyphRangesDefault = lib.ImFontAtlas_GetGlyphRangesDefault
+ImFontAtlas.GetGlyphRangesGreek = lib.ImFontAtlas_GetGlyphRangesGreek
 ImFontAtlas.GetGlyphRangesJapanese = lib.ImFontAtlas_GetGlyphRangesJapanese
 ImFontAtlas.GetGlyphRangesKorean = lib.ImFontAtlas_GetGlyphRangesKorean
 ImFontAtlas.GetGlyphRangesThai = lib.ImFontAtlas_GetGlyphRangesThai
@@ -1056,6 +1057,31 @@ end
 ImGuiInputTextState.OnKeyPressed = lib.ImGuiInputTextState_OnKeyPressed
 ImGuiInputTextState.SelectAll = lib.ImGuiInputTextState_SelectAll
 M.ImGuiInputTextState = ffi.metatype("ImGuiInputTextState",ImGuiInputTextState)
+--------------------------ImGuiKeyOwnerData----------------------------
+local ImGuiKeyOwnerData= {}
+ImGuiKeyOwnerData.__index = ImGuiKeyOwnerData
+function ImGuiKeyOwnerData.__new(ctype)
+    local ptr = lib.ImGuiKeyOwnerData_ImGuiKeyOwnerData()
+    return ffi.gc(ptr,lib.ImGuiKeyOwnerData_destroy)
+end
+M.ImGuiKeyOwnerData = ffi.metatype("ImGuiKeyOwnerData",ImGuiKeyOwnerData)
+--------------------------ImGuiKeyRoutingData----------------------------
+local ImGuiKeyRoutingData= {}
+ImGuiKeyRoutingData.__index = ImGuiKeyRoutingData
+function ImGuiKeyRoutingData.__new(ctype)
+    local ptr = lib.ImGuiKeyRoutingData_ImGuiKeyRoutingData()
+    return ffi.gc(ptr,lib.ImGuiKeyRoutingData_destroy)
+end
+M.ImGuiKeyRoutingData = ffi.metatype("ImGuiKeyRoutingData",ImGuiKeyRoutingData)
+--------------------------ImGuiKeyRoutingTable----------------------------
+local ImGuiKeyRoutingTable= {}
+ImGuiKeyRoutingTable.__index = ImGuiKeyRoutingTable
+ImGuiKeyRoutingTable.Clear = lib.ImGuiKeyRoutingTable_Clear
+function ImGuiKeyRoutingTable.__new(ctype)
+    local ptr = lib.ImGuiKeyRoutingTable_ImGuiKeyRoutingTable()
+    return ffi.gc(ptr,lib.ImGuiKeyRoutingTable_destroy)
+end
+M.ImGuiKeyRoutingTable = ffi.metatype("ImGuiKeyRoutingTable",ImGuiKeyRoutingTable)
 --------------------------ImGuiLastItemData----------------------------
 local ImGuiLastItemData= {}
 ImGuiLastItemData.__index = ImGuiLastItemData
@@ -1480,6 +1506,15 @@ function ImGuiTextFilter:PassFilter(text,text_end)
     return lib.ImGuiTextFilter_PassFilter(self,text,text_end)
 end
 M.ImGuiTextFilter = ffi.metatype("ImGuiTextFilter",ImGuiTextFilter)
+--------------------------ImGuiTextIndex----------------------------
+local ImGuiTextIndex= {}
+ImGuiTextIndex.__index = ImGuiTextIndex
+ImGuiTextIndex.append = lib.ImGuiTextIndex_append
+ImGuiTextIndex.clear = lib.ImGuiTextIndex_clear
+ImGuiTextIndex.get_line_begin = lib.ImGuiTextIndex_get_line_begin
+ImGuiTextIndex.get_line_end = lib.ImGuiTextIndex_get_line_end
+ImGuiTextIndex.size = lib.ImGuiTextIndex_size
+M.ImGuiTextIndex = ffi.metatype("ImGuiTextIndex",ImGuiTextIndex)
 --------------------------ImGuiTextRange----------------------------
 local ImGuiTextRange= {}
 ImGuiTextRange.__index = ImGuiTextRange
@@ -5371,6 +5406,7 @@ function M.Combo(a1,a2,a3,a4,a5,a6) -- generic version
     print(a1,a2,a3,a4,a5,a6)
     error'M.Combo could not find overloaded'
 end
+M.ConvertSingleModFlagToKey = lib.igConvertSingleModFlagToKey
 function M.CreateContext(shared_font_atlas)
     shared_font_atlas = shared_font_atlas or nil
     return lib.igCreateContext(shared_font_atlas)
@@ -5388,6 +5424,9 @@ function M.DebugDrawItemRect(col)
     return lib.igDebugDrawItemRect(col)
 end
 M.DebugHookIdInfo = lib.igDebugHookIdInfo
+M.DebugLocateItem = lib.igDebugLocateItem
+M.DebugLocateItemOnHover = lib.igDebugLocateItemOnHover
+M.DebugLocateItemResolveWithLastItem = lib.igDebugLocateItemResolveWithLastItem
 M.DebugLog = lib.igDebugLog
 M.DebugLogV = lib.igDebugLogV
 M.DebugNodeColumns = lib.igDebugNodeColumns
@@ -5439,6 +5478,7 @@ M.DockBuilderSplitNode = lib.igDockBuilderSplitNode
 M.DockContextCalcDropPosForDocking = lib.igDockContextCalcDropPosForDocking
 M.DockContextClearNodes = lib.igDockContextClearNodes
 M.DockContextEndFrame = lib.igDockContextEndFrame
+M.DockContextFindNodeByID = lib.igDockContextFindNodeByID
 M.DockContextGenNodeID = lib.igDockContextGenNodeID
 M.DockContextInitialize = lib.igDockContextInitialize
 M.DockContextNewFrameUpdateDocking = lib.igDockContextNewFrameUpdateDocking
@@ -5594,6 +5634,7 @@ function M.ErrorCheckEndWindowRecover(log_callback,user_data)
     user_data = user_data or nil
     return lib.igErrorCheckEndWindowRecover(log_callback,user_data)
 end
+M.ErrorCheckUsingSetCursorPosToExtendParentBoundaries = lib.igErrorCheckUsingSetCursorPosToExtendParentBoundaries
 function M.FindBestWindowPosForPopup(window)
     local nonUDT_out = ffi.new("ImVec2")
     lib.igFindBestWindowPosForPopup(nonUDT_out,window)
@@ -5677,6 +5718,7 @@ function M.GetContentRegionMaxAbs()
     return nonUDT_out
 end
 M.GetCurrentContext = lib.igGetCurrentContext
+M.GetCurrentFocusScope = lib.igGetCurrentFocusScope
 M.GetCurrentTable = lib.igGetCurrentTable
 M.GetCurrentWindow = lib.igGetCurrentWindow
 M.GetCurrentWindowRead = lib.igGetCurrentWindowRead
@@ -5702,8 +5744,6 @@ M.GetDragDropPayload = lib.igGetDragDropPayload
 M.GetDrawData = lib.igGetDrawData
 M.GetDrawListSharedData = lib.igGetDrawListSharedData
 M.GetFocusID = lib.igGetFocusID
-M.GetFocusScope = lib.igGetFocusScope
-M.GetFocusedFocusScope = lib.igGetFocusedFocusScope
 M.GetFont = lib.igGetFont
 M.GetFontSize = lib.igGetFontSize
 function M.GetFontTexUvWhitePixel()
@@ -5756,12 +5796,19 @@ function M.GetItemRectSize()
     return nonUDT_out
 end
 M.GetItemStatusFlags = lib.igGetItemStatusFlags
+M.GetKeyChordName = lib.igGetKeyChordName
 M.GetKeyData = lib.igGetKeyData
 M.GetKeyIndex = lib.igGetKeyIndex
 M.GetKeyName = lib.igGetKeyName
+M.GetKeyOwner = lib.igGetKeyOwner
+M.GetKeyOwnerData = lib.igGetKeyOwnerData
 M.GetKeyPressedAmount = lib.igGetKeyPressedAmount
+function M.GetKeyVector2d(key_left,key_right,key_up,key_down)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.igGetKeyVector2d(nonUDT_out,key_left,key_right,key_up,key_down)
+    return nonUDT_out
+end
 M.GetMainViewport = lib.igGetMainViewport
-M.GetMergedModFlags = lib.igGetMergedModFlags
 M.GetMouseClickedCount = lib.igGetMouseClickedCount
 M.GetMouseCursor = lib.igGetMouseCursor
 function M.GetMouseDragDelta(button,lock_threshold)
@@ -5781,15 +5828,7 @@ function M.GetMousePosOnOpeningCurrentPopup()
     lib.igGetMousePosOnOpeningCurrentPopup(nonUDT_out)
     return nonUDT_out
 end
-M.GetNavInputAmount = lib.igGetNavInputAmount
-function M.GetNavInputAmount2d(dir_sources,mode,slow_factor,fast_factor)
-    fast_factor = fast_factor or 0.0
-    slow_factor = slow_factor or 0.0
-    local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetNavInputAmount2d(nonUDT_out,dir_sources,mode,slow_factor,fast_factor)
-    return nonUDT_out
-end
-M.GetNavInputName = lib.igGetNavInputName
+M.GetNavTweakPressedAmount = lib.igGetNavTweakPressedAmount
 M.GetPlatformIO = lib.igGetPlatformIO
 function M.GetPopupAllowedExtentRect(window)
     local nonUDT_out = ffi.new("ImRect")
@@ -5800,6 +5839,7 @@ M.GetScrollMaxX = lib.igGetScrollMaxX
 M.GetScrollMaxY = lib.igGetScrollMaxY
 M.GetScrollX = lib.igGetScrollX
 M.GetScrollY = lib.igGetScrollY
+M.GetShortcutRoutingData = lib.igGetShortcutRoutingData
 M.GetStateStorage = lib.igGetStateStorage
 M.GetStyle = lib.igGetStyle
 M.GetStyleColorName = lib.igGetStyleColorName
@@ -5810,6 +5850,7 @@ M.GetTime = lib.igGetTime
 M.GetTopMostAndVisiblePopupModal = lib.igGetTopMostAndVisiblePopupModal
 M.GetTopMostPopupModal = lib.igGetTopMostPopupModal
 M.GetTreeNodeToLabelSpacing = lib.igGetTreeNodeToLabelSpacing
+M.GetTypematicRepeatRate = lib.igGetTypematicRepeatRate
 M.GetVersion = lib.igGetVersion
 M.GetViewportPlatformMonitor = lib.igGetViewportPlatformMonitor
 M.GetWindowAlwaysWantOwnTabBar = lib.igGetWindowAlwaysWantOwnTabBar
@@ -6077,6 +6118,7 @@ function M.ImTextStrFromUtf8(out_buf,out_buf_size,in_text,in_text_end,in_remaini
     return lib.igImTextStrFromUtf8(out_buf,out_buf_size,in_text,in_text_end,in_remaining)
 end
 M.ImTextStrToUtf8 = lib.igImTextStrToUtf8
+M.ImToUpper = lib.igImToUpper
 M.ImTriangleArea = lib.igImTriangleArea
 M.ImTriangleBarycentricCoords = lib.igImTriangleBarycentricCoords
 function M.ImTriangleClosestPoint(a,b,c,p)
@@ -6093,13 +6135,12 @@ function M.Image(user_texture_id,size,uv0,uv1,tint_col,border_col)
     uv1 = uv1 or ImVec2(1,1)
     return lib.igImage(user_texture_id,size,uv0,uv1,tint_col,border_col)
 end
-function M.ImageButton(user_texture_id,size,uv0,uv1,frame_padding,bg_col,tint_col)
+function M.ImageButton(str_id,user_texture_id,size,uv0,uv1,bg_col,tint_col)
     bg_col = bg_col or ImVec4(0,0,0,0)
-    frame_padding = frame_padding or -1
     tint_col = tint_col or ImVec4(1,1,1,1)
     uv0 = uv0 or ImVec2(0,0)
     uv1 = uv1 or ImVec2(1,1)
-    return lib.igImageButton(user_texture_id,size,uv0,uv1,frame_padding,bg_col,tint_col)
+    return lib.igImageButton(str_id,user_texture_id,size,uv0,uv1,bg_col,tint_col)
 end
 M.ImageButtonEx = lib.igImageButtonEx
 function M.Indent(indent_w)
@@ -6196,9 +6237,8 @@ function M.InvisibleButton(str_id,size,flags)
     flags = flags or 0
     return lib.igInvisibleButton(str_id,size,flags)
 end
-M.IsActiveIdUsingKey = lib.igIsActiveIdUsingKey
 M.IsActiveIdUsingNavDir = lib.igIsActiveIdUsingNavDir
-M.IsActiveIdUsingNavInput = lib.igIsActiveIdUsingNavInput
+M.IsAliasKey = lib.igIsAliasKey
 M.IsAnyItemActive = lib.igIsAnyItemActive
 M.IsAnyItemFocused = lib.igIsAnyItemFocused
 M.IsAnyItemHovered = lib.igIsAnyItemHovered
@@ -6224,23 +6264,64 @@ end
 M.IsItemToggledOpen = lib.igIsItemToggledOpen
 M.IsItemToggledSelection = lib.igIsItemToggledSelection
 M.IsItemVisible = lib.igIsItemVisible
-M.IsKeyDown = lib.igIsKeyDown
-function M.IsKeyPressed(key,_repeat)
+M.IsKeyDown_Nil = lib.igIsKeyDown_Nil
+M.IsKeyDown_ID = lib.igIsKeyDown_ID
+function M.IsKeyDown(a1,a2) -- generic version
+    if a2==nil then return M.IsKeyDown_Nil(a1) end
+    if ffi.istype('ImGuiID',a2) then return M.IsKeyDown_ID(a1,a2) end
+    print(a1,a2)
+    error'M.IsKeyDown could not find overloaded'
+end
+function M.IsKeyPressed_Bool(key,_repeat)
     if _repeat == nil then _repeat = true end
-    return lib.igIsKeyPressed(key,_repeat)
+    return lib.igIsKeyPressed_Bool(key,_repeat)
+end
+function M.IsKeyPressed_ID(key,owner_id,flags)
+    flags = flags or 0
+    return lib.igIsKeyPressed_ID(key,owner_id,flags)
+end
+function M.IsKeyPressed(a1,a2,a3) -- generic version
+    if (ffi.istype('bool',a2) or type(a2)=='boolean') then return M.IsKeyPressed_Bool(a1,a2) end
+    if ffi.istype('ImGuiID',a2) then return M.IsKeyPressed_ID(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.IsKeyPressed could not find overloaded'
 end
 function M.IsKeyPressedMap(key,_repeat)
     if _repeat == nil then _repeat = true end
     return lib.igIsKeyPressedMap(key,_repeat)
 end
-M.IsKeyReleased = lib.igIsKeyReleased
+M.IsKeyReleased_Nil = lib.igIsKeyReleased_Nil
+M.IsKeyReleased_ID = lib.igIsKeyReleased_ID
+function M.IsKeyReleased(a1,a2) -- generic version
+    if a2==nil then return M.IsKeyReleased_Nil(a1) end
+    if ffi.istype('ImGuiID',a2) then return M.IsKeyReleased_ID(a1,a2) end
+    print(a1,a2)
+    error'M.IsKeyReleased could not find overloaded'
+end
 M.IsLegacyKey = lib.igIsLegacyKey
-function M.IsMouseClicked(button,_repeat)
+function M.IsMouseClicked_Bool(button,_repeat)
     _repeat = _repeat or false
-    return lib.igIsMouseClicked(button,_repeat)
+    return lib.igIsMouseClicked_Bool(button,_repeat)
+end
+function M.IsMouseClicked_ID(button,owner_id,flags)
+    flags = flags or 0
+    return lib.igIsMouseClicked_ID(button,owner_id,flags)
+end
+function M.IsMouseClicked(a1,a2,a3) -- generic version
+    if (ffi.istype('bool',a2) or type(a2)=='boolean') then return M.IsMouseClicked_Bool(a1,a2) end
+    if ffi.istype('ImGuiID',a2) then return M.IsMouseClicked_ID(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.IsMouseClicked could not find overloaded'
 end
 M.IsMouseDoubleClicked = lib.igIsMouseDoubleClicked
-M.IsMouseDown = lib.igIsMouseDown
+M.IsMouseDown_Nil = lib.igIsMouseDown_Nil
+M.IsMouseDown_ID = lib.igIsMouseDown_ID
+function M.IsMouseDown(a1,a2) -- generic version
+    if a2==nil then return M.IsMouseDown_Nil(a1) end
+    if ffi.istype('ImGuiID',a2) then return M.IsMouseDown_ID(a1,a2) end
+    print(a1,a2)
+    error'M.IsMouseDown could not find overloaded'
+end
 function M.IsMouseDragPastThreshold(button,lock_threshold)
     lock_threshold = lock_threshold or -1.0
     return lib.igIsMouseDragPastThreshold(button,lock_threshold)
@@ -6257,10 +6338,16 @@ function M.IsMousePosValid(mouse_pos)
     mouse_pos = mouse_pos or nil
     return lib.igIsMousePosValid(mouse_pos)
 end
-M.IsMouseReleased = lib.igIsMouseReleased
+M.IsMouseReleased_Nil = lib.igIsMouseReleased_Nil
+M.IsMouseReleased_ID = lib.igIsMouseReleased_ID
+function M.IsMouseReleased(a1,a2) -- generic version
+    if a2==nil then return M.IsMouseReleased_Nil(a1) end
+    if ffi.istype('ImGuiID',a2) then return M.IsMouseReleased_ID(a1,a2) end
+    print(a1,a2)
+    error'M.IsMouseReleased could not find overloaded'
+end
 M.IsNamedKey = lib.igIsNamedKey
-M.IsNavInputDown = lib.igIsNavInputDown
-M.IsNavInputTest = lib.igIsNavInputTest
+M.IsNamedKeyOrModKey = lib.igIsNamedKeyOrModKey
 function M.IsPopupOpen_Str(str_id,flags)
     flags = flags or 0
     return lib.igIsPopupOpen_Str(str_id,flags)
@@ -6397,6 +6484,7 @@ function M.MenuItemEx(label,icon,shortcut,selected,enabled)
     shortcut = shortcut or nil
     return lib.igMenuItemEx(label,icon,shortcut,selected,enabled)
 end
+M.MouseButtonToKey = lib.igMouseButtonToKey
 M.NavInitRequestApplyResult = lib.igNavInitRequestApplyResult
 M.NavInitWindow = lib.igNavInitWindow
 M.NavMoveRequestApplyResult = lib.igNavMoveRequestApplyResult
@@ -6569,6 +6657,7 @@ function M.RenderColorRectWithAlphaCheckerboard(draw_list,p_min,p_max,fill_col,g
     rounding = rounding or 0.0
     return lib.igRenderColorRectWithAlphaCheckerboard(draw_list,p_min,p_max,fill_col,grid_step,grid_off,rounding,flags)
 end
+M.RenderDragDropTargetRect = lib.igRenderDragDropTargetRect
 function M.RenderFrame(p_min,p_max,fill_col,border,rounding)
     if border == nil then border = true end
     rounding = rounding or 0.0
@@ -6659,8 +6748,7 @@ end
 M.Separator = lib.igSeparator
 M.SeparatorEx = lib.igSeparatorEx
 M.SetActiveID = lib.igSetActiveID
-M.SetActiveIdUsingKey = lib.igSetActiveIdUsingKey
-M.SetActiveIdUsingNavAndKeys = lib.igSetActiveIdUsingNavAndKeys
+M.SetActiveIdUsingAllKeyboardKeys = lib.igSetActiveIdUsingAllKeyboardKeys
 function M.SetAllocatorFunctions(alloc_func,free_func,user_data)
     user_data = user_data or nil
     return lib.igSetAllocatorFunctions(alloc_func,free_func,user_data)
@@ -6684,7 +6772,14 @@ M.SetFocusID = lib.igSetFocusID
 M.SetHoveredID = lib.igSetHoveredID
 M.SetItemAllowOverlap = lib.igSetItemAllowOverlap
 M.SetItemDefaultFocus = lib.igSetItemDefaultFocus
-M.SetItemUsingMouseWheel = lib.igSetItemUsingMouseWheel
+function M.SetItemKeyOwner(key,flags)
+    flags = flags or 0
+    return lib.igSetItemKeyOwner(key,flags)
+end
+function M.SetKeyOwner(key,owner_id,flags)
+    flags = flags or 0
+    return lib.igSetKeyOwner(key,owner_id,flags)
+end
 function M.SetKeyboardFocusHere(offset)
     offset = offset or 0
     return lib.igSetKeyboardFocusHere(offset)
@@ -6774,6 +6869,11 @@ function M.SetScrollY(a1,a2) -- generic version
     print(a1,a2)
     error'M.SetScrollY could not find overloaded'
 end
+function M.SetShortcutRouting(key_chord,owner_id,flags)
+    flags = flags or 0
+    owner_id = owner_id or 0
+    return lib.igSetShortcutRouting(key_chord,owner_id,flags)
+end
 M.SetStateStorage = lib.igSetStateStorage
 M.SetTabItemClosed = lib.igSetTabItemClosed
 M.SetTooltip = lib.igSetTooltip
@@ -6850,6 +6950,11 @@ end
 M.SetWindowViewport = lib.igSetWindowViewport
 M.ShadeVertsLinearColorGradientKeepAlpha = lib.igShadeVertsLinearColorGradientKeepAlpha
 M.ShadeVertsLinearUV = lib.igShadeVertsLinearUV
+function M.Shortcut(key_chord,owner_id,flags)
+    flags = flags or 0
+    owner_id = owner_id or 0
+    return lib.igShortcut(key_chord,owner_id,flags)
+end
 function M.ShowAboutWindow(p_open)
     p_open = p_open or nil
     return lib.igShowAboutWindow(p_open)
@@ -6973,15 +7078,27 @@ function M.TabItemButton(label,flags)
     flags = flags or 0
     return lib.igTabItemButton(label,flags)
 end
-function M.TabItemCalcSize(label,has_close_button)
+function M.TabItemCalcSize_Str(label,has_close_button_or_unsaved_marker)
     local nonUDT_out = ffi.new("ImVec2")
-    lib.igTabItemCalcSize(nonUDT_out,label,has_close_button)
+    lib.igTabItemCalcSize_Str(nonUDT_out,label,has_close_button_or_unsaved_marker)
     return nonUDT_out
+end
+function M.TabItemCalcSize_WindowPtr(window)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.igTabItemCalcSize_WindowPtr(nonUDT_out,window)
+    return nonUDT_out
+end
+function M.TabItemCalcSize(a2,a3) -- generic version
+    if (ffi.istype('const char*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.TabItemCalcSize_Str(a2,a3) end
+    if (ffi.istype('ImGuiWindow*',a2) or ffi.istype('ImGuiWindow',a2) or ffi.istype('ImGuiWindow[]',a2)) then return M.TabItemCalcSize_WindowPtr(a2) end
+    print(a2,a3)
+    error'M.TabItemCalcSize could not find overloaded'
 end
 M.TabItemEx = lib.igTabItemEx
 M.TabItemLabelAndCloseButton = lib.igTabItemLabelAndCloseButton
 M.TableBeginApplyRequests = lib.igTableBeginApplyRequests
 M.TableBeginCell = lib.igTableBeginCell
+M.TableBeginContextMenuPopup = lib.igTableBeginContextMenuPopup
 M.TableBeginInitMemory = lib.igTableBeginInitMemory
 M.TableBeginRow = lib.igTableBeginRow
 M.TableDrawBorders = lib.igTableDrawBorders
@@ -7086,6 +7203,8 @@ function M.TempInputScalar(bb,id,label,data_type,p_data,format,p_clamp_min,p_cla
     return lib.igTempInputScalar(bb,id,label,data_type,p_data,format,p_clamp_min,p_clamp_max)
 end
 M.TempInputText = lib.igTempInputText
+M.TestKeyOwner = lib.igTestKeyOwner
+M.TestShortcutRouting = lib.igTestShortcutRouting
 M.Text = lib.igText
 M.TextColored = lib.igTextColored
 M.TextColoredV = lib.igTextColoredV
@@ -7118,10 +7237,6 @@ function M.TreeNodeBehavior(id,flags,label,label_end)
     label_end = label_end or nil
     return lib.igTreeNodeBehavior(id,flags,label,label_end)
 end
-function M.TreeNodeBehaviorIsOpen(id,flags)
-    flags = flags or 0
-    return lib.igTreeNodeBehaviorIsOpen(id,flags)
-end
 function M.TreeNodeEx_Str(label,flags)
     flags = flags or 0
     return lib.igTreeNodeEx_Str(label,flags)
@@ -7143,6 +7258,8 @@ function M.TreeNodeExV(a1,a2,a3,a4) -- generic version
     print(a1,a2,a3,a4)
     error'M.TreeNodeExV could not find overloaded'
 end
+M.TreeNodeSetOpen = lib.igTreeNodeSetOpen
+M.TreeNodeUpdateNextOpen = lib.igTreeNodeUpdateNextOpen
 M.TreeNodeV_Str = lib.igTreeNodeV_Str
 M.TreeNodeV_Ptr = lib.igTreeNodeV_Ptr
 function M.TreeNodeV(a1,a2,a3) -- generic version
@@ -7153,13 +7270,10 @@ function M.TreeNodeV(a1,a2,a3) -- generic version
 end
 M.TreePop = lib.igTreePop
 M.TreePush_Str = lib.igTreePush_Str
-function M.TreePush_Ptr(ptr_id)
-    ptr_id = ptr_id or nil
-    return lib.igTreePush_Ptr(ptr_id)
-end
+M.TreePush_Ptr = lib.igTreePush_Ptr
 function M.TreePush(a1) -- generic version
     if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.TreePush_Str(a1) end
-    if (ffi.istype('const void*',a1) or type(a1)=='nil') then return M.TreePush_Ptr(a1) end
+    if ffi.istype('const void*',a1) then return M.TreePush_Ptr(a1) end
     print(a1)
     error'M.TreePush could not find overloaded'
 end
