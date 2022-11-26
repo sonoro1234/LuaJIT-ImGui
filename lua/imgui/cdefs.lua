@@ -76,6 +76,7 @@ typedef struct ImGuiDockNodeSettings ImGuiDockNodeSettings;
 typedef struct ImGuiGroupData ImGuiGroupData;
 typedef struct ImGuiInputTextState ImGuiInputTextState;
 typedef struct ImGuiLastItemData ImGuiLastItemData;
+typedef struct ImGuiLocEntry ImGuiLocEntry;
 typedef struct ImGuiMenuColumns ImGuiMenuColumns;
 typedef struct ImGuiNavItemData ImGuiNavItemData;
 typedef struct ImGuiMetricsConfig ImGuiMetricsConfig;
@@ -1307,6 +1308,7 @@ struct ImGuiViewport
     void* PlatformUserData;
     void* PlatformHandle;
     void* PlatformHandleRaw;
+   _Bool         PlatformWindowCreated;
    _Bool         PlatformRequestMove;
    _Bool         PlatformRequestResize;
    _Bool         PlatformRequestClose;
@@ -1368,6 +1370,7 @@ struct ImGuiDockNodeSettings;
 struct ImGuiGroupData;
 struct ImGuiInputTextState;
 struct ImGuiLastItemData;
+struct ImGuiLocEntry;
 struct ImGuiMenuColumns;
 struct ImGuiNavItemData;
 struct ImGuiMetricsConfig;
@@ -2130,7 +2133,6 @@ struct ImGuiViewportP
     float Alpha;
     float LastAlpha;
     short PlatformMonitor;
-   _Bool         PlatformWindowCreated;
     ImGuiWindow* Window;
     int DrawListsLastFrame[2];
     ImDrawList* DrawLists[2];
@@ -2168,6 +2170,21 @@ struct ImGuiSettingsHandler
     void (*ApplyAllFn)(ImGuiContext* ctx, ImGuiSettingsHandler* handler);
     void (*WriteAllFn)(ImGuiContext* ctx, ImGuiSettingsHandler* handler, ImGuiTextBuffer* out_buf);
     void* UserData;
+};
+typedef enum {
+ImGuiLocKey_TableSizeOne=0,
+ImGuiLocKey_TableSizeAllFit=1,
+ImGuiLocKey_TableSizeAllDefault=2,
+ImGuiLocKey_TableResetOrder=3,
+ImGuiLocKey_WindowingMainMenuBar=4,
+ImGuiLocKey_WindowingPopup=5,
+ImGuiLocKey_WindowingUntitled=6,
+ImGuiLocKey_COUNT=7,
+}ImGuiLocKey;
+struct ImGuiLocEntry
+{
+    ImGuiLocKey Key;
+    const char* Text;
 };
 typedef enum {
     ImGuiDebugLogFlags_None = 0,
@@ -2463,6 +2480,7 @@ struct ImGuiContext
     ImChunkStream_ImGuiTableSettings SettingsTables;
     ImVector_ImGuiContextHook Hooks;
     ImGuiID HookIdNext;
+    const char* LocalizationTable[ImGuiLocKey_COUNT];
    _Bool         LogEnabled;
     ImGuiLogType LogType;
     ImFileHandle LogFile;
@@ -3893,6 +3911,8 @@ ImGuiWindowSettings* igFindOrCreateWindowSettings(const char* name);
 void igAddSettingsHandler(const ImGuiSettingsHandler* handler);
 void igRemoveSettingsHandler(const char* type_name);
 ImGuiSettingsHandler* igFindSettingsHandler(const char* type_name);
+void igLocalizeRegisterEntries(const ImGuiLocEntry* entries,int count);
+const char* igLocalizeGetMsg(ImGuiLocKey key);
 void igSetScrollX_WindowPtr(ImGuiWindow* window,float scroll_x);
 void igSetScrollY_WindowPtr(ImGuiWindow* window,float scroll_y);
 void igSetScrollFromPosX_WindowPtr(ImGuiWindow* window,float local_x,float center_x_ratio);
@@ -3967,7 +3987,9 @@ void igSetNavID(ImGuiID id,ImGuiNavLayer nav_layer,ImGuiID focus_scope_id,const 
 _Bool                igIsNamedKey(ImGuiKey key);
 _Bool                igIsNamedKeyOrModKey(ImGuiKey key);
 _Bool                igIsLegacyKey(ImGuiKey key);
+_Bool                igIsKeyboardKey(ImGuiKey key);
 _Bool                igIsGamepadKey(ImGuiKey key);
+_Bool                igIsMouseKey(ImGuiKey key);
 _Bool                igIsAliasKey(ImGuiKey key);
 ImGuiKey igConvertSingleModFlagToKey(ImGuiKey key);
 ImGuiKeyData* igGetKeyData(ImGuiKey key);

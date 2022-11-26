@@ -6298,6 +6298,7 @@ function M.IsKeyReleased(a1,a2) -- generic version
     print(a1,a2)
     error'M.IsKeyReleased could not find overloaded'
 end
+M.IsKeyboardKey = lib.igIsKeyboardKey
 M.IsLegacyKey = lib.igIsLegacyKey
 function M.IsMouseClicked_Bool(button,_repeat)
     _repeat = _repeat or false
@@ -6334,6 +6335,7 @@ function M.IsMouseHoveringRect(r_min,r_max,clip)
     if clip == nil then clip = true end
     return lib.igIsMouseHoveringRect(r_min,r_max,clip)
 end
+M.IsMouseKey = lib.igIsMouseKey
 function M.IsMousePosValid(mouse_pos)
     mouse_pos = mouse_pos or nil
     return lib.igIsMousePosValid(mouse_pos)
@@ -6424,6 +6426,8 @@ function M.LoadIniSettingsFromMemory(ini_data,ini_size)
     ini_size = ini_size or 0
     return lib.igLoadIniSettingsFromMemory(ini_data,ini_size)
 end
+M.LocalizeGetMsg = lib.igLocalizeGetMsg
+M.LocalizeRegisterEntries = lib.igLocalizeRegisterEntries
 M.LogBegin = lib.igLogBegin
 M.LogButtons = lib.igLogButtons
 M.LogFinish = lib.igLogFinish
