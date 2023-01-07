@@ -122,7 +122,7 @@ local function show_editor(editor)
         end
         ig.EndPopup()
     end
-
+	ig.PopStyleVar()
 
     for _, node in pairs(editor.nodes) do
         node:draw()
