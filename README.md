@@ -2,11 +2,11 @@
 
 ![sample](sample.png)
 
-This is a LuaJIT binding for the excellent C++ intermediate gui [imgui](https://github.com/ocornut/imgui).
+This is a LuaJIT binding for the excellent C++ immediate gui [imgui](https://github.com/ocornut/imgui).
 Uses cimgui to be the most "up to date" as possible.
 
 Notes:
-* currently this wrapper is based on version [1.89.1 docking of imgui]
+* currently this wrapper is based on version [1.89.2 docking of imgui]
 
 # cloning
 

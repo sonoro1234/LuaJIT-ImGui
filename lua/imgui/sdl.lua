@@ -1050,8 +1050,8 @@ ImGuiInputTextState.GetSelectionEnd = lib.ImGuiInputTextState_GetSelectionEnd
 ImGuiInputTextState.GetSelectionStart = lib.ImGuiInputTextState_GetSelectionStart
 ImGuiInputTextState.GetUndoAvailCount = lib.ImGuiInputTextState_GetUndoAvailCount
 ImGuiInputTextState.HasSelection = lib.ImGuiInputTextState_HasSelection
-function ImGuiInputTextState.__new(ctype)
-    local ptr = lib.ImGuiInputTextState_ImGuiInputTextState()
+function ImGuiInputTextState.__new(ctype,ctx)
+    local ptr = lib.ImGuiInputTextState_ImGuiInputTextState(ctx)
     return ffi.gc(ptr,lib.ImGuiInputTextState_destroy)
 end
 ImGuiInputTextState.OnKeyPressed = lib.ImGuiInputTextState_OnKeyPressed
@@ -5406,6 +5406,7 @@ function M.Combo(a1,a2,a3,a4,a5,a6) -- generic version
     print(a1,a2,a3,a4,a5,a6)
     error'M.Combo could not find overloaded'
 end
+M.ConvertShortcutMod = lib.igConvertShortcutMod
 M.ConvertSingleModFlagToKey = lib.igConvertSingleModFlagToKey
 function M.CreateContext(shared_font_atlas)
     shared_font_atlas = shared_font_atlas or nil
@@ -5445,6 +5446,7 @@ M.DebugNodeWindow = lib.igDebugNodeWindow
 M.DebugNodeWindowSettings = lib.igDebugNodeWindowSettings
 M.DebugNodeWindowsList = lib.igDebugNodeWindowsList
 M.DebugNodeWindowsListByBeginStackParent = lib.igDebugNodeWindowsListByBeginStackParent
+M.DebugRenderKeyboardPreview = lib.igDebugRenderKeyboardPreview
 M.DebugRenderViewportThumbnail = lib.igDebugRenderViewportThumbnail
 M.DebugStartItemPicker = lib.igDebugStartItemPicker
 M.DebugTextEncoding = lib.igDebugTextEncoding
@@ -5799,15 +5801,15 @@ M.GetItemStatusFlags = lib.igGetItemStatusFlags
 M.GetKeyChordName = lib.igGetKeyChordName
 M.GetKeyData = lib.igGetKeyData
 M.GetKeyIndex = lib.igGetKeyIndex
+function M.GetKeyMagnitude2d(key_left,key_right,key_up,key_down)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.igGetKeyMagnitude2d(nonUDT_out,key_left,key_right,key_up,key_down)
+    return nonUDT_out
+end
 M.GetKeyName = lib.igGetKeyName
 M.GetKeyOwner = lib.igGetKeyOwner
 M.GetKeyOwnerData = lib.igGetKeyOwnerData
 M.GetKeyPressedAmount = lib.igGetKeyPressedAmount
-function M.GetKeyVector2d(key_left,key_right,key_up,key_down)
-    local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetKeyVector2d(nonUDT_out,key_left,key_right,key_up,key_down)
-    return nonUDT_out
-end
 M.GetMainViewport = lib.igGetMainViewport
 M.GetMouseClickedCount = lib.igGetMouseClickedCount
 M.GetMouseCursor = lib.igGetMouseCursor
@@ -5932,6 +5934,7 @@ function M.ImClamp(v,mn,mx)
     return nonUDT_out
 end
 M.ImDot = lib.igImDot
+M.ImExponentialMovingAverage = lib.igImExponentialMovingAverage
 M.ImFileClose = lib.igImFileClose
 M.ImFileGetSize = lib.igImFileGetSize
 function M.ImFileLoadToMemory(filename,mode,out_file_size,padding_bytes)
