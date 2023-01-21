@@ -5310,12 +5310,12 @@ void ImPlot_PlotToPixels_double(ImVec2 *pOut,double x,double y,ImAxis x_axis,ImA
 void ImPlot_GetPlotPos(ImVec2 *pOut);
 void ImPlot_GetPlotSize(ImVec2 *pOut);
 void ImPlot_GetPlotMousePos(ImPlotPoint *pOut,ImAxis x_axis,ImAxis y_axis);
-ImPlotRect ImPlot_GetPlotLimits(ImAxis x_axis,ImAxis y_axis);
+void ImPlot_GetPlotLimits(ImPlotRect *pOut,ImAxis x_axis,ImAxis y_axis);
 _Bool                ImPlot_IsPlotHovered(void);
 _Bool                ImPlot_IsAxisHovered(ImAxis axis);
 _Bool                ImPlot_IsSubplotsHovered(void);
 _Bool                ImPlot_IsPlotSelected(void);
-ImPlotRect ImPlot_GetPlotSelection(ImAxis x_axis,ImAxis y_axis);
+void ImPlot_GetPlotSelection(ImPlotRect *pOut,ImAxis x_axis,ImAxis y_axis);
 void ImPlot_CancelPlotSelection(void);
 void ImPlot_HideNextItem(                                   _Bool                                         hidden,ImPlotCond cond);
 _Bool                ImPlot_BeginAlignedPlots(const char* group_id,                                                             _Bool                                                                   vertical);

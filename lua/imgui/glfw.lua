@@ -2631,7 +2631,9 @@ M.ImPlot_GetPlotDrawList = lib.ImPlot_GetPlotDrawList
 function M.ImPlot_GetPlotLimits(x_axis,y_axis)
     x_axis = x_axis or -1
     y_axis = y_axis or -1
-    return lib.ImPlot_GetPlotLimits(x_axis,y_axis)
+    local nonUDT_out = ffi.new("ImPlotRect")
+    lib.ImPlot_GetPlotLimits(nonUDT_out,x_axis,y_axis)
+    return nonUDT_out
 end
 function M.ImPlot_GetPlotMousePos(x_axis,y_axis)
     x_axis = x_axis or -1
@@ -2648,7 +2650,9 @@ end
 function M.ImPlot_GetPlotSelection(x_axis,y_axis)
     x_axis = x_axis or -1
     y_axis = y_axis or -1
-    return lib.ImPlot_GetPlotSelection(x_axis,y_axis)
+    local nonUDT_out = ffi.new("ImPlotRect")
+    lib.ImPlot_GetPlotSelection(nonUDT_out,x_axis,y_axis)
+    return nonUDT_out
 end
 function M.ImPlot_GetPlotSize()
     local nonUDT_out = ffi.new("ImVec2")
