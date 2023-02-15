@@ -1131,14 +1131,6 @@ function ImGuiMenuColumns.__new(ctype)
 end
 ImGuiMenuColumns.Update = lib.ImGuiMenuColumns_Update
 M.ImGuiMenuColumns = ffi.metatype("ImGuiMenuColumns",ImGuiMenuColumns)
---------------------------ImGuiMetricsConfig----------------------------
-local ImGuiMetricsConfig= {}
-ImGuiMetricsConfig.__index = ImGuiMetricsConfig
-function ImGuiMetricsConfig.__new(ctype)
-    local ptr = lib.ImGuiMetricsConfig_ImGuiMetricsConfig()
-    return ffi.gc(ptr,lib.ImGuiMetricsConfig_destroy)
-end
-M.ImGuiMetricsConfig = ffi.metatype("ImGuiMetricsConfig",ImGuiMetricsConfig)
 --------------------------ImGuiNavItemData----------------------------
 local ImGuiNavItemData= {}
 ImGuiNavItemData.__index = ImGuiNavItemData
@@ -1384,8 +1376,6 @@ M.ImGuiStyleMod = ffi.metatype("ImGuiStyleMod",ImGuiStyleMod)
 --------------------------ImGuiTabBar----------------------------
 local ImGuiTabBar= {}
 ImGuiTabBar.__index = ImGuiTabBar
-ImGuiTabBar.GetTabName = lib.ImGuiTabBar_GetTabName
-ImGuiTabBar.GetTabOrder = lib.ImGuiTabBar_GetTabOrder
 function ImGuiTabBar.__new(ctype)
     local ptr = lib.ImGuiTabBar_ImGuiTabBar()
     return ffi.gc(ptr,lib.ImGuiTabBar_destroy)
@@ -5332,6 +5322,7 @@ end
 M.ClearActiveID = lib.igClearActiveID
 M.ClearDragDrop = lib.igClearDragDrop
 M.ClearIniSettings = lib.igClearIniSettings
+M.ClearWindowSettings = lib.igClearWindowSettings
 M.CloseButton = lib.igCloseButton
 M.CloseCurrentPopup = lib.igCloseCurrentPopup
 M.ClosePopupToLevel = lib.igClosePopupToLevel
@@ -5489,6 +5480,11 @@ M.DockContextGenNodeID = lib.igDockContextGenNodeID
 M.DockContextInitialize = lib.igDockContextInitialize
 M.DockContextNewFrameUpdateDocking = lib.igDockContextNewFrameUpdateDocking
 M.DockContextNewFrameUpdateUndocking = lib.igDockContextNewFrameUpdateUndocking
+M.DockContextProcessUndockNode = lib.igDockContextProcessUndockNode
+function M.DockContextProcessUndockWindow(ctx,window,clear_persistent_docking_ref)
+    if clear_persistent_docking_ref == nil then clear_persistent_docking_ref = true end
+    return lib.igDockContextProcessUndockWindow(ctx,window,clear_persistent_docking_ref)
+end
 M.DockContextQueueDock = lib.igDockContextQueueDock
 M.DockContextQueueUndockNode = lib.igDockContextQueueUndockNode
 M.DockContextQueueUndockWindow = lib.igDockContextQueueUndockWindow
@@ -5654,7 +5650,6 @@ end
 M.FindBottomMostVisibleWindowWithinBeginStack = lib.igFindBottomMostVisibleWindowWithinBeginStack
 M.FindHoveredViewportFromPlatformWindowStack = lib.igFindHoveredViewportFromPlatformWindowStack
 M.FindOrCreateColumns = lib.igFindOrCreateColumns
-M.FindOrCreateWindowSettings = lib.igFindOrCreateWindowSettings
 function M.FindRenderedTextEnd(text,text_end)
     text_end = text_end or nil
     return lib.igFindRenderedTextEnd(text,text_end)
@@ -5665,7 +5660,8 @@ M.FindViewportByPlatformHandle = lib.igFindViewportByPlatformHandle
 M.FindWindowByID = lib.igFindWindowByID
 M.FindWindowByName = lib.igFindWindowByName
 M.FindWindowDisplayIndex = lib.igFindWindowDisplayIndex
-M.FindWindowSettings = lib.igFindWindowSettings
+M.FindWindowSettingsByID = lib.igFindWindowSettingsByID
+M.FindWindowSettingsByWindow = lib.igFindWindowSettingsByWindow
 M.FocusTopMostWindowUnderOne = lib.igFocusTopMostWindowUnderOne
 M.FocusWindow = lib.igFocusWindow
 M.GcAwakeTransientWindowBuffers = lib.igGcAwakeTransientWindowBuffers
@@ -5725,6 +5721,7 @@ function M.GetContentRegionMaxAbs()
 end
 M.GetCurrentContext = lib.igGetCurrentContext
 M.GetCurrentFocusScope = lib.igGetCurrentFocusScope
+M.GetCurrentTabBar = lib.igGetCurrentTabBar
 M.GetCurrentTable = lib.igGetCurrentTable
 M.GetCurrentWindow = lib.igGetCurrentWindow
 M.GetCurrentWindowRead = lib.igGetCurrentWindowRead
@@ -5781,7 +5778,14 @@ function M.GetID(a1,a2) -- generic version
     print(a1,a2)
     error'M.GetID could not find overloaded'
 end
-M.GetIDWithSeed = lib.igGetIDWithSeed
+M.GetIDWithSeed_Str = lib.igGetIDWithSeed_Str
+M.GetIDWithSeed_Int = lib.igGetIDWithSeed_Int
+function M.GetIDWithSeed(a1,a2,a3) -- generic version
+    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.GetIDWithSeed_Str(a1,a2,a3) end
+    if (ffi.istype('int',a1) or type(a1)=='number') then return M.GetIDWithSeed_Int(a1,a2) end
+    print(a1,a2,a3)
+    error'M.GetIDWithSeed could not find overloaded'
+end
 M.GetIO = lib.igGetIO
 M.GetInputTextState = lib.igGetInputTextState
 M.GetItemFlags = lib.igGetItemFlags
@@ -5926,7 +5930,9 @@ function M.ImBezierQuadraticCalc(p1,p2,p3,t)
     lib.igImBezierQuadraticCalc(nonUDT_out,p1,p2,p3,t)
     return nonUDT_out
 end
+M.ImBitArrayClearAllBits = lib.igImBitArrayClearAllBits
 M.ImBitArrayClearBit = lib.igImBitArrayClearBit
+M.ImBitArrayGetStorageSizeInBytes = lib.igImBitArrayGetStorageSizeInBytes
 M.ImBitArraySetBit = lib.igImBitArraySetBit
 M.ImBitArraySetBitRange = lib.igImBitArraySetBitRange
 M.ImBitArrayTestBit = lib.igImBitArrayTestBit
@@ -6149,7 +6155,10 @@ function M.ImageButton(str_id,user_texture_id,size,uv0,uv1,bg_col,tint_col)
     uv1 = uv1 or ImVec2(1,1)
     return lib.igImageButton(str_id,user_texture_id,size,uv0,uv1,bg_col,tint_col)
 end
-M.ImageButtonEx = lib.igImageButtonEx
+function M.ImageButtonEx(id,texture_id,size,uv0,uv1,bg_col,tint_col,flags)
+    flags = flags or 0
+    return lib.igImageButtonEx(id,texture_id,size,uv0,uv1,bg_col,tint_col,flags)
+end
 function M.Indent(indent_w)
     indent_w = indent_w or 0.0
     return lib.igIndent(indent_w)
@@ -6758,6 +6767,8 @@ function M.Selectable(a1,a2,a3,a4) -- generic version
 end
 M.Separator = lib.igSeparator
 M.SeparatorEx = lib.igSeparatorEx
+M.SeparatorText = lib.igSeparatorText
+M.SeparatorTextEx = lib.igSeparatorTextEx
 M.SetActiveID = lib.igSetActiveID
 M.SetActiveIdUsingAllKeyboardKeys = lib.igSetActiveIdUsingAllKeyboardKeys
 function M.SetAllocatorFunctions(alloc_func,free_func,user_data)
@@ -7080,7 +7091,12 @@ M.TabBarAddTab = lib.igTabBarAddTab
 M.TabBarCloseTab = lib.igTabBarCloseTab
 M.TabBarFindMostRecentlySelectedTabForActiveWindow = lib.igTabBarFindMostRecentlySelectedTabForActiveWindow
 M.TabBarFindTabByID = lib.igTabBarFindTabByID
+M.TabBarFindTabByOrder = lib.igTabBarFindTabByOrder
+M.TabBarGetCurrentTab = lib.igTabBarGetCurrentTab
+M.TabBarGetTabName = lib.igTabBarGetTabName
+M.TabBarGetTabOrder = lib.igTabBarGetTabOrder
 M.TabBarProcessReorder = lib.igTabBarProcessReorder
+M.TabBarQueueFocus = lib.igTabBarQueueFocus
 M.TabBarQueueReorder = lib.igTabBarQueueReorder
 M.TabBarQueueReorderFromMousePos = lib.igTabBarQueueReorderFromMousePos
 M.TabBarRemoveTab = lib.igTabBarRemoveTab
@@ -7159,6 +7175,7 @@ M.TableGetColumnWidthAuto = lib.igTableGetColumnWidthAuto
 M.TableGetHeaderRowHeight = lib.igTableGetHeaderRowHeight
 M.TableGetHoveredColumn = lib.igTableGetHoveredColumn
 M.TableGetInstanceData = lib.igTableGetInstanceData
+M.TableGetInstanceID = lib.igTableGetInstanceID
 M.TableGetMaxColumnWidth = lib.igTableGetMaxColumnWidth
 M.TableGetRowIndex = lib.igTableGetRowIndex
 M.TableGetSortSpecs = lib.igTableGetSortSpecs

@@ -127,7 +127,7 @@ if(IMPL_GLFW)
 endif(IMPL_GLFW)
 
 if(IMPL_SDL)
-    list(APPEND IMGUI_SOURCES_sdl ${BAKENDS_FOLDER}imgui_impl_sdl.cpp)
+    list(APPEND IMGUI_SOURCES_sdl ${BAKENDS_FOLDER}imgui_impl_sdl2.cpp)
 	if(DEFINED SDL_PATH)
 		message(STATUS "SDL_PATH defined as " ${SDL_PATH})
 		FIND_PACKAGE(SDL2 REQUIRED PATHS ${SDL_PATH})
