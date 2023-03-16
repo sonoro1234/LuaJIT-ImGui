@@ -68,6 +68,7 @@ typedef struct ImRect ImRect;
 typedef struct ImDrawDataBuilder ImDrawDataBuilder;
 typedef struct ImGuiColorMod ImGuiColorMod;
 typedef struct ImGuiContextHook ImGuiContextHook;
+typedef struct ImGuiDataVarInfo ImGuiDataVarInfo;
 typedef struct ImGuiDataTypeInfo ImGuiDataTypeInfo;
 typedef struct ImGuiDockContext ImGuiDockContext;
 typedef struct ImGuiDockRequest ImGuiDockRequest;
@@ -921,6 +922,8 @@ struct ImGuiIO
    _Bool         ConfigWindowsResizeFromEdges;
    _Bool         ConfigWindowsMoveFromTitleBarOnly;
     float ConfigMemoryCompactTimer;
+   _Bool         ConfigDebugBeginReturnValueOnce;
+   _Bool         ConfigDebugBeginReturnValueLoop;
     const char* BackendPlatformName;
     const char* BackendRendererName;
     void* BackendPlatformUserData;
@@ -948,6 +951,7 @@ struct ImGuiIO
     int KeyMap[ImGuiKey_COUNT];
    _Bool         KeysDown[ImGuiKey_COUNT];
     float NavInputs[ImGuiNavInput_COUNT];
+    ImGuiContext* Ctx;
     ImVec2 MousePos;
    _Bool         MouseDown[5];
     float MouseWheel;
@@ -984,6 +988,7 @@ struct ImGuiIO
 };
 struct ImGuiInputTextCallbackData
 {
+    ImGuiContext* Ctx;
     ImGuiInputTextFlags EventFlag;
     ImGuiInputTextFlags Flags;
     void* UserData;
@@ -1076,6 +1081,7 @@ struct ImGuiStorage
 typedef struct ImGuiStoragePair ImGuiStoragePair;
 struct ImGuiListClipper
 {
+    ImGuiContext* Ctx;
     int DisplayStart;
     int DisplayEnd;
     int ItemsCount;
@@ -1371,6 +1377,7 @@ struct ImDrawListSharedData;
 struct ImGuiColorMod;
 struct ImGuiContext;
 struct ImGuiContextHook;
+struct ImGuiDataVarInfo;
 struct ImGuiDataTypeInfo;
 struct ImGuiDockContext;
 struct ImGuiDockRequest;
@@ -1620,6 +1627,12 @@ typedef enum {
     ImGuiPopupPositionPolicy_ComboBox,
     ImGuiPopupPositionPolicy_Tooltip,
 }ImGuiPopupPositionPolicy;
+struct ImGuiDataVarInfo
+{
+    ImGuiDataType Type;
+    ImU32 Count;
+    ImU32 Offset;
+};
 typedef struct ImGuiDataTypeTempStorage ImGuiDataTypeTempStorage;
 struct ImGuiDataTypeTempStorage
 {
@@ -2380,7 +2393,6 @@ struct ImGuiContext
     ImGuiID NavActivateId;
     ImGuiID NavActivateDownId;
     ImGuiID NavActivatePressedId;
-    ImGuiID NavActivateInputId;
     ImGuiActivateFlags NavActivateFlags;
     ImGuiID NavJustMovedToId;
     ImGuiID NavJustMovedToFocusScopeId;
@@ -2490,6 +2502,7 @@ struct ImGuiContext
     ImGuiID PlatformImeViewport;
     char PlatformLocaleDecimalPoint;
     ImGuiDockContext DockContext;
+    void (*DockNodeWindowMenuHandler)(ImGuiContext* ctx, ImGuiDockNode* node, ImGuiTabBar* tab_bar);
    _Bool         SettingsLoaded;
     float SettingsDirtyTimer;
     ImGuiTextBuffer SettingsIniData;
@@ -2513,7 +2526,9 @@ struct ImGuiContext
     ImGuiDebugLogFlags DebugLogFlags;
     ImGuiTextBuffer DebugLogBuf;
     ImGuiTextIndex DebugLogIndex;
+    ImU8 DebugLogClipperAutoDisableFrames;
     ImU8 DebugLocateFrames;
+    ImS8 DebugBeginReturnValueCullDepth;
    _Bool         DebugItemPickerActive;
     ImU8 DebugItemPickerMouseButton;
     ImGuiID DebugItemPickerBreakId;
@@ -2570,6 +2585,7 @@ struct ImGuiWindowTempData
 typedef struct ImVector_ImGuiOldColumns {int Size;int Capacity;ImGuiOldColumns* Data;} ImVector_ImGuiOldColumns;
 struct ImGuiWindow
 {
+    ImGuiContext* Ctx;
     char* Name;
     ImGuiID ID;
     ImGuiWindowFlags Flags, FlagsPreviousFrame;
@@ -3042,8 +3058,8 @@ void igPopStyleColor(int count);
 void igPushStyleVar_Float(ImGuiStyleVar idx,float val);
 void igPushStyleVar_Vec2(ImGuiStyleVar idx,const ImVec2 val);
 void igPopStyleVar(int count);
-void igPushAllowKeyboardFocus(                                        _Bool                                              allow_keyboard_focus);
-void igPopAllowKeyboardFocus(void);
+void igPushTabStop(                             _Bool                                   tab_stop);
+void igPopTabStop(void);
 void igPushButtonRepeat(                                  _Bool                                        repeat);
 void igPopButtonRepeat(void);
 void igPushItemWidth(float item_width);
@@ -3207,7 +3223,7 @@ _Bool                igBeginMenu(const char* label,                             
 void igEndMenu(void);
 _Bool                igMenuItem_Bool(const char* label,const char* shortcut,                                                                      _Bool                                                                            selected,                                                                                    _Bool                                                                                          enabled);
 _Bool                igMenuItem_BoolPtr(const char* label,const char* shortcut,                                                                         _Bool                                                                             * p_selected,                                                                                          _Bool                                                                                                enabled);
-void igBeginTooltip(void);
+_Bool                igBeginTooltip(void);
 void igEndTooltip(void);
 void igSetTooltip(const char* fmt,...);
 void igSetTooltipV(const char* fmt,va_list args);
@@ -3751,6 +3767,7 @@ void ImDrawDataBuilder_Clear(ImDrawDataBuilder* self);
 void ImDrawDataBuilder_ClearFreeMemory(ImDrawDataBuilder* self);
 int ImDrawDataBuilder_GetDrawListCount(ImDrawDataBuilder* self);
 void ImDrawDataBuilder_FlattenIntoSingleLayer(ImDrawDataBuilder* self);
+void* ImGuiDataVarInfo_GetVarPtr(ImGuiDataVarInfo* self,void* parent);
 ImGuiStyleMod* ImGuiStyleMod_ImGuiStyleMod_Int(ImGuiStyleVar idx,int v);
 void ImGuiStyleMod_destroy(ImGuiStyleMod* self);
 ImGuiStyleMod* ImGuiStyleMod_ImGuiStyleMod_Float(ImGuiStyleVar idx,float v);
@@ -3762,7 +3779,7 @@ void ImGuiMenuColumns_destroy(ImGuiMenuColumns* self);
 void ImGuiMenuColumns_Update(ImGuiMenuColumns* self,float spacing,                                                                            _Bool                                                                                  window_reappearing);
 float ImGuiMenuColumns_DeclColumns(ImGuiMenuColumns* self,float w_icon,float w_label,float w_shortcut,float w_mark);
 void ImGuiMenuColumns_CalcNextTotalWidth(ImGuiMenuColumns* self,                                                                          _Bool                                                                                update_offsets);
-ImGuiInputTextState* ImGuiInputTextState_ImGuiInputTextState(ImGuiContext* ctx);
+ImGuiInputTextState* ImGuiInputTextState_ImGuiInputTextState(void);
 void ImGuiInputTextState_destroy(ImGuiInputTextState* self);
 void ImGuiInputTextState_ClearText(ImGuiInputTextState* self);
 void ImGuiInputTextState_ClearFreeMemory(ImGuiInputTextState* self);
@@ -3789,8 +3806,8 @@ ImGuiLastItemData* ImGuiLastItemData_ImGuiLastItemData(void);
 void ImGuiLastItemData_destroy(ImGuiLastItemData* self);
 ImGuiStackSizes* ImGuiStackSizes_ImGuiStackSizes(void);
 void ImGuiStackSizes_destroy(ImGuiStackSizes* self);
-void ImGuiStackSizes_SetToCurrentState(ImGuiStackSizes* self);
-void ImGuiStackSizes_CompareWithCurrentState(ImGuiStackSizes* self);
+void ImGuiStackSizes_SetToContextState(ImGuiStackSizes* self,ImGuiContext* ctx);
+void ImGuiStackSizes_CompareWithContextState(ImGuiStackSizes* self,ImGuiContext* ctx);
 ImGuiPtrOrIndex* ImGuiPtrOrIndex_ImGuiPtrOrIndex_Ptr(void* ptr);
 void ImGuiPtrOrIndex_destroy(ImGuiPtrOrIndex* self);
 ImGuiPtrOrIndex* ImGuiPtrOrIndex_ImGuiPtrOrIndex_Int(int index);
@@ -3896,6 +3913,7 @@ void igSetWindowPos_WindowPtr(ImGuiWindow* window,const ImVec2 pos,ImGuiCond con
 void igSetWindowSize_WindowPtr(ImGuiWindow* window,const ImVec2 size,ImGuiCond cond);
 void igSetWindowCollapsed_WindowPtr(ImGuiWindow* window,                                                                  _Bool                                                                        collapsed,ImGuiCond cond);
 void igSetWindowHitTestHole(ImGuiWindow* window,const ImVec2 pos,const ImVec2 size);
+void igSetWindowHiddendAndSkipItemsForCurrentFrame(ImGuiWindow* window);
 void igWindowRectAbsToRel(ImRect *pOut,ImGuiWindow* window,const ImRect r);
 void igWindowRectRelToAbs(ImRect *pOut,ImGuiWindow* window,const ImRect r);
 void igFocusWindow(ImGuiWindow* window);
@@ -3975,6 +3993,7 @@ void igGetContentRegionMaxAbs(ImVec2 *pOut);
 void igShrinkWidths(ImGuiShrinkWidthItem* items,int count,float width_excess);
 void igPushItemFlag(ImGuiItemFlags option,                                                    _Bool                                                          enabled);
 void igPopItemFlag(void);
+const ImGuiDataVarInfo* igGetStyleVarInfo(ImGuiStyleVar idx);
 void igLogBegin(ImGuiLogType type,int auto_open_depth);
 void igLogToBuffer(int auto_open_depth);
 void igLogRenderedText(const ImVec2* ref_pos,const char* text,const char* text_end);
@@ -3986,7 +4005,7 @@ void igClosePopupsOverWindow(ImGuiWindow* ref_window,                           
 void igClosePopupsExceptModals(void);
 _Bool                igIsPopupOpen_ID(ImGuiID id,ImGuiPopupFlags popup_flags);
 _Bool                igBeginPopupEx(ImGuiID id,ImGuiWindowFlags extra_flags);
-void igBeginTooltipEx(ImGuiTooltipFlags tooltip_flags,ImGuiWindowFlags extra_window_flags);
+_Bool                igBeginTooltipEx(ImGuiTooltipFlags tooltip_flags,ImGuiWindowFlags extra_window_flags);
 void igGetPopupAllowedExtentRect(ImRect *pOut,ImGuiWindow* window);
 ImGuiWindow* igGetTopMostPopupModal(void);
 ImGuiWindow* igGetTopMostAndVisiblePopupModal(void);
@@ -4059,6 +4078,7 @@ void igDockContextProcessUndockWindow(ImGuiContext* ctx,ImGuiWindow* window,    
 void igDockContextProcessUndockNode(ImGuiContext* ctx,ImGuiDockNode* node);
 _Bool                igDockContextCalcDropPosForDocking(ImGuiWindow* target,ImGuiDockNode* target_node,ImGuiWindow* payload_window,ImGuiDockNode* payload_node,ImGuiDir split_dir,                                                                                                                                                                            _Bool                                                                                                                                                                                  split_outer,ImVec2* out_pos);
 ImGuiDockNode* igDockContextFindNodeByID(ImGuiContext* ctx,ImGuiID id);
+void igDockNodeWindowMenuHandler_Default(ImGuiContext* ctx,ImGuiDockNode* node,ImGuiTabBar* tab_bar);
 _Bool                igDockNodeBeginAmendTabBar(ImGuiDockNode* node);
 void igDockNodeEndAmendTabBar(void);
 ImGuiDockNode* igDockNodeGetRootNode(ImGuiDockNode* node);
@@ -5783,6 +5803,37 @@ typedef enum {
       LOCAL,
       WORLD
    }MODE;
+typedef enum {
+      DIRECTION_X,
+      DIRECTION_Y,
+      DIRECTION_Z,
+      PLANE_X,
+      PLANE_Y,
+      PLANE_Z,
+      SELECTION,
+      INACTIVE,
+      TRANSLATION_LINE,
+      SCALE_LINE,
+      ROTATION_USING_BORDER,
+      ROTATION_USING_FILL,
+      HATCHED_AXIS_LINES,
+      TEXT,
+      TEXT_SHADOW,
+      COUNT
+   }COLOR;
+typedef struct Style Style;
+struct Style
+{
+      float TranslationLineThickness;
+      float TranslationLineArrowSize;
+      float RotationLineThickness;
+      float RotationOuterLineThickness;
+      float ScaleLineThickness;
+      float ScaleLineCircleSize;
+      float HatchedAxisLineThickness;
+      float CenterCircleSize;
+      ImVec4 Colors[COUNT];
+};
 void ImGuizmo_SetDrawlist(ImDrawList* drawlist);
 void ImGuizmo_BeginFrame(void);
 void ImGuizmo_SetImGuiContext(ImGuiContext* ctx);
@@ -5796,11 +5847,15 @@ void ImGuizmo_SetOrthographic(                                        _Bool     
 void ImGuizmo_DrawCubes(const float* view,const float* projection,const float* matrices,int matrixCount);
 void ImGuizmo_DrawGrid(const float* view,const float* projection,const float* matrix,const float gridSize);
 _Bool                ImGuizmo_Manipulate(const float* view,const float* projection,OPERATION operation,MODE mode,float* matrix,float* deltaMatrix,const float* snap,const float* localBounds,const float* boundsSnap);
-void ImGuizmo_ViewManipulate(float* view,float length,ImVec2 position,ImVec2 size,ImU32 backgroundColor);
+void ImGuizmo_ViewManipulate_Float(float* view,float length,ImVec2 position,ImVec2 size,ImU32 backgroundColor);
+void ImGuizmo_ViewManipulate_FloatPtr(float* view,const float* projection,OPERATION operation,MODE mode,float* matrix,float length,ImVec2 position,ImVec2 size,ImU32 backgroundColor);
 void ImGuizmo_SetID(int id);
 _Bool                ImGuizmo_IsOver_OPERATION(OPERATION op);
 void ImGuizmo_SetGizmoSizeClipSpace(float value);
 void ImGuizmo_AllowAxisFlip(                                      _Bool                                            value);
+Style* Style_Style(void);
+void Style_destroy(Style* self);
+Style* ImGuizmo_GetStyle(void);
 typedef int vgButtons;
 typedef int vgModifiers;
 typedef struct Vec4{
@@ -5924,6 +5979,7 @@ typedef enum {
     ImNodesCol_BoxSelectorOutline,
     ImNodesCol_GridBackground,
     ImNodesCol_GridLine,
+    ImNodesCol_GridLinePrimary,
     ImNodesCol_MiniMapBackground,
     ImNodesCol_MiniMapBackgroundHovered,
     ImNodesCol_MiniMapOutline,
@@ -5959,7 +6015,9 @@ typedef enum {
 typedef enum {
     ImNodesStyleFlags_None = 0,
     ImNodesStyleFlags_NodeOutline = 1 << 0,
-    ImNodesStyleFlags_GridLines = 1 << 2
+    ImNodesStyleFlags_GridLines = 1 << 2,
+    ImNodesStyleFlags_GridLinesPrimary = 1 << 3,
+    ImNodesStyleFlags_GridSnapping = 1 << 4
 }ImNodesStyleFlags_;
 typedef enum {
     ImNodesPinShape_Circle,
@@ -5985,15 +6043,22 @@ struct LinkDetachWithModifierClick
         const              _Bool                 * Modifier;
 };
 typedef struct LinkDetachWithModifierClick LinkDetachWithModifierClick;
+struct MultipleSelectModifier
+{
+        const              _Bool                 * Modifier;
+};
+typedef struct MultipleSelectModifier MultipleSelectModifier;
 struct ImNodesIO
 {
     EmulateThreeButtonMouse EmulateThreeButtonMouse;
     LinkDetachWithModifierClick LinkDetachWithModifierClick;
+    MultipleSelectModifier MultipleSelectModifier;
     int AltMouseButton;
     float AutoPanningSpeed;
 };
 typedef struct EmulateThreeButtonMouse EmulateThreeButtonMouse;
 typedef struct LinkDetachWithModifierClick LinkDetachWithModifierClick;
+typedef struct MultipleSelectModifier MultipleSelectModifier;
 typedef struct ImNodesStyle ImNodesStyle;
 struct ImNodesStyle
 {
@@ -6031,6 +6096,8 @@ EmulateThreeButtonMouse* EmulateThreeButtonMouse_EmulateThreeButtonMouse(void);
 void EmulateThreeButtonMouse_destroy(EmulateThreeButtonMouse* self);
 LinkDetachWithModifierClick* LinkDetachWithModifierClick_LinkDetachWithModifierClick(void);
 void LinkDetachWithModifierClick_destroy(LinkDetachWithModifierClick* self);
+MultipleSelectModifier* MultipleSelectModifier_MultipleSelectModifier(void);
+void MultipleSelectModifier_destroy(MultipleSelectModifier* self);
 ImNodesIO* ImNodesIO_ImNodesIO(void);
 void ImNodesIO_destroy(ImNodesIO* self);
 ImNodesStyle* ImNodesStyle_ImNodesStyle(void);
@@ -6048,9 +6115,9 @@ void imnodes_EditorContextResetPanning(const ImVec2 pos);
 void imnodes_EditorContextMoveToNode(const int node_id);
 ImNodesIO* imnodes_GetIO(void);
 ImNodesStyle* imnodes_GetStyle(void);
-void imnodes_StyleColorsDark(void);
-void imnodes_StyleColorsClassic(void);
-void imnodes_StyleColorsLight(void);
+void imnodes_StyleColorsDark(ImNodesStyle* dest);
+void imnodes_StyleColorsClassic(ImNodesStyle* dest);
+void imnodes_StyleColorsLight(ImNodesStyle* dest);
 void imnodes_BeginNodeEditor(void);
 void imnodes_EndNodeEditor(void);
 void imnodes_MiniMap(const float minimap_size_fraction,const ImNodesMiniMapLocation location,const ImNodesMiniMapNodeHoveringCallback node_hovering_callback,const ImNodesMiniMapNodeHoveringCallbackUserData node_hovering_callback_data);
@@ -6080,6 +6147,7 @@ void imnodes_SetNodeGridSpacePos(int node_id,const ImVec2 grid_pos);
 void imnodes_GetNodeScreenSpacePos(ImVec2 *pOut,const int node_id);
 void imnodes_GetNodeEditorSpacePos(ImVec2 *pOut,const int node_id);
 void imnodes_GetNodeGridSpacePos(ImVec2 *pOut,const int node_id);
+void imnodes_SnapNodeToGrid(int node_id);
 _Bool                imnodes_IsEditorHovered(void);
 _Bool                imnodes_IsNodeHovered(int* node_id);
 _Bool                imnodes_IsLinkHovered(int* link_id);

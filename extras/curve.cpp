@@ -9,10 +9,8 @@
 // v1.00 - jari komppa's original
 
 //#pragma once
-
-#include "imgui.h"
-
 #define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui.h"
 #include "imgui_internal.h"
 #include <algorithm> 
 //#include <cmath>

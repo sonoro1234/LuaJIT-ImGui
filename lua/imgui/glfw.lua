@@ -955,6 +955,11 @@ function ImGuiContextHook.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiContextHook_destroy)
 end
 M.ImGuiContextHook = ffi.metatype("ImGuiContextHook",ImGuiContextHook)
+--------------------------ImGuiDataVarInfo----------------------------
+local ImGuiDataVarInfo= {}
+ImGuiDataVarInfo.__index = ImGuiDataVarInfo
+ImGuiDataVarInfo.GetVarPtr = lib.ImGuiDataVarInfo_GetVarPtr
+M.ImGuiDataVarInfo = ffi.metatype("ImGuiDataVarInfo",ImGuiDataVarInfo)
 --------------------------ImGuiDockContext----------------------------
 local ImGuiDockContext= {}
 ImGuiDockContext.__index = ImGuiDockContext
@@ -1050,8 +1055,8 @@ ImGuiInputTextState.GetSelectionEnd = lib.ImGuiInputTextState_GetSelectionEnd
 ImGuiInputTextState.GetSelectionStart = lib.ImGuiInputTextState_GetSelectionStart
 ImGuiInputTextState.GetUndoAvailCount = lib.ImGuiInputTextState_GetUndoAvailCount
 ImGuiInputTextState.HasSelection = lib.ImGuiInputTextState_HasSelection
-function ImGuiInputTextState.__new(ctype,ctx)
-    local ptr = lib.ImGuiInputTextState_ImGuiInputTextState(ctx)
+function ImGuiInputTextState.__new(ctype)
+    local ptr = lib.ImGuiInputTextState_ImGuiInputTextState()
     return ffi.gc(ptr,lib.ImGuiInputTextState_destroy)
 end
 ImGuiInputTextState.OnKeyPressed = lib.ImGuiInputTextState_OnKeyPressed
@@ -1263,12 +1268,12 @@ M.ImGuiStackLevelInfo = ffi.metatype("ImGuiStackLevelInfo",ImGuiStackLevelInfo)
 --------------------------ImGuiStackSizes----------------------------
 local ImGuiStackSizes= {}
 ImGuiStackSizes.__index = ImGuiStackSizes
-ImGuiStackSizes.CompareWithCurrentState = lib.ImGuiStackSizes_CompareWithCurrentState
+ImGuiStackSizes.CompareWithContextState = lib.ImGuiStackSizes_CompareWithContextState
 function ImGuiStackSizes.__new(ctype)
     local ptr = lib.ImGuiStackSizes_ImGuiStackSizes()
     return ffi.gc(ptr,lib.ImGuiStackSizes_destroy)
 end
-ImGuiStackSizes.SetToCurrentState = lib.ImGuiStackSizes_SetToCurrentState
+ImGuiStackSizes.SetToContextState = lib.ImGuiStackSizes_SetToContextState
 M.ImGuiStackSizes = ffi.metatype("ImGuiStackSizes",ImGuiStackSizes)
 --------------------------ImGuiStackTool----------------------------
 local ImGuiStackTool= {}
@@ -2225,6 +2230,22 @@ function LinkDetachWithModifierClick.__new(ctype)
     return ffi.gc(ptr,lib.LinkDetachWithModifierClick_destroy)
 end
 M.LinkDetachWithModifierClick = ffi.metatype("LinkDetachWithModifierClick",LinkDetachWithModifierClick)
+--------------------------MultipleSelectModifier----------------------------
+local MultipleSelectModifier= {}
+MultipleSelectModifier.__index = MultipleSelectModifier
+function MultipleSelectModifier.__new(ctype)
+    local ptr = lib.MultipleSelectModifier_MultipleSelectModifier()
+    return ffi.gc(ptr,lib.MultipleSelectModifier_destroy)
+end
+M.MultipleSelectModifier = ffi.metatype("MultipleSelectModifier",MultipleSelectModifier)
+--------------------------Style----------------------------
+local Style= {}
+Style.__index = Style
+function Style.__new(ctype)
+    local ptr = lib.Style_Style()
+    return ffi.gc(ptr,lib.Style_destroy)
+end
+M.Style = ffi.metatype("Style",Style)
 --------------------------imguiGizmo----------------------------
 local imguiGizmo= {}
 imguiGizmo.__index = imguiGizmo
@@ -2290,6 +2311,7 @@ M.ImGuizmo_DecomposeMatrixToComponents = lib.ImGuizmo_DecomposeMatrixToComponent
 M.ImGuizmo_DrawCubes = lib.ImGuizmo_DrawCubes
 M.ImGuizmo_DrawGrid = lib.ImGuizmo_DrawGrid
 M.ImGuizmo_Enable = lib.ImGuizmo_Enable
+M.ImGuizmo_GetStyle = lib.ImGuizmo_GetStyle
 M.ImGuizmo_IsOver_Nil = lib.ImGuizmo_IsOver_Nil
 M.ImGuizmo_IsOver_OPERATION = lib.ImGuizmo_IsOver_OPERATION
 function M.ImGuizmo_IsOver(a1) -- generic version
@@ -2316,7 +2338,14 @@ M.ImGuizmo_SetID = lib.ImGuizmo_SetID
 M.ImGuizmo_SetImGuiContext = lib.ImGuizmo_SetImGuiContext
 M.ImGuizmo_SetOrthographic = lib.ImGuizmo_SetOrthographic
 M.ImGuizmo_SetRect = lib.ImGuizmo_SetRect
-M.ImGuizmo_ViewManipulate = lib.ImGuizmo_ViewManipulate
+M.ImGuizmo_ViewManipulate_Float = lib.ImGuizmo_ViewManipulate_Float
+M.ImGuizmo_ViewManipulate_FloatPtr = lib.ImGuizmo_ViewManipulate_FloatPtr
+function M.ImGuizmo_ViewManipulate(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
+    if (ffi.istype('float',a2) or type(a2)=='number') then return M.ImGuizmo_ViewManipulate_Float(a1,a2,a3,a4,a5) end
+    if (ffi.istype('const float*',a2) or ffi.istype('float[]',a2)) then return M.ImGuizmo_ViewManipulate_FloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
+    error'M.ImGuizmo_ViewManipulate could not find overloaded'
+end
 M.ImNodes_AutoPositionNode = lib.ImNodes_AutoPositionNode
 M.ImNodes_BeginCanvas = lib.ImNodes_BeginCanvas
 M.ImNodes_BeginInputSlot = lib.ImNodes_BeginInputSlot
@@ -5496,6 +5525,7 @@ M.DockNodeGetDepth = lib.igDockNodeGetDepth
 M.DockNodeGetRootNode = lib.igDockNodeGetRootNode
 M.DockNodeGetWindowMenuButtonId = lib.igDockNodeGetWindowMenuButtonId
 M.DockNodeIsInHierarchyOf = lib.igDockNodeIsInHierarchyOf
+M.DockNodeWindowMenuHandler_Default = lib.igDockNodeWindowMenuHandler_Default
 function M.DockSpace(id,size,flags,window_class)
     flags = flags or 0
     size = size or ImVec2(0,0)
@@ -5854,6 +5884,7 @@ M.GetStateStorage = lib.igGetStateStorage
 M.GetStyle = lib.igGetStyle
 M.GetStyleColorName = lib.igGetStyleColorName
 M.GetStyleColorVec4 = lib.igGetStyleColorVec4
+M.GetStyleVarInfo = lib.igGetStyleVarInfo
 M.GetTextLineHeight = lib.igGetTextLineHeight
 M.GetTextLineHeightWithSpacing = lib.igGetTextLineHeightWithSpacing
 M.GetTime = lib.igGetTime
@@ -6587,7 +6618,6 @@ function M.PlotLines(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
     print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
     error'M.PlotLines could not find overloaded'
 end
-M.PopAllowKeyboardFocus = lib.igPopAllowKeyboardFocus
 M.PopButtonRepeat = lib.igPopButtonRepeat
 M.PopClipRect = lib.igPopClipRect
 M.PopColumnsBackground = lib.igPopColumnsBackground
@@ -6604,13 +6634,13 @@ function M.PopStyleVar(count)
     count = count or 1
     return lib.igPopStyleVar(count)
 end
+M.PopTabStop = lib.igPopTabStop
 M.PopTextWrapPos = lib.igPopTextWrapPos
 function M.ProgressBar(fraction,size_arg,overlay)
     overlay = overlay or nil
     size_arg = size_arg or ImVec2(-M.FLT_MIN,0)
     return lib.igProgressBar(fraction,size_arg,overlay)
 end
-M.PushAllowKeyboardFocus = lib.igPushAllowKeyboardFocus
 M.PushButtonRepeat = lib.igPushButtonRepeat
 M.PushClipRect = lib.igPushClipRect
 M.PushColumnClipRect = lib.igPushColumnClipRect
@@ -6649,6 +6679,7 @@ function M.PushStyleVar(a1,a2) -- generic version
     print(a1,a2)
     error'M.PushStyleVar could not find overloaded'
 end
+M.PushTabStop = lib.igPushTabStop
 function M.PushTextWrapPos(wrap_local_pos_x)
     wrap_local_pos_x = wrap_local_pos_x or 0.0
     return lib.igPushTextWrapPos(wrap_local_pos_x)
@@ -6930,6 +6961,7 @@ function M.SetWindowFocus(a1) -- generic version
     error'M.SetWindowFocus could not find overloaded'
 end
 M.SetWindowFontScale = lib.igSetWindowFontScale
+M.SetWindowHiddendAndSkipItemsForCurrentFrame = lib.igSetWindowHiddendAndSkipItemsForCurrentFrame
 M.SetWindowHitTestHole = lib.igSetWindowHitTestHole
 function M.SetWindowPos_Vec2(pos,cond)
     cond = cond or 0
@@ -7574,8 +7606,18 @@ M.imnodes_SetNodeDraggable = lib.imnodes_SetNodeDraggable
 M.imnodes_SetNodeEditorSpacePos = lib.imnodes_SetNodeEditorSpacePos
 M.imnodes_SetNodeGridSpacePos = lib.imnodes_SetNodeGridSpacePos
 M.imnodes_SetNodeScreenSpacePos = lib.imnodes_SetNodeScreenSpacePos
-M.imnodes_StyleColorsClassic = lib.imnodes_StyleColorsClassic
-M.imnodes_StyleColorsDark = lib.imnodes_StyleColorsDark
-M.imnodes_StyleColorsLight = lib.imnodes_StyleColorsLight
+M.imnodes_SnapNodeToGrid = lib.imnodes_SnapNodeToGrid
+function M.imnodes_StyleColorsClassic(dest)
+    dest = dest or nil
+    return lib.imnodes_StyleColorsClassic(dest)
+end
+function M.imnodes_StyleColorsDark(dest)
+    dest = dest or nil
+    return lib.imnodes_StyleColorsDark(dest)
+end
+function M.imnodes_StyleColorsLight(dest)
+    dest = dest or nil
+    return lib.imnodes_StyleColorsLight(dest)
+end
 return M
 ----------END_AUTOGENERATED_LUA-----------------------------
