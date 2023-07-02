@@ -1003,6 +1003,7 @@ ImGuiIO.AddKeyAnalogEvent = lib.ImGuiIO_AddKeyAnalogEvent
 ImGuiIO.AddKeyEvent = lib.ImGuiIO_AddKeyEvent
 ImGuiIO.AddMouseButtonEvent = lib.ImGuiIO_AddMouseButtonEvent
 ImGuiIO.AddMousePosEvent = lib.ImGuiIO_AddMousePosEvent
+ImGuiIO.AddMouseSourceEvent = lib.ImGuiIO_AddMouseSourceEvent
 ImGuiIO.AddMouseViewportEvent = lib.ImGuiIO_AddMouseViewportEvent
 ImGuiIO.AddMouseWheelEvent = lib.ImGuiIO_AddMouseWheelEvent
 ImGuiIO.ClearInputCharacters = lib.ImGuiIO_ClearInputCharacters
@@ -1041,6 +1042,15 @@ function ImGuiInputTextCallbackData:InsertChars(pos,text,text_end)
 end
 ImGuiInputTextCallbackData.SelectAll = lib.ImGuiInputTextCallbackData_SelectAll
 M.ImGuiInputTextCallbackData = ffi.metatype("ImGuiInputTextCallbackData",ImGuiInputTextCallbackData)
+--------------------------ImGuiInputTextDeactivatedState----------------------------
+local ImGuiInputTextDeactivatedState= {}
+ImGuiInputTextDeactivatedState.__index = ImGuiInputTextDeactivatedState
+ImGuiInputTextDeactivatedState.ClearFreeMemory = lib.ImGuiInputTextDeactivatedState_ClearFreeMemory
+function ImGuiInputTextDeactivatedState.__new(ctype)
+    local ptr = lib.ImGuiInputTextDeactivatedState_ImGuiInputTextDeactivatedState()
+    return ffi.gc(ptr,lib.ImGuiInputTextDeactivatedState_destroy)
+end
+M.ImGuiInputTextDeactivatedState = ffi.metatype("ImGuiInputTextDeactivatedState",ImGuiInputTextDeactivatedState)
 --------------------------ImGuiInputTextState----------------------------
 local ImGuiInputTextState= {}
 ImGuiInputTextState.__index = ImGuiInputTextState
@@ -1103,11 +1113,11 @@ function ImGuiListClipper:Begin(items_count,items_height)
     return lib.ImGuiListClipper_Begin(self,items_count,items_height)
 end
 ImGuiListClipper.End = lib.ImGuiListClipper_End
-ImGuiListClipper.ForceDisplayRangeByIndices = lib.ImGuiListClipper_ForceDisplayRangeByIndices
 function ImGuiListClipper.__new(ctype)
     local ptr = lib.ImGuiListClipper_ImGuiListClipper()
     return ffi.gc(ptr,lib.ImGuiListClipper_destroy)
 end
+ImGuiListClipper.IncludeRangeByIndices = lib.ImGuiListClipper_IncludeRangeByIndices
 ImGuiListClipper.Step = lib.ImGuiListClipper_Step
 M.ImGuiListClipper = ffi.metatype("ImGuiListClipper",ImGuiListClipper)
 --------------------------ImGuiListClipperData----------------------------
@@ -5677,6 +5687,7 @@ function M.FindBestWindowPosForPopupEx(ref_pos,size,last_dir,r_outer,r_avoid,pol
     lib.igFindBestWindowPosForPopupEx(nonUDT_out,ref_pos,size,last_dir,r_outer,r_avoid,policy)
     return nonUDT_out
 end
+M.FindBlockingModal = lib.igFindBlockingModal
 M.FindBottomMostVisibleWindowWithinBeginStack = lib.igFindBottomMostVisibleWindowWithinBeginStack
 M.FindHoveredViewportFromPlatformWindowStack = lib.igFindHoveredViewportFromPlatformWindowStack
 M.FindOrCreateColumns = lib.igFindOrCreateColumns
@@ -5693,7 +5704,10 @@ M.FindWindowDisplayIndex = lib.igFindWindowDisplayIndex
 M.FindWindowSettingsByID = lib.igFindWindowSettingsByID
 M.FindWindowSettingsByWindow = lib.igFindWindowSettingsByWindow
 M.FocusTopMostWindowUnderOne = lib.igFocusTopMostWindowUnderOne
-M.FocusWindow = lib.igFocusWindow
+function M.FocusWindow(window,flags)
+    flags = flags or 0
+    return lib.igFocusWindow(window,flags)
+end
 M.GcAwakeTransientWindowBuffers = lib.igGcAwakeTransientWindowBuffers
 M.GcCompactTransientMiscBuffers = lib.igGcCompactTransientMiscBuffers
 M.GcCompactTransientWindowBuffers = lib.igGcCompactTransientWindowBuffers
@@ -5837,7 +5851,14 @@ function M.GetItemRectSize()
 end
 M.GetItemStatusFlags = lib.igGetItemStatusFlags
 M.GetKeyChordName = lib.igGetKeyChordName
-M.GetKeyData = lib.igGetKeyData
+M.GetKeyData_ContextPtr = lib.igGetKeyData_ContextPtr
+M.GetKeyData_Key = lib.igGetKeyData_Key
+function M.GetKeyData(a1,a2) -- generic version
+    if (ffi.istype('ImGuiContext*',a1) or ffi.istype('ImGuiContext',a1) or ffi.istype('ImGuiContext[]',a1)) then return M.GetKeyData_ContextPtr(a1,a2) end
+    if ffi.istype('ImGuiKey',a1) then return M.GetKeyData_Key(a1) end
+    print(a1,a2)
+    error'M.GetKeyData could not find overloaded'
+end
 M.GetKeyIndex = lib.igGetKeyIndex
 function M.GetKeyMagnitude2d(key_left,key_right,key_up,key_down)
     local nonUDT_out = ffi.new("ImVec2")
@@ -6023,7 +6044,6 @@ M.ImFormatString = lib.igImFormatString
 M.ImFormatStringToTempBuffer = lib.igImFormatStringToTempBuffer
 M.ImFormatStringToTempBufferV = lib.igImFormatStringToTempBufferV
 M.ImFormatStringV = lib.igImFormatStringV
-M.ImGetDirQuadrantFromDelta = lib.igImGetDirQuadrantFromDelta
 function M.ImHashData(data,data_size,seed)
     seed = seed or 0
     return lib.igImHashData(data,data_size,seed)
@@ -6262,6 +6282,7 @@ function M.InputText(label,buf,buf_size,flags,callback,user_data)
     user_data = user_data or nil
     return lib.igInputText(label,buf,buf_size,flags,callback,user_data)
 end
+M.InputTextDeactivateHook = lib.igInputTextDeactivateHook
 function M.InputTextEx(label,hint,buf,buf_size,size_arg,flags,callback,user_data)
     callback = callback or nil
     user_data = user_data or nil
@@ -6420,6 +6441,10 @@ M.IsWindowAbove = lib.igIsWindowAbove
 M.IsWindowAppearing = lib.igIsWindowAppearing
 M.IsWindowChildOf = lib.igIsWindowChildOf
 M.IsWindowCollapsed = lib.igIsWindowCollapsed
+function M.IsWindowContentHoverable(window,flags)
+    flags = flags or 0
+    return lib.igIsWindowContentHoverable(window,flags)
+end
 M.IsWindowDocked = lib.igIsWindowDocked
 function M.IsWindowFocused(flags)
     flags = flags or 0
@@ -6536,6 +6561,7 @@ function M.MenuItemEx(label,icon,shortcut,selected,enabled)
     return lib.igMenuItemEx(label,icon,shortcut,selected,enabled)
 end
 M.MouseButtonToKey = lib.igMouseButtonToKey
+M.NavClearPreferredPosForAxis = lib.igNavClearPreferredPosForAxis
 M.NavInitRequestApplyResult = lib.igNavInitRequestApplyResult
 M.NavInitWindow = lib.igNavInitWindow
 M.NavMoveRequestApplyResult = lib.igNavMoveRequestApplyResult
@@ -6545,6 +6571,7 @@ M.NavMoveRequestForward = lib.igNavMoveRequestForward
 M.NavMoveRequestResolveWithLastItem = lib.igNavMoveRequestResolveWithLastItem
 M.NavMoveRequestSubmit = lib.igNavMoveRequestSubmit
 M.NavMoveRequestTryWrapping = lib.igNavMoveRequestTryWrapping
+M.NavUpdateCurrentWindowIsScrollPushableX = lib.igNavUpdateCurrentWindowIsScrollPushableX
 M.NewFrame = lib.igNewFrame
 M.NewLine = lib.igNewLine
 M.NextColumn = lib.igNextColumn
@@ -6797,7 +6824,10 @@ function M.Selectable(a1,a2,a3,a4) -- generic version
     error'M.Selectable could not find overloaded'
 end
 M.Separator = lib.igSeparator
-M.SeparatorEx = lib.igSeparatorEx
+function M.SeparatorEx(flags,thickness)
+    thickness = thickness or 1.0
+    return lib.igSeparatorEx(flags,thickness)
+end
 M.SeparatorText = lib.igSeparatorText
 M.SeparatorTextEx = lib.igSeparatorTextEx
 M.SetActiveID = lib.igSetActiveID
@@ -6832,6 +6862,10 @@ end
 function M.SetKeyOwner(key,owner_id,flags)
     flags = flags or 0
     return lib.igSetKeyOwner(key,owner_id,flags)
+end
+function M.SetKeyOwnersForKeyChord(key,owner_id,flags)
+    flags = flags or 0
+    return lib.igSetKeyOwnersForKeyChord(key,owner_id,flags)
 end
 function M.SetKeyboardFocusHere(offset)
     offset = offset or 0
@@ -7377,6 +7411,11 @@ function M.Value(a1,a2,a3) -- generic version
     if (ffi.istype('float',a2) or type(a2)=='number') then return M.Value_Float(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.Value could not find overloaded'
+end
+function M.WindowPosRelToAbs(window,p)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.igWindowPosRelToAbs(nonUDT_out,window,p)
+    return nonUDT_out
 end
 function M.WindowRectAbsToRel(window,r)
     local nonUDT_out = ffi.new("ImRect")
