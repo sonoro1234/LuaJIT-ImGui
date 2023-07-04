@@ -2331,6 +2331,7 @@ function M.ImGuizmo_IsOver(a1) -- generic version
     error'M.ImGuizmo_IsOver could not find overloaded'
 end
 M.ImGuizmo_IsUsing = lib.ImGuizmo_IsUsing
+M.ImGuizmo_IsUsingAny = lib.ImGuizmo_IsUsingAny
 function M.ImGuizmo_Manipulate(view,projection,operation,mode,matrix,deltaMatrix,snap,localBounds,boundsSnap)
     boundsSnap = boundsSnap or nil
     deltaMatrix = deltaMatrix or nil
@@ -2339,6 +2340,7 @@ function M.ImGuizmo_Manipulate(view,projection,operation,mode,matrix,deltaMatrix
     return lib.ImGuizmo_Manipulate(view,projection,operation,mode,matrix,deltaMatrix,snap,localBounds,boundsSnap)
 end
 M.ImGuizmo_RecomposeMatrixFromComponents = lib.ImGuizmo_RecomposeMatrixFromComponents
+M.ImGuizmo_SetAxisLimit = lib.ImGuizmo_SetAxisLimit
 function M.ImGuizmo_SetDrawlist(drawlist)
     drawlist = drawlist or nil
     return lib.ImGuizmo_SetDrawlist(drawlist)
@@ -2347,6 +2349,7 @@ M.ImGuizmo_SetGizmoSizeClipSpace = lib.ImGuizmo_SetGizmoSizeClipSpace
 M.ImGuizmo_SetID = lib.ImGuizmo_SetID
 M.ImGuizmo_SetImGuiContext = lib.ImGuizmo_SetImGuiContext
 M.ImGuizmo_SetOrthographic = lib.ImGuizmo_SetOrthographic
+M.ImGuizmo_SetPlaneLimit = lib.ImGuizmo_SetPlaneLimit
 M.ImGuizmo_SetRect = lib.ImGuizmo_SetRect
 M.ImGuizmo_ViewManipulate_Float = lib.ImGuizmo_ViewManipulate_Float
 M.ImGuizmo_ViewManipulate_FloatPtr = lib.ImGuizmo_ViewManipulate_FloatPtr
@@ -5177,7 +5180,7 @@ function M.AcceptDragDropPayload(type,flags)
     flags = flags or 0
     return lib.igAcceptDragDropPayload(type,flags)
 end
-M.ActivateItem = lib.igActivateItem
+M.ActivateItemByID = lib.igActivateItemByID
 M.AddContextHook = lib.igAddContextHook
 M.AddSettingsHandler = lib.igAddSettingsHandler
 M.AlignTextToFramePadding = lib.igAlignTextToFramePadding
@@ -5238,6 +5241,7 @@ end
 M.BeginDragDropTarget = lib.igBeginDragDropTarget
 M.BeginDragDropTargetCustom = lib.igBeginDragDropTargetCustom
 M.BeginGroup = lib.igBeginGroup
+M.BeginItemTooltip = lib.igBeginItemTooltip
 function M.BeginListBox(label,size)
     size = size or ImVec2(0,0)
     return lib.igBeginListBox(label,size)
@@ -5703,6 +5707,7 @@ M.FindWindowByName = lib.igFindWindowByName
 M.FindWindowDisplayIndex = lib.igFindWindowDisplayIndex
 M.FindWindowSettingsByID = lib.igFindWindowSettingsByID
 M.FindWindowSettingsByWindow = lib.igFindWindowSettingsByWindow
+M.FocusItem = lib.igFocusItem
 M.FocusTopMostWindowUnderOne = lib.igFocusTopMostWindowUnderOne
 function M.FocusWindow(window,flags)
     flags = flags or 0
@@ -6853,12 +6858,13 @@ function M.SetDragDropPayload(type,data,sz,cond)
 end
 M.SetFocusID = lib.igSetFocusID
 M.SetHoveredID = lib.igSetHoveredID
-M.SetItemAllowOverlap = lib.igSetItemAllowOverlap
 M.SetItemDefaultFocus = lib.igSetItemDefaultFocus
 function M.SetItemKeyOwner(key,flags)
     flags = flags or 0
     return lib.igSetItemKeyOwner(key,flags)
 end
+M.SetItemTooltip = lib.igSetItemTooltip
+M.SetItemTooltipV = lib.igSetItemTooltipV
 function M.SetKeyOwner(key,owner_id,flags)
     flags = flags or 0
     return lib.igSetKeyOwner(key,owner_id,flags)
@@ -6877,6 +6883,7 @@ M.SetNavID = lib.igSetNavID
 M.SetNavWindow = lib.igSetNavWindow
 M.SetNextFrameWantCaptureKeyboard = lib.igSetNextFrameWantCaptureKeyboard
 M.SetNextFrameWantCaptureMouse = lib.igSetNextFrameWantCaptureMouse
+M.SetNextItemAllowOverlap = lib.igSetNextItemAllowOverlap
 function M.SetNextItemOpen(is_open,cond)
     cond = cond or 0
     return lib.igSetNextItemOpen(is_open,cond)
