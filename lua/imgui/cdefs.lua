@@ -431,12 +431,12 @@ typedef enum {
     ImGuiHoveredFlags_AllowWhenOverlapped = ImGuiHoveredFlags_AllowWhenOverlappedByItem | ImGuiHoveredFlags_AllowWhenOverlappedByWindow,
     ImGuiHoveredFlags_RectOnly = ImGuiHoveredFlags_AllowWhenBlockedByPopup | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_AllowWhenOverlapped,
     ImGuiHoveredFlags_RootAndChildWindows = ImGuiHoveredFlags_RootWindow | ImGuiHoveredFlags_ChildWindows,
-    ImGuiHoveredFlags_ForTooltip = 1 << 11,
-    ImGuiHoveredFlags_Stationary = 1 << 12,
-    ImGuiHoveredFlags_DelayNone = 1 << 13,
-    ImGuiHoveredFlags_DelayShort = 1 << 14,
-    ImGuiHoveredFlags_DelayNormal = 1 << 15,
-    ImGuiHoveredFlags_NoSharedDelay = 1 << 16,
+    ImGuiHoveredFlags_ForTooltip = 1 << 12,
+    ImGuiHoveredFlags_Stationary = 1 << 13,
+    ImGuiHoveredFlags_DelayNone = 1 << 14,
+    ImGuiHoveredFlags_DelayShort = 1 << 15,
+    ImGuiHoveredFlags_DelayNormal = 1 << 16,
+    ImGuiHoveredFlags_NoSharedDelay = 1 << 17,
 }ImGuiHoveredFlags_;
 typedef enum {
     ImGuiDockNodeFlags_None = 0,
@@ -759,6 +759,7 @@ typedef enum {
     ImGuiStyleVar_SeparatorTextBorderSize,
     ImGuiStyleVar_SeparatorTextAlign,
     ImGuiStyleVar_SeparatorTextPadding,
+    ImGuiStyleVar_DockingSeparatorSize,
     ImGuiStyleVar_COUNT
 }ImGuiStyleVar_;
 typedef enum {
@@ -879,6 +880,7 @@ struct ImGuiStyle
     ImVec2 SeparatorTextPadding;
     ImVec2 DisplayWindowPadding;
     ImVec2 DisplaySafeAreaPadding;
+    float DockingSeparatorSize;
     float MouseCursorScale;
    _Bool         AntiAliasedLines;
    _Bool         AntiAliasedLinesUseTex;
@@ -1195,13 +1197,14 @@ struct ImDrawList
     ImDrawListSplitter _Splitter;
     float _FringeScale;
 };
+typedef struct ImVector_ImDrawListPtr {int Size;int Capacity;ImDrawList** Data;} ImVector_ImDrawListPtr;
 struct ImDrawData
 {
    _Bool         Valid;
     int CmdListsCount;
     int TotalIdxCount;
     int TotalVtxCount;
-    ImDrawList** CmdLists;
+    ImVector_ImDrawListPtr CmdLists;
     ImVec2 DisplayPos;
     ImVec2 DisplaySize;
     ImVec2 FramebufferScale;
@@ -1534,10 +1537,10 @@ struct ImDrawListSharedData
     ImU8 CircleSegmentCounts[64];
     const ImVec4* TexUvLines;
 };
-typedef struct ImVector_ImDrawListPtr {int Size;int Capacity;ImDrawList** Data;} ImVector_ImDrawListPtr;
 struct ImDrawDataBuilder
 {
-    ImVector_ImDrawListPtr Layers[2];
+    ImVector_ImDrawListPtr* Layers[2];
+    ImVector_ImDrawListPtr LayerData1;
 };
 typedef enum {
     ImGuiItemFlags_None = 0,
@@ -2033,10 +2036,11 @@ typedef enum {
     ImGuiNavMoveFlags_Forwarded = 1 << 7,
     ImGuiNavMoveFlags_DebugNoResult = 1 << 8,
     ImGuiNavMoveFlags_FocusApi = 1 << 9,
-    ImGuiNavMoveFlags_Tabbing = 1 << 10,
-    ImGuiNavMoveFlags_Activate = 1 << 11,
-    ImGuiNavMoveFlags_NoSelect = 1 << 12,
-    ImGuiNavMoveFlags_NoSetNavHighlight = 1 << 13,
+    ImGuiNavMoveFlags_IsTabbing = 1 << 10,
+    ImGuiNavMoveFlags_IsPageMove = 1 << 11,
+    ImGuiNavMoveFlags_Activate = 1 << 12,
+    ImGuiNavMoveFlags_NoSelect = 1 << 13,
+    ImGuiNavMoveFlags_NoSetNavHighlight = 1 << 14,
 }ImGuiNavMoveFlags_;
 typedef enum {
     ImGuiNavLayer_Main = 0,
@@ -2876,6 +2880,8 @@ struct ImGuiTableInstanceData
     float LastOuterHeight;
     float LastFirstRowHeight;
     float LastFrozenHeight;
+    int HoveredRowLast;
+    int HoveredRowNext;
 };
 typedef struct ImSpan_ImGuiTableColumn {ImGuiTableColumn* Data;ImGuiTableColumn* DataEnd;} ImSpan_ImGuiTableColumn;
 typedef struct ImSpan_ImGuiTableColumnIdx {ImGuiTableColumnIdx* Data;ImGuiTableColumnIdx* DataEnd;} ImSpan_ImGuiTableColumnIdx;
@@ -3448,7 +3454,7 @@ void ImGuiIO_AddInputCharacterUTF16(ImGuiIO* self,ImWchar16 c);
 void ImGuiIO_AddInputCharactersUTF8(ImGuiIO* self,const char* str);
 void ImGuiIO_SetKeyEventNativeData(ImGuiIO* self,ImGuiKey key,int native_keycode,int native_scancode,int native_legacy_index);
 void ImGuiIO_SetAppAcceptingEvents(ImGuiIO* self,                                                           _Bool                                                                 accepting_events);
-void ImGuiIO_ClearInputCharacters(ImGuiIO* self);
+void ImGuiIO_ClearEventsQueue(ImGuiIO* self);
 void ImGuiIO_ClearInputKeys(ImGuiIO* self);
 ImGuiIO* ImGuiIO_ImGuiIO(void);
 void ImGuiIO_destroy(ImGuiIO* self);
@@ -3606,6 +3612,7 @@ void ImDrawList__PathArcToN(ImDrawList* self,const ImVec2 center,float radius,fl
 ImDrawData* ImDrawData_ImDrawData(void);
 void ImDrawData_destroy(ImDrawData* self);
 void ImDrawData_Clear(ImDrawData* self);
+void ImDrawData_AddDrawList(ImDrawData* self,ImDrawList* draw_list);
 void ImDrawData_DeIndexAllBuffers(ImDrawData* self);
 void ImDrawData_ScaleClipRects(ImDrawData* self,const ImVec2 fb_scale);
 ImFontConfig* ImFontConfig_ImFontConfig(void);
@@ -3823,10 +3830,8 @@ void ImGuiTextIndex_append(ImGuiTextIndex* self,const char* base,int old_size,in
 ImDrawListSharedData* ImDrawListSharedData_ImDrawListSharedData(void);
 void ImDrawListSharedData_destroy(ImDrawListSharedData* self);
 void ImDrawListSharedData_SetCircleTessellationMaxError(ImDrawListSharedData* self,float max_error);
-void ImDrawDataBuilder_Clear(ImDrawDataBuilder* self);
-void ImDrawDataBuilder_ClearFreeMemory(ImDrawDataBuilder* self);
-int ImDrawDataBuilder_GetDrawListCount(ImDrawDataBuilder* self);
-void ImDrawDataBuilder_FlattenIntoSingleLayer(ImDrawDataBuilder* self);
+ImDrawDataBuilder* ImDrawDataBuilder_ImDrawDataBuilder(void);
+void ImDrawDataBuilder_destroy(ImDrawDataBuilder* self);
 void* ImGuiDataVarInfo_GetVarPtr(ImGuiDataVarInfo* self,void* parent);
 ImGuiStyleMod* ImGuiStyleMod_ImGuiStyleMod_Int(ImGuiStyleVar idx,int v);
 void ImGuiStyleMod_destroy(ImGuiStyleMod* self);
@@ -3991,6 +3996,7 @@ ImGuiWindow* igFindBottomMostVisibleWindowWithinBeginStack(ImGuiWindow* window);
 void igSetCurrentFont(ImFont* font);
 ImFont* igGetDefaultFont(void);
 ImDrawList* igGetForegroundDrawList_WindowPtr(ImGuiWindow* window);
+void igAddDrawListToDrawDataEx(ImDrawData* draw_data,ImVector_ImDrawListPtr* out_list,ImDrawList* draw_list);
 void igInitialize(void);
 void igShutdown(void);
 void igUpdateInputEvents(                                   _Bool                                         trickle_fast_inputs);
@@ -4198,6 +4204,7 @@ void igTableOpenContextMenu(int column_n);
 void igTableSetColumnWidth(int column_n,float width);
 void igTableSetColumnSortDirection(int column_n,ImGuiSortDirection sort_direction,                                                                                            _Bool                                                                                                  append_to_sort_specs);
 int igTableGetHoveredColumn(void);
+int igTableGetHoveredRow(void);
 float igTableGetHeaderRowHeight(void);
 void igTablePushBackgroundChannel(void);
 void igTablePopBackgroundChannel(void);

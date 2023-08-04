@@ -595,6 +595,7 @@ M.ImDrawCmd = ffi.metatype("ImDrawCmd",ImDrawCmd)
 --------------------------ImDrawData----------------------------
 local ImDrawData= {}
 ImDrawData.__index = ImDrawData
+ImDrawData.AddDrawList = lib.ImDrawData_AddDrawList
 ImDrawData.Clear = lib.ImDrawData_Clear
 ImDrawData.DeIndexAllBuffers = lib.ImDrawData_DeIndexAllBuffers
 function ImDrawData.__new(ctype)
@@ -606,10 +607,10 @@ M.ImDrawData = ffi.metatype("ImDrawData",ImDrawData)
 --------------------------ImDrawDataBuilder----------------------------
 local ImDrawDataBuilder= {}
 ImDrawDataBuilder.__index = ImDrawDataBuilder
-ImDrawDataBuilder.Clear = lib.ImDrawDataBuilder_Clear
-ImDrawDataBuilder.ClearFreeMemory = lib.ImDrawDataBuilder_ClearFreeMemory
-ImDrawDataBuilder.FlattenIntoSingleLayer = lib.ImDrawDataBuilder_FlattenIntoSingleLayer
-ImDrawDataBuilder.GetDrawListCount = lib.ImDrawDataBuilder_GetDrawListCount
+function ImDrawDataBuilder.__new(ctype)
+    local ptr = lib.ImDrawDataBuilder_ImDrawDataBuilder()
+    return ffi.gc(ptr,lib.ImDrawDataBuilder_destroy)
+end
 M.ImDrawDataBuilder = ffi.metatype("ImDrawDataBuilder",ImDrawDataBuilder)
 --------------------------ImDrawList----------------------------
 local ImDrawList= {}
@@ -1006,7 +1007,7 @@ ImGuiIO.AddMousePosEvent = lib.ImGuiIO_AddMousePosEvent
 ImGuiIO.AddMouseSourceEvent = lib.ImGuiIO_AddMouseSourceEvent
 ImGuiIO.AddMouseViewportEvent = lib.ImGuiIO_AddMouseViewportEvent
 ImGuiIO.AddMouseWheelEvent = lib.ImGuiIO_AddMouseWheelEvent
-ImGuiIO.ClearInputCharacters = lib.ImGuiIO_ClearInputCharacters
+ImGuiIO.ClearEventsQueue = lib.ImGuiIO_ClearEventsQueue
 ImGuiIO.ClearInputKeys = lib.ImGuiIO_ClearInputKeys
 function ImGuiIO.__new(ctype)
     local ptr = lib.ImGuiIO_ImGuiIO()
@@ -5182,6 +5183,7 @@ function M.AcceptDragDropPayload(type,flags)
 end
 M.ActivateItemByID = lib.igActivateItemByID
 M.AddContextHook = lib.igAddContextHook
+M.AddDrawListToDrawDataEx = lib.igAddDrawListToDrawDataEx
 M.AddSettingsHandler = lib.igAddSettingsHandler
 M.AlignTextToFramePadding = lib.igAlignTextToFramePadding
 M.ArrowButton = lib.igArrowButton
@@ -7247,6 +7249,7 @@ end
 M.TableGetColumnWidthAuto = lib.igTableGetColumnWidthAuto
 M.TableGetHeaderRowHeight = lib.igTableGetHeaderRowHeight
 M.TableGetHoveredColumn = lib.igTableGetHoveredColumn
+M.TableGetHoveredRow = lib.igTableGetHoveredRow
 M.TableGetInstanceData = lib.igTableGetInstanceData
 M.TableGetInstanceID = lib.igTableGetInstanceID
 M.TableGetMaxColumnWidth = lib.igTableGetMaxColumnWidth
