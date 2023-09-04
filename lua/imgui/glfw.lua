@@ -1118,7 +1118,8 @@ function ImGuiListClipper.__new(ctype)
     local ptr = lib.ImGuiListClipper_ImGuiListClipper()
     return ffi.gc(ptr,lib.ImGuiListClipper_destroy)
 end
-ImGuiListClipper.IncludeRangeByIndices = lib.ImGuiListClipper_IncludeRangeByIndices
+ImGuiListClipper.IncludeItemByIndex = lib.ImGuiListClipper_IncludeItemByIndex
+ImGuiListClipper.IncludeItemsByIndex = lib.ImGuiListClipper_IncludeItemsByIndex
 ImGuiListClipper.Step = lib.ImGuiListClipper_Step
 M.ImGuiListClipper = ffi.metatype("ImGuiListClipper",ImGuiListClipper)
 --------------------------ImGuiListClipperData----------------------------
@@ -5460,9 +5461,17 @@ M.DataTypeCompare = lib.igDataTypeCompare
 M.DataTypeFormatString = lib.igDataTypeFormatString
 M.DataTypeGetInfo = lib.igDataTypeGetInfo
 M.DebugCheckVersionAndDataLayout = lib.igDebugCheckVersionAndDataLayout
+function M.DebugDrawCursorPos(col)
+    col = col or 4278190335
+    return lib.igDebugDrawCursorPos(col)
+end
 function M.DebugDrawItemRect(col)
     col = col or 4278190335
     return lib.igDebugDrawItemRect(col)
+end
+function M.DebugDrawLineExtents(col)
+    col = col or 4278190335
+    return lib.igDebugDrawLineExtents(col)
 end
 M.DebugHookIdInfo = lib.igDebugHookIdInfo
 M.DebugLocateItem = lib.igDebugLocateItem
@@ -6576,6 +6585,7 @@ M.NavMoveRequestButNoResultYet = lib.igNavMoveRequestButNoResultYet
 M.NavMoveRequestCancel = lib.igNavMoveRequestCancel
 M.NavMoveRequestForward = lib.igNavMoveRequestForward
 M.NavMoveRequestResolveWithLastItem = lib.igNavMoveRequestResolveWithLastItem
+M.NavMoveRequestResolveWithPastTreeNode = lib.igNavMoveRequestResolveWithPastTreeNode
 M.NavMoveRequestSubmit = lib.igNavMoveRequestSubmit
 M.NavMoveRequestTryWrapping = lib.igNavMoveRequestTryWrapping
 M.NavUpdateCurrentWindowIsScrollPushableX = lib.igNavUpdateCurrentWindowIsScrollPushableX
