@@ -113,7 +113,9 @@ local function show_editor(editor)
     ig.TextUnformatted("A -- add node");
     ig.TextUnformatted("X -- delete selected node or link");
 
-    ig.ImNodes_BeginCanvas(editor.context);
+    --ig.ImNodes_BeginCanvas(editor.context);
+	ig.ImNodes_Ez_SetContext(editor.context)
+	ig.ImNodes_Ez_BeginCanvas();
 
     for _, node in pairs(editor.nodes) do
         node:draw()
@@ -135,7 +137,8 @@ local function show_editor(editor)
         end
         ig.EndPopup()
     end
-    ig.ImNodes_EndCanvas()
+    --ig.ImNodes_EndCanvas()
+	ig.ImNodes_Ez_EndCanvas()
     ig.End();
 end
 local function Editor(name, nodetypes)
@@ -185,7 +188,8 @@ local function Editor(name, nodetypes)
     end
     function E:load_str(str)
         self.nodes = {}
-        local f = loadstring(str)
+        local f,err = loadstring(str)
+		assert(f,er)
         setfenv(f,setmetatable({ig=ig},{ __index = _G}))
         local loadedE = f()
         for k,v in pairs(loadedE.nodes) do
@@ -195,7 +199,8 @@ local function Editor(name, nodetypes)
         self.current_id = loadedE.current_id
         self.name = loadedE.name
     end
-    E.context = ig.CanvasState();
+    --E.context = ig.CanvasState();
+	E.context = ig.ImNodes_Ez_CreateContext();
     return E
 end
 ---------------------------------------use it!!-------------------------------------

@@ -262,7 +262,8 @@ local function Editor(name, nodetypes)
     function E:load_str(str)
         self.nodes = {}
         self.links = {}
-        local f = loadstring(str)
+        local f,err = loadstring(str)
+		assert(f,err)
         setfenv(f,setmetatable({ig=ig},{ __index = _G}))
         local loadedE = f()
         for k,v in pairs(loadedE.nodes) do

@@ -263,7 +263,9 @@ local function show_editor(editor)
     ig.TextUnformatted("A -- add node");
     ig.TextUnformatted("X -- delete selected node or link");
 
-    ig.ImNodes_BeginCanvas(editor.context);
+    --ig.ImNodes_BeginCanvas(editor.context);
+	ig.ImNodes_Ez_SetContext(editor.context)
+	ig.ImNodes_Ez_BeginCanvas();
 
     for _, node in pairs(editor.nodes) do
         node:draw()
@@ -285,7 +287,8 @@ local function show_editor(editor)
         end
         ig.EndPopup()
     end
-    ig.ImNodes_EndCanvas()
+    --ig.ImNodes_EndCanvas()
+	ig.ImNodes_Ez_EndCanvas()
     ig.End();
     
         -- The outputs
@@ -373,7 +376,8 @@ local function Editor(name, nodetypes)
         --self.name = loadedE.name
         self.root_nodes = loadedE.root_nodes
     end
-    E.context = ig.CanvasState();
+    --E.context = ig.CanvasState();
+	E.context = ig.ImNodes_Ez_CreateContext();
     return E
 end
 ---------------------------------------use it!!-------------------------------------

@@ -6279,6 +6279,7 @@ void imnodes_LoadCurrentEditorStateFromIniFile(const char* file_name);
 void imnodes_LoadEditorStateFromIniFile(ImNodesEditorContext* editor,const char* file_name);
 _Bool              * getIOKeyCtrlPtr();
 typedef struct _CanvasStateImpl _CanvasStateImpl;
+typedef struct Context Context;
 typedef enum {
     ColCanvasLines,
     ColNodeBg,
@@ -6296,6 +6297,10 @@ struct CanvasStyle
 {
         float CurveThickness;
         float ConnectionIndent;
+        float GridSpacing;
+        float CurveStrength;
+        float NodeRounding;
+        ImVec2 NodeSpacing;
 };
 typedef struct CanvasStyle CanvasStyle;
 struct CanvasState
@@ -6307,18 +6312,61 @@ struct CanvasState
     _CanvasStateImpl* _Impl;
 };
 typedef struct CanvasStyle CanvasStyle;
+typedef enum {
+    ImNodesStyleVar_GridSpacing_r,
+    ImNodesStyleVar_CurveThickness,
+    ImNodesStyleVar_CurveStrength,
+    ImNodesStyleVar_SlotRadius,
+    ImNodesStyleVar_NodeRounding,
+    ImNodesStyleVar_NodeSpacing,
+    ImNodesStyleVar_ItemSpacing,
+    ImNodesStyleVar_COUNT_r,
+}ImNodesStyleVar;
+typedef enum {
+    ImNodesStyleCol_GridLines,
+    ImNodesStyleCol_NodeBodyBg,
+    ImNodesStyleCol_NodeBodyBgHovered,
+    ImNodesStyleCol_NodeBodyBgActive,
+    ImNodesStyleCol_NodeBorder,
+    ImNodesStyleCol_Connection,
+    ImNodesStyleCol_ConnectionActive,
+    ImNodesStyleCol_SelectBg,
+    ImNodesStyleCol_SelectBorder,
+    ImNodesStyleCol_NodeTitleBarBg,
+    ImNodesStyleCol_NodeTitleBarBgHovered,
+    ImNodesStyleCol_NodeTitleBarBgActive,
+    ImNodesStyleCol_COUNT,
+}ImNodesStyleCol;
 typedef struct SlotInfo SlotInfo;
 struct SlotInfo
 {
     const char* title;
     int kind;
 };
+typedef struct StyleVars StyleVars;
+struct StyleVars
+{
+    float SlotRadius;
+    ImVec2 ItemSpacing;
+struct
+{
+        ImVec4 NodeBodyBg;
+        ImVec4 NodeBodyBgHovered;
+        ImVec4 NodeBodyBgActive;
+        ImVec4 NodeBorder;
+        ImVec4 NodeTitleBarBg;
+        ImVec4 NodeTitleBarBgHovered;
+        ImVec4 NodeTitleBarBgActive;
+} Colors;
+};
+struct Context;
 CanvasState* CanvasState_CanvasState(void);
 void CanvasState_destroy(CanvasState* self);
 void ImNodes_BeginCanvas(CanvasState* canvas);
 void ImNodes_EndCanvas(void);
 _Bool                ImNodes_BeginNode(void* node_id,ImVec2* pos,                                                           _Bool                                                               * selected);
 void ImNodes_EndNode(void);
+_Bool                ImNodes_IsNodeHovered(void);
 void ImNodes_AutoPositionNode(void* node_id);
 _Bool                ImNodes_GetNewConnection(void** input_node,const char** input_slot_title,void** output_node,const char** output_slot_title);
 _Bool                ImNodes_GetPendingConnection(void** node_id,const char** slot_title,int* slot_kind);
@@ -6334,10 +6382,23 @@ _Bool                ImNodes_BeginOutputSlot(const char* title,int kind);
 void ImNodes_EndSlot(void);
 _Bool                ImNodes_IsSlotCurveHovered(void);
 _Bool                ImNodes_IsConnectingCompatibleSlot(void);
+Context* ImNodes_Ez_CreateContext(void);
+void ImNodes_Ez_FreeContext(Context* ctx);
+void ImNodes_Ez_SetContext(Context* ctx);
+CanvasState* ImNodes_Ez_GetState(void);
+void ImNodes_Ez_BeginCanvas(void);
+void ImNodes_Ez_EndCanvas(void);
 _Bool                ImNodes_Ez_BeginNode(void* node_id,const char* title,ImVec2* pos,                                                                                _Bool                                                                                    * selected);
 void ImNodes_Ez_EndNode(void);
 void ImNodes_Ez_InputSlots(const SlotInfo* slots,int snum);
 void ImNodes_Ez_OutputSlots(const SlotInfo* slots,int snum);
+_Bool                ImNodes_Ez_Connection(void* input_node,const char* input_slot,void* output_node,const char* output_slot);
+void ImNodes_Ez_PushStyleVar_Float(ImNodesStyleVar idx,float val);
+void ImNodes_Ez_PushStyleVar_Vec2(ImNodesStyleVar idx,const ImVec2 val);
+void ImNodes_Ez_PopStyleVar(int count);
+void ImNodes_Ez_PushStyleColor_U32(ImNodesStyleCol idx,ImU32 col);
+void ImNodes_Ez_PushStyleColor_Vec4(ImNodesStyleCol idx,const ImVec4 col);
+void ImNodes_Ez_PopStyleColor(int count);
 typedef struct GLFWwindow GLFWwindow;
 typedef struct GLFWmonitor GLFWmonitor;
 struct GLFWwindow;

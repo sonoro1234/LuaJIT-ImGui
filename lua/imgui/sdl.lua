@@ -2371,16 +2371,45 @@ M.ImNodes_Connection = lib.ImNodes_Connection
 M.ImNodes_EndCanvas = lib.ImNodes_EndCanvas
 M.ImNodes_EndNode = lib.ImNodes_EndNode
 M.ImNodes_EndSlot = lib.ImNodes_EndSlot
+M.ImNodes_Ez_BeginCanvas = lib.ImNodes_Ez_BeginCanvas
 M.ImNodes_Ez_BeginNode = lib.ImNodes_Ez_BeginNode
+M.ImNodes_Ez_Connection = lib.ImNodes_Ez_Connection
+M.ImNodes_Ez_CreateContext = lib.ImNodes_Ez_CreateContext
+M.ImNodes_Ez_EndCanvas = lib.ImNodes_Ez_EndCanvas
 M.ImNodes_Ez_EndNode = lib.ImNodes_Ez_EndNode
+M.ImNodes_Ez_FreeContext = lib.ImNodes_Ez_FreeContext
+M.ImNodes_Ez_GetState = lib.ImNodes_Ez_GetState
 M.ImNodes_Ez_InputSlots = lib.ImNodes_Ez_InputSlots
 M.ImNodes_Ez_OutputSlots = lib.ImNodes_Ez_OutputSlots
+M.ImNodes_Ez_PopStyleColor = lib.ImNodes_Ez_PopStyleColor
+function M.ImNodes_Ez_PopStyleVar(count)
+    count = count or 1
+    return lib.ImNodes_Ez_PopStyleVar(count)
+end
+M.ImNodes_Ez_PushStyleColor_U32 = lib.ImNodes_Ez_PushStyleColor_U32
+M.ImNodes_Ez_PushStyleColor_Vec4 = lib.ImNodes_Ez_PushStyleColor_Vec4
+function M.ImNodes_Ez_PushStyleColor(a1,a2) -- generic version
+    if (ffi.istype('ImU32',a2) or type(a2)=='number') then return M.ImNodes_Ez_PushStyleColor_U32(a1,a2) end
+    if ffi.istype('const ImVec4',a2) then return M.ImNodes_Ez_PushStyleColor_Vec4(a1,a2) end
+    print(a1,a2)
+    error'M.ImNodes_Ez_PushStyleColor could not find overloaded'
+end
+M.ImNodes_Ez_PushStyleVar_Float = lib.ImNodes_Ez_PushStyleVar_Float
+M.ImNodes_Ez_PushStyleVar_Vec2 = lib.ImNodes_Ez_PushStyleVar_Vec2
+function M.ImNodes_Ez_PushStyleVar(a1,a2) -- generic version
+    if (ffi.istype('float',a2) or type(a2)=='number') then return M.ImNodes_Ez_PushStyleVar_Float(a1,a2) end
+    if ffi.istype('const ImVec2',a2) then return M.ImNodes_Ez_PushStyleVar_Vec2(a1,a2) end
+    print(a1,a2)
+    error'M.ImNodes_Ez_PushStyleVar could not find overloaded'
+end
+M.ImNodes_Ez_SetContext = lib.ImNodes_Ez_SetContext
 M.ImNodes_GetCurrentCanvas = lib.ImNodes_GetCurrentCanvas
 M.ImNodes_GetNewConnection = lib.ImNodes_GetNewConnection
 M.ImNodes_GetPendingConnection = lib.ImNodes_GetPendingConnection
 M.ImNodes_InputSlotKind = lib.ImNodes_InputSlotKind
 M.ImNodes_IsConnectingCompatibleSlot = lib.ImNodes_IsConnectingCompatibleSlot
 M.ImNodes_IsInputSlotKind = lib.ImNodes_IsInputSlotKind
+M.ImNodes_IsNodeHovered = lib.ImNodes_IsNodeHovered
 M.ImNodes_IsOutputSlotKind = lib.ImNodes_IsOutputSlotKind
 M.ImNodes_IsSlotCurveHovered = lib.ImNodes_IsSlotCurveHovered
 M.ImNodes_OutputSlotKind = lib.ImNodes_OutputSlotKind
