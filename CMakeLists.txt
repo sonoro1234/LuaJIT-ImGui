@@ -75,6 +75,9 @@ if(IMGUI_FREETYPE)
 endif(IMGUI_FREETYPE)
 
 if(IMPL_OPENGL3)
+	if(IMPL_OPENGL3_ES2)
+		add_definitions("-DIMGUI_IMPL_OPENGL_ES2")
+	endif(IMPL_OPENGL3_ES2)
     list(APPEND IMGUI_SOURCES ${BAKENDS_FOLDER}imgui_impl_opengl3.cpp)
     #./cimgui/imgui/examples/libs/gl3w/GL/gl3w.c)
     #list(APPEND IMGUI_SOURCES ./extras/cimgui_extras.cpp) #Do_gl3winit not needed
@@ -82,7 +85,11 @@ if(IMPL_OPENGL3)
 	if(WIN32)
         list(APPEND IMGUI_LIBRARIES opengl32)
 	else(WIN32)#Unix
-        list(APPEND IMGUI_LIBRARIES GL)
+		if(IMPL_OPENGL3_ES2) # OpenGLESv2
+        	list(APPEND IMGUI_LIBRARIES GLESv2)
+		else(IMPL_OPENGL3_ES2) # GL
+			list(APPEND IMGUI_LIBRARIES GL)
+		endif(IMPL_OPENGL3_ES2)
 	endif(WIN32)
 endif(IMPL_OPENGL3)
 
