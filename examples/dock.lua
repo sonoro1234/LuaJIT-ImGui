@@ -6,9 +6,7 @@ local win = igwin:GLFW(800,400, "dock_lock",{vsync=true})
 local ffi = require"ffi"
 local lock = ffi.new("bool[1]",true);
 
-local ininamL = "docklock4.ini"
-local ininamC = ffi.new("char[?]",#ininamL + 1,ininamL)
-win.ig.GetIO().IniFilename = ininamC
+win.ig.GetIO().IniFilename = "docklock4.ini"
 
 local wndclass = win.ig.ImGuiWindowClass()
 wndclass.DockNodeFlagsOverrideSet = win.ig.lib.ImGuiWindowFlags_NoMove 
