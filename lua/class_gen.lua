@@ -230,35 +230,84 @@ end
 
 local cdefs = dofile("./imgui/cdefs.lua")
 ffi_cdef(cdefs)
-local function checktype(typ,va)
-	if ffi.typeof(typ)==ffi.typeof"int" or 
-		ffi.typeof(typ)==ffi.typeof"const int" or
-		ffi.typeof(typ)==ffi.typeof"float" or
-		ffi.typeof(typ)==ffi.typeof"double" then
-		return "(ffi.istype('"..typ.."',"..va..") or type("..va..")=='number')"
-	elseif ffi.typeof(typ)==ffi.typeof"bool" then
-		return "(ffi.istype('"..typ.."',"..va..") or type("..va..")=='boolean')"
-	elseif ffi.typeof(typ)==ffi.typeof"const char*" then
-		return "(ffi.istype('"..typ.."',"..va..") or ffi.istype('char[]',"..va..") or type("..va..")=='string')"
-	elseif ffi.typeof(typ)==ffi.typeof"const float*" then
-		return "(ffi.istype('"..typ.."',"..va..") or ffi.istype('float[]',"..va.."))"
-	elseif ffi.typeof(typ)==ffi.typeof"const double*" then
-		return "(ffi.istype('"..typ.."',"..va..") or ffi.istype('double[]',"..va.."))"
-	elseif ffi.typeof(typ)==ffi.typeof"int*" then
-		return "(ffi.istype('"..typ.."',"..va..") or ffi.istype('int[]',"..va.."))"
-	elseif ffi.typeof(typ)==ffi.typeof"void*" or ffi.typeof(typ)==ffi.typeof"const void*" then
-		return "ffi.istype('"..typ.."',"..va..")"
-	elseif typ=="ImU32" then
-		return "(ffi.istype('"..typ.."',"..va..") or type("..va..")=='number')"
-	else
-		if typ:match"%*" and not typ:match"%(%*%)" then --pointer not function pointer
-			local typsinptr = typ:gsub("(%*)","")
-			local extra = " or ffi.istype('"..typsinptr.."',"..va..")"
-			local extra2 = " or ffi.istype('"..typsinptr.."[]',"..va..")"
-			return "(ffi.istype('"..typ.."',"..va..")"..extra..extra2..")"
+
+--
+
+-- test for pointers with unsigned-signed confusion and * vs []
+local function GENp(typ,va)
+	local typ2 = typ:gsub("%*","[?]")
+	return "ffi.typeof('"..typ.."') == ffi.typeof("..va..") or ffi.typeof('const "..typ.."') == ffi.typeof("..va..") or ffi.typeof('"..typ2.."') == ffi.typeof("..va..") or ffi.typeof('const "..typ2.."') == ffi.typeof("..va..")"
+end
+--test against type or const type
+local function CHK(typ,ti)
+	return ffi.typeof(typ) == ffi.typeof(ti) or ffi.typeof(typ) == ffi.typeof("const "..ti)
+end
+
+--not confused by ffi.istype
+local types = {"void *","int8_t","uint8_t","int16_t","uint16_t","int32_t","uint32_t","int64_t","uint64_t","float","double","bool"}
+local function CHK_types(typ,va)
+	for i=1,#types do
+		if CHK(typ,types[i]) then
+			local typ1 = types[i]
+			if typ1=="void *" then
+				return "ffi.istype('"..typ1.."',"..va..")"
+			elseif typ1== "bool" then
+				return "(ffi.istype('"..typ1.."',"..va..") or type("..va..")=='boolean')"
+			else -- let it be a number
+				return "(ffi.istype('"..typ1.."',"..va..") or type("..va..")=='number')"
+			end
 		end
-		return "ffi.istype('"..typ.."',"..va..")"
 	end
+end
+
+--signed unsigned confusion of ffi.istype with pointers
+local UStypes = {"int8_t*","uint8_t*","int16_t*","uint16_t*","int32_t*","uint32_t*","int64_t*","uint64_t*"}
+local function CHK_types_p(typ,va)
+	for i=1,#UStypes do
+		if CHK(typ,UStypes[i]) then
+			return GENp(UStypes[i],va)
+		end
+	end
+end
+
+--signed unsigned confusion of ffi.istype with pointers
+local Ptypes = {"float*","double*","bool*"}
+local function CHK_types_p2(typ,va)
+	for i=1,#Ptypes do
+		if CHK(typ,Ptypes[i]) then
+			local typ1 = Ptypes[i]
+			local typ2 = typ1:gsub("%*","[]")
+			return "(ffi.istype('"..typ1.."',"..va..") or ffi.istype('"..typ2.."',"..va.."))"
+		end
+	end
+end
+
+local badtypes = {}
+local function checktype(typ,va)
+	local cond = CHK_types(typ,va)
+	if cond then return cond end
+	
+	if ffi.typeof(typ)==ffi.typeof"const char*" then
+		return "(ffi.istype('"..typ.."',"..va..") or ffi.istype('char[]',"..va..") or type("..va..")=='string')"
+	end
+	
+	cond = CHK_types_p(typ,va)
+	if cond then return cond end
+	
+	cond = CHK_types_p2(typ,va)
+	if cond then return cond end
+	
+	if not tostring(ffi.typeof(typ)):find"struct" then
+		badtypes[typ] = true
+	end
+	if typ:match"%*" and not typ:match"%(%*%)" then --pointer not function pointer
+		local typsinptr = typ:gsub("(%*)","")
+		local extra = " or ffi.istype('"..typsinptr.."',"..va..")"
+		local extra2 = " or ffi.istype('"..typsinptr.."[]',"..va..")"
+		return "(ffi.istype('"..typ.."',"..va..")"..extra..extra2..")"
+	end
+	return "ffi.istype('"..typ.."',"..va..")"
+
 end
 
 local function gen_args(method,def,minvararg)
@@ -284,6 +333,7 @@ end
 
 --require"anima.utils" --gives us prtable
 local function create_generic(code,defs,method)
+
 	if defs[1].skipped then return end
 	if defs[1].is_static_function then
 		method = nil
@@ -400,11 +450,17 @@ local function create_generic(code,defs,method)
 			if v=="nil" then
 				table.insert(code2,"a"..k.."==nil")
 			else
+			---------------------which function is using this overloading type
+				-- if v:find"short" and not v:find"%*" then
+					-- print("short",defs[1].cimguiname)
+				-- end
+			-----------------
 				local strcode = checktype(v,"a"..k)
 				--if has a default take nil as valid check
 				--print("defs[i].defaults[k]",defs[i].ov_cimguiname,defs[i].defaults[defs[i].argsT[k].name])
 				if defs[i].defaults[defs[i].argsT[k].name]~=nil then
 					--if defs[i].argsT[k].type~="ImStrv" then 
+					print("---overload with default",defs[i].ov_cimguiname)
 					strcode = "("..strcode.." or type(a"..k..")=='nil')"
 					--end
 				end
@@ -539,7 +595,17 @@ local function class_gen(sources)
 			table.insert(strout,code_for_struct(struct,fundefs, structs))
 		end
 	end)
+	
 	table.insert(strout,code_for_imguifuns("",fundefs, structs))--("ImGui"))
+	
+	------------------------------------
+	print"----------------------------"
+	for k,v in pairs(badtypes) do
+		print("badtype",k,ffi.typeof(k))
+	end
+	print"----------------------------"
+	------------------------------------
+	
 	
 	table.insert(strout,"return M")
 	table.insert(strout,"----------END_AUTOGENERATED_LUA-----------------------------")
