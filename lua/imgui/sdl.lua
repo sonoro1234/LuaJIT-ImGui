@@ -6132,9 +6132,9 @@ function M.ImLerp_Vec4(a,b,t)
     return nonUDT_out
 end
 function M.ImLerp(a2,a3,a4) -- generic version
-    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1) or ffi.istype('ImVec2[]',a1)) and (ffi.istype('float',a4) or type(a4)=='number') then return M.ImLerp_Vec2Float(a2,a3,a4) end
-    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1) or ffi.istype('ImVec2[]',a1)) and ffi.istype('const ImVec2',a4) then return M.ImLerp_Vec2Vec2(a2,a3,a4) end
-    if (ffi.istype('ImVec4*',a1) or ffi.istype('ImVec4',a1) or ffi.istype('ImVec4[]',a1)) then return M.ImLerp_Vec4(a2,a3,a4) end
+    if ffi.istype('const ImVec2',a2) and (ffi.istype('float',a4) or type(a4)=='number') then return M.ImLerp_Vec2Float(a2,a3,a4) end
+    if ffi.istype('const ImVec2',a2) and ffi.istype('const ImVec2',a4) then return M.ImLerp_Vec2Vec2(a2,a3,a4) end
+    if ffi.istype('const ImVec4',a2) then return M.ImLerp_Vec4(a2,a3,a4) end
     print(a2,a3,a4)
     error'M.ImLerp could not find overloaded'
 end

@@ -270,7 +270,7 @@ local function CHK_types_p(typ,va)
 	end
 end
 
---signed unsigned confusion of ffi.istype with pointers
+--not signed unsigned confusion of ffi.istype with pointers
 local Ptypes = {"float*","double*","bool*"}
 local function CHK_types_p2(typ,va)
 	for i=1,#Ptypes do
@@ -369,12 +369,15 @@ local function create_generic(code,defs,method)
 		print()
 	end
 	--]]
+	--if methodnotconst and defs[1].nonUDT then print("zzzzz",defs[1].cimguiname) end
 	--find first different arg
 	local keys = {}
 	local done = {}
 	local check = {}
 	local maxnargs2 = is_vararg and minvararg-1 or maxnargs
-	for i=1,maxnargs2 do
+	local ini_i= methodnotconst and 2 or 1
+	ini_i= defs[1].nonUDT and ini_i + 1 or ini_i
+	for i=ini_i,maxnargs2 do
 		keys[i] = {}
 		for j=1,#defs do
 			if not done[j] then
@@ -401,7 +404,7 @@ local function create_generic(code,defs,method)
 	end
 	
 	--if is_vararg then cpp2ffi.prtable(keys,done,check) end
-
+	--if defs[1].cimguiname == "igImLerp" then cpp2ffi.prtable(defs,keys,done,check) end
 	--do generic--------------
 	local code2 = {}
 	--create args
@@ -422,6 +425,7 @@ local function create_generic(code,defs,method)
 		for i=1,maxnargs do args = args.."a"..i.."," end
 	else
 		if defs[1].nonUDT then
+			--print("mmmm",defs[1].cimguiname)
 			for i=2,maxnargs do
 				args = args.."a"..i..","
 			end
@@ -460,7 +464,7 @@ local function create_generic(code,defs,method)
 				--print("defs[i].defaults[k]",defs[i].ov_cimguiname,defs[i].defaults[defs[i].argsT[k].name])
 				if defs[i].defaults[defs[i].argsT[k].name]~=nil then
 					--if defs[i].argsT[k].type~="ImStrv" then 
-					print("---overload with default",defs[i].ov_cimguiname)
+					--print("---overload with default",defs[i].ov_cimguiname)
 					strcode = "("..strcode.." or type(a"..k..")=='nil')"
 					--end
 				end
