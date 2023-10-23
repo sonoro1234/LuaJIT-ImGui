@@ -402,9 +402,23 @@ local function create_generic(code,defs,method)
 			end
 		end
 	end
+	--[[
+	--for decision tree
+	local ordered_check = {}
+	for i=1,#check do
+		ordered_check[i] = {}
+		for k,v in pairs(check[i]) do
+			table.insert(ordered_check[i],{k,v})
+		end
+		table.sort(ordered_check[i],function(a,b) return a[1] < b[1] end)
+	end
+	local Tree = {}
+	
 	
 	--if is_vararg then cpp2ffi.prtable(keys,done,check) end
-	--if defs[1].cimguiname == "igImLerp" then cpp2ffi.prtable(defs,keys,done,check) end
+	if defs[1].cimguiname == "igImLerp" then cpp2ffi.prtable(defs,keys,done,check, ordered_check) end
+	--]]
+	
 	--do generic--------------
 	local code2 = {}
 	--create args
