@@ -214,7 +214,7 @@ function win:draw(ig)
 				end
 				ig.Columns(1)
 			end
-			ig.EndChildFrame()
+			ig.EndChild()
 		end
 	end
 	ig.End()

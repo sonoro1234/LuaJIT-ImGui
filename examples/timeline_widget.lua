@@ -130,7 +130,7 @@ function M.TimelineEvent(str_id, values, keep_range_constant)
 	end
 
     ig.SetCursorScreenPos(cursor_pos + ig.ImVec2(0, row_height));
-
+	ig.Dummy(ig.ImVec2(0,0))
     if (changed) then
         if (values[0]>values[1]) then local tmp=values[0];values[0]=values[1];values[1]=tmp; end
         if (values[1]>s_max_timeline_value) then values[0]= values[0] -(values[1]-s_max_timeline_value);values[1]=s_max_timeline_value; end
@@ -221,7 +221,7 @@ function M.EndTimeline( num_vertical_grid_lines, current_time, timeline_running_
         end
     end
     ig.SetCursorPosY(ig.GetCursorPosY()+row_height);
-
+	ig.Dummy(ig.ImVec2(0,0))
 
     -- zoom and pan
     if (s_ptimeline_offset_and_scale~=nil)   then

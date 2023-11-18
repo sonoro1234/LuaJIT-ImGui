@@ -3,7 +3,7 @@ local function MainDockSpace(W)
     if not W.has_imgui_viewport then return end
     if (bit.band(ig.GetIO().ConfigFlags , ig.lib.ImGuiConfigFlags_DockingEnable)==0) then return end
     
-    local dockspace_flags = bit.bor(ig.lib.ImGuiDockNodeFlags_NoDockingInCentralNode, ig.lib.ImGuiDockNodeFlags_AutoHideTabBar, ig.lib.ImGuiDockNodeFlags_PassthruCentralNode) --ImGuiDockNodeFlags_NoSplit
+    local dockspace_flags = bit.bor(ig.lib.ImGuiDockNodeFlags_NoDockingOverCentralNode, ig.lib.ImGuiDockNodeFlags_AutoHideTabBar, ig.lib.ImGuiDockNodeFlags_PassthruCentralNode) --ImGuiDockNodeFlags_NoSplit
     ig.DockSpaceOverViewport(nil, dockspace_flags);
 end
 local M = {}

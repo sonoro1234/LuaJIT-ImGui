@@ -635,6 +635,17 @@ function ImDrawList:AddCircleFilled(center,radius,col,num_segments)
 end
 ImDrawList.AddConvexPolyFilled = lib.ImDrawList_AddConvexPolyFilled
 ImDrawList.AddDrawCmd = lib.ImDrawList_AddDrawCmd
+function ImDrawList:AddEllipse(center,radius_x,radius_y,col,rot,num_segments,thickness)
+    num_segments = num_segments or 0
+    rot = rot or 0.0
+    thickness = thickness or 1.0
+    return lib.ImDrawList_AddEllipse(self,center,radius_x,radius_y,col,rot,num_segments,thickness)
+end
+function ImDrawList:AddEllipseFilled(center,radius_x,radius_y,col,rot,num_segments)
+    num_segments = num_segments or 0
+    rot = rot or 0.0
+    return lib.ImDrawList_AddEllipseFilled(self,center,radius_x,radius_y,col,rot,num_segments)
+end
 function ImDrawList:AddImage(user_texture_id,p_min,p_max,uv_min,uv_max,col)
     col = col or 4294967295
     uv_max = uv_max or ImVec2(1,1)
@@ -733,6 +744,10 @@ function ImDrawList:PathBezierQuadraticCurveTo(p2,p3,num_segments)
     return lib.ImDrawList_PathBezierQuadraticCurveTo(self,p2,p3,num_segments)
 end
 ImDrawList.PathClear = lib.ImDrawList_PathClear
+function ImDrawList:PathEllipticalArcTo(center,radius_x,radius_y,rot,a_min,a_max,num_segments)
+    num_segments = num_segments or 0
+    return lib.ImDrawList_PathEllipticalArcTo(self,center,radius_x,radius_y,rot,a_min,a_max,num_segments)
+end
 ImDrawList.PathFillConvex = lib.ImDrawList_PathFillConvex
 ImDrawList.PathLineTo = lib.ImDrawList_PathLineTo
 ImDrawList.PathLineToMergeDuplicate = lib.ImDrawList_PathLineToMergeDuplicate
@@ -855,15 +870,15 @@ function ImFontAtlas:AddFontFromMemoryCompressedBase85TTF(compressed_font_data_b
     glyph_ranges = glyph_ranges or nil
     return lib.ImFontAtlas_AddFontFromMemoryCompressedBase85TTF(self,compressed_font_data_base85,size_pixels,font_cfg,glyph_ranges)
 end
-function ImFontAtlas:AddFontFromMemoryCompressedTTF(compressed_font_data,compressed_font_size,size_pixels,font_cfg,glyph_ranges)
+function ImFontAtlas:AddFontFromMemoryCompressedTTF(compressed_font_data,compressed_font_data_size,size_pixels,font_cfg,glyph_ranges)
     font_cfg = font_cfg or nil
     glyph_ranges = glyph_ranges or nil
-    return lib.ImFontAtlas_AddFontFromMemoryCompressedTTF(self,compressed_font_data,compressed_font_size,size_pixels,font_cfg,glyph_ranges)
+    return lib.ImFontAtlas_AddFontFromMemoryCompressedTTF(self,compressed_font_data,compressed_font_data_size,size_pixels,font_cfg,glyph_ranges)
 end
-function ImFontAtlas:AddFontFromMemoryTTF(font_data,font_size,size_pixels,font_cfg,glyph_ranges)
+function ImFontAtlas:AddFontFromMemoryTTF(font_data,font_data_size,size_pixels,font_cfg,glyph_ranges)
     font_cfg = font_cfg or nil
     glyph_ranges = glyph_ranges or nil
-    return lib.ImFontAtlas_AddFontFromMemoryTTF(self,font_data,font_size,size_pixels,font_cfg,glyph_ranges)
+    return lib.ImFontAtlas_AddFontFromMemoryTTF(self,font_data,font_data_size,size_pixels,font_cfg,glyph_ranges)
 end
 ImFontAtlas.Build = lib.ImFontAtlas_Build
 ImFontAtlas.CalcCustomRectUV = lib.ImFontAtlas_CalcCustomRectUV
@@ -961,6 +976,14 @@ local ImGuiDataVarInfo= {}
 ImGuiDataVarInfo.__index = ImGuiDataVarInfo
 ImGuiDataVarInfo.GetVarPtr = lib.ImGuiDataVarInfo_GetVarPtr
 M.ImGuiDataVarInfo = ffi.metatype("ImGuiDataVarInfo",ImGuiDataVarInfo)
+--------------------------ImGuiDebugAllocInfo----------------------------
+local ImGuiDebugAllocInfo= {}
+ImGuiDebugAllocInfo.__index = ImGuiDebugAllocInfo
+function ImGuiDebugAllocInfo.__new(ctype)
+    local ptr = lib.ImGuiDebugAllocInfo_ImGuiDebugAllocInfo()
+    return ffi.gc(ptr,lib.ImGuiDebugAllocInfo_destroy)
+end
+M.ImGuiDebugAllocInfo = ffi.metatype("ImGuiDebugAllocInfo",ImGuiDebugAllocInfo)
 --------------------------ImGuiDockContext----------------------------
 local ImGuiDockContext= {}
 ImGuiDockContext.__index = ImGuiDockContext
@@ -993,6 +1016,14 @@ end
 ImGuiDockNode.SetLocalFlags = lib.ImGuiDockNode_SetLocalFlags
 ImGuiDockNode.UpdateMergedFlags = lib.ImGuiDockNode_UpdateMergedFlags
 M.ImGuiDockNode = ffi.metatype("ImGuiDockNode",ImGuiDockNode)
+--------------------------ImGuiIDStackTool----------------------------
+local ImGuiIDStackTool= {}
+ImGuiIDStackTool.__index = ImGuiIDStackTool
+function ImGuiIDStackTool.__new(ctype)
+    local ptr = lib.ImGuiIDStackTool_ImGuiIDStackTool()
+    return ffi.gc(ptr,lib.ImGuiIDStackTool_destroy)
+end
+M.ImGuiIDStackTool = ffi.metatype("ImGuiIDStackTool",ImGuiIDStackTool)
 --------------------------ImGuiIO----------------------------
 local ImGuiIO= {}
 ImGuiIO.__index = ImGuiIO
@@ -1287,14 +1318,6 @@ function ImGuiStackSizes.__new(ctype)
 end
 ImGuiStackSizes.SetToContextState = lib.ImGuiStackSizes_SetToContextState
 M.ImGuiStackSizes = ffi.metatype("ImGuiStackSizes",ImGuiStackSizes)
---------------------------ImGuiStackTool----------------------------
-local ImGuiStackTool= {}
-ImGuiStackTool.__index = ImGuiStackTool
-function ImGuiStackTool.__new(ctype)
-    local ptr = lib.ImGuiStackTool_ImGuiStackTool()
-    return ffi.gc(ptr,lib.ImGuiStackTool_destroy)
-end
-M.ImGuiStackTool = ffi.metatype("ImGuiStackTool",ImGuiStackTool)
 --------------------------ImGuiStorage----------------------------
 local ImGuiStorage= {}
 ImGuiStorage.__index = ImGuiStorage
@@ -1338,16 +1361,16 @@ M.ImGuiStorage = ffi.metatype("ImGuiStorage",ImGuiStorage)
 --------------------------ImGuiStoragePair----------------------------
 local ImGuiStoragePair= {}
 ImGuiStoragePair.__index = ImGuiStoragePair
-function ImGuiStoragePair.ImGuiStoragePair_Int(_key,_val_i)
-    local ptr = lib.ImGuiStoragePair_ImGuiStoragePair_Int(_key,_val_i)
+function ImGuiStoragePair.ImGuiStoragePair_Int(_key,_val)
+    local ptr = lib.ImGuiStoragePair_ImGuiStoragePair_Int(_key,_val)
     return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
 end
-function ImGuiStoragePair.ImGuiStoragePair_Float(_key,_val_f)
-    local ptr = lib.ImGuiStoragePair_ImGuiStoragePair_Float(_key,_val_f)
+function ImGuiStoragePair.ImGuiStoragePair_Float(_key,_val)
+    local ptr = lib.ImGuiStoragePair_ImGuiStoragePair_Float(_key,_val)
     return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
 end
-function ImGuiStoragePair.ImGuiStoragePair_Ptr(_key,_val_p)
-    local ptr = lib.ImGuiStoragePair_ImGuiStoragePair_Ptr(_key,_val_p)
+function ImGuiStoragePair.ImGuiStoragePair_Ptr(_key,_val)
+    local ptr = lib.ImGuiStoragePair_ImGuiStoragePair_Ptr(_key,_val)
     return ffi.gc(ptr,lib.ImGuiStoragePair_destroy)
 end
 function ImGuiStoragePair.__new(ctype,a1,a2) -- generic version
@@ -1542,6 +1565,15 @@ end
 ImGuiTextRange.empty = lib.ImGuiTextRange_empty
 ImGuiTextRange.split = lib.ImGuiTextRange_split
 M.ImGuiTextRange = ffi.metatype("ImGuiTextRange",ImGuiTextRange)
+--------------------------ImGuiTypingSelectState----------------------------
+local ImGuiTypingSelectState= {}
+ImGuiTypingSelectState.__index = ImGuiTypingSelectState
+ImGuiTypingSelectState.Clear = lib.ImGuiTypingSelectState_Clear
+function ImGuiTypingSelectState.__new(ctype)
+    local ptr = lib.ImGuiTypingSelectState_ImGuiTypingSelectState()
+    return ffi.gc(ptr,lib.ImGuiTypingSelectState_destroy)
+end
+M.ImGuiTypingSelectState = ffi.metatype("ImGuiTypingSelectState",ImGuiTypingSelectState)
 --------------------------ImGuiViewport----------------------------
 local ImGuiViewport= {}
 ImGuiViewport.__index = ImGuiViewport
@@ -2116,6 +2148,7 @@ function ImRect:Contains(a2) -- generic version
     print(a2)
     error'ImRect:Contains could not find overloaded'
 end
+ImRect.ContainsWithPad = lib.ImRect_ContainsWithPad
 ImRect.Expand_Float = lib.ImRect_Expand_Float
 ImRect.Expand_Vec2 = lib.ImRect_Expand_Vec2
 function ImRect:Expand(a2) -- generic version
@@ -2555,6 +2588,7 @@ function M.ImPlot_ClampLabelPos(pos,size,Min,Max)
     lib.ImPlot_ClampLabelPos(nonUDT_out,pos,size,Min,Max)
     return nonUDT_out
 end
+M.ImPlot_ClampLegendRect = lib.ImPlot_ClampLegendRect
 function M.ImPlot_ColormapButton(label,size,cmap)
     cmap = cmap or -1
     size = size or ImVec2(0,0)
@@ -2584,24 +2618,36 @@ function M.ImPlot_DestroyContext(ctx)
     ctx = ctx or nil
     return lib.ImPlot_DestroyContext(ctx)
 end
-function M.ImPlot_DragLineX(id,x,col,thickness,flags)
+function M.ImPlot_DragLineX(id,x,col,thickness,flags,out_clicked,out_hovered,held)
     flags = flags or 0
+    held = held or nil
+    out_clicked = out_clicked or nil
+    out_hovered = out_hovered or nil
     thickness = thickness or 1
-    return lib.ImPlot_DragLineX(id,x,col,thickness,flags)
+    return lib.ImPlot_DragLineX(id,x,col,thickness,flags,out_clicked,out_hovered,held)
 end
-function M.ImPlot_DragLineY(id,y,col,thickness,flags)
+function M.ImPlot_DragLineY(id,y,col,thickness,flags,out_clicked,out_hovered,held)
     flags = flags or 0
+    held = held or nil
+    out_clicked = out_clicked or nil
+    out_hovered = out_hovered or nil
     thickness = thickness or 1
-    return lib.ImPlot_DragLineY(id,y,col,thickness,flags)
+    return lib.ImPlot_DragLineY(id,y,col,thickness,flags,out_clicked,out_hovered,held)
 end
-function M.ImPlot_DragPoint(id,x,y,col,size,flags)
+function M.ImPlot_DragPoint(id,x,y,col,size,flags,out_clicked,out_hovered,held)
     flags = flags or 0
+    held = held or nil
+    out_clicked = out_clicked or nil
+    out_hovered = out_hovered or nil
     size = size or 4
-    return lib.ImPlot_DragPoint(id,x,y,col,size,flags)
+    return lib.ImPlot_DragPoint(id,x,y,col,size,flags,out_clicked,out_hovered,held)
 end
-function M.ImPlot_DragRect(id,x1,y1,x2,y2,col,flags)
+function M.ImPlot_DragRect(id,x1,y1,x2,y2,col,flags,out_clicked,out_hovered,held)
     flags = flags or 0
-    return lib.ImPlot_DragRect(id,x1,y1,x2,y2,col,flags)
+    held = held or nil
+    out_clicked = out_clicked or nil
+    out_hovered = out_hovered or nil
+    return lib.ImPlot_DragRect(id,x1,y1,x2,y2,col,flags,out_clicked,out_hovered,held)
 end
 M.ImPlot_EndAlignedPlots = lib.ImPlot_EndAlignedPlots
 M.ImPlot_EndDragDropSource = lib.ImPlot_EndDragDropSource
@@ -4073,78 +4119,148 @@ function M.ImPlot_PlotLineG(label_id,getter,data,count,flags)
     flags = flags or 0
     return lib.ImPlot_PlotLineG(label_id,getter,data,count,flags)
 end
-function M.ImPlot_PlotPieChart_FloatPtr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+function M.ImPlot_PlotPieChart_FloatPtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+    angle0 = angle0 or 90
+    flags = flags or 0
+    fmt_data = fmt_data or nil
+    return lib.ImPlot_PlotPieChart_FloatPtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+end
+function M.ImPlot_PlotPieChart_doublePtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+    angle0 = angle0 or 90
+    flags = flags or 0
+    fmt_data = fmt_data or nil
+    return lib.ImPlot_PlotPieChart_doublePtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+end
+function M.ImPlot_PlotPieChart_S8PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+    angle0 = angle0 or 90
+    flags = flags or 0
+    fmt_data = fmt_data or nil
+    return lib.ImPlot_PlotPieChart_S8PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+end
+function M.ImPlot_PlotPieChart_U8PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+    angle0 = angle0 or 90
+    flags = flags or 0
+    fmt_data = fmt_data or nil
+    return lib.ImPlot_PlotPieChart_U8PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+end
+function M.ImPlot_PlotPieChart_S16PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+    angle0 = angle0 or 90
+    flags = flags or 0
+    fmt_data = fmt_data or nil
+    return lib.ImPlot_PlotPieChart_S16PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+end
+function M.ImPlot_PlotPieChart_U16PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+    angle0 = angle0 or 90
+    flags = flags or 0
+    fmt_data = fmt_data or nil
+    return lib.ImPlot_PlotPieChart_U16PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+end
+function M.ImPlot_PlotPieChart_S32PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+    angle0 = angle0 or 90
+    flags = flags or 0
+    fmt_data = fmt_data or nil
+    return lib.ImPlot_PlotPieChart_S32PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+end
+function M.ImPlot_PlotPieChart_U32PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+    angle0 = angle0 or 90
+    flags = flags or 0
+    fmt_data = fmt_data or nil
+    return lib.ImPlot_PlotPieChart_U32PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+end
+function M.ImPlot_PlotPieChart_S64PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+    angle0 = angle0 or 90
+    flags = flags or 0
+    fmt_data = fmt_data or nil
+    return lib.ImPlot_PlotPieChart_S64PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+end
+function M.ImPlot_PlotPieChart_U64PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+    angle0 = angle0 or 90
+    flags = flags or 0
+    fmt_data = fmt_data or nil
+    return lib.ImPlot_PlotPieChart_U64PtrPlotFormatter(label_ids,values,count,x,y,radius,fmt,fmt_data,angle0,flags)
+end
+function M.ImPlot_PlotPieChart_FloatPtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
     angle0 = angle0 or 90
     flags = flags or 0
     label_fmt = label_fmt or "%.1f"
-    return lib.ImPlot_PlotPieChart_FloatPtr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+    return lib.ImPlot_PlotPieChart_FloatPtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
 end
-function M.ImPlot_PlotPieChart_doublePtr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+function M.ImPlot_PlotPieChart_doublePtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
     angle0 = angle0 or 90
     flags = flags or 0
     label_fmt = label_fmt or "%.1f"
-    return lib.ImPlot_PlotPieChart_doublePtr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+    return lib.ImPlot_PlotPieChart_doublePtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
 end
-function M.ImPlot_PlotPieChart_S8Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+function M.ImPlot_PlotPieChart_S8PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
     angle0 = angle0 or 90
     flags = flags or 0
     label_fmt = label_fmt or "%.1f"
-    return lib.ImPlot_PlotPieChart_S8Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+    return lib.ImPlot_PlotPieChart_S8PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
 end
-function M.ImPlot_PlotPieChart_U8Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+function M.ImPlot_PlotPieChart_U8PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
     angle0 = angle0 or 90
     flags = flags or 0
     label_fmt = label_fmt or "%.1f"
-    return lib.ImPlot_PlotPieChart_U8Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+    return lib.ImPlot_PlotPieChart_U8PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
 end
-function M.ImPlot_PlotPieChart_S16Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+function M.ImPlot_PlotPieChart_S16PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
     angle0 = angle0 or 90
     flags = flags or 0
     label_fmt = label_fmt or "%.1f"
-    return lib.ImPlot_PlotPieChart_S16Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+    return lib.ImPlot_PlotPieChart_S16PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
 end
-function M.ImPlot_PlotPieChart_U16Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+function M.ImPlot_PlotPieChart_U16PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
     angle0 = angle0 or 90
     flags = flags or 0
     label_fmt = label_fmt or "%.1f"
-    return lib.ImPlot_PlotPieChart_U16Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+    return lib.ImPlot_PlotPieChart_U16PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
 end
-function M.ImPlot_PlotPieChart_S32Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+function M.ImPlot_PlotPieChart_S32PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
     angle0 = angle0 or 90
     flags = flags or 0
     label_fmt = label_fmt or "%.1f"
-    return lib.ImPlot_PlotPieChart_S32Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+    return lib.ImPlot_PlotPieChart_S32PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
 end
-function M.ImPlot_PlotPieChart_U32Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+function M.ImPlot_PlotPieChart_U32PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
     angle0 = angle0 or 90
     flags = flags or 0
     label_fmt = label_fmt or "%.1f"
-    return lib.ImPlot_PlotPieChart_U32Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+    return lib.ImPlot_PlotPieChart_U32PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
 end
-function M.ImPlot_PlotPieChart_S64Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+function M.ImPlot_PlotPieChart_S64PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
     angle0 = angle0 or 90
     flags = flags or 0
     label_fmt = label_fmt or "%.1f"
-    return lib.ImPlot_PlotPieChart_S64Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+    return lib.ImPlot_PlotPieChart_S64PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
 end
-function M.ImPlot_PlotPieChart_U64Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+function M.ImPlot_PlotPieChart_U64PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
     angle0 = angle0 or 90
     flags = flags or 0
     label_fmt = label_fmt or "%.1f"
-    return lib.ImPlot_PlotPieChart_U64Ptr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
+    return lib.ImPlot_PlotPieChart_U64PtrStr(label_ids,values,count,x,y,radius,label_fmt,angle0,flags)
 end
-function M.ImPlot_PlotPieChart(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
-    if (ffi.istype('float*',a2) or ffi.istype('float[]',a2)) then return M.ImPlot_PlotPieChart_FloatPtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('double*',a2) or ffi.istype('double[]',a2)) then return M.ImPlot_PlotPieChart_doublePtr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.ImPlot_PlotPieChart_S8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if ffi.typeof('uint8_t*') == ffi.typeof(a2) or ffi.typeof('const uint8_t*') == ffi.typeof(a2) or ffi.typeof('uint8_t[?]') == ffi.typeof(a2) or ffi.typeof('const uint8_t[?]') == ffi.typeof(a2) then return M.ImPlot_PlotPieChart_U8Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if ffi.typeof('int16_t*') == ffi.typeof(a2) or ffi.typeof('const int16_t*') == ffi.typeof(a2) or ffi.typeof('int16_t[?]') == ffi.typeof(a2) or ffi.typeof('const int16_t[?]') == ffi.typeof(a2) then return M.ImPlot_PlotPieChart_S16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if ffi.typeof('uint16_t*') == ffi.typeof(a2) or ffi.typeof('const uint16_t*') == ffi.typeof(a2) or ffi.typeof('uint16_t[?]') == ffi.typeof(a2) or ffi.typeof('const uint16_t[?]') == ffi.typeof(a2) then return M.ImPlot_PlotPieChart_U16Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if ffi.typeof('int32_t*') == ffi.typeof(a2) or ffi.typeof('const int32_t*') == ffi.typeof(a2) or ffi.typeof('int32_t[?]') == ffi.typeof(a2) or ffi.typeof('const int32_t[?]') == ffi.typeof(a2) then return M.ImPlot_PlotPieChart_S32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if ffi.typeof('uint32_t*') == ffi.typeof(a2) or ffi.typeof('const uint32_t*') == ffi.typeof(a2) or ffi.typeof('uint32_t[?]') == ffi.typeof(a2) or ffi.typeof('const uint32_t[?]') == ffi.typeof(a2) then return M.ImPlot_PlotPieChart_U32Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if ffi.typeof('int64_t*') == ffi.typeof(a2) or ffi.typeof('const int64_t*') == ffi.typeof(a2) or ffi.typeof('int64_t[?]') == ffi.typeof(a2) or ffi.typeof('const int64_t[?]') == ffi.typeof(a2) then return M.ImPlot_PlotPieChart_S64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    if ffi.typeof('uint64_t*') == ffi.typeof(a2) or ffi.typeof('const uint64_t*') == ffi.typeof(a2) or ffi.typeof('uint64_t[?]') == ffi.typeof(a2) or ffi.typeof('const uint64_t[?]') == ffi.typeof(a2) then return M.ImPlot_PlotPieChart_U64Ptr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
-    print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
+function M.ImPlot_PlotPieChart(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) -- generic version
+    if (ffi.istype('float*',a2) or ffi.istype('float[]',a2)) and ffi.istype('ImPlotFormatter',a7) and (ffi.istype('void *',a8) or type(a8)=='nil') and ((ffi.istype('int32_t',a10) or type(a10)=='number') or type(a10)=='nil') and ((ffi.istype('double',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_FloatPtrPlotFormatter(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) end
+    if (ffi.istype('double*',a2) or ffi.istype('double[]',a2)) and ffi.istype('ImPlotFormatter',a7) and (ffi.istype('void *',a8) or type(a8)=='nil') and ((ffi.istype('int32_t',a10) or type(a10)=='number') or type(a10)=='nil') and ((ffi.istype('double',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_doublePtrPlotFormatter(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and ffi.istype('ImPlotFormatter',a7) and (ffi.istype('void *',a8) or type(a8)=='nil') and ((ffi.istype('int32_t',a10) or type(a10)=='number') or type(a10)=='nil') and ((ffi.istype('double',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_S8PtrPlotFormatter(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) end
+    if ffi.typeof('uint8_t*') == ffi.typeof(a2) or ffi.typeof('const uint8_t*') == ffi.typeof(a2) or ffi.typeof('uint8_t[?]') == ffi.typeof(a2) or ffi.typeof('const uint8_t[?]') == ffi.typeof(a2) and ffi.istype('ImPlotFormatter',a7) and (ffi.istype('void *',a8) or type(a8)=='nil') and ((ffi.istype('int32_t',a10) or type(a10)=='number') or type(a10)=='nil') and ((ffi.istype('double',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_U8PtrPlotFormatter(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) end
+    if ffi.typeof('int16_t*') == ffi.typeof(a2) or ffi.typeof('const int16_t*') == ffi.typeof(a2) or ffi.typeof('int16_t[?]') == ffi.typeof(a2) or ffi.typeof('const int16_t[?]') == ffi.typeof(a2) and ffi.istype('ImPlotFormatter',a7) and (ffi.istype('void *',a8) or type(a8)=='nil') and ((ffi.istype('int32_t',a10) or type(a10)=='number') or type(a10)=='nil') and ((ffi.istype('double',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_S16PtrPlotFormatter(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) end
+    if ffi.typeof('uint16_t*') == ffi.typeof(a2) or ffi.typeof('const uint16_t*') == ffi.typeof(a2) or ffi.typeof('uint16_t[?]') == ffi.typeof(a2) or ffi.typeof('const uint16_t[?]') == ffi.typeof(a2) and ffi.istype('ImPlotFormatter',a7) and (ffi.istype('void *',a8) or type(a8)=='nil') and ((ffi.istype('int32_t',a10) or type(a10)=='number') or type(a10)=='nil') and ((ffi.istype('double',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_U16PtrPlotFormatter(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) end
+    if ffi.typeof('int32_t*') == ffi.typeof(a2) or ffi.typeof('const int32_t*') == ffi.typeof(a2) or ffi.typeof('int32_t[?]') == ffi.typeof(a2) or ffi.typeof('const int32_t[?]') == ffi.typeof(a2) and ffi.istype('ImPlotFormatter',a7) and (ffi.istype('void *',a8) or type(a8)=='nil') and ((ffi.istype('int32_t',a10) or type(a10)=='number') or type(a10)=='nil') and ((ffi.istype('double',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_S32PtrPlotFormatter(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) end
+    if ffi.typeof('uint32_t*') == ffi.typeof(a2) or ffi.typeof('const uint32_t*') == ffi.typeof(a2) or ffi.typeof('uint32_t[?]') == ffi.typeof(a2) or ffi.typeof('const uint32_t[?]') == ffi.typeof(a2) and ffi.istype('ImPlotFormatter',a7) and (ffi.istype('void *',a8) or type(a8)=='nil') and ((ffi.istype('int32_t',a10) or type(a10)=='number') or type(a10)=='nil') and ((ffi.istype('double',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_U32PtrPlotFormatter(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) end
+    if ffi.typeof('int64_t*') == ffi.typeof(a2) or ffi.typeof('const int64_t*') == ffi.typeof(a2) or ffi.typeof('int64_t[?]') == ffi.typeof(a2) or ffi.typeof('const int64_t[?]') == ffi.typeof(a2) and ffi.istype('ImPlotFormatter',a7) and (ffi.istype('void *',a8) or type(a8)=='nil') and ((ffi.istype('int32_t',a10) or type(a10)=='number') or type(a10)=='nil') and ((ffi.istype('double',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_S64PtrPlotFormatter(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) end
+    if ffi.typeof('uint64_t*') == ffi.typeof(a2) or ffi.typeof('const uint64_t*') == ffi.typeof(a2) or ffi.typeof('uint64_t[?]') == ffi.typeof(a2) or ffi.typeof('const uint64_t[?]') == ffi.typeof(a2) and ffi.istype('ImPlotFormatter',a7) and (ffi.istype('void *',a8) or type(a8)=='nil') and ((ffi.istype('int32_t',a10) or type(a10)=='number') or type(a10)=='nil') and ((ffi.istype('double',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_U64PtrPlotFormatter(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) end
+    if (ffi.istype('float*',a2) or ffi.istype('float[]',a2)) and ((ffi.istype('const char*',a7) or ffi.istype('char[]',a7) or type(a7)=='string') or type(a7)=='nil') and ((ffi.istype('double',a8) or type(a8)=='number') or type(a8)=='nil') and a10==nil and ((ffi.istype('int32_t',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_FloatPtrStr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('double*',a2) or ffi.istype('double[]',a2)) and ((ffi.istype('const char*',a7) or ffi.istype('char[]',a7) or type(a7)=='string') or type(a7)=='nil') and ((ffi.istype('double',a8) or type(a8)=='number') or type(a8)=='nil') and a10==nil and ((ffi.istype('int32_t',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_doublePtrStr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if (ffi.istype('const ImS8*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') and ((ffi.istype('const char*',a7) or ffi.istype('char[]',a7) or type(a7)=='string') or type(a7)=='nil') and ((ffi.istype('double',a8) or type(a8)=='number') or type(a8)=='nil') and a10==nil and ((ffi.istype('int32_t',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_S8PtrStr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.typeof('uint8_t*') == ffi.typeof(a2) or ffi.typeof('const uint8_t*') == ffi.typeof(a2) or ffi.typeof('uint8_t[?]') == ffi.typeof(a2) or ffi.typeof('const uint8_t[?]') == ffi.typeof(a2) and ((ffi.istype('const char*',a7) or ffi.istype('char[]',a7) or type(a7)=='string') or type(a7)=='nil') and ((ffi.istype('double',a8) or type(a8)=='number') or type(a8)=='nil') and a10==nil and ((ffi.istype('int32_t',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_U8PtrStr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.typeof('int16_t*') == ffi.typeof(a2) or ffi.typeof('const int16_t*') == ffi.typeof(a2) or ffi.typeof('int16_t[?]') == ffi.typeof(a2) or ffi.typeof('const int16_t[?]') == ffi.typeof(a2) and ((ffi.istype('const char*',a7) or ffi.istype('char[]',a7) or type(a7)=='string') or type(a7)=='nil') and ((ffi.istype('double',a8) or type(a8)=='number') or type(a8)=='nil') and a10==nil and ((ffi.istype('int32_t',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_S16PtrStr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.typeof('uint16_t*') == ffi.typeof(a2) or ffi.typeof('const uint16_t*') == ffi.typeof(a2) or ffi.typeof('uint16_t[?]') == ffi.typeof(a2) or ffi.typeof('const uint16_t[?]') == ffi.typeof(a2) and ((ffi.istype('const char*',a7) or ffi.istype('char[]',a7) or type(a7)=='string') or type(a7)=='nil') and ((ffi.istype('double',a8) or type(a8)=='number') or type(a8)=='nil') and a10==nil and ((ffi.istype('int32_t',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_U16PtrStr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.typeof('int32_t*') == ffi.typeof(a2) or ffi.typeof('const int32_t*') == ffi.typeof(a2) or ffi.typeof('int32_t[?]') == ffi.typeof(a2) or ffi.typeof('const int32_t[?]') == ffi.typeof(a2) and ((ffi.istype('const char*',a7) or ffi.istype('char[]',a7) or type(a7)=='string') or type(a7)=='nil') and ((ffi.istype('double',a8) or type(a8)=='number') or type(a8)=='nil') and a10==nil and ((ffi.istype('int32_t',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_S32PtrStr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.typeof('uint32_t*') == ffi.typeof(a2) or ffi.typeof('const uint32_t*') == ffi.typeof(a2) or ffi.typeof('uint32_t[?]') == ffi.typeof(a2) or ffi.typeof('const uint32_t[?]') == ffi.typeof(a2) and ((ffi.istype('const char*',a7) or ffi.istype('char[]',a7) or type(a7)=='string') or type(a7)=='nil') and ((ffi.istype('double',a8) or type(a8)=='number') or type(a8)=='nil') and a10==nil and ((ffi.istype('int32_t',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_U32PtrStr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.typeof('int64_t*') == ffi.typeof(a2) or ffi.typeof('const int64_t*') == ffi.typeof(a2) or ffi.typeof('int64_t[?]') == ffi.typeof(a2) or ffi.typeof('const int64_t[?]') == ffi.typeof(a2) and ((ffi.istype('const char*',a7) or ffi.istype('char[]',a7) or type(a7)=='string') or type(a7)=='nil') and ((ffi.istype('double',a8) or type(a8)=='number') or type(a8)=='nil') and a10==nil and ((ffi.istype('int32_t',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_S64PtrStr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    if ffi.typeof('uint64_t*') == ffi.typeof(a2) or ffi.typeof('const uint64_t*') == ffi.typeof(a2) or ffi.typeof('uint64_t[?]') == ffi.typeof(a2) or ffi.typeof('const uint64_t[?]') == ffi.typeof(a2) and ((ffi.istype('const char*',a7) or ffi.istype('char[]',a7) or type(a7)=='string') or type(a7)=='nil') and ((ffi.istype('double',a8) or type(a8)=='number') or type(a8)=='nil') and a10==nil and ((ffi.istype('int32_t',a9) or type(a9)=='number') or type(a9)=='nil') then return M.ImPlot_PlotPieChart_U64PtrStr(a1,a2,a3,a4,a5,a6,a7,a8,a9) end
+    print(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
     error'M.ImPlot_PlotPieChart could not find overloaded'
 end
 function M.ImPlot_PlotScatter_FloatPtrInt(label_id,values,count,xscale,xstart,flags,offset,stride)
@@ -5226,17 +5342,17 @@ function M.Begin(name,p_open,flags)
     p_open = p_open or nil
     return lib.igBegin(name,p_open,flags)
 end
-function M.BeginChild_Str(str_id,size,border,flags)
-    border = border or false
-    flags = flags or 0
+function M.BeginChild_Str(str_id,size,child_flags,window_flags)
+    child_flags = child_flags or 0
     size = size or ImVec2(0,0)
-    return lib.igBeginChild_Str(str_id,size,border,flags)
+    window_flags = window_flags or 0
+    return lib.igBeginChild_Str(str_id,size,child_flags,window_flags)
 end
-function M.BeginChild_ID(id,size,border,flags)
-    border = border or false
-    flags = flags or 0
+function M.BeginChild_ID(id,size,child_flags,window_flags)
+    child_flags = child_flags or 0
     size = size or ImVec2(0,0)
-    return lib.igBeginChild_ID(id,size,border,flags)
+    window_flags = window_flags or 0
+    return lib.igBeginChild_ID(id,size,child_flags,window_flags)
 end
 function M.BeginChild(a1,a2,a3,a4) -- generic version
     if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return M.BeginChild_Str(a1,a2,a3,a4) end
@@ -5245,10 +5361,6 @@ function M.BeginChild(a1,a2,a3,a4) -- generic version
     error'M.BeginChild could not find overloaded'
 end
 M.BeginChildEx = lib.igBeginChildEx
-function M.BeginChildFrame(id,size,flags)
-    flags = flags or 0
-    return lib.igBeginChildFrame(id,size,flags)
-end
 function M.BeginColumns(str_id,count,flags)
     flags = flags or 0
     return lib.igBeginColumns(str_id,count,flags)
@@ -5337,6 +5449,7 @@ function M.BeginTableEx(name,id,columns_count,flags,outer_size,inner_width)
 end
 M.BeginTooltip = lib.igBeginTooltip
 M.BeginTooltipEx = lib.igBeginTooltipEx
+M.BeginTooltipHidden = lib.igBeginTooltipHidden
 M.BeginViewportSideBar = lib.igBeginViewportSideBar
 M.BringWindowToDisplayBack = lib.igBringWindowToDisplayBack
 M.BringWindowToDisplayBehind = lib.igBringWindowToDisplayBehind
@@ -5465,14 +5578,14 @@ function M.Combo_Str(label,current_item,items_separated_by_zeros,popup_max_heigh
     popup_max_height_in_items = popup_max_height_in_items or -1
     return lib.igCombo_Str(label,current_item,items_separated_by_zeros,popup_max_height_in_items)
 end
-function M.Combo_FnBoolPtr(label,current_item,items_getter,data,items_count,popup_max_height_in_items)
+function M.Combo_FnStrPtr(label,current_item,getter,user_data,items_count,popup_max_height_in_items)
     popup_max_height_in_items = popup_max_height_in_items or -1
-    return lib.igCombo_FnBoolPtr(label,current_item,items_getter,data,items_count,popup_max_height_in_items)
+    return lib.igCombo_FnStrPtr(label,current_item,getter,user_data,items_count,popup_max_height_in_items)
 end
 function M.Combo(a1,a2,a3,a4,a5,a6) -- generic version
     if (ffi.istype('const char* const[]',a3) or ffi.istype('const char const[]',a3) or ffi.istype('const char const[][]',a3)) then return M.Combo_Str_arr(a1,a2,a3,a4,a5) end
     if (ffi.istype('const char*',a3) or ffi.istype('char[]',a3) or type(a3)=='string') then return M.Combo_Str(a1,a2,a3,a4) end
-    if ffi.istype('bool(*)(void* data,int idx,const char** out_text)',a3) then return M.Combo_FnBoolPtr(a1,a2,a3,a4,a5,a6) end
+    if ffi.istype('const char*(*)(void* user_data,int idx)',a3) then return M.Combo_FnStrPtr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.Combo could not find overloaded'
 end
@@ -5489,6 +5602,7 @@ M.DataTypeClamp = lib.igDataTypeClamp
 M.DataTypeCompare = lib.igDataTypeCompare
 M.DataTypeFormatString = lib.igDataTypeFormatString
 M.DataTypeGetInfo = lib.igDataTypeGetInfo
+M.DebugAllocHook = lib.igDebugAllocHook
 M.DebugCheckVersionAndDataLayout = lib.igDebugCheckVersionAndDataLayout
 function M.DebugDrawCursorPos(col)
     col = col or 4278190335
@@ -5519,6 +5633,7 @@ M.DebugNodeStorage = lib.igDebugNodeStorage
 M.DebugNodeTabBar = lib.igDebugNodeTabBar
 M.DebugNodeTable = lib.igDebugNodeTable
 M.DebugNodeTableSettings = lib.igDebugNodeTableSettings
+M.DebugNodeTypingSelectState = lib.igDebugNodeTypingSelectState
 M.DebugNodeViewport = lib.igDebugNodeViewport
 M.DebugNodeWindow = lib.igDebugNodeWindow
 M.DebugNodeWindowSettings = lib.igDebugNodeWindowSettings
@@ -5694,7 +5809,6 @@ end
 M.Dummy = lib.igDummy
 M.End = lib.igEnd
 M.EndChild = lib.igEndChild
-M.EndChildFrame = lib.igEndChildFrame
 M.EndColumns = lib.igEndColumns
 M.EndCombo = lib.igEndCombo
 M.EndComboPreview = lib.igEndComboPreview
@@ -5958,6 +6072,10 @@ M.GetTopMostAndVisiblePopupModal = lib.igGetTopMostAndVisiblePopupModal
 M.GetTopMostPopupModal = lib.igGetTopMostPopupModal
 M.GetTreeNodeToLabelSpacing = lib.igGetTreeNodeToLabelSpacing
 M.GetTypematicRepeatRate = lib.igGetTypematicRepeatRate
+function M.GetTypingSelectRequest(flags)
+    flags = flags or 0
+    return lib.igGetTypingSelectRequest(flags)
+end
 M.GetVersion = lib.igGetVersion
 M.GetViewportPlatformMonitor = lib.igGetViewportPlatformMonitor
 M.GetWindowAlwaysWantOwnTabBar = lib.igGetWindowAlwaysWantOwnTabBar
@@ -6064,18 +6182,6 @@ function M.ImFloor(a1,a2) -- generic version
     print(a1,a2)
     error'M.ImFloor could not find overloaded'
 end
-M.ImFloorSigned_Float = lib.igImFloorSigned_Float
-function M.ImFloorSigned_Vec2(v)
-    local nonUDT_out = ffi.new("ImVec2")
-    lib.igImFloorSigned_Vec2(nonUDT_out,v)
-    return nonUDT_out
-end
-function M.ImFloorSigned(a1,a2) -- generic version
-    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImFloorSigned_Float(a1) end
-    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1) or ffi.istype('ImVec2[]',a1)) then return M.ImFloorSigned_Vec2(a2) end
-    print(a1,a2)
-    error'M.ImFloorSigned could not find overloaded'
-end
 M.ImFontAtlasBuildFinish = lib.igImFontAtlasBuildFinish
 M.ImFontAtlasBuildInit = lib.igImFontAtlasBuildInit
 M.ImFontAtlasBuildMultiplyCalcLookupTable = lib.igImFontAtlasBuildMultiplyCalcLookupTable
@@ -6085,6 +6191,7 @@ M.ImFontAtlasBuildRender32bppRectFromString = lib.igImFontAtlasBuildRender32bppR
 M.ImFontAtlasBuildRender8bppRectFromString = lib.igImFontAtlasBuildRender8bppRectFromString
 M.ImFontAtlasBuildSetupFont = lib.igImFontAtlasBuildSetupFont
 M.ImFontAtlasGetBuilderForStbTruetype = lib.igImFontAtlasGetBuilderForStbTruetype
+M.ImFontAtlasUpdateConfigDataPointers = lib.igImFontAtlasUpdateConfigDataPointers
 M.ImFormatString = lib.igImFormatString
 M.ImFormatStringToTempBuffer = lib.igImFormatStringToTempBuffer
 M.ImFormatStringToTempBufferV = lib.igImFormatStringToTempBufferV
@@ -6222,6 +6329,7 @@ M.ImTextCharToUtf8 = lib.igImTextCharToUtf8
 M.ImTextCountCharsFromUtf8 = lib.igImTextCountCharsFromUtf8
 M.ImTextCountUtf8BytesFromChar = lib.igImTextCountUtf8BytesFromChar
 M.ImTextCountUtf8BytesFromStr = lib.igImTextCountUtf8BytesFromStr
+M.ImTextFindPreviousUtf8Codepoint = lib.igImTextFindPreviousUtf8Codepoint
 function M.ImTextStrFromUtf8(out_buf,out_buf_size,in_text,in_text_end,in_remaining)
     in_remaining = in_remaining or nil
     return lib.igImTextStrFromUtf8(out_buf,out_buf_size,in_text,in_text_end,in_remaining)
@@ -6236,6 +6344,18 @@ function M.ImTriangleClosestPoint(a,b,c,p)
     return nonUDT_out
 end
 M.ImTriangleContainsPoint = lib.igImTriangleContainsPoint
+M.ImTrunc_Float = lib.igImTrunc_Float
+function M.ImTrunc_Vec2(v)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.igImTrunc_Vec2(nonUDT_out,v)
+    return nonUDT_out
+end
+function M.ImTrunc(a1,a2) -- generic version
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImTrunc_Float(a1) end
+    if (ffi.istype('ImVec2*',a1) or ffi.istype('ImVec2',a1) or ffi.istype('ImVec2[]',a1)) then return M.ImTrunc_Vec2(a2) end
+    print(a1,a2)
+    error'M.ImTrunc could not find overloaded'
+end
 M.ImUpperPowerOfTwo = lib.igImUpperPowerOfTwo
 function M.Image(user_texture_id,size,uv0,uv1,tint_col,border_col)
     border_col = border_col or ImVec4(0,0,0,0)
@@ -6244,16 +6364,16 @@ function M.Image(user_texture_id,size,uv0,uv1,tint_col,border_col)
     uv1 = uv1 or ImVec2(1,1)
     return lib.igImage(user_texture_id,size,uv0,uv1,tint_col,border_col)
 end
-function M.ImageButton(str_id,user_texture_id,size,uv0,uv1,bg_col,tint_col)
+function M.ImageButton(str_id,user_texture_id,image_size,uv0,uv1,bg_col,tint_col)
     bg_col = bg_col or ImVec4(0,0,0,0)
     tint_col = tint_col or ImVec4(1,1,1,1)
     uv0 = uv0 or ImVec2(0,0)
     uv1 = uv1 or ImVec2(1,1)
-    return lib.igImageButton(str_id,user_texture_id,size,uv0,uv1,bg_col,tint_col)
+    return lib.igImageButton(str_id,user_texture_id,image_size,uv0,uv1,bg_col,tint_col)
 end
-function M.ImageButtonEx(id,texture_id,size,uv0,uv1,bg_col,tint_col,flags)
+function M.ImageButtonEx(id,texture_id,image_size,uv0,uv1,bg_col,tint_col,flags)
     flags = flags or 0
-    return lib.igImageButtonEx(id,texture_id,size,uv0,uv1,bg_col,tint_col,flags)
+    return lib.igImageButtonEx(id,texture_id,image_size,uv0,uv1,bg_col,tint_col,flags)
 end
 function M.Indent(indent_w)
     indent_w = indent_w or 0.0
@@ -6377,6 +6497,17 @@ end
 M.IsItemToggledOpen = lib.igIsItemToggledOpen
 M.IsItemToggledSelection = lib.igIsItemToggledSelection
 M.IsItemVisible = lib.igIsItemVisible
+M.IsKeyChordPressed_Nil = lib.igIsKeyChordPressed_Nil
+function M.IsKeyChordPressed_ID(key_chord,owner_id,flags)
+    flags = flags or 0
+    return lib.igIsKeyChordPressed_ID(key_chord,owner_id,flags)
+end
+function M.IsKeyChordPressed(a1,a2,a3) -- generic version
+    if a2==nil then return M.IsKeyChordPressed_Nil(a1) end
+    if (ffi.istype('uint32_t',a2) or type(a2)=='number') then return M.IsKeyChordPressed_ID(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.IsKeyChordPressed could not find overloaded'
+end
 M.IsKeyDown_Nil = lib.igIsKeyDown_Nil
 M.IsKeyDown_ID = lib.igIsKeyDown_ID
 function M.IsKeyDown(a1,a2) -- generic version
@@ -6398,10 +6529,6 @@ function M.IsKeyPressed(a1,a2,a3) -- generic version
     if (ffi.istype('uint32_t',a2) or type(a2)=='number') then return M.IsKeyPressed_ID(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.IsKeyPressed could not find overloaded'
-end
-function M.IsKeyPressedMap(key,_repeat)
-    if _repeat == nil then _repeat = true end
-    return lib.igIsKeyPressedMap(key,_repeat)
 end
 M.IsKeyReleased_Nil = lib.igIsKeyReleased_Nil
 M.IsKeyReleased_ID = lib.igIsKeyReleased_ID
@@ -6427,7 +6554,14 @@ function M.IsMouseClicked(a1,a2,a3) -- generic version
     print(a1,a2,a3)
     error'M.IsMouseClicked could not find overloaded'
 end
-M.IsMouseDoubleClicked = lib.igIsMouseDoubleClicked
+M.IsMouseDoubleClicked_Nil = lib.igIsMouseDoubleClicked_Nil
+M.IsMouseDoubleClicked_ID = lib.igIsMouseDoubleClicked_ID
+function M.IsMouseDoubleClicked(a1,a2) -- generic version
+    if a2==nil then return M.IsMouseDoubleClicked_Nil(a1) end
+    if (ffi.istype('uint32_t',a2) or type(a2)=='number') then return M.IsMouseDoubleClicked_ID(a1,a2) end
+    print(a1,a2)
+    error'M.IsMouseDoubleClicked could not find overloaded'
+end
 M.IsMouseDown_Nil = lib.igIsMouseDown_Nil
 M.IsMouseDown_ID = lib.igIsMouseDown_ID
 function M.IsMouseDown(a1,a2) -- generic version
@@ -6528,13 +6662,13 @@ function M.ListBox_Str_arr(label,current_item,items,items_count,height_in_items)
     height_in_items = height_in_items or -1
     return lib.igListBox_Str_arr(label,current_item,items,items_count,height_in_items)
 end
-function M.ListBox_FnBoolPtr(label,current_item,items_getter,data,items_count,height_in_items)
+function M.ListBox_FnStrPtr(label,current_item,getter,user_data,items_count,height_in_items)
     height_in_items = height_in_items or -1
-    return lib.igListBox_FnBoolPtr(label,current_item,items_getter,data,items_count,height_in_items)
+    return lib.igListBox_FnStrPtr(label,current_item,getter,user_data,items_count,height_in_items)
 end
 function M.ListBox(a1,a2,a3,a4,a5,a6) -- generic version
     if (ffi.istype('const char* const[]',a3) or ffi.istype('const char const[]',a3) or ffi.istype('const char const[][]',a3)) then return M.ListBox_Str_arr(a1,a2,a3,a4,a5) end
-    if ffi.istype('bool(*)(void* data,int idx,const char** out_text)',a3) then return M.ListBox_FnBoolPtr(a1,a2,a3,a4,a5,a6) end
+    if ffi.istype('const char*(*)(void* user_data,int idx)',a3) then return M.ListBox_FnStrPtr(a1,a2,a3,a4,a5,a6) end
     print(a1,a2,a3,a4,a5,a6)
     error'M.ListBox could not find overloaded'
 end
@@ -6617,6 +6751,7 @@ M.NavMoveRequestResolveWithLastItem = lib.igNavMoveRequestResolveWithLastItem
 M.NavMoveRequestResolveWithPastTreeNode = lib.igNavMoveRequestResolveWithPastTreeNode
 M.NavMoveRequestSubmit = lib.igNavMoveRequestSubmit
 M.NavMoveRequestTryWrapping = lib.igNavMoveRequestTryWrapping
+M.NavRestoreHighlightAfterMove = lib.igNavRestoreHighlightAfterMove
 M.NavUpdateCurrentWindowIsScrollPushableX = lib.igNavUpdateCurrentWindowIsScrollPushableX
 M.NewFrame = lib.igNewFrame
 M.NewLine = lib.igNewLine
@@ -6929,6 +7064,7 @@ function M.SetNextItemOpen(is_open,cond)
     cond = cond or 0
     return lib.igSetNextItemOpen(is_open,cond)
 end
+M.SetNextItemSelectionUserData = lib.igSetNextItemSelectionUserData
 M.SetNextItemWidth = lib.igSetNextItemWidth
 M.SetNextWindowBgAlpha = lib.igSetNextWindowBgAlpha
 M.SetNextWindowClass = lib.igSetNextWindowClass
@@ -7086,6 +7222,7 @@ end
 M.SetWindowViewport = lib.igSetWindowViewport
 M.ShadeVertsLinearColorGradientKeepAlpha = lib.igShadeVertsLinearColorGradientKeepAlpha
 M.ShadeVertsLinearUV = lib.igShadeVertsLinearUV
+M.ShadeVertsTransformPos = lib.igShadeVertsTransformPos
 function M.Shortcut(key_chord,owner_id,flags)
     flags = flags or 0
     owner_id = owner_id or 0
@@ -7105,13 +7242,13 @@ function M.ShowDemoWindow(p_open)
 end
 M.ShowFontAtlas = lib.igShowFontAtlas
 M.ShowFontSelector = lib.igShowFontSelector
+function M.ShowIDStackToolWindow(p_open)
+    p_open = p_open or nil
+    return lib.igShowIDStackToolWindow(p_open)
+end
 function M.ShowMetricsWindow(p_open)
     p_open = p_open or nil
     return lib.igShowMetricsWindow(p_open)
-end
-function M.ShowStackToolWindow(p_open)
-    p_open = p_open or nil
-    return lib.igShowStackToolWindow(p_open)
 end
 function M.ShowStyleEditor(ref)
     ref = ref or nil
@@ -7237,13 +7374,18 @@ function M.TabItemCalcSize(a2,a3) -- generic version
 end
 M.TabItemEx = lib.igTabItemEx
 M.TabItemLabelAndCloseButton = lib.igTabItemLabelAndCloseButton
+M.TableAngledHeadersRow = lib.igTableAngledHeadersRow
+function M.TableAngledHeadersRowEx(angle,label_width)
+    label_width = label_width or 0.0
+    return lib.igTableAngledHeadersRowEx(angle,label_width)
+end
 M.TableBeginApplyRequests = lib.igTableBeginApplyRequests
 M.TableBeginCell = lib.igTableBeginCell
 M.TableBeginContextMenuPopup = lib.igTableBeginContextMenuPopup
 M.TableBeginInitMemory = lib.igTableBeginInitMemory
 M.TableBeginRow = lib.igTableBeginRow
 M.TableDrawBorders = lib.igTableDrawBorders
-M.TableDrawContextMenu = lib.igTableDrawContextMenu
+M.TableDrawDefaultContextMenu = lib.igTableDrawDefaultContextMenu
 M.TableEndCell = lib.igTableEndCell
 M.TableEndRow = lib.igTableEndRow
 M.TableFindByID = lib.igTableFindByID
@@ -7286,6 +7428,7 @@ function M.TableGetColumnResizeID(table,column_n,instance_no)
     return lib.igTableGetColumnResizeID(table,column_n,instance_no)
 end
 M.TableGetColumnWidthAuto = lib.igTableGetColumnWidthAuto
+M.TableGetHeaderAngledMaxLabelWidth = lib.igTableGetHeaderAngledMaxLabelWidth
 M.TableGetHeaderRowHeight = lib.igTableGetHeaderRowHeight
 M.TableGetHoveredColumn = lib.igTableGetHoveredColumn
 M.TableGetHoveredRow = lib.igTableGetHoveredRow
@@ -7339,6 +7482,7 @@ M.TableSortSpecsSanitize = lib.igTableSortSpecsSanitize
 M.TableUpdateBorders = lib.igTableUpdateBorders
 M.TableUpdateColumnsWeightFromWidth = lib.igTableUpdateColumnsWeightFromWidth
 M.TableUpdateLayout = lib.igTableUpdateLayout
+M.TeleportMousePos = lib.igTeleportMousePos
 M.TempInputIsActive = lib.igTempInputIsActive
 function M.TempInputScalar(bb,id,label,data_type,p_data,format,p_clamp_min,p_clamp_max)
     p_clamp_max = p_clamp_max or nil
@@ -7421,6 +7565,9 @@ function M.TreePush(a1) -- generic version
     error'M.TreePush could not find overloaded'
 end
 M.TreePushOverrideID = lib.igTreePushOverrideID
+M.TypingSelectFindBestLeadingMatch = lib.igTypingSelectFindBestLeadingMatch
+M.TypingSelectFindMatch = lib.igTypingSelectFindMatch
+M.TypingSelectFindNextSingleCharMatch = lib.igTypingSelectFindNextSingleCharMatch
 function M.Unindent(indent_w)
     indent_w = indent_w or 0.0
     return lib.igUnindent(indent_w)
