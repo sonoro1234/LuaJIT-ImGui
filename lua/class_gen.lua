@@ -382,7 +382,9 @@ local function create_generic(code,defs,method)
 		for j=1,#defs do
 			if not done[j] then
 				local tt = defs[j].argsT[i] and defs[j].argsT[i].type or "nil"
-				keys[i][tt] = (keys[i][tt] or 0) + 1
+				--keys[i][tt] = (keys[i][tt] or 0) + 1
+				keys[i][tt] = keys[i][tt] or {}
+				table.insert(keys[i][tt],j)
 			end
 		end
 		local keycount = 0
@@ -391,17 +393,17 @@ local function create_generic(code,defs,method)
 		for j=1,#defs do
 			if not done[j] then
 				local tt = defs[j].argsT[i] and defs[j].argsT[i].type or "nil"
-				if keycount > 1 then
+				if keycount > 1 then  -- if more than one posible type then keep check
 					check[j] = check[j] or {}
 					check[j][i]=tt
 				end
-				if keys[i][tt] == 1 then 
+				if #keys[i][tt] == 1 then -- if one type is exclusive of one overload we are done
 					done[j]= true;
-					--print(j,defs[j].ov_cimguiname,"done") 
 				end
 			end
 		end
 	end
+	--for j=1,#defs do if not done[j] then print("not done",defs[1].cimguiname) end end
 	--[[
 	--for decision tree
 	local ordered_check = {}
@@ -418,6 +420,8 @@ local function create_generic(code,defs,method)
 	--if is_vararg then cpp2ffi.prtable(keys,done,check) end
 	if defs[1].cimguiname == "igImLerp" then cpp2ffi.prtable(defs,keys,done,check, ordered_check) end
 	--]]
+	--if defs[1].cimguiname == "ImPlot_PlotLine" then cpp2ffi.prtable(defs,keys,done,check) end
+	--for decision tree by variable
 	
 	--do generic--------------
 	local code2 = {}
