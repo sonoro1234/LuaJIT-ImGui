@@ -174,8 +174,10 @@ function gui.FileBrowser(filename_p, args, funcOK)
             end
             ig.EndChild()
             
-            ig.InputText("file",save_file_name,256)
-            if ig.InputText("pattern",pattern_ed,32,ig.lib.ImGuiInputTextFlags_EnterReturnsTrue) then curr_dir_done = false end
+			if not args.choose_dir then
+				ig.InputText("file",save_file_name,256)
+				if ig.InputText("pattern",pattern_ed,32,ig.lib.ImGuiInputTextFlags_EnterReturnsTrue) then curr_dir_done = false end
+			end
             local doit = false
             
             if ig.Button("OK") then
@@ -194,6 +196,8 @@ function gui.FileBrowser(filename_p, args, funcOK)
                     else
                         doit = true
                     end
+				elseif args.choose_dir then
+					doit = true
                 else
                     ig.CloseCurrentPopup(); 
                 end
@@ -201,7 +205,7 @@ function gui.FileBrowser(filename_p, args, funcOK)
             doit = yesnoD.draw(doit)
             if doit then
                 if funcOK then
-                    funcOK(fullname)
+                    funcOK(fullname, curr_dir)
                 else
                     filename_p[0] = fullname
                 end
