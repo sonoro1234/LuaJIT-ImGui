@@ -1,6 +1,5 @@
 
 local lfs = require"lfs_ffi"
---lfs.unicode = false
 local function preparepath(patt)
 	if not patt then return end
 	for i,v in ipairs(patt) do
@@ -17,8 +16,8 @@ local function funcdir(path, func, patt, recur, funcd, tree)
     for file,obj in lfs.dir(path) do
         if file ~= "." and file ~= ".." then
             local f = path..sep..file
-            local attr = lfs.attributes (f)
-			--local attr = obj and obj:attr() or lfs.attributes (f)
+            --local attr = lfs.attributes (f)
+			local attr = obj and obj:attr() or lfs.attributes (f)
 			assert (type(attr) == "table",f)
             if attr.mode == "directory" then
 				if funcd then funcd(f,file,attr,tree) end
@@ -41,12 +40,6 @@ local function funcdir(path, func, patt, recur, funcd, tree)
     end
 end
 
-
-local function ffd(f, file, attr, tree)
-	--curdir = f
-	--print("dir",f,tree)
-end
-
 local dirsizes = {}
 local function ff(f, file, attr, tree, newtree)
 	if attr.mode == "directory" then
@@ -59,7 +52,7 @@ end
 local function get_sizes(inidir)
 	local time1 = os.clock()
 	dirsizes = {}
-	funcdir(inidir, ff,nil, true,ffd)
+	funcdir(inidir, ff,nil, true)
 	
 	print("done",os.clock()-time1)
 	local ssizes = {}
@@ -77,17 +70,44 @@ local win = igwin:GLFW(800,400, "dirsizes",{vsync=true})
 
 local gui = require"filebrowser"(win.ig)
 
+local allsizes = {}
 local thesizes = {}
 local curdir = ""
+local subdir = ""
 local fb = gui.FileBrowser(nil,{key="loader",pattern=nil,choose_dir=true},function(fname,dir) 
 	print("load",fname,dir); 
 	thesizes = get_sizes(dir);
+	allsizes = thesizes
 	curdir = dir
+	subdir = dir
 	end)
 
+local function get_subdirs(pp)
+	local spch = "[%^%$%(%)%%%.%[%]%*%+%-%?]"
+	--subtitution of special characters
+	local pp1 = pp:gsub(spch,"%%%1")
+	pp1 = "^"..pp1
+	thesizes = {}
+	subdir = curdir..pp
+	for i,v in ipairs(allsizes) do
+		if v.dir:match(pp1) then
+			table.insert(thesizes, v)
+		end
+	end
+end
+
+local floor = math.floor
+local format = string.format
+--thousand puntuation
+local function thousands(n)
+	local a = floor(n/1000)
+	local b = n - a*1000
+	if a==0 then return tostring(b) end
+	return thousands(a).."."..format("%03d",b)
+end
 
 function win:draw(ig)
-	ig.ShowDemoWindow()
+	--ig.ShowDemoWindow()
 	if ig.Begin"sizes" then
 		if ig.SmallButton("load") then
 			fb.open()
@@ -95,6 +115,15 @@ function win:draw(ig)
 		fb.draw()
 		ig.SameLine()
 		ig.TextUnformatted(curdir)
+		ig.SameLine()
+		ig.TextUnformatted("| num folders:"..tostring(#allsizes))
+		if ig.Button("All") then
+			get_subdirs("")
+		end
+		ig.SameLine()
+		ig.TextUnformatted(subdir)
+		ig.SameLine()
+		ig.TextUnformatted("| num folders:"..tostring(#thesizes))
 		if ig.BeginTable("dirsizes",2,ig.lib.ImGuiTableFlags_Sortable + ig.lib.ImGuiTableFlags_Borders + ig.lib.ImGuiTableFlags_RowBg + ig.lib.ImGuiTableFlags_ScrollY + ig.lib.ImGuiTableFlags_Resizable) then
 			ig.TableSetupColumn("folder");
             ig.TableSetupColumn("size");
@@ -126,20 +155,16 @@ function win:draw(ig)
 					if line <= #thesizes then
 					ig.TableNextRow()
 					ig.TableNextColumn()
-					ig.TextUnformatted(thesizes[line].dir)
+					if ig.Button(thesizes[line].dir) then
+						get_subdirs(thesizes[line].dir)
+						break
+					end
 					ig.TableNextColumn()
-					ig.Text("%s",string.format("%d",thesizes[line].size))
+					ig.TextUnformatted(thousands(thesizes[line].size))
 					end
 				end
 			end
 			clipper:End()
-			-- for i,v in ipairs(thesizes) do
-				-- ig.TableNextRow()
-				-- ig.TableNextColumn()
-				-- ig.TextUnformatted(v.dir)
-				-- ig.TableNextColumn()
-				-- ig.Text("%s",string.format("%d",v.size))
-			-- end
 			ig.EndTable()
 		end
 	end
