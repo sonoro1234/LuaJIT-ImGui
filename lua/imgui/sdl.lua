@@ -5603,6 +5603,9 @@ M.DataTypeCompare = lib.igDataTypeCompare
 M.DataTypeFormatString = lib.igDataTypeFormatString
 M.DataTypeGetInfo = lib.igDataTypeGetInfo
 M.DebugAllocHook = lib.igDebugAllocHook
+M.DebugBreakButton = lib.igDebugBreakButton
+M.DebugBreakButtonTooltip = lib.igDebugBreakButtonTooltip
+M.DebugBreakClearData = lib.igDebugBreakClearData
 M.DebugCheckVersionAndDataLayout = lib.igDebugCheckVersionAndDataLayout
 function M.DebugDrawCursorPos(col)
     col = col or 4278190335
@@ -5616,6 +5619,7 @@ function M.DebugDrawLineExtents(col)
     col = col or 4278190335
     return lib.igDebugDrawLineExtents(col)
 end
+M.DebugFlashStyleColor = lib.igDebugFlashStyleColor
 M.DebugHookIdInfo = lib.igDebugHookIdInfo
 M.DebugLocateItem = lib.igDebugLocateItem
 M.DebugLocateItemOnHover = lib.igDebugLocateItemOnHover
@@ -6357,12 +6361,12 @@ function M.ImTrunc(a1,a2) -- generic version
     error'M.ImTrunc could not find overloaded'
 end
 M.ImUpperPowerOfTwo = lib.igImUpperPowerOfTwo
-function M.Image(user_texture_id,size,uv0,uv1,tint_col,border_col)
+function M.Image(user_texture_id,image_size,uv0,uv1,tint_col,border_col)
     border_col = border_col or ImVec4(0,0,0,0)
     tint_col = tint_col or ImVec4(1,1,1,1)
     uv0 = uv0 or ImVec2(0,0)
     uv1 = uv1 or ImVec2(1,1)
-    return lib.igImage(user_texture_id,size,uv0,uv1,tint_col,border_col)
+    return lib.igImage(user_texture_id,image_size,uv0,uv1,tint_col,border_col)
 end
 function M.ImageButton(str_id,user_texture_id,image_size,uv0,uv1,bg_col,tint_col)
     bg_col = bg_col or ImVec4(0,0,0,0)
@@ -7179,7 +7183,7 @@ function M.SetWindowFocus(a1) -- generic version
     error'M.SetWindowFocus could not find overloaded'
 end
 M.SetWindowFontScale = lib.igSetWindowFontScale
-M.SetWindowHiddendAndSkipItemsForCurrentFrame = lib.igSetWindowHiddendAndSkipItemsForCurrentFrame
+M.SetWindowHiddenAndSkipItemsForCurrentFrame = lib.igSetWindowHiddenAndSkipItemsForCurrentFrame
 M.SetWindowHitTestHole = lib.igSetWindowHitTestHole
 function M.SetWindowPos_Vec2(pos,cond)
     cond = cond or 0
