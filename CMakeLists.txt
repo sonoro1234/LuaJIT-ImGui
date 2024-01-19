@@ -72,6 +72,7 @@ if(IMGUI_FREETYPE)
 	list(APPEND IMGUI_LIBRARIES freetype)
 	list(APPEND IMGUI_SOURCES ./cimgui/imgui/misc/freetype/imgui_freetype.cpp)
 	add_definitions("-DCIMGUI_FREETYPE=1")
+	add_definitions("-DIMGUI_ENABLE_STB_TRUETYPE=1") #have stb also
 endif(IMGUI_FREETYPE)
 
 if(IMPL_OPENGL3)
