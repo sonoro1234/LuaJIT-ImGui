@@ -295,10 +295,11 @@ typedef enum {
     ImGuiPopupFlags_MouseButtonMiddle = 2,
     ImGuiPopupFlags_MouseButtonMask_ = 0x1F,
     ImGuiPopupFlags_MouseButtonDefault_ = 1,
-    ImGuiPopupFlags_NoOpenOverExistingPopup = 1 << 5,
-    ImGuiPopupFlags_NoOpenOverItems = 1 << 6,
-    ImGuiPopupFlags_AnyPopupId = 1 << 7,
-    ImGuiPopupFlags_AnyPopupLevel = 1 << 8,
+    ImGuiPopupFlags_NoReopen = 1 << 5,
+    ImGuiPopupFlags_NoOpenOverExistingPopup = 1 << 7,
+    ImGuiPopupFlags_NoOpenOverItems = 1 << 8,
+    ImGuiPopupFlags_AnyPopupId = 1 << 10,
+    ImGuiPopupFlags_AnyPopupLevel = 1 << 11,
     ImGuiPopupFlags_AnyPopup = ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel,
 }ImGuiPopupFlags_;
 typedef enum {
@@ -1012,7 +1013,6 @@ struct ImGuiIO
     int MetricsRenderWindows;
     int MetricsActiveWindows;
     ImVec2 MouseDelta;
-    void* _UnusedPadding;
     ImGuiContext* Ctx;
     ImVec2 MousePos;
    _Bool         MouseDown[5];
@@ -1077,6 +1077,7 @@ struct ImGuiWindowClass
 {
     ImGuiID ClassId;
     ImGuiID ParentViewportId;
+    ImGuiID FocusRouteParentWindowId;
     ImGuiViewportFlags ViewportFlagsOverrideSet;
     ImGuiViewportFlags ViewportFlagsOverrideClear;
     ImGuiTabItemFlags TabItemFlagsOverrideSet;
@@ -1696,34 +1697,6 @@ typedef enum {
     ImGuiPlotType_Lines,
     ImGuiPlotType_Histogram,
 }ImGuiPlotType;
-typedef enum {
-    ImGuiPopupPositionPolicy_Default,
-    ImGuiPopupPositionPolicy_ComboBox,
-    ImGuiPopupPositionPolicy_Tooltip,
-}ImGuiPopupPositionPolicy;
-struct ImGuiDataVarInfo
-{
-    ImGuiDataType Type;
-    ImU32 Count;
-    ImU32 Offset;
-};
-typedef struct ImGuiDataTypeTempStorage ImGuiDataTypeTempStorage;
-struct ImGuiDataTypeTempStorage
-{
-    ImU8 Data[8];
-};
-struct ImGuiDataTypeInfo
-{
-    size_t Size;
-    const char* Name;
-    const char* PrintFmt;
-    const char* ScanFmt;
-};
-typedef enum {
-    ImGuiDataType_String = ImGuiDataType_COUNT + 1,
-    ImGuiDataType_Pointer,
-    ImGuiDataType_ID,
-}ImGuiDataTypePrivate_;
 struct ImGuiColorMod
 {
     ImGuiCol Col;
@@ -1794,17 +1767,9 @@ struct ImGuiInputTextState
    _Bool         SelectedAllMouseLock;
    _Bool         Edited;
     ImGuiInputTextFlags Flags;
-};
-struct ImGuiPopupData
-{
-    ImGuiID PopupId;
-    ImGuiWindow* Window;
-    ImGuiWindow* BackupNavWindow;
-    int ParentNavLayer;
-    int OpenFrameCount;
-    ImGuiID OpenParentId;
-    ImVec2 OpenPopupPos;
-    ImVec2 OpenMousePos;
+   _Bool         ReloadUserBuf;
+    int ReloadSelectionStart;
+    int ReloadSelectionEnd;
 };
 typedef enum {
     ImGuiNextWindowDataFlags_None = 0,
@@ -1850,15 +1815,17 @@ typedef enum {
     ImGuiNextItemDataFlags_None = 0,
     ImGuiNextItemDataFlags_HasWidth = 1 << 0,
     ImGuiNextItemDataFlags_HasOpen = 1 << 1,
+    ImGuiNextItemDataFlags_HasShortcut = 1 << 2,
 }ImGuiNextItemDataFlags_;
 struct ImGuiNextItemData
 {
     ImGuiNextItemDataFlags Flags;
     ImGuiItemFlags ItemFlags;
-    float Width;
     ImGuiSelectionUserData SelectionUserData;
-    ImGuiCond OpenCond;
+    float Width;
+    ImGuiKeyChord Shortcut;
    _Bool         OpenVal;
+    ImGuiCond OpenCond : 8;
 };
 struct ImGuiLastItemData
 {
@@ -1907,6 +1874,45 @@ struct ImGuiPtrOrIndex
 {
     void* Ptr;
     int Index;
+};
+struct ImGuiDataVarInfo
+{
+    ImGuiDataType Type;
+    ImU32 Count;
+    ImU32 Offset;
+};
+typedef struct ImGuiDataTypeTempStorage ImGuiDataTypeTempStorage;
+struct ImGuiDataTypeTempStorage
+{
+    ImU8 Data[8];
+};
+struct ImGuiDataTypeInfo
+{
+    size_t Size;
+    const char* Name;
+    const char* PrintFmt;
+    const char* ScanFmt;
+};
+typedef enum {
+    ImGuiDataType_String = ImGuiDataType_COUNT + 1,
+    ImGuiDataType_Pointer,
+    ImGuiDataType_ID,
+}ImGuiDataTypePrivate_;
+typedef enum {
+    ImGuiPopupPositionPolicy_Default,
+    ImGuiPopupPositionPolicy_ComboBox,
+    ImGuiPopupPositionPolicy_Tooltip,
+}ImGuiPopupPositionPolicy;
+struct ImGuiPopupData
+{
+    ImGuiID PopupId;
+    ImGuiWindow* Window;
+    ImGuiWindow* BackupNavWindow;
+    int ParentNavLayer;
+    int OpenFrameCount;
+    ImGuiID OpenParentId;
+    ImVec2 OpenPopupPos;
+    ImVec2 OpenMousePos;
 };
 typedef struct ImBitArray_ImGuiKey_NamedKey_COUNT__lessImGuiKey_NamedKey_BEGIN {ImU32 Storage[(ImGuiKey_NamedKey_COUNT+31)>>5];} ImBitArray_ImGuiKey_NamedKey_COUNT__lessImGuiKey_NamedKey_BEGIN;
 typedef ImBitArray_ImGuiKey_NamedKey_COUNT__lessImGuiKey_NamedKey_BEGIN ImBitArrayForNamedKeys;
@@ -1981,6 +1987,7 @@ struct ImGuiKeyRoutingData
 {
     ImGuiKeyRoutingIndex NextEntryIndex;
     ImU16 Mods;
+    ImU8 RoutingCurrScore;
     ImU8 RoutingNextScore;
     ImGuiID RoutingCurr;
     ImGuiID RoutingNext;
@@ -2014,23 +2021,22 @@ typedef enum {
     ImGuiInputFlags_CondHovered = 1 << 8,
     ImGuiInputFlags_CondActive = 1 << 9,
     ImGuiInputFlags_CondDefault_ = ImGuiInputFlags_CondHovered | ImGuiInputFlags_CondActive,
-    ImGuiInputFlags_CondMask_ = ImGuiInputFlags_CondHovered | ImGuiInputFlags_CondActive,
     ImGuiInputFlags_LockThisFrame = 1 << 10,
     ImGuiInputFlags_LockUntilRelease = 1 << 11,
     ImGuiInputFlags_RouteFocused = 1 << 12,
     ImGuiInputFlags_RouteGlobalLow = 1 << 13,
     ImGuiInputFlags_RouteGlobal = 1 << 14,
     ImGuiInputFlags_RouteGlobalHigh = 1 << 15,
-    ImGuiInputFlags_RouteMask_ = ImGuiInputFlags_RouteFocused | ImGuiInputFlags_RouteGlobal | ImGuiInputFlags_RouteGlobalLow | ImGuiInputFlags_RouteGlobalHigh,
     ImGuiInputFlags_RouteAlways = 1 << 16,
     ImGuiInputFlags_RouteUnlessBgFocused= 1 << 17,
-    ImGuiInputFlags_RouteExtraMask_ = ImGuiInputFlags_RouteAlways | ImGuiInputFlags_RouteUnlessBgFocused,
     ImGuiInputFlags_RepeatRateMask_ = ImGuiInputFlags_RepeatRateDefault | ImGuiInputFlags_RepeatRateNavMove | ImGuiInputFlags_RepeatRateNavTweak,
     ImGuiInputFlags_RepeatUntilMask_ = ImGuiInputFlags_RepeatUntilRelease | ImGuiInputFlags_RepeatUntilKeyModsChange | ImGuiInputFlags_RepeatUntilKeyModsChangeFromNone | ImGuiInputFlags_RepeatUntilOtherKeyPress,
     ImGuiInputFlags_RepeatMask_ = ImGuiInputFlags_Repeat | ImGuiInputFlags_RepeatRateMask_ | ImGuiInputFlags_RepeatUntilMask_,
+    ImGuiInputFlags_CondMask_ = ImGuiInputFlags_CondHovered | ImGuiInputFlags_CondActive,
+    ImGuiInputFlags_RouteMask_ = ImGuiInputFlags_RouteFocused | ImGuiInputFlags_RouteGlobal | ImGuiInputFlags_RouteGlobalLow | ImGuiInputFlags_RouteGlobalHigh,
     ImGuiInputFlags_SupportedByIsKeyPressed = ImGuiInputFlags_RepeatMask_,
     ImGuiInputFlags_SupportedByIsMouseClicked = ImGuiInputFlags_Repeat,
-    ImGuiInputFlags_SupportedByShortcut = ImGuiInputFlags_RepeatMask_ | ImGuiInputFlags_RouteMask_ | ImGuiInputFlags_RouteExtraMask_,
+    ImGuiInputFlags_SupportedByShortcut = ImGuiInputFlags_RepeatMask_ | ImGuiInputFlags_RouteMask_ | ImGuiInputFlags_RouteAlways | ImGuiInputFlags_RouteUnlessBgFocused,
     ImGuiInputFlags_SupportedBySetKeyOwner = ImGuiInputFlags_LockThisFrame | ImGuiInputFlags_LockUntilRelease,
     ImGuiInputFlags_SupportedBySetItemKeyOwner = ImGuiInputFlags_SupportedBySetKeyOwner | ImGuiInputFlags_CondMask_,
 }ImGuiInputFlags_;
@@ -2059,6 +2065,7 @@ typedef enum {
     ImGuiActivateFlags_PreferTweak = 1 << 1,
     ImGuiActivateFlags_TryToPreserveState = 1 << 2,
     ImGuiActivateFlags_FromTabbing = 1 << 3,
+    ImGuiActivateFlags_FromShortcut = 1 << 4,
 }ImGuiActivateFlags_;
 typedef enum {
     ImGuiScrollFlags_None = 0,
@@ -2074,8 +2081,7 @@ typedef enum {
 }ImGuiScrollFlags_;
 typedef enum {
     ImGuiNavHighlightFlags_None = 0,
-    ImGuiNavHighlightFlags_TypeDefault = 1 << 0,
-    ImGuiNavHighlightFlags_TypeThin = 1 << 1,
+    ImGuiNavHighlightFlags_Compact = 1 << 1,
     ImGuiNavHighlightFlags_AlwaysDraw = 1 << 2,
     ImGuiNavHighlightFlags_NoRounding = 1 << 3,
 }ImGuiNavHighlightFlags_;
@@ -2114,6 +2120,12 @@ struct ImGuiNavItemData
     float DistBox;
     float DistCenter;
     float DistAxial;
+};
+typedef struct ImGuiFocusScopeData ImGuiFocusScopeData;
+struct ImGuiFocusScopeData
+{
+    ImGuiID ID;
+    ImGuiID WindowID;
 };
 typedef enum {
     ImGuiTypingSelectFlags_None = 0,
@@ -2181,6 +2193,7 @@ typedef enum {
     ImGuiDockNodeFlags_NoCloseButton = 1 << 15,
     ImGuiDockNodeFlags_NoResizeX = 1 << 16,
     ImGuiDockNodeFlags_NoResizeY = 1 << 17,
+    ImGuiDockNodeFlags_DockedWindowsInFocusRoute= 1 << 18,
     ImGuiDockNodeFlags_NoDockingSplitOther = 1 << 19,
     ImGuiDockNodeFlags_NoDockingOverMe = 1 << 20,
     ImGuiDockNodeFlags_NoDockingOverOther = 1 << 21,
@@ -2352,9 +2365,10 @@ typedef enum {
     ImGuiDebugLogFlags_EventClipper = 1 << 4,
     ImGuiDebugLogFlags_EventSelection = 1 << 5,
     ImGuiDebugLogFlags_EventIO = 1 << 6,
-    ImGuiDebugLogFlags_EventDocking = 1 << 7,
-    ImGuiDebugLogFlags_EventViewport = 1 << 8,
-    ImGuiDebugLogFlags_EventMask_ = ImGuiDebugLogFlags_EventActiveId | ImGuiDebugLogFlags_EventFocus | ImGuiDebugLogFlags_EventPopup | ImGuiDebugLogFlags_EventNav | ImGuiDebugLogFlags_EventClipper | ImGuiDebugLogFlags_EventSelection | ImGuiDebugLogFlags_EventIO | ImGuiDebugLogFlags_EventDocking | ImGuiDebugLogFlags_EventViewport,
+    ImGuiDebugLogFlags_EventInputRouting = 1 << 7,
+    ImGuiDebugLogFlags_EventDocking = 1 << 8,
+    ImGuiDebugLogFlags_EventViewport = 1 << 9,
+    ImGuiDebugLogFlags_EventMask_ = ImGuiDebugLogFlags_EventActiveId | ImGuiDebugLogFlags_EventFocus | ImGuiDebugLogFlags_EventPopup | ImGuiDebugLogFlags_EventNav | ImGuiDebugLogFlags_EventClipper | ImGuiDebugLogFlags_EventSelection | ImGuiDebugLogFlags_EventIO | ImGuiDebugLogFlags_EventInputRouting | ImGuiDebugLogFlags_EventDocking | ImGuiDebugLogFlags_EventViewport,
     ImGuiDebugLogFlags_OutputToTTY = 1 << 20,
     ImGuiDebugLogFlags_OutputToTestEngine = 1 << 21,
 }ImGuiDebugLogFlags_;
@@ -2387,6 +2401,8 @@ struct ImGuiMetricsConfig
    _Bool         ShowDockingNodes;
     int ShowWindowsRectsType;
     int ShowTablesRectsType;
+    int HighlightMonitorIdx;
+    ImGuiID HighlightViewportID;
 };
 typedef struct ImGuiStackLevelInfo ImGuiStackLevelInfo;
 struct ImGuiStackLevelInfo
@@ -2422,7 +2438,7 @@ typedef struct ImVector_ImGuiInputEvent {int Size;int Capacity;ImGuiInputEvent* 
 typedef struct ImVector_ImGuiWindowStackData {int Size;int Capacity;ImGuiWindowStackData* Data;} ImVector_ImGuiWindowStackData;
 typedef struct ImVector_ImGuiColorMod {int Size;int Capacity;ImGuiColorMod* Data;} ImVector_ImGuiColorMod;
 typedef struct ImVector_ImGuiStyleMod {int Size;int Capacity;ImGuiStyleMod* Data;} ImVector_ImGuiStyleMod;
-typedef struct ImVector_ImGuiID {int Size;int Capacity;ImGuiID* Data;} ImVector_ImGuiID;
+typedef struct ImVector_ImGuiFocusScopeData {int Size;int Capacity;ImGuiFocusScopeData* Data;} ImVector_ImGuiFocusScopeData;
 typedef struct ImVector_ImGuiItemFlags {int Size;int Capacity;ImGuiItemFlags* Data;} ImVector_ImGuiItemFlags;
 typedef struct ImVector_ImGuiGroupData {int Size;int Capacity;ImGuiGroupData* Data;} ImVector_ImGuiGroupData;
 typedef struct ImVector_ImGuiPopupData {int Size;int Capacity;ImGuiPopupData* Data;} ImVector_ImGuiPopupData;
@@ -2437,6 +2453,7 @@ typedef struct ImVector_ImGuiTabBar {int Size;int Capacity;ImGuiTabBar* Data;} I
 typedef struct ImPool_ImGuiTabBar {ImVector_ImGuiTabBar Buf;ImGuiStorage Map;ImPoolIdx FreeIdx;ImPoolIdx AliveCount;} ImPool_ImGuiTabBar;
 typedef struct ImVector_ImGuiPtrOrIndex {int Size;int Capacity;ImGuiPtrOrIndex* Data;} ImVector_ImGuiPtrOrIndex;
 typedef struct ImVector_ImGuiShrinkWidthItem {int Size;int Capacity;ImGuiShrinkWidthItem* Data;} ImVector_ImGuiShrinkWidthItem;
+typedef struct ImVector_ImGuiID {int Size;int Capacity;ImGuiID* Data;} ImVector_ImGuiID;
 typedef struct ImVector_ImGuiSettingsHandler {int Size;int Capacity;ImGuiSettingsHandler* Data;} ImVector_ImGuiSettingsHandler;
 typedef struct ImChunkStream_ImGuiWindowSettings {ImVector_char Buf;} ImChunkStream_ImGuiWindowSettings;
 typedef struct ImChunkStream_ImGuiTableSettings {ImVector_char Buf;} ImChunkStream_ImGuiTableSettings;
@@ -2504,10 +2521,11 @@ struct ImGuiContext
    _Bool         ActiveIdHasBeenPressedBefore;
    _Bool         ActiveIdHasBeenEditedBefore;
    _Bool         ActiveIdHasBeenEditedThisFrame;
+   _Bool         ActiveIdFromShortcut;
+    int ActiveIdMouseButton : 8;
     ImVec2 ActiveIdClickOffset;
     ImGuiWindow* ActiveIdWindow;
     ImGuiInputSource ActiveIdSource;
-    int ActiveIdMouseButton;
     ImGuiID ActiveIdPreviousFrame;
    _Bool         ActiveIdPreviousFrameIsAlive;
    _Bool         ActiveIdPreviousFrameHasBeenEditedBefore;
@@ -2517,6 +2535,7 @@ struct ImGuiContext
     double LastKeyModsChangeTime;
     double LastKeyModsChangeFromNoneTime;
     double LastKeyboardKeyPressTime;
+    ImBitArrayForNamedKeys KeysMayBeCharInput;
     ImGuiKeyOwnerData KeysOwnerData[ImGuiKey_NamedKey_COUNT];
     ImGuiKeyRoutingTable KeysRoutingTable;
     ImU32 ActiveIdUsingNavDirMask;
@@ -2533,13 +2552,12 @@ struct ImGuiContext
     ImVector_ImGuiColorMod ColorStack;
     ImVector_ImGuiStyleMod StyleVarStack;
     ImVector_ImFontPtr FontStack;
-    ImVector_ImGuiID FocusScopeStack;
+    ImVector_ImGuiFocusScopeData FocusScopeStack;
     ImVector_ImGuiItemFlags ItemFlagsStack;
     ImVector_ImGuiGroupData GroupStack;
     ImVector_ImGuiPopupData OpenPopupStack;
     ImVector_ImGuiPopupData BeginPopupStack;
     ImVector_ImGuiNavTreeNodeData NavTreeNodeStack;
-    int BeginMenuCount;
     ImVector_ImGuiViewportPPtr Viewports;
     float CurrentDpiScale;
     ImGuiViewportP* CurrentViewport;
@@ -2547,16 +2565,20 @@ struct ImGuiContext
     ImGuiViewportP* MouseLastHoveredViewport;
     ImGuiID PlatformLastFocusedViewportId;
     ImGuiPlatformMonitor FallbackMonitor;
+    ImRect PlatformMonitorsFullWorkRect;
     int ViewportCreatedCount;
     int PlatformWindowsCreatedCount;
     int ViewportFocusedStampCount;
     ImGuiWindow* NavWindow;
     ImGuiID NavId;
     ImGuiID NavFocusScopeId;
+    ImVector_ImGuiFocusScopeData NavFocusRoute;
     ImGuiID NavActivateId;
     ImGuiID NavActivateDownId;
     ImGuiID NavActivatePressedId;
     ImGuiActivateFlags NavActivateFlags;
+    ImGuiID NavHighlightActivatedId;
+    float NavHighlightActivatedTimer;
     ImGuiID NavJustMovedToId;
     ImGuiID NavJustMovedToFocusScopeId;
     ImGuiKeyChord NavJustMovedToKeyMods;
@@ -2599,6 +2621,7 @@ struct ImGuiContext
     float NavWindowingTimer;
     float NavWindowingHighlightAlpha;
    _Bool         NavWindowingToggleLayer;
+    ImGuiKey NavWindowingToggleKey;
     ImVec2 NavWindowingAccumDeltaPos;
     ImVec2 NavWindowingAccumDeltaSize;
     float DimBgRatio;
@@ -2646,6 +2669,8 @@ struct ImGuiContext
     ImGuiInputTextDeactivatedState InputTextDeactivatedState;
     ImFont InputTextPasswordFont;
     ImGuiID TempInputId;
+    int BeginMenuDepth;
+    int BeginComboDepth;
     ImGuiColorEditFlags ColorEditOptions;
     ImGuiID ColorEditCurrentID;
     ImGuiID ColorEditSavedID;
@@ -2721,6 +2746,7 @@ struct ImGuiContext
     int WantCaptureKeyboardNextFrame;
     int WantTextInputNextFrame;
     ImVector_char TempBuffer;
+    char TempKeychordName[64];
 };
 struct ImGuiWindowTempData
 {
@@ -2859,6 +2885,7 @@ struct ImGuiWindow
     ImGuiWindow* RootWindowDockTree;
     ImGuiWindow* RootWindowForTitleBarHighlight;
     ImGuiWindow* RootWindowForNav;
+    ImGuiWindow* ParentWindowForFocusRoute;
     ImGuiWindow* NavLastChildNavWindow;
     ImGuiID NavLastIds[ImGuiNavLayer_COUNT];
     ImRect NavRectRel[ImGuiNavLayer_COUNT];
@@ -3968,7 +3995,6 @@ void ImDrawListSharedData_destroy(ImDrawListSharedData* self);
 void ImDrawListSharedData_SetCircleTessellationMaxError(ImDrawListSharedData* self,float max_error);
 ImDrawDataBuilder* ImDrawDataBuilder_ImDrawDataBuilder(void);
 void ImDrawDataBuilder_destroy(ImDrawDataBuilder* self);
-void* ImGuiDataVarInfo_GetVarPtr(ImGuiDataVarInfo* self,void* parent);
 ImGuiStyleMod* ImGuiStyleMod_ImGuiStyleMod_Int(ImGuiStyleVar idx,int v);
 void ImGuiStyleMod_destroy(ImGuiStyleMod* self);
 ImGuiStyleMod* ImGuiStyleMod_ImGuiStyleMod_Float(ImGuiStyleVar idx,float v);
@@ -3998,8 +4024,9 @@ int ImGuiInputTextState_GetCursorPos(ImGuiInputTextState* self);
 int ImGuiInputTextState_GetSelectionStart(ImGuiInputTextState* self);
 int ImGuiInputTextState_GetSelectionEnd(ImGuiInputTextState* self);
 void ImGuiInputTextState_SelectAll(ImGuiInputTextState* self);
-ImGuiPopupData* ImGuiPopupData_ImGuiPopupData(void);
-void ImGuiPopupData_destroy(ImGuiPopupData* self);
+void ImGuiInputTextState_ReloadUserBufAndSelectAll(ImGuiInputTextState* self);
+void ImGuiInputTextState_ReloadUserBufAndKeepSelection(ImGuiInputTextState* self);
+void ImGuiInputTextState_ReloadUserBufAndMoveToEnd(ImGuiInputTextState* self);
 ImGuiNextWindowData* ImGuiNextWindowData_ImGuiNextWindowData(void);
 void ImGuiNextWindowData_destroy(ImGuiNextWindowData* self);
 void ImGuiNextWindowData_ClearFlags(ImGuiNextWindowData* self);
@@ -4015,6 +4042,9 @@ void ImGuiStackSizes_CompareWithContextState(ImGuiStackSizes* self,ImGuiContext*
 ImGuiPtrOrIndex* ImGuiPtrOrIndex_ImGuiPtrOrIndex_Ptr(void* ptr);
 void ImGuiPtrOrIndex_destroy(ImGuiPtrOrIndex* self);
 ImGuiPtrOrIndex* ImGuiPtrOrIndex_ImGuiPtrOrIndex_Int(int index);
+void* ImGuiDataVarInfo_GetVarPtr(ImGuiDataVarInfo* self,void* parent);
+ImGuiPopupData* ImGuiPopupData_ImGuiPopupData(void);
+void ImGuiPopupData_destroy(ImGuiPopupData* self);
 ImGuiInputEvent* ImGuiInputEvent_ImGuiInputEvent(void);
 void ImGuiInputEvent_destroy(ImGuiInputEvent* self);
 ImGuiKeyRoutingData* ImGuiKeyRoutingData_ImGuiKeyRoutingData(void);
@@ -4123,6 +4153,7 @@ void igSetWindowSize_WindowPtr(ImGuiWindow* window,const ImVec2 size,ImGuiCond c
 void igSetWindowCollapsed_WindowPtr(ImGuiWindow* window,                                                                  _Bool                                                                        collapsed,ImGuiCond cond);
 void igSetWindowHitTestHole(ImGuiWindow* window,const ImVec2 pos,const ImVec2 size);
 void igSetWindowHiddenAndSkipItemsForCurrentFrame(ImGuiWindow* window);
+void igSetWindowParentWindowForFocusRoute(ImGuiWindow* window,ImGuiWindow* parent_window);
 void igWindowRectAbsToRel(ImRect *pOut,ImGuiWindow* window,const ImRect r);
 void igWindowRectRelToAbs(ImRect *pOut,ImGuiWindow* window,const ImRect r);
 void igWindowPosRelToAbs(ImVec2 *pOut,ImGuiWindow* window,const ImVec2 p);
@@ -4241,11 +4272,13 @@ void igNavMoveRequestResolveWithPastTreeNode(ImGuiNavItemData* result,ImGuiNavTr
 void igNavMoveRequestCancel(void);
 void igNavMoveRequestApplyResult(void);
 void igNavMoveRequestTryWrapping(ImGuiWindow* window,ImGuiNavMoveFlags move_flags);
+void igNavHighlightActivated(ImGuiID id);
 void igNavClearPreferredPosForAxis(ImGuiAxis axis);
 void igNavRestoreHighlightAfterMove(void);
 void igNavUpdateCurrentWindowIsScrollPushableX(void);
 void igSetNavWindow(ImGuiWindow* window);
 void igSetNavID(ImGuiID id,ImGuiNavLayer nav_layer,ImGuiID focus_scope_id,const ImRect rect_rel);
+void igSetNavFocusScope(ImGuiID focus_scope_id);
 void igFocusItem(void);
 void igActivateItemByID(ImGuiID id);
 _Bool                igIsNamedKey(ImGuiKey key);
@@ -4255,11 +4288,12 @@ _Bool                igIsKeyboardKey(ImGuiKey key);
 _Bool                igIsGamepadKey(ImGuiKey key);
 _Bool                igIsMouseKey(ImGuiKey key);
 _Bool                igIsAliasKey(ImGuiKey key);
-ImGuiKeyChord igConvertShortcutMod(ImGuiKeyChord key_chord);
+_Bool                igIsModKey(ImGuiKey key);
+ImGuiKeyChord igFixupKeyChord(ImGuiContext* ctx,ImGuiKeyChord key_chord);
 ImGuiKey igConvertSingleModFlagToKey(ImGuiContext* ctx,ImGuiKey key);
 ImGuiKeyData* igGetKeyData_ContextPtr(ImGuiContext* ctx,ImGuiKey key);
 ImGuiKeyData* igGetKeyData_Key(ImGuiKey key);
-const char* igGetKeyChordName(ImGuiKeyChord key_chord,char* out_buf,int out_buf_size);
+const char* igGetKeyChordName(ImGuiKeyChord key_chord);
 ImGuiKey igMouseButtonToKey(ImGuiMouseButton button);
 _Bool                igIsMouseDragPastThreshold(ImGuiMouseButton button,float lock_threshold);
 void igGetKeyMagnitude2d(ImVec2 *pOut,ImGuiKey key_left,ImGuiKey key_right,ImGuiKey key_up,ImGuiKey key_down);
@@ -4283,6 +4317,7 @@ _Bool                igIsMouseClicked_ID(ImGuiMouseButton button,ImGuiID owner_i
 _Bool                igIsMouseReleased_ID(ImGuiMouseButton button,ImGuiID owner_id);
 _Bool                igIsMouseDoubleClicked_ID(ImGuiMouseButton button,ImGuiID owner_id);
 _Bool                igIsKeyChordPressed_ID(ImGuiKeyChord key_chord,ImGuiID owner_id,ImGuiInputFlags flags);
+void igSetNextItemShortcut(ImGuiKeyChord key_chord);
 _Bool                igShortcut(ImGuiKeyChord key_chord,ImGuiID owner_id,ImGuiInputFlags flags);
 _Bool                igSetShortcutRouting(ImGuiKeyChord key_chord,ImGuiID owner_id,ImGuiInputFlags flags);
 _Bool                igTestShortcutRouting(ImGuiKeyChord key_chord,ImGuiID owner_id);
@@ -6594,9 +6629,12 @@ struct GLFWmonitor; bool ImGui_ImplGlfw_InitForOpenGL(GLFWwindow* window,bool in
  void ImGui_ImplOpenGL2_DestroyDeviceObjects(void);
 typedef struct SDL_Window SDL_Window;
 typedef struct SDL_Renderer SDL_Renderer;
+typedef struct _SDL_GameController _SDL_GameController;
 struct SDL_Window;
 struct SDL_Renderer;
-typedef union SDL_Event SDL_Event; bool ImGui_ImplSDL2_InitForOpenGL(SDL_Window* window,void* sdl_gl_context);
+struct _SDL_GameController;
+typedef union SDL_Event SDL_Event;
+typedef enum { ImGui_ImplSDL2_GamepadMode_AutoFirst, ImGui_ImplSDL2_GamepadMode_AutoAll, ImGui_ImplSDL2_GamepadMode_Manual }ImGui_ImplSDL2_GamepadMode; bool ImGui_ImplSDL2_InitForOpenGL(SDL_Window* window,void* sdl_gl_context);
  bool ImGui_ImplSDL2_InitForVulkan(SDL_Window* window);
  bool ImGui_ImplSDL2_InitForD3D(SDL_Window* window);
  bool ImGui_ImplSDL2_InitForMetal(SDL_Window* window);
@@ -6605,6 +6643,7 @@ typedef union SDL_Event SDL_Event; bool ImGui_ImplSDL2_InitForOpenGL(SDL_Window*
  void ImGui_ImplSDL2_Shutdown(void);
  void ImGui_ImplSDL2_NewFrame(void);
  bool ImGui_ImplSDL2_ProcessEvent(const SDL_Event* event);
+ void ImGui_ImplSDL2_SetGamepadMode(ImGui_ImplSDL2_GamepadMode mode,struct _SDL_GameController** manual_gamepads_array,int manual_gamepads_count);
 ]]
 --[[ END AUTOGENERATED SEGMENT ]]
 

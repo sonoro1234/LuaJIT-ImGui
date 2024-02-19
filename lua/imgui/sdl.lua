@@ -1102,6 +1102,9 @@ function ImGuiInputTextState.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiInputTextState_destroy)
 end
 ImGuiInputTextState.OnKeyPressed = lib.ImGuiInputTextState_OnKeyPressed
+ImGuiInputTextState.ReloadUserBufAndKeepSelection = lib.ImGuiInputTextState_ReloadUserBufAndKeepSelection
+ImGuiInputTextState.ReloadUserBufAndMoveToEnd = lib.ImGuiInputTextState_ReloadUserBufAndMoveToEnd
+ImGuiInputTextState.ReloadUserBufAndSelectAll = lib.ImGuiInputTextState_ReloadUserBufAndSelectAll
 ImGuiInputTextState.SelectAll = lib.ImGuiInputTextState_SelectAll
 M.ImGuiInputTextState = ffi.metatype("ImGuiInputTextState",ImGuiInputTextState)
 --------------------------ImGuiKeyOwnerData----------------------------
@@ -5589,7 +5592,6 @@ function M.Combo(a1,a2,a3,a4,a5,a6) -- generic version
     print(a1,a2,a3,a4,a5,a6)
     error'M.Combo could not find overloaded'
 end
-M.ConvertShortcutMod = lib.igConvertShortcutMod
 M.ConvertSingleModFlagToKey = lib.igConvertSingleModFlagToKey
 function M.CreateContext(shared_font_atlas)
     shared_font_atlas = shared_font_atlas or nil
@@ -5865,6 +5867,7 @@ M.FindWindowByName = lib.igFindWindowByName
 M.FindWindowDisplayIndex = lib.igFindWindowDisplayIndex
 M.FindWindowSettingsByID = lib.igFindWindowSettingsByID
 M.FindWindowSettingsByWindow = lib.igFindWindowSettingsByWindow
+M.FixupKeyChord = lib.igFixupKeyChord
 M.FocusItem = lib.igFocusItem
 M.FocusTopMostWindowUnderOne = lib.igFocusTopMostWindowUnderOne
 function M.FocusWindow(window,flags)
@@ -6544,6 +6547,7 @@ function M.IsKeyReleased(a1,a2) -- generic version
 end
 M.IsKeyboardKey = lib.igIsKeyboardKey
 M.IsLegacyKey = lib.igIsLegacyKey
+M.IsModKey = lib.igIsModKey
 function M.IsMouseClicked_Bool(button,_repeat)
     _repeat = _repeat or false
     return lib.igIsMouseClicked_Bool(button,_repeat)
@@ -6745,6 +6749,7 @@ function M.MenuItemEx(label,icon,shortcut,selected,enabled)
 end
 M.MouseButtonToKey = lib.igMouseButtonToKey
 M.NavClearPreferredPosForAxis = lib.igNavClearPreferredPosForAxis
+M.NavHighlightActivated = lib.igNavHighlightActivated
 M.NavInitRequestApplyResult = lib.igNavInitRequestApplyResult
 M.NavInitWindow = lib.igNavInitWindow
 M.NavMoveRequestApplyResult = lib.igNavMoveRequestApplyResult
@@ -6932,7 +6937,7 @@ function M.RenderFrameBorder(p_min,p_max,rounding)
 end
 M.RenderMouseCursor = lib.igRenderMouseCursor
 function M.RenderNavHighlight(bb,id,flags)
-    flags = flags or 1
+    flags = flags or 0
     return lib.igRenderNavHighlight(bb,id,flags)
 end
 function M.RenderPlatformWindowsDefault(platform_render_arg,renderer_render_arg)
@@ -7059,6 +7064,7 @@ function M.SetKeyboardFocusHere(offset)
 end
 M.SetLastItemData = lib.igSetLastItemData
 M.SetMouseCursor = lib.igSetMouseCursor
+M.SetNavFocusScope = lib.igSetNavFocusScope
 M.SetNavID = lib.igSetNavID
 M.SetNavWindow = lib.igSetNavWindow
 M.SetNextFrameWantCaptureKeyboard = lib.igSetNextFrameWantCaptureKeyboard
@@ -7069,6 +7075,7 @@ function M.SetNextItemOpen(is_open,cond)
     return lib.igSetNextItemOpen(is_open,cond)
 end
 M.SetNextItemSelectionUserData = lib.igSetNextItemSelectionUserData
+M.SetNextItemShortcut = lib.igSetNextItemShortcut
 M.SetNextItemWidth = lib.igSetNextItemWidth
 M.SetNextWindowBgAlpha = lib.igSetNextWindowBgAlpha
 M.SetNextWindowClass = lib.igSetNextWindowClass
@@ -7146,7 +7153,6 @@ function M.SetScrollY(a1,a2) -- generic version
 end
 function M.SetShortcutRouting(key_chord,owner_id,flags)
     flags = flags or 0
-    owner_id = owner_id or 0
     return lib.igSetShortcutRouting(key_chord,owner_id,flags)
 end
 M.SetStateStorage = lib.igSetStateStorage
@@ -7185,6 +7191,7 @@ end
 M.SetWindowFontScale = lib.igSetWindowFontScale
 M.SetWindowHiddenAndSkipItemsForCurrentFrame = lib.igSetWindowHiddenAndSkipItemsForCurrentFrame
 M.SetWindowHitTestHole = lib.igSetWindowHitTestHole
+M.SetWindowParentWindowForFocusRoute = lib.igSetWindowParentWindowForFocusRoute
 function M.SetWindowPos_Vec2(pos,cond)
     cond = cond or 0
     return lib.igSetWindowPos_Vec2(pos,cond)
