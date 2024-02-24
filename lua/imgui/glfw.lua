@@ -5893,11 +5893,14 @@ function M.GetColorU32_Col(idx,alpha_mul)
     return lib.igGetColorU32_Col(idx,alpha_mul)
 end
 M.GetColorU32_Vec4 = lib.igGetColorU32_Vec4
-M.GetColorU32_U32 = lib.igGetColorU32_U32
+function M.GetColorU32_U32(col,alpha_mul)
+    alpha_mul = alpha_mul or 1.0
+    return lib.igGetColorU32_U32(col,alpha_mul)
+end
 function M.GetColorU32(a1,a2) -- generic version
     if (ffi.istype('int32_t',a1) or type(a1)=='number') then return M.GetColorU32_Col(a1,a2) end
     if ffi.istype('const ImVec4',a1) then return M.GetColorU32_Vec4(a1) end
-    if (ffi.istype('uint32_t',a1) or type(a1)=='number') then return M.GetColorU32_U32(a1) end
+    if (ffi.istype('uint32_t',a1) or type(a1)=='number') then return M.GetColorU32_U32(a1,a2) end
     print(a1,a2)
     error'M.GetColorU32 could not find overloaded'
 end
@@ -7386,9 +7389,9 @@ end
 M.TabItemEx = lib.igTabItemEx
 M.TabItemLabelAndCloseButton = lib.igTabItemLabelAndCloseButton
 M.TableAngledHeadersRow = lib.igTableAngledHeadersRow
-function M.TableAngledHeadersRowEx(angle,label_width)
-    label_width = label_width or 0.0
-    return lib.igTableAngledHeadersRowEx(angle,label_width)
+function M.TableAngledHeadersRowEx(angle,max_label_width)
+    max_label_width = max_label_width or 0.0
+    return lib.igTableAngledHeadersRowEx(angle,max_label_width)
 end
 M.TableBeginApplyRequests = lib.igTableBeginApplyRequests
 M.TableBeginCell = lib.igTableBeginCell
