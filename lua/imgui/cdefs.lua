@@ -705,7 +705,9 @@ typedef enum {
     ImGuiStyleVar_GrabMinSize,
     ImGuiStyleVar_GrabRounding,
     ImGuiStyleVar_TabRounding,
+    ImGuiStyleVar_TabBorderSize,
     ImGuiStyleVar_TabBarBorderSize,
+    ImGuiStyleVar_TableAngledHeadersAngle,
     ImGuiStyleVar_ButtonTextAlign,
     ImGuiStyleVar_SelectableTextAlign,
     ImGuiStyleVar_SeparatorTextBorderSize,
@@ -1615,6 +1617,7 @@ typedef enum {
     ImGuiInputTextFlags_Multiline = 1 << 26,
     ImGuiInputTextFlags_NoMarkEdited = 1 << 27,
     ImGuiInputTextFlags_MergedItem = 1 << 28,
+    ImGuiInputTextFlags_LocalizeDecimalPoint= 1 << 29,
 }ImGuiInputTextFlagsPrivate_;
 typedef enum {
     ImGuiButtonFlags_PressedOnClick = 1 << 4,
@@ -1907,7 +1910,7 @@ struct ImGuiPopupData
 {
     ImGuiID PopupId;
     ImGuiWindow* Window;
-    ImGuiWindow* BackupNavWindow;
+    ImGuiWindow* RestoreNavWindow;
     int ParentNavLayer;
     int OpenFrameCount;
     ImGuiID OpenParentId;
@@ -1932,7 +1935,6 @@ typedef enum {
     ImGuiInputSource_Mouse,
     ImGuiInputSource_Keyboard,
     ImGuiInputSource_Gamepad,
-    ImGuiInputSource_Clipboard,
     ImGuiInputSource_COUNT
 }ImGuiInputSource;
 typedef struct ImGuiInputEventMousePos ImGuiInputEventMousePos;
@@ -2103,6 +2105,7 @@ typedef enum {
     ImGuiNavMoveFlags_Activate = 1 << 12,
     ImGuiNavMoveFlags_NoSelect = 1 << 13,
     ImGuiNavMoveFlags_NoSetNavHighlight = 1 << 14,
+    ImGuiNavMoveFlags_NoClearActiveId = 1 << 15,
 }ImGuiNavMoveFlags_;
 typedef enum {
     ImGuiNavLayer_Main = 0,
@@ -3726,14 +3729,15 @@ void ImDrawList_AddCircle(ImDrawList* self,const ImVec2 center,float radius,ImU3
 void ImDrawList_AddCircleFilled(ImDrawList* self,const ImVec2 center,float radius,ImU32 col,int num_segments);
 void ImDrawList_AddNgon(ImDrawList* self,const ImVec2 center,float radius,ImU32 col,int num_segments,float thickness);
 void ImDrawList_AddNgonFilled(ImDrawList* self,const ImVec2 center,float radius,ImU32 col,int num_segments);
-void ImDrawList_AddEllipse(ImDrawList* self,const ImVec2 center,float radius_x,float radius_y,ImU32 col,float rot,int num_segments,float thickness);
-void ImDrawList_AddEllipseFilled(ImDrawList* self,const ImVec2 center,float radius_x,float radius_y,ImU32 col,float rot,int num_segments);
+void ImDrawList_AddEllipse(ImDrawList* self,const ImVec2 center,const ImVec2 radius,ImU32 col,float rot,int num_segments,float thickness);
+void ImDrawList_AddEllipseFilled(ImDrawList* self,const ImVec2 center,const ImVec2 radius,ImU32 col,float rot,int num_segments);
 void ImDrawList_AddText_Vec2(ImDrawList* self,const ImVec2 pos,ImU32 col,const char* text_begin,const char* text_end);
 void ImDrawList_AddText_FontPtr(ImDrawList* self,const ImFont* font,float font_size,const ImVec2 pos,ImU32 col,const char* text_begin,const char* text_end,float wrap_width,const ImVec4* cpu_fine_clip_rect);
-void ImDrawList_AddPolyline(ImDrawList* self,const ImVec2* points,int num_points,ImU32 col,ImDrawFlags flags,float thickness);
-void ImDrawList_AddConvexPolyFilled(ImDrawList* self,const ImVec2* points,int num_points,ImU32 col);
 void ImDrawList_AddBezierCubic(ImDrawList* self,const ImVec2 p1,const ImVec2 p2,const ImVec2 p3,const ImVec2 p4,ImU32 col,float thickness,int num_segments);
 void ImDrawList_AddBezierQuadratic(ImDrawList* self,const ImVec2 p1,const ImVec2 p2,const ImVec2 p3,ImU32 col,float thickness,int num_segments);
+void ImDrawList_AddPolyline(ImDrawList* self,const ImVec2* points,int num_points,ImU32 col,ImDrawFlags flags,float thickness);
+void ImDrawList_AddConvexPolyFilled(ImDrawList* self,const ImVec2* points,int num_points,ImU32 col);
+void ImDrawList_AddConcavePolyFilled(ImDrawList* self,const ImVec2* points,int num_points,ImU32 col);
 void ImDrawList_AddImage(ImDrawList* self,ImTextureID user_texture_id,const ImVec2 p_min,const ImVec2 p_max,const ImVec2 uv_min,const ImVec2 uv_max,ImU32 col);
 void ImDrawList_AddImageQuad(ImDrawList* self,ImTextureID user_texture_id,const ImVec2 p1,const ImVec2 p2,const ImVec2 p3,const ImVec2 p4,const ImVec2 uv1,const ImVec2 uv2,const ImVec2 uv3,const ImVec2 uv4,ImU32 col);
 void ImDrawList_AddImageRounded(ImDrawList* self,ImTextureID user_texture_id,const ImVec2 p_min,const ImVec2 p_max,const ImVec2 uv_min,const ImVec2 uv_max,ImU32 col,float rounding,ImDrawFlags flags);
@@ -3741,10 +3745,11 @@ void ImDrawList_PathClear(ImDrawList* self);
 void ImDrawList_PathLineTo(ImDrawList* self,const ImVec2 pos);
 void ImDrawList_PathLineToMergeDuplicate(ImDrawList* self,const ImVec2 pos);
 void ImDrawList_PathFillConvex(ImDrawList* self,ImU32 col);
+void ImDrawList_PathFillConcave(ImDrawList* self,ImU32 col);
 void ImDrawList_PathStroke(ImDrawList* self,ImU32 col,ImDrawFlags flags,float thickness);
 void ImDrawList_PathArcTo(ImDrawList* self,const ImVec2 center,float radius,float a_min,float a_max,int num_segments);
 void ImDrawList_PathArcToFast(ImDrawList* self,const ImVec2 center,float radius,int a_min_of_12,int a_max_of_12);
-void ImDrawList_PathEllipticalArcTo(ImDrawList* self,const ImVec2 center,float radius_x,float radius_y,float rot,float a_min,float a_max,int num_segments);
+void ImDrawList_PathEllipticalArcTo(ImDrawList* self,const ImVec2 center,const ImVec2 radius,float rot,float a_min,float a_max,int num_segments);
 void ImDrawList_PathBezierCubicCurveTo(ImDrawList* self,const ImVec2 p2,const ImVec2 p3,const ImVec2 p4,int num_segments);
 void ImDrawList_PathBezierQuadraticCurveTo(ImDrawList* self,const ImVec2 p2,const ImVec2 p3,int num_segments);
 void ImDrawList_PathRect(ImDrawList* self,const ImVec2 rect_min,const ImVec2 rect_max,float rounding,ImDrawFlags flags);
@@ -3851,7 +3856,6 @@ ImGuiPlatformMonitor* ImGuiPlatformMonitor_ImGuiPlatformMonitor(void);
 void ImGuiPlatformMonitor_destroy(ImGuiPlatformMonitor* self);
 ImGuiPlatformImeData* ImGuiPlatformImeData_ImGuiPlatformImeData(void);
 void ImGuiPlatformImeData_destroy(ImGuiPlatformImeData* self);
-ImGuiKey igGetKeyIndex(ImGuiKey key);
 ImGuiID igImHashData(const void* data,size_t data_size,ImGuiID seed);
 ImGuiID igImHashStr(const char* data,size_t data_size,ImGuiID seed);
 void igImQsort(void* base,size_t count,size_t size_of_element,int(*compare_func)(void const*,void const*));
@@ -3939,6 +3943,7 @@ _Bool                igImTriangleContainsPoint(const ImVec2 a,const ImVec2 b,con
 void igImTriangleClosestPoint(ImVec2 *pOut,const ImVec2 a,const ImVec2 b,const ImVec2 c,const ImVec2 p);
 void igImTriangleBarycentricCoords(const ImVec2 a,const ImVec2 b,const ImVec2 c,const ImVec2 p,float* out_u,float* out_v,float* out_w);
 float igImTriangleArea(const ImVec2 a,const ImVec2 b,const ImVec2 c);
+_Bool                igImTriangleIsClockwise(const ImVec2 a,const ImVec2 b,const ImVec2 c);
 ImVec1* ImVec1_ImVec1_Nil(void);
 void ImVec1_destroy(ImVec1* self);
 ImVec1* ImVec1_ImVec1_Float(float _x);

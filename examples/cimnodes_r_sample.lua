@@ -76,7 +76,7 @@ local function Node(value,editor,typen,loadT)
         ig.ImNodes_Ez_EndNode();
         
         local dodelete = false
-        local user_key = ig.GetKeyIndex(ig.lib.ImGuiKey_X)
+        local user_key = ig.lib.ImGuiKey_X
         if ig.IsWindowFocused(ig.lib.ImGuiFocusedFlags_RootAndChildWindows) and ig.IsKeyReleased(user_key)
         then
             dodelete = true
@@ -124,7 +124,7 @@ local function show_editor(editor)
         node:draw()
     end
     
-    local user_key = ig.GetKeyIndex(ig.lib.ImGuiKey_A)
+    local user_key = ig.lib.ImGuiKey_A
     if (ig.IsWindowFocused(ig.lib.ImGuiFocusedFlags_RootAndChildWindows) and ig.IsKeyReleased(user_key))
     then
         ig.OpenPopup("add node")
