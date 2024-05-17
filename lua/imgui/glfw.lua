@@ -6338,6 +6338,7 @@ M.ImStrnicmp = lib.igImStrnicmp
 M.ImTextCharFromUtf8 = lib.igImTextCharFromUtf8
 M.ImTextCharToUtf8 = lib.igImTextCharToUtf8
 M.ImTextCountCharsFromUtf8 = lib.igImTextCountCharsFromUtf8
+M.ImTextCountLines = lib.igImTextCountLines
 M.ImTextCountUtf8BytesFromChar = lib.igImTextCountUtf8BytesFromChar
 M.ImTextCountUtf8BytesFromStr = lib.igImTextCountUtf8BytesFromStr
 M.ImTextFindPreviousUtf8Codepoint = lib.igImTextFindPreviousUtf8Codepoint
@@ -7099,6 +7100,7 @@ function M.SetNextWindowPos(pos,cond,pivot)
     pivot = pivot or ImVec2(0,0)
     return lib.igSetNextWindowPos(pos,cond,pivot)
 end
+M.SetNextWindowRefreshPolicy = lib.igSetNextWindowRefreshPolicy
 M.SetNextWindowScroll = lib.igSetNextWindowScroll
 function M.SetNextWindowSize(size,cond)
     cond = cond or 0
@@ -7391,10 +7393,7 @@ end
 M.TabItemEx = lib.igTabItemEx
 M.TabItemLabelAndCloseButton = lib.igTabItemLabelAndCloseButton
 M.TableAngledHeadersRow = lib.igTableAngledHeadersRow
-function M.TableAngledHeadersRowEx(angle,max_label_width)
-    max_label_width = max_label_width or 0.0
-    return lib.igTableAngledHeadersRowEx(angle,max_label_width)
-end
+M.TableAngledHeadersRowEx = lib.igTableAngledHeadersRowEx
 M.TableBeginApplyRequests = lib.igTableBeginApplyRequests
 M.TableBeginCell = lib.igTableBeginCell
 M.TableBeginContextMenuPopup = lib.igTableBeginContextMenuPopup
@@ -7594,6 +7593,7 @@ M.UpdateMouseMovingWindowEndFrame = lib.igUpdateMouseMovingWindowEndFrame
 M.UpdateMouseMovingWindowNewFrame = lib.igUpdateMouseMovingWindowNewFrame
 M.UpdatePlatformWindows = lib.igUpdatePlatformWindows
 M.UpdateWindowParentAndRootLinks = lib.igUpdateWindowParentAndRootLinks
+M.UpdateWindowSkipRefresh = lib.igUpdateWindowSkipRefresh
 function M.VSliderFloat(label,size,v,v_min,v_max,format,flags)
     flags = flags or 0
     format = format or "%.3f"
