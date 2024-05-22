@@ -121,6 +121,11 @@ function win:draw(ig)
 			get_subdirs("")
 		end
 		ig.SameLine()
+		if ig.Button("<-") then
+			local updir = subdir:match([[^]]..curdir..[[(.*)[/\][^/\]*$]]) or ""
+			get_subdirs(updir)
+		end
+		ig.SameLine()
 		ig.TextUnformatted(subdir)
 		ig.SameLine()
 		ig.TextUnformatted("| num folders:"..tostring(#thesizes))
