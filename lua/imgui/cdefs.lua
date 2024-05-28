@@ -162,6 +162,7 @@ typedef int ImGuiDockNodeFlags;
 typedef int ImGuiDragDropFlags;
 typedef int ImGuiFocusedFlags;
 typedef int ImGuiHoveredFlags;
+typedef int ImGuiInputFlags;
 typedef int ImGuiInputTextFlags;
 typedef int ImGuiKeyChord;
 typedef int ImGuiPopupFlags;
@@ -593,14 +594,26 @@ ImGuiMod_Ctrl=1 << 12,
 ImGuiMod_Shift=1 << 13,
 ImGuiMod_Alt=1 << 14,
 ImGuiMod_Super=1 << 15,
-ImGuiMod_Shortcut=1 << 11,
-ImGuiMod_Mask_=0xF800,
+ImGuiMod_Mask_=0xF000,
 ImGuiKey_NamedKey_BEGIN=512,
 ImGuiKey_NamedKey_END=ImGuiKey_COUNT,
 ImGuiKey_NamedKey_COUNT=ImGuiKey_NamedKey_END - ImGuiKey_NamedKey_BEGIN,
 ImGuiKey_KeysData_SIZE=ImGuiKey_NamedKey_COUNT,
 ImGuiKey_KeysData_OFFSET=ImGuiKey_NamedKey_BEGIN,
 }ImGuiKey;
+typedef enum {
+    ImGuiInputFlags_None = 0,
+    ImGuiInputFlags_Repeat = 1 << 0,
+    ImGuiInputFlags_RouteActive = 1 << 10,
+    ImGuiInputFlags_RouteFocused = 1 << 11,
+    ImGuiInputFlags_RouteGlobal = 1 << 12,
+    ImGuiInputFlags_RouteAlways = 1 << 13,
+    ImGuiInputFlags_RouteOverFocused = 1 << 14,
+    ImGuiInputFlags_RouteOverActive = 1 << 15,
+    ImGuiInputFlags_RouteUnlessBgFocused = 1 << 16,
+    ImGuiInputFlags_RouteFromRootWindow = 1 << 17,
+    ImGuiInputFlags_Tooltip = 1 << 18,
+}ImGuiInputFlags_;
 typedef enum {
     ImGuiConfigFlags_None = 0,
     ImGuiConfigFlags_NavEnableKeyboard = 1 << 0,
@@ -1045,6 +1058,7 @@ struct ImGuiIO
    _Bool         MouseDownOwned[5];
    _Bool         MouseDownOwnedUnlessPopupClose[5];
    _Bool         MouseWheelRequestAxisSwap;
+   _Bool         MouseCtrlLeftAsRightClick;
     float MouseDownDuration[5];
     float MouseDownDurationPrev[5];
     ImVec2 MouseDragMaxDistanceAbs[5];
@@ -1483,7 +1497,6 @@ typedef int ImGuiLayoutType;
 typedef int ImGuiActivateFlags;
 typedef int ImGuiDebugLogFlags;
 typedef int ImGuiFocusRequestFlags;
-typedef int ImGuiInputFlags;
 typedef int ImGuiItemFlags;
 typedef int ImGuiItemStatusFlags;
 typedef int ImGuiOldColumnFlags;
@@ -1615,6 +1628,7 @@ typedef enum {
     ImGuiItemStatusFlags_HoveredWindow = 1 << 7,
     ImGuiItemStatusFlags_Visible = 1 << 8,
     ImGuiItemStatusFlags_HasClipRect = 1 << 9,
+    ImGuiItemStatusFlags_HasShortcut = 1 << 10,
 }ImGuiItemStatusFlags_;
 typedef enum {
     ImGuiHoveredFlags_DelayMask_ = ImGuiHoveredFlags_DelayNone | ImGuiHoveredFlags_DelayShort | ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay,
@@ -1843,6 +1857,7 @@ struct ImGuiNextItemData
     ImGuiSelectionUserData SelectionUserData;
     float Width;
     ImGuiKeyChord Shortcut;
+    ImGuiInputFlags ShortcutFlags;
    _Bool         OpenVal;
     ImGuiCond OpenCond : 8;
 };
@@ -1855,6 +1870,7 @@ struct ImGuiLastItemData
     ImRect NavRect;
     ImRect DisplayRect;
     ImRect ClipRect;
+    ImGuiKeyChord Shortcut;
 };
 struct ImGuiNavTreeNodeData
 {
@@ -2027,8 +2043,6 @@ struct ImGuiKeyOwnerData
    _Bool         LockUntilRelease;
 };
 typedef enum {
-    ImGuiInputFlags_None = 0,
-    ImGuiInputFlags_Repeat = 1 << 0,
     ImGuiInputFlags_RepeatRateDefault = 1 << 1,
     ImGuiInputFlags_RepeatRateNavMove = 1 << 2,
     ImGuiInputFlags_RepeatRateNavTweak = 1 << 3,
@@ -2036,28 +2050,24 @@ typedef enum {
     ImGuiInputFlags_RepeatUntilKeyModsChange = 1 << 5,
     ImGuiInputFlags_RepeatUntilKeyModsChangeFromNone = 1 << 6,
     ImGuiInputFlags_RepeatUntilOtherKeyPress = 1 << 7,
-    ImGuiInputFlags_CondHovered = 1 << 8,
-    ImGuiInputFlags_CondActive = 1 << 9,
+    ImGuiInputFlags_LockThisFrame = 1 << 20,
+    ImGuiInputFlags_LockUntilRelease = 1 << 21,
+    ImGuiInputFlags_CondHovered = 1 << 22,
+    ImGuiInputFlags_CondActive = 1 << 23,
     ImGuiInputFlags_CondDefault_ = ImGuiInputFlags_CondHovered | ImGuiInputFlags_CondActive,
-    ImGuiInputFlags_LockThisFrame = 1 << 10,
-    ImGuiInputFlags_LockUntilRelease = 1 << 11,
-    ImGuiInputFlags_RouteFocused = 1 << 12,
-    ImGuiInputFlags_RouteGlobalLow = 1 << 13,
-    ImGuiInputFlags_RouteGlobal = 1 << 14,
-    ImGuiInputFlags_RouteGlobalHigh = 1 << 15,
-    ImGuiInputFlags_RouteAlways = 1 << 16,
-    ImGuiInputFlags_RouteUnlessBgFocused= 1 << 17,
     ImGuiInputFlags_RepeatRateMask_ = ImGuiInputFlags_RepeatRateDefault | ImGuiInputFlags_RepeatRateNavMove | ImGuiInputFlags_RepeatRateNavTweak,
     ImGuiInputFlags_RepeatUntilMask_ = ImGuiInputFlags_RepeatUntilRelease | ImGuiInputFlags_RepeatUntilKeyModsChange | ImGuiInputFlags_RepeatUntilKeyModsChangeFromNone | ImGuiInputFlags_RepeatUntilOtherKeyPress,
     ImGuiInputFlags_RepeatMask_ = ImGuiInputFlags_Repeat | ImGuiInputFlags_RepeatRateMask_ | ImGuiInputFlags_RepeatUntilMask_,
     ImGuiInputFlags_CondMask_ = ImGuiInputFlags_CondHovered | ImGuiInputFlags_CondActive,
-    ImGuiInputFlags_RouteMask_ = ImGuiInputFlags_RouteFocused | ImGuiInputFlags_RouteGlobal | ImGuiInputFlags_RouteGlobalLow | ImGuiInputFlags_RouteGlobalHigh,
+    ImGuiInputFlags_RouteTypeMask_ = ImGuiInputFlags_RouteActive | ImGuiInputFlags_RouteFocused | ImGuiInputFlags_RouteGlobal | ImGuiInputFlags_RouteAlways,
+    ImGuiInputFlags_RouteOptionsMask_ = ImGuiInputFlags_RouteOverFocused | ImGuiInputFlags_RouteOverActive | ImGuiInputFlags_RouteUnlessBgFocused | ImGuiInputFlags_RouteFromRootWindow,
     ImGuiInputFlags_SupportedByIsKeyPressed = ImGuiInputFlags_RepeatMask_,
     ImGuiInputFlags_SupportedByIsMouseClicked = ImGuiInputFlags_Repeat,
-    ImGuiInputFlags_SupportedByShortcut = ImGuiInputFlags_RepeatMask_ | ImGuiInputFlags_RouteMask_ | ImGuiInputFlags_RouteAlways | ImGuiInputFlags_RouteUnlessBgFocused,
+    ImGuiInputFlags_SupportedByShortcut = ImGuiInputFlags_RepeatMask_ | ImGuiInputFlags_RouteTypeMask_ | ImGuiInputFlags_RouteOptionsMask_,
+    ImGuiInputFlags_SupportedBySetNextItemShortcut = ImGuiInputFlags_RepeatMask_ | ImGuiInputFlags_RouteTypeMask_ | ImGuiInputFlags_RouteOptionsMask_ | ImGuiInputFlags_Tooltip,
     ImGuiInputFlags_SupportedBySetKeyOwner = ImGuiInputFlags_LockThisFrame | ImGuiInputFlags_LockUntilRelease,
     ImGuiInputFlags_SupportedBySetItemKeyOwner = ImGuiInputFlags_SupportedBySetKeyOwner | ImGuiInputFlags_CondMask_,
-}ImGuiInputFlags_;
+}ImGuiInputFlagsPrivate_;
 typedef struct ImGuiListClipperRange ImGuiListClipperRange;
 struct ImGuiListClipperRange
 {
@@ -2488,6 +2498,7 @@ struct ImGuiContext
     ImFont* Font;
     float FontSize;
     float FontBaseSize;
+    float CurrentDpiScale;
     ImDrawListSharedData DrawListSharedData;
     double Time;
     int FrameCount;
@@ -2577,7 +2588,6 @@ struct ImGuiContext
     ImVector_ImGuiPopupData BeginPopupStack;
     ImVector_ImGuiNavTreeNodeData NavTreeNodeStack;
     ImVector_ImGuiViewportPPtr Viewports;
-    float CurrentDpiScale;
     ImGuiViewportP* CurrentViewport;
     ImGuiViewportP* MouseViewport;
     ImGuiViewportP* MouseLastHoveredViewport;
@@ -3521,8 +3531,8 @@ _Bool                igBeginTabItem(const char* label,                          
 void igEndTabItem(void);
 _Bool                igTabItemButton(const char* label,ImGuiTabItemFlags flags);
 void igSetTabItemClosed(const char* tab_or_docked_window_label);
-ImGuiID igDockSpace(ImGuiID id,const ImVec2 size,ImGuiDockNodeFlags flags,const ImGuiWindowClass* window_class);
-ImGuiID igDockSpaceOverViewport(const ImGuiViewport* viewport,ImGuiDockNodeFlags flags,const ImGuiWindowClass* window_class);
+ImGuiID igDockSpace(ImGuiID dockspace_id,const ImVec2 size,ImGuiDockNodeFlags flags,const ImGuiWindowClass* window_class);
+ImGuiID igDockSpaceOverViewport(ImGuiID dockspace_id,const ImGuiViewport* viewport,ImGuiDockNodeFlags flags,const ImGuiWindowClass* window_class);
 void igSetNextWindowDockID(ImGuiID dock_id,ImGuiCond cond);
 void igSetNextWindowClass(const ImGuiWindowClass* window_class);
 ImGuiID igGetWindowDockID(void);
@@ -3589,6 +3599,8 @@ _Bool                igIsKeyChordPressed_Nil(ImGuiKeyChord key_chord);
 int igGetKeyPressedAmount(ImGuiKey key,float repeat_delay,float rate);
 const char* igGetKeyName(ImGuiKey key);
 void igSetNextFrameWantCaptureKeyboard(                                                 _Bool                                                       want_capture_keyboard);
+_Bool                igShortcut_Nil(ImGuiKeyChord key_chord,ImGuiInputFlags flags);
+void igSetNextItemShortcut(ImGuiKeyChord key_chord,ImGuiInputFlags flags);
 _Bool                igIsMouseDown_Nil(ImGuiMouseButton button);
 _Bool                igIsMouseClicked_Bool(ImGuiMouseButton button,                                                             _Bool                                                                   repeat);
 _Bool                igIsMouseReleased_Nil(ImGuiMouseButton button);
@@ -4208,6 +4220,7 @@ void igInitialize(void);
 void igShutdown(void);
 void igUpdateInputEvents(                                   _Bool                                         trickle_fast_inputs);
 void igUpdateHoveredWindowAndCaptureFlags(void);
+void igFindHoveredWindowEx(const ImVec2 pos,                                                      _Bool                                                            find_first_and_in_any_viewport,ImGuiWindow** out_hovered_window,ImGuiWindow** out_hovered_window_under_moving_window);
 void igStartMouseMovingWindow(ImGuiWindow* window);
 void igStartMouseMovingWindowOrNode(ImGuiWindow* window,ImGuiDockNode* node,                                                                                      _Bool                                                                                            undock);
 void igUpdateMouseMovingWindowNewFrame(void);
@@ -4317,15 +4330,15 @@ void igSetNavFocusScope(ImGuiID focus_scope_id);
 void igFocusItem(void);
 void igActivateItemByID(ImGuiID id);
 _Bool                igIsNamedKey(ImGuiKey key);
-_Bool                igIsNamedKeyOrModKey(ImGuiKey key);
+_Bool                igIsNamedKeyOrMod(ImGuiKey key);
 _Bool                igIsLegacyKey(ImGuiKey key);
 _Bool                igIsKeyboardKey(ImGuiKey key);
 _Bool                igIsGamepadKey(ImGuiKey key);
 _Bool                igIsMouseKey(ImGuiKey key);
 _Bool                igIsAliasKey(ImGuiKey key);
 _Bool                igIsModKey(ImGuiKey key);
-ImGuiKeyChord igFixupKeyChord(ImGuiContext* ctx,ImGuiKeyChord key_chord);
-ImGuiKey igConvertSingleModFlagToKey(ImGuiContext* ctx,ImGuiKey key);
+ImGuiKeyChord igFixupKeyChord(ImGuiKeyChord key_chord);
+ImGuiKey igConvertSingleModFlagToKey(ImGuiKey key);
 ImGuiKeyData* igGetKeyData_ContextPtr(ImGuiContext* ctx,ImGuiKey key);
 ImGuiKeyData* igGetKeyData_Key(ImGuiKey key);
 const char* igGetKeyChordName(ImGuiKeyChord key_chord);
@@ -4345,16 +4358,15 @@ void igSetItemKeyOwner(ImGuiKey key,ImGuiInputFlags flags);
 _Bool                igTestKeyOwner(ImGuiKey key,ImGuiID owner_id);
 ImGuiKeyOwnerData* igGetKeyOwnerData(ImGuiContext* ctx,ImGuiKey key);
 _Bool                igIsKeyDown_ID(ImGuiKey key,ImGuiID owner_id);
-_Bool                igIsKeyPressed_ID(ImGuiKey key,ImGuiID owner_id,ImGuiInputFlags flags);
+_Bool                igIsKeyPressed_InputFlags(ImGuiKey key,ImGuiInputFlags flags,ImGuiID owner_id);
 _Bool                igIsKeyReleased_ID(ImGuiKey key,ImGuiID owner_id);
+_Bool                igIsKeyChordPressed_InputFlags(ImGuiKeyChord key_chord,ImGuiInputFlags flags,ImGuiID owner_id);
 _Bool                igIsMouseDown_ID(ImGuiMouseButton button,ImGuiID owner_id);
-_Bool                igIsMouseClicked_ID(ImGuiMouseButton button,ImGuiID owner_id,ImGuiInputFlags flags);
+_Bool                igIsMouseClicked_InputFlags(ImGuiMouseButton button,ImGuiInputFlags flags,ImGuiID owner_id);
 _Bool                igIsMouseReleased_ID(ImGuiMouseButton button,ImGuiID owner_id);
 _Bool                igIsMouseDoubleClicked_ID(ImGuiMouseButton button,ImGuiID owner_id);
-_Bool                igIsKeyChordPressed_ID(ImGuiKeyChord key_chord,ImGuiID owner_id,ImGuiInputFlags flags);
-void igSetNextItemShortcut(ImGuiKeyChord key_chord);
-_Bool                igShortcut(ImGuiKeyChord key_chord,ImGuiID owner_id,ImGuiInputFlags flags);
-_Bool                igSetShortcutRouting(ImGuiKeyChord key_chord,ImGuiID owner_id,ImGuiInputFlags flags);
+_Bool                igShortcut_ID(ImGuiKeyChord key_chord,ImGuiInputFlags flags,ImGuiID owner_id);
+_Bool                igSetShortcutRouting(ImGuiKeyChord key_chord,ImGuiInputFlags flags,ImGuiID owner_id);
 _Bool                igTestShortcutRouting(ImGuiKeyChord key_chord,ImGuiID owner_id);
 ImGuiKeyRoutingData* igGetShortcutRoutingData(ImGuiKeyChord key_chord);
 void igDockContextInitialize(ImGuiContext* ctx);

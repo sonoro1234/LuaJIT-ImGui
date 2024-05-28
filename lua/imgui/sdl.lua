@@ -5703,17 +5703,18 @@ M.DockNodeGetRootNode = lib.igDockNodeGetRootNode
 M.DockNodeGetWindowMenuButtonId = lib.igDockNodeGetWindowMenuButtonId
 M.DockNodeIsInHierarchyOf = lib.igDockNodeIsInHierarchyOf
 M.DockNodeWindowMenuHandler_Default = lib.igDockNodeWindowMenuHandler_Default
-function M.DockSpace(id,size,flags,window_class)
+function M.DockSpace(dockspace_id,size,flags,window_class)
     flags = flags or 0
     size = size or ImVec2(0,0)
     window_class = window_class or nil
-    return lib.igDockSpace(id,size,flags,window_class)
+    return lib.igDockSpace(dockspace_id,size,flags,window_class)
 end
-function M.DockSpaceOverViewport(viewport,flags,window_class)
+function M.DockSpaceOverViewport(dockspace_id,viewport,flags,window_class)
+    dockspace_id = dockspace_id or 0
     flags = flags or 0
     viewport = viewport or nil
     window_class = window_class or nil
-    return lib.igDockSpaceOverViewport(viewport,flags,window_class)
+    return lib.igDockSpaceOverViewport(dockspace_id,viewport,flags,window_class)
 end
 M.DragBehavior = lib.igDragBehavior
 function M.DragFloat(label,v,v_speed,v_min,v_max,format,flags)
@@ -5856,6 +5857,7 @@ end
 M.FindBlockingModal = lib.igFindBlockingModal
 M.FindBottomMostVisibleWindowWithinBeginStack = lib.igFindBottomMostVisibleWindowWithinBeginStack
 M.FindHoveredViewportFromPlatformWindowStack = lib.igFindHoveredViewportFromPlatformWindowStack
+M.FindHoveredWindowEx = lib.igFindHoveredWindowEx
 M.FindOrCreateColumns = lib.igFindOrCreateColumns
 function M.FindRenderedTextEnd(text,text_end)
     text_end = text_end or nil
@@ -6511,13 +6513,13 @@ M.IsItemToggledOpen = lib.igIsItemToggledOpen
 M.IsItemToggledSelection = lib.igIsItemToggledSelection
 M.IsItemVisible = lib.igIsItemVisible
 M.IsKeyChordPressed_Nil = lib.igIsKeyChordPressed_Nil
-function M.IsKeyChordPressed_ID(key_chord,owner_id,flags)
-    flags = flags or 0
-    return lib.igIsKeyChordPressed_ID(key_chord,owner_id,flags)
+function M.IsKeyChordPressed_InputFlags(key_chord,flags,owner_id)
+    owner_id = owner_id or 0
+    return lib.igIsKeyChordPressed_InputFlags(key_chord,flags,owner_id)
 end
 function M.IsKeyChordPressed(a1,a2,a3) -- generic version
     if a2==nil then return M.IsKeyChordPressed_Nil(a1) end
-    if (ffi.istype('uint32_t',a2) or type(a2)=='number') then return M.IsKeyChordPressed_ID(a1,a2,a3) end
+    if (ffi.istype('int32_t',a2) or type(a2)=='number') then return M.IsKeyChordPressed_InputFlags(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.IsKeyChordPressed could not find overloaded'
 end
@@ -6533,13 +6535,13 @@ function M.IsKeyPressed_Bool(key,_repeat)
     if _repeat == nil then _repeat = true end
     return lib.igIsKeyPressed_Bool(key,_repeat)
 end
-function M.IsKeyPressed_ID(key,owner_id,flags)
-    flags = flags or 0
-    return lib.igIsKeyPressed_ID(key,owner_id,flags)
+function M.IsKeyPressed_InputFlags(key,flags,owner_id)
+    owner_id = owner_id or 0
+    return lib.igIsKeyPressed_InputFlags(key,flags,owner_id)
 end
 function M.IsKeyPressed(a1,a2,a3) -- generic version
     if (ffi.istype('bool',a2) or type(a2)=='boolean') then return M.IsKeyPressed_Bool(a1,a2) end
-    if (ffi.istype('uint32_t',a2) or type(a2)=='number') then return M.IsKeyPressed_ID(a1,a2,a3) end
+    if (ffi.istype('int32_t',a2) or type(a2)=='number') then return M.IsKeyPressed_InputFlags(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.IsKeyPressed could not find overloaded'
 end
@@ -6558,13 +6560,13 @@ function M.IsMouseClicked_Bool(button,_repeat)
     _repeat = _repeat or false
     return lib.igIsMouseClicked_Bool(button,_repeat)
 end
-function M.IsMouseClicked_ID(button,owner_id,flags)
-    flags = flags or 0
-    return lib.igIsMouseClicked_ID(button,owner_id,flags)
+function M.IsMouseClicked_InputFlags(button,flags,owner_id)
+    owner_id = owner_id or 0
+    return lib.igIsMouseClicked_InputFlags(button,flags,owner_id)
 end
 function M.IsMouseClicked(a1,a2,a3) -- generic version
     if (ffi.istype('bool',a2) or type(a2)=='boolean') then return M.IsMouseClicked_Bool(a1,a2) end
-    if (ffi.istype('uint32_t',a2) or type(a2)=='number') then return M.IsMouseClicked_ID(a1,a2,a3) end
+    if (ffi.istype('int32_t',a2) or type(a2)=='number') then return M.IsMouseClicked_InputFlags(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.IsMouseClicked could not find overloaded'
 end
@@ -6610,7 +6612,7 @@ function M.IsMouseReleased(a1,a2) -- generic version
     error'M.IsMouseReleased could not find overloaded'
 end
 M.IsNamedKey = lib.igIsNamedKey
-M.IsNamedKeyOrModKey = lib.igIsNamedKeyOrModKey
+M.IsNamedKeyOrMod = lib.igIsNamedKeyOrMod
 function M.IsPopupOpen_Str(str_id,flags)
     flags = flags or 0
     return lib.igIsPopupOpen_Str(str_id,flags)
@@ -7081,7 +7083,10 @@ function M.SetNextItemOpen(is_open,cond)
     return lib.igSetNextItemOpen(is_open,cond)
 end
 M.SetNextItemSelectionUserData = lib.igSetNextItemSelectionUserData
-M.SetNextItemShortcut = lib.igSetNextItemShortcut
+function M.SetNextItemShortcut(key_chord,flags)
+    flags = flags or 0
+    return lib.igSetNextItemShortcut(key_chord,flags)
+end
 M.SetNextItemWidth = lib.igSetNextItemWidth
 M.SetNextWindowBgAlpha = lib.igSetNextWindowBgAlpha
 M.SetNextWindowClass = lib.igSetNextWindowClass
@@ -7158,10 +7163,7 @@ function M.SetScrollY(a1,a2) -- generic version
     print(a1,a2)
     error'M.SetScrollY could not find overloaded'
 end
-function M.SetShortcutRouting(key_chord,owner_id,flags)
-    flags = flags or 0
-    return lib.igSetShortcutRouting(key_chord,owner_id,flags)
-end
+M.SetShortcutRouting = lib.igSetShortcutRouting
 M.SetStateStorage = lib.igSetStateStorage
 M.SetTabItemClosed = lib.igSetTabItemClosed
 M.SetTooltip = lib.igSetTooltip
@@ -7241,10 +7243,16 @@ M.SetWindowViewport = lib.igSetWindowViewport
 M.ShadeVertsLinearColorGradientKeepAlpha = lib.igShadeVertsLinearColorGradientKeepAlpha
 M.ShadeVertsLinearUV = lib.igShadeVertsLinearUV
 M.ShadeVertsTransformPos = lib.igShadeVertsTransformPos
-function M.Shortcut(key_chord,owner_id,flags)
+function M.Shortcut_Nil(key_chord,flags)
     flags = flags or 0
-    owner_id = owner_id or 0
-    return lib.igShortcut(key_chord,owner_id,flags)
+    return lib.igShortcut_Nil(key_chord,flags)
+end
+M.Shortcut_ID = lib.igShortcut_ID
+function M.Shortcut(a1,a2,a3) -- generic version
+    if a3==nil then return M.Shortcut_Nil(a1,a2) end
+    if (ffi.istype('uint32_t',a3) or type(a3)=='number') then return M.Shortcut_ID(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.Shortcut could not find overloaded'
 end
 function M.ShowAboutWindow(p_open)
     p_open = p_open or nil
