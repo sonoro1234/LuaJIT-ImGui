@@ -1654,7 +1654,6 @@ function ImGuiWindow.__new(ctype,context,name)
     local ptr = lib.ImGuiWindow_ImGuiWindow(context,name)
     return ffi.gc(ptr,lib.ImGuiWindow_destroy)
 end
-ImGuiWindow.MenuBarHeight = lib.ImGuiWindow_MenuBarHeight
 function ImGuiWindow:MenuBarRect()
     local nonUDT_out = ffi.new("ImRect")
     lib.ImGuiWindow_MenuBarRect(nonUDT_out,self)
@@ -1665,7 +1664,6 @@ function ImGuiWindow:Rect()
     lib.ImGuiWindow_Rect(nonUDT_out,self)
     return nonUDT_out
 end
-ImGuiWindow.TitleBarHeight = lib.ImGuiWindow_TitleBarHeight
 function ImGuiWindow:TitleBarRect()
     local nonUDT_out = ffi.new("ImRect")
     lib.ImGuiWindow_TitleBarRect(nonUDT_out,self)
@@ -5380,6 +5378,7 @@ function M.BeginDisabled(disabled)
     if disabled == nil then disabled = true end
     return lib.igBeginDisabled(disabled)
 end
+M.BeginDisabledOverrideReenable = lib.igBeginDisabledOverrideReenable
 M.BeginDockableDragDropSource = lib.igBeginDockableDragDropSource
 M.BeginDockableDragDropTarget = lib.igBeginDockableDragDropTarget
 M.BeginDocked = lib.igBeginDocked
@@ -5600,7 +5599,10 @@ function M.CreateContext(shared_font_atlas)
     return lib.igCreateContext(shared_font_atlas)
 end
 M.CreateNewWindowSettings = lib.igCreateNewWindowSettings
-M.DataTypeApplyFromText = lib.igDataTypeApplyFromText
+function M.DataTypeApplyFromText(buf,data_type,p_data,format,p_data_when_empty)
+    p_data_when_empty = p_data_when_empty or nil
+    return lib.igDataTypeApplyFromText(buf,data_type,p_data,format,p_data_when_empty)
+end
 M.DataTypeApplyOp = lib.igDataTypeApplyOp
 M.DataTypeClamp = lib.igDataTypeClamp
 M.DataTypeCompare = lib.igDataTypeCompare
@@ -5651,6 +5653,7 @@ M.DebugRenderKeyboardPreview = lib.igDebugRenderKeyboardPreview
 M.DebugRenderViewportThumbnail = lib.igDebugRenderViewportThumbnail
 M.DebugStartItemPicker = lib.igDebugStartItemPicker
 M.DebugTextEncoding = lib.igDebugTextEncoding
+M.DebugTextUnformattedWithLocateItem = lib.igDebugTextUnformattedWithLocateItem
 function M.DestroyContext(ctx)
     ctx = ctx or nil
     return lib.igDestroyContext(ctx)
@@ -5822,6 +5825,7 @@ M.EndColumns = lib.igEndColumns
 M.EndCombo = lib.igEndCombo
 M.EndComboPreview = lib.igEndComboPreview
 M.EndDisabled = lib.igEndDisabled
+M.EndDisabledOverrideReenable = lib.igEndDisabledOverrideReenable
 M.EndDragDropSource = lib.igEndDragDropSource
 M.EndDragDropTarget = lib.igEndDragDropTarget
 M.EndFrame = lib.igEndFrame
@@ -7082,6 +7086,7 @@ function M.SetNextItemOpen(is_open,cond)
     cond = cond or 0
     return lib.igSetNextItemOpen(is_open,cond)
 end
+M.SetNextItemRefVal = lib.igSetNextItemRefVal
 M.SetNextItemSelectionUserData = lib.igSetNextItemSelectionUserData
 function M.SetNextItemShortcut(key_chord,flags)
     flags = flags or 0
