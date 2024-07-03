@@ -1042,6 +1042,7 @@ ImGuiIO.AddMouseViewportEvent = lib.ImGuiIO_AddMouseViewportEvent
 ImGuiIO.AddMouseWheelEvent = lib.ImGuiIO_AddMouseWheelEvent
 ImGuiIO.ClearEventsQueue = lib.ImGuiIO_ClearEventsQueue
 ImGuiIO.ClearInputKeys = lib.ImGuiIO_ClearInputKeys
+ImGuiIO.ClearInputMouse = lib.ImGuiIO_ClearInputMouse
 function ImGuiIO.__new(ctype)
     local ptr = lib.ImGuiIO_ImGuiIO()
     return ffi.gc(ptr,lib.ImGuiIO_destroy)
@@ -5439,11 +5440,11 @@ function M.BeginTabItem(label,p_open,flags)
     p_open = p_open or nil
     return lib.igBeginTabItem(label,p_open,flags)
 end
-function M.BeginTable(str_id,column,flags,outer_size,inner_width)
+function M.BeginTable(str_id,columns,flags,outer_size,inner_width)
     flags = flags or 0
     inner_width = inner_width or 0.0
     outer_size = outer_size or ImVec2(0.0,0.0)
-    return lib.igBeginTable(str_id,column,flags,outer_size,inner_width)
+    return lib.igBeginTable(str_id,columns,flags,outer_size,inner_width)
 end
 function M.BeginTableEx(name,id,columns_count,flags,outer_size,inner_width)
     flags = flags or 0
@@ -5887,13 +5888,9 @@ M.GcCompactTransientMiscBuffers = lib.igGcCompactTransientMiscBuffers
 M.GcCompactTransientWindowBuffers = lib.igGcCompactTransientWindowBuffers
 M.GetActiveID = lib.igGetActiveID
 M.GetAllocatorFunctions = lib.igGetAllocatorFunctions
-M.GetBackgroundDrawList_Nil = lib.igGetBackgroundDrawList_Nil
-M.GetBackgroundDrawList_ViewportPtr = lib.igGetBackgroundDrawList_ViewportPtr
-function M.GetBackgroundDrawList(a1) -- generic version
-    if a1==nil then return M.GetBackgroundDrawList_Nil() end
-    if (ffi.istype('ImGuiViewport*',a1) or ffi.istype('ImGuiViewport',a1) or ffi.istype('ImGuiViewport[]',a1)) then return M.GetBackgroundDrawList_ViewportPtr(a1) end
-    print(a1)
-    error'M.GetBackgroundDrawList could not find overloaded'
+function M.GetBackgroundDrawList(viewport)
+    viewport = viewport or nil
+    return lib.igGetBackgroundDrawList(viewport)
 end
 M.GetClipboardText = lib.igGetClipboardText
 function M.GetColorU32_Col(idx,alpha_mul)
@@ -5975,12 +5972,13 @@ function M.GetFontTexUvWhitePixel()
     lib.igGetFontTexUvWhitePixel(nonUDT_out)
     return nonUDT_out
 end
-M.GetForegroundDrawList_Nil = lib.igGetForegroundDrawList_Nil
-M.GetForegroundDrawList_ViewportPtr = lib.igGetForegroundDrawList_ViewportPtr
+function M.GetForegroundDrawList_ViewportPtr(viewport)
+    viewport = viewport or nil
+    return lib.igGetForegroundDrawList_ViewportPtr(viewport)
+end
 M.GetForegroundDrawList_WindowPtr = lib.igGetForegroundDrawList_WindowPtr
 function M.GetForegroundDrawList(a1) -- generic version
-    if a1==nil then return M.GetForegroundDrawList_Nil() end
-    if (ffi.istype('ImGuiViewport*',a1) or ffi.istype('ImGuiViewport',a1) or ffi.istype('ImGuiViewport[]',a1)) then return M.GetForegroundDrawList_ViewportPtr(a1) end
+    if ((ffi.istype('ImGuiViewport*',a1) or ffi.istype('ImGuiViewport',a1) or ffi.istype('ImGuiViewport[]',a1)) or type(a1)=='nil') then return M.GetForegroundDrawList_ViewportPtr(a1) end
     if (ffi.istype('ImGuiWindow*',a1) or ffi.istype('ImGuiWindow',a1) or ffi.istype('ImGuiWindow[]',a1)) then return M.GetForegroundDrawList_WindowPtr(a1) end
     print(a1)
     error'M.GetForegroundDrawList could not find overloaded'
@@ -6276,6 +6274,7 @@ function M.ImLog(a1) -- generic version
     print(a1)
     error'M.ImLog could not find overloaded'
 end
+M.ImLowerBound = lib.igImLowerBound
 function M.ImMax(lhs,rhs)
     local nonUDT_out = ffi.new("ImVec2")
     lib.igImMax(nonUDT_out,lhs,rhs)

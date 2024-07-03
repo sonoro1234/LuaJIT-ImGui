@@ -56,6 +56,7 @@ typedef struct ImGuiPlatformMonitor ImGuiPlatformMonitor;
 typedef struct ImGuiPlatformImeData ImGuiPlatformImeData;
 typedef struct ImGuiSizeCallbackData ImGuiSizeCallbackData;
 typedef struct ImGuiStorage ImGuiStorage;
+typedef struct ImGuiStoragePair ImGuiStoragePair;
 typedef struct ImGuiStyle ImGuiStyle;
 typedef struct ImGuiTableSortSpecs ImGuiTableSortSpecs;
 typedef struct ImGuiTableColumnSortSpecs ImGuiTableColumnSortSpecs;
@@ -142,6 +143,7 @@ struct ImGuiPlatformMonitor;
 struct ImGuiPlatformImeData;
 struct ImGuiSizeCallbackData;
 struct ImGuiStorage;
+struct ImGuiStoragePair;
 struct ImGuiStyle;
 struct ImGuiTableSortSpecs;
 struct ImGuiTableColumnSortSpecs;
@@ -227,7 +229,6 @@ typedef enum {
     ImGuiWindowFlags_NoNav = ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus,
     ImGuiWindowFlags_NoDecoration = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse,
     ImGuiWindowFlags_NoInputs = ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus,
-    ImGuiWindowFlags_NavFlattened = 1 << 23,
     ImGuiWindowFlags_ChildWindow = 1 << 24,
     ImGuiWindowFlags_Tooltip = 1 << 25,
     ImGuiWindowFlags_Popup = 1 << 26,
@@ -245,6 +246,7 @@ typedef enum {
     ImGuiChildFlags_AutoResizeY = 1 << 5,
     ImGuiChildFlags_AlwaysAutoResize = 1 << 6,
     ImGuiChildFlags_FrameStyle = 1 << 7,
+    ImGuiChildFlags_NavFlattened = 1 << 8,
 }ImGuiChildFlags_;
 typedef enum {
     ImGuiInputTextFlags_None = 0,
@@ -334,8 +336,9 @@ typedef enum {
     ImGuiTabBarFlags_NoCloseWithMiddleMouseButton = 1 << 3,
     ImGuiTabBarFlags_NoTabListScrollingButtons = 1 << 4,
     ImGuiTabBarFlags_NoTooltip = 1 << 5,
-    ImGuiTabBarFlags_FittingPolicyResizeDown = 1 << 6,
-    ImGuiTabBarFlags_FittingPolicyScroll = 1 << 7,
+    ImGuiTabBarFlags_DrawSelectedOverline = 1 << 6,
+    ImGuiTabBarFlags_FittingPolicyResizeDown = 1 << 7,
+    ImGuiTabBarFlags_FittingPolicyScroll = 1 << 8,
     ImGuiTabBarFlags_FittingPolicyMask_ = ImGuiTabBarFlags_FittingPolicyResizeDown | ImGuiTabBarFlags_FittingPolicyScroll,
     ImGuiTabBarFlags_FittingPolicyDefault_ = ImGuiTabBarFlags_FittingPolicyResizeDown,
 }ImGuiTabBarFlags_;
@@ -400,7 +403,9 @@ typedef enum {
     ImGuiDragDropFlags_SourceNoHoldToOpenOthers = 1 << 2,
     ImGuiDragDropFlags_SourceAllowNullID = 1 << 3,
     ImGuiDragDropFlags_SourceExtern = 1 << 4,
-    ImGuiDragDropFlags_SourceAutoExpirePayload = 1 << 5,
+    ImGuiDragDropFlags_PayloadAutoExpire = 1 << 5,
+    ImGuiDragDropFlags_PayloadNoCrossContext = 1 << 6,
+    ImGuiDragDropFlags_PayloadNoCrossProcess = 1 << 7,
     ImGuiDragDropFlags_AcceptBeforeDelivery = 1 << 10,
     ImGuiDragDropFlags_AcceptNoDrawDefaultRect = 1 << 11,
     ImGuiDragDropFlags_AcceptNoPreviewTooltip = 1 << 12,
@@ -622,7 +627,8 @@ typedef enum {
     ImGuiConfigFlags_NavNoCaptureKeyboard = 1 << 3,
     ImGuiConfigFlags_NoMouse = 1 << 4,
     ImGuiConfigFlags_NoMouseCursorChange = 1 << 5,
-    ImGuiConfigFlags_DockingEnable = 1 << 6,
+    ImGuiConfigFlags_NoKeyboard = 1 << 6,
+    ImGuiConfigFlags_DockingEnable = 1 << 7,
     ImGuiConfigFlags_ViewportsEnable = 1 << 10,
     ImGuiConfigFlags_DpiEnableScaleViewports= 1 << 14,
     ImGuiConfigFlags_DpiEnableScaleFonts = 1 << 15,
@@ -673,11 +679,13 @@ typedef enum {
     ImGuiCol_ResizeGrip,
     ImGuiCol_ResizeGripHovered,
     ImGuiCol_ResizeGripActive,
-    ImGuiCol_Tab,
     ImGuiCol_TabHovered,
-    ImGuiCol_TabActive,
-    ImGuiCol_TabUnfocused,
-    ImGuiCol_TabUnfocusedActive,
+    ImGuiCol_Tab,
+    ImGuiCol_TabSelected,
+    ImGuiCol_TabSelectedOverline,
+    ImGuiCol_TabDimmed,
+    ImGuiCol_TabDimmedSelected,
+    ImGuiCol_TabDimmedSelectedOverline,
     ImGuiCol_DockingPreview,
     ImGuiCol_DockingEmptyBg,
     ImGuiCol_PlotLines,
@@ -695,7 +703,7 @@ typedef enum {
     ImGuiCol_NavWindowingHighlight,
     ImGuiCol_NavWindowingDimBg,
     ImGuiCol_ModalWindowDimBg,
-    ImGuiCol_COUNT
+    ImGuiCol_COUNT,
 }ImGuiCol_;
 typedef enum {
     ImGuiStyleVar_Alpha,
@@ -777,6 +785,7 @@ typedef enum {
     ImGuiSliderFlags_Logarithmic = 1 << 5,
     ImGuiSliderFlags_NoRoundToFormat = 1 << 6,
     ImGuiSliderFlags_NoInput = 1 << 7,
+    ImGuiSliderFlags_WrapAround = 1 << 8,
     ImGuiSliderFlags_InvalidMask_ = 0x7000000F,
 }ImGuiSliderFlags_;
 typedef enum {
@@ -1141,16 +1150,14 @@ struct ImGuiTextBuffer
 };
 struct ImGuiStoragePair
 {
-        ImGuiID key;
-        union { int val_i; float val_f; void* val_p; };
+    ImGuiID key;
+    union { int val_i; float val_f; void* val_p; };
 };
-typedef struct ImGuiStoragePair ImGuiStoragePair;
 typedef struct ImVector_ImGuiStoragePair {int Size;int Capacity;ImGuiStoragePair* Data;} ImVector_ImGuiStoragePair;
 struct ImGuiStorage
 {
     ImVector_ImGuiStoragePair Data;
 };
-typedef struct ImGuiStoragePair ImGuiStoragePair;
 struct ImGuiListClipper
 {
     ImGuiContext* Ctx;
@@ -2294,11 +2301,13 @@ struct ImGuiDockNode
 };
 typedef enum {
     ImGuiWindowDockStyleCol_Text,
-    ImGuiWindowDockStyleCol_Tab,
     ImGuiWindowDockStyleCol_TabHovered,
-    ImGuiWindowDockStyleCol_TabActive,
-    ImGuiWindowDockStyleCol_TabUnfocused,
-    ImGuiWindowDockStyleCol_TabUnfocusedActive,
+    ImGuiWindowDockStyleCol_TabFocused,
+    ImGuiWindowDockStyleCol_TabSelected,
+    ImGuiWindowDockStyleCol_TabSelectedOverline,
+    ImGuiWindowDockStyleCol_TabDimmed,
+    ImGuiWindowDockStyleCol_TabDimmedSelected,
+    ImGuiWindowDockStyleCol_TabDimmedSelectedOverline,
     ImGuiWindowDockStyleCol_COUNT
 }ImGuiWindowDockStyleCol;
 struct ImGuiWindowDockStyle
@@ -2513,6 +2522,7 @@ struct ImGuiContext
    _Bool         GcCompactAll;
    _Bool         TestEngineHookItems;
     void* TestEngine;
+    char ContextName[16];
     ImVector_ImGuiInputEvent InputEventsQueue;
     ImVector_ImGuiInputEvent InputEventsTrail;
     ImGuiMouseSource InputEventsNextMouseSource;
@@ -2528,6 +2538,7 @@ struct ImGuiContext
     ImGuiWindow* CurrentWindow;
     ImGuiWindow* HoveredWindow;
     ImGuiWindow* HoveredWindowUnderMovingWindow;
+    ImGuiWindow* HoveredWindowBeforeClear;
     ImGuiWindow* MovingWindow;
     ImGuiWindow* WheelingWindow;
     ImVec2 WheelingWindowRefMousePos;
@@ -2542,7 +2553,7 @@ struct ImGuiContext
     float HoveredIdTimer;
     float HoveredIdNotActiveTimer;
    _Bool         HoveredIdAllowOverlap;
-   _Bool         HoveredIdDisabled;
+   _Bool         HoveredIdIsDisabled;
    _Bool         ItemUnclipByLog;
     ImGuiID ActiveId;
     ImGuiID ActiveIdIsAlive;
@@ -2603,6 +2614,7 @@ struct ImGuiContext
     ImGuiWindow* NavWindow;
     ImGuiID NavId;
     ImGuiID NavFocusScopeId;
+    ImGuiNavLayer NavLayer;
     ImGuiID NavActivateId;
     ImGuiID NavActivateDownId;
     ImGuiID NavActivatePressedId;
@@ -2610,13 +2622,9 @@ struct ImGuiContext
     ImVector_ImGuiFocusScopeData NavFocusRoute;
     ImGuiID NavHighlightActivatedId;
     float NavHighlightActivatedTimer;
-    ImGuiID NavJustMovedToId;
-    ImGuiID NavJustMovedToFocusScopeId;
-    ImGuiKeyChord NavJustMovedToKeyMods;
     ImGuiID NavNextActivateId;
     ImGuiActivateFlags NavNextActivateFlags;
     ImGuiInputSource NavInputSource;
-    ImGuiNavLayer NavLayer;
     ImGuiSelectionUserData NavLastValidSelectionUserData;
    _Bool         NavIdIsAlive;
    _Bool         NavMousePosDirty;
@@ -2644,6 +2652,12 @@ struct ImGuiContext
     ImGuiNavItemData NavMoveResultLocalVisible;
     ImGuiNavItemData NavMoveResultOther;
     ImGuiNavItemData NavTabbingResultFirst;
+    ImGuiID NavJustMovedFromFocusScopeId;
+    ImGuiID NavJustMovedToId;
+    ImGuiID NavJustMovedToFocusScopeId;
+    ImGuiKeyChord NavJustMovedToKeyMods;
+   _Bool         NavJustMovedToIsTabbing;
+   _Bool         NavJustMovedToHasSelectionData;
     ImGuiKeyChord ConfigNavWindowingKeyNext;
     ImGuiKeyChord ConfigNavWindowingKeyPrev;
     ImGuiWindow* NavWindowingTarget;
@@ -3505,7 +3519,7 @@ _Bool                igBeginPopupContextItem(const char* str_id,ImGuiPopupFlags 
 _Bool                igBeginPopupContextWindow(const char* str_id,ImGuiPopupFlags popup_flags);
 _Bool                igBeginPopupContextVoid(const char* str_id,ImGuiPopupFlags popup_flags);
 _Bool                igIsPopupOpen_Str(const char* str_id,ImGuiPopupFlags flags);
-_Bool                igBeginTable(const char* str_id,int column,ImGuiTableFlags flags,const ImVec2 outer_size,float inner_width);
+_Bool                igBeginTable(const char* str_id,int columns,ImGuiTableFlags flags,const ImVec2 outer_size,float inner_width);
 void igEndTable(void);
 void igTableNextRow(ImGuiTableRowFlags row_flags,float min_row_height);
 _Bool                igTableNextColumn(void);
@@ -3522,6 +3536,7 @@ int igTableGetRowIndex(void);
 const char* igTableGetColumnName_Int(int column_n);
 ImGuiTableColumnFlags igTableGetColumnFlags(int column_n);
 void igTableSetColumnEnabled(int column_n,                                                    _Bool                                                          v);
+int igTableGetHoveredColumn(void);
 void igTableSetBgColor(ImGuiTableBgTarget target,ImU32 color,int column_n);
 void igColumns(int count,const char* id,                                                  _Bool                                                        border);
 void igNextColumn(void);
@@ -3581,9 +3596,7 @@ void igGetItemRectMin(ImVec2 *pOut);
 void igGetItemRectMax(ImVec2 *pOut);
 void igGetItemRectSize(ImVec2 *pOut);
 ImGuiViewport* igGetMainViewport(void);
-ImDrawList* igGetBackgroundDrawList_Nil(void);
-ImDrawList* igGetForegroundDrawList_Nil(void);
-ImDrawList* igGetBackgroundDrawList_ViewportPtr(ImGuiViewport* viewport);
+ImDrawList* igGetBackgroundDrawList(ImGuiViewport* viewport);
 ImDrawList* igGetForegroundDrawList_ViewportPtr(ImGuiViewport* viewport);
 _Bool                igIsRectVisible_Nil(const ImVec2 size);
 _Bool                igIsRectVisible_Vec2(const ImVec2 rect_min,const ImVec2 rect_max);
@@ -3665,6 +3678,7 @@ void ImGuiIO_SetKeyEventNativeData(ImGuiIO* self,ImGuiKey key,int native_keycode
 void ImGuiIO_SetAppAcceptingEvents(ImGuiIO* self,                                                           _Bool                                                                 accepting_events);
 void ImGuiIO_ClearEventsQueue(ImGuiIO* self);
 void ImGuiIO_ClearInputKeys(ImGuiIO* self);
+void ImGuiIO_ClearInputMouse(ImGuiIO* self);
 ImGuiIO* ImGuiIO_ImGuiIO(void);
 void ImGuiIO_destroy(ImGuiIO* self);
 ImGuiInputTextCallbackData* ImGuiInputTextCallbackData_ImGuiInputTextCallbackData(void);
@@ -4041,6 +4055,7 @@ int ImGuiTextIndex_size(ImGuiTextIndex* self);
 const char* ImGuiTextIndex_get_line_begin(ImGuiTextIndex* self,const char* base,int n);
 const char* ImGuiTextIndex_get_line_end(ImGuiTextIndex* self,const char* base,int n);
 void ImGuiTextIndex_append(ImGuiTextIndex* self,const char* base,int old_size,int new_size);
+ImGuiStoragePair* igImLowerBound(ImGuiStoragePair* in_begin,ImGuiStoragePair* in_end,ImGuiID key);
 ImDrawListSharedData* ImDrawListSharedData_ImDrawListSharedData(void);
 void ImDrawListSharedData_destroy(ImDrawListSharedData* self);
 void ImDrawListSharedData_SetCircleTessellationMaxError(ImDrawListSharedData* self,float max_error);
@@ -4296,20 +4311,20 @@ void igLogToBuffer(int auto_open_depth);
 void igLogRenderedText(const ImVec2* ref_pos,const char* text,const char* text_end);
 void igLogSetNextTextDecoration(const char* prefix,const char* suffix);
 _Bool                igBeginChildEx(const char* name,ImGuiID id,const ImVec2 size_arg,ImGuiChildFlags child_flags,ImGuiWindowFlags window_flags);
+_Bool                igBeginPopupEx(ImGuiID id,ImGuiWindowFlags extra_window_flags);
 void igOpenPopupEx(ImGuiID id,ImGuiPopupFlags popup_flags);
 void igClosePopupToLevel(int remaining,                                                 _Bool                                                       restore_focus_to_window_under_popup);
 void igClosePopupsOverWindow(ImGuiWindow* ref_window,                                                               _Bool                                                                     restore_focus_to_window_under_popup);
 void igClosePopupsExceptModals(void);
 _Bool                igIsPopupOpen_ID(ImGuiID id,ImGuiPopupFlags popup_flags);
-_Bool                igBeginPopupEx(ImGuiID id,ImGuiWindowFlags extra_flags);
-_Bool                igBeginTooltipEx(ImGuiTooltipFlags tooltip_flags,ImGuiWindowFlags extra_window_flags);
-_Bool                igBeginTooltipHidden(void);
 void igGetPopupAllowedExtentRect(ImRect *pOut,ImGuiWindow* window);
 ImGuiWindow* igGetTopMostPopupModal(void);
 ImGuiWindow* igGetTopMostAndVisiblePopupModal(void);
 ImGuiWindow* igFindBlockingModal(ImGuiWindow* window);
 void igFindBestWindowPosForPopup(ImVec2 *pOut,ImGuiWindow* window);
 void igFindBestWindowPosForPopupEx(ImVec2 *pOut,const ImVec2 ref_pos,const ImVec2 size,ImGuiDir* last_dir,const ImRect r_outer,const ImRect r_avoid,ImGuiPopupPositionPolicy policy);
+_Bool                igBeginTooltipEx(ImGuiTooltipFlags tooltip_flags,ImGuiWindowFlags extra_window_flags);
+_Bool                igBeginTooltipHidden(void);
 _Bool                igBeginViewportSideBar(const char* name,ImGuiViewport* viewport,ImGuiDir dir,float size,ImGuiWindowFlags window_flags);
 _Bool                igBeginMenuEx(const char* label,const char* icon,                                                                _Bool                                                                      enabled);
 _Bool                igMenuItemEx(const char* label,const char* icon,const char* shortcut,                                                                                    _Bool                                                                                          selected,                                                                                                  _Bool                                                                                                        enabled);
@@ -4442,7 +4457,6 @@ float igGetColumnNormFromOffset(const ImGuiOldColumns* columns,float offset);
 void igTableOpenContextMenu(int column_n);
 void igTableSetColumnWidth(int column_n,float width);
 void igTableSetColumnSortDirection(int column_n,ImGuiSortDirection sort_direction,                                                                                            _Bool                                                                                                  append_to_sort_specs);
-int igTableGetHoveredColumn(void);
 int igTableGetHoveredRow(void);
 float igTableGetHeaderRowHeight(void);
 float igTableGetHeaderAngledMaxLabelWidth(void);
