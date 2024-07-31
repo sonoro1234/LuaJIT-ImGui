@@ -23,7 +23,7 @@ function M.BeginTimeline(str_id, max_value, num_visible_rows, popt_offset_and_sc
     local rv = ig.BeginChild(str_id,ig.ImVec2(0,num_visible_rows>0 and (row_height*(num_visible_rows+1)) or (ig.GetContentRegionAvail().y-row_height*1.2)),false);
     ig.PushStyleColor(ig.lib.ImGuiCol_Separator,ig.GetStyle().Colors[ig.lib.ImGuiCol_Border]);
     ig.Columns(2,str_id);
-    local contentRegionWidth = ig.GetWindowContentRegionMax().x-ig.GetWindowContentRegionMin().x; -- ImGui::GetContentRegionAvail().x ?
+    local contentRegionWidth = ig.GetContentRegionAvail().x
     if (ig.GetColumnOffset(1)>=contentRegionWidth*0.48) then ig.SetColumnOffset(1,contentRegionWidth*0.15); end
     s_max_timeline_value = max_value>=0 and max_value or (contentRegionWidth*0.85);
 
@@ -57,7 +57,8 @@ function M.TimelineEvent(str_id, values, keep_range_constant)
     local columnWidth = ig.GetColumnWidth(1)-ig.GetStyle().ScrollbarSize;
     local columnWidthScaled = columnWidth * s_timeline_time_scale;
     local columnWidthOffsetScaled = columnWidthScaled * s_timeline_time_offset;
-    local cursor_pos = ig.ImVec2(ig.GetWindowContentRegionMin().x + win.Pos.x+columnOffset-TIMELINE_RADIUS,win.DC.CursorPos.y);
+    --local cursor_pos = ig.ImVec2(ig.GetWindowContentRegionMin().x + win.Pos.x+columnOffset-TIMELINE_RADIUS,win.DC.CursorPos.y);
+	local cursor_pos = ig.ImVec2(ig.GetCursorPos().x + win.Pos.x+columnOffset-TIMELINE_RADIUS,win.DC.CursorPos.y);
     local mustMoveBothEnds=false;
     local isMouseDraggingZero = ig.IsMouseDragging(0);
     local posx = ffi.new("float[?]",2,{0,0});
@@ -77,8 +78,8 @@ function M.TimelineEvent(str_id, values, keep_range_constant)
             ig.SetTooltip("%f", values[i]);
             if (not keep_range_constant)	then
                 -- @meshula:The item hovered line needs to be compensated for vertical scrolling. Thx!
-                local a = ig.ImVec2(pos.x, ig.GetWindowContentRegionMin().y + win.Pos.y + win.Scroll.y);
-                local b = ig.ImVec2(pos.x, ig.GetWindowContentRegionMax().y + win.Pos.y + win.Scroll.y);
+                local a = ig.ImVec2(pos.x, ig.GetCursorPos().y + win.Pos.y + win.Scroll.y);
+                local b = ig.ImVec2(pos.x, ig.GetContentRegionAvail().y + ig.GetCursorPos().y + win.Pos.y + win.Scroll.y);
                 -- possible aternative:
                 --ImVec2 a(pos.x, win->Pos.y);
                 --ImVec2 b(pos.x, win->Pos.y+win->Size.y);
@@ -168,14 +169,14 @@ function M.EndTimeline( num_vertical_grid_lines, current_time, timeline_running_
 
     -- Draw black vertical lines (inside scrolling area)
     for i=1,num_vertical_grid_lines do
-        local a = ig.GetWindowContentRegionMin() + win.Pos;
+        local a = ig.GetCursorPos() + win.Pos;
         a.x = a.x + s_timeline_time_scale * i * horizontal_interval + columnOffset - columnWidthOffsetScaled;
         win.DrawList:AddLine(a, ig.ImVec2(a.x,startY), line_color);
     end
 
     -- Draw moving vertical line
     if (current_time>0 and current_time<s_max_timeline_value)	then
-        local a = ig.GetWindowContentRegionMin() + win.Pos;
+        local a = ig.GetCursorPos() + win.Pos;
         a.x = a.x + columnWidthScaled*(current_time/s_max_timeline_value)+columnOffset-columnWidthOffsetScaled;
         win.DrawList:AddLine(a, ig.ImVec2(a.x,startY), moving_line_color,3);
     end

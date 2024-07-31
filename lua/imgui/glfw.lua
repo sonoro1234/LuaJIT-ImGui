@@ -949,6 +949,14 @@ function ImFontGlyphRangesBuilder.__new(ctype)
 end
 ImFontGlyphRangesBuilder.SetBit = lib.ImFontGlyphRangesBuilder_SetBit
 M.ImFontGlyphRangesBuilder = ffi.metatype("ImFontGlyphRangesBuilder",ImFontGlyphRangesBuilder)
+--------------------------ImGuiBoxSelectState----------------------------
+local ImGuiBoxSelectState= {}
+ImGuiBoxSelectState.__index = ImGuiBoxSelectState
+function ImGuiBoxSelectState.__new(ctype)
+    local ptr = lib.ImGuiBoxSelectState_ImGuiBoxSelectState()
+    return ffi.gc(ptr,lib.ImGuiBoxSelectState_destroy)
+end
+M.ImGuiBoxSelectState = ffi.metatype("ImGuiBoxSelectState",ImGuiBoxSelectState)
 --------------------------ImGuiComboPreviewData----------------------------
 local ImGuiComboPreviewData= {}
 ImGuiComboPreviewData.__index = ImGuiComboPreviewData
@@ -1157,6 +1165,7 @@ function ImGuiListClipper.__new(ctype)
 end
 ImGuiListClipper.IncludeItemByIndex = lib.ImGuiListClipper_IncludeItemByIndex
 ImGuiListClipper.IncludeItemsByIndex = lib.ImGuiListClipper_IncludeItemsByIndex
+ImGuiListClipper.SeekCursorForItem = lib.ImGuiListClipper_SeekCursorForItem
 ImGuiListClipper.Step = lib.ImGuiListClipper_Step
 M.ImGuiListClipper = ffi.metatype("ImGuiListClipper",ImGuiListClipper)
 --------------------------ImGuiListClipperData----------------------------
@@ -1185,6 +1194,24 @@ function ImGuiMenuColumns.__new(ctype)
 end
 ImGuiMenuColumns.Update = lib.ImGuiMenuColumns_Update
 M.ImGuiMenuColumns = ffi.metatype("ImGuiMenuColumns",ImGuiMenuColumns)
+--------------------------ImGuiMultiSelectState----------------------------
+local ImGuiMultiSelectState= {}
+ImGuiMultiSelectState.__index = ImGuiMultiSelectState
+function ImGuiMultiSelectState.__new(ctype)
+    local ptr = lib.ImGuiMultiSelectState_ImGuiMultiSelectState()
+    return ffi.gc(ptr,lib.ImGuiMultiSelectState_destroy)
+end
+M.ImGuiMultiSelectState = ffi.metatype("ImGuiMultiSelectState",ImGuiMultiSelectState)
+--------------------------ImGuiMultiSelectTempData----------------------------
+local ImGuiMultiSelectTempData= {}
+ImGuiMultiSelectTempData.__index = ImGuiMultiSelectTempData
+ImGuiMultiSelectTempData.Clear = lib.ImGuiMultiSelectTempData_Clear
+ImGuiMultiSelectTempData.ClearIO = lib.ImGuiMultiSelectTempData_ClearIO
+function ImGuiMultiSelectTempData.__new(ctype)
+    local ptr = lib.ImGuiMultiSelectTempData_ImGuiMultiSelectTempData()
+    return ffi.gc(ptr,lib.ImGuiMultiSelectTempData_destroy)
+end
+M.ImGuiMultiSelectTempData = ffi.metatype("ImGuiMultiSelectTempData",ImGuiMultiSelectTempData)
 --------------------------ImGuiNavItemData----------------------------
 local ImGuiNavItemData= {}
 ImGuiNavItemData.__index = ImGuiNavItemData
@@ -1298,6 +1325,30 @@ function ImGuiPtrOrIndex.__new(ctype,a1) -- generic version
     error'ImGuiPtrOrIndex.__new could not find overloaded'
 end
 M.ImGuiPtrOrIndex = ffi.metatype("ImGuiPtrOrIndex",ImGuiPtrOrIndex)
+--------------------------ImGuiSelectionBasicStorage----------------------------
+local ImGuiSelectionBasicStorage= {}
+ImGuiSelectionBasicStorage.__index = ImGuiSelectionBasicStorage
+ImGuiSelectionBasicStorage.ApplyRequests = lib.ImGuiSelectionBasicStorage_ApplyRequests
+ImGuiSelectionBasicStorage.Clear = lib.ImGuiSelectionBasicStorage_Clear
+ImGuiSelectionBasicStorage.Contains = lib.ImGuiSelectionBasicStorage_Contains
+ImGuiSelectionBasicStorage.GetNextSelectedItem = lib.ImGuiSelectionBasicStorage_GetNextSelectedItem
+ImGuiSelectionBasicStorage.GetStorageIdFromIndex = lib.ImGuiSelectionBasicStorage_GetStorageIdFromIndex
+function ImGuiSelectionBasicStorage.__new(ctype)
+    local ptr = lib.ImGuiSelectionBasicStorage_ImGuiSelectionBasicStorage()
+    return ffi.gc(ptr,lib.ImGuiSelectionBasicStorage_destroy)
+end
+ImGuiSelectionBasicStorage.SetItemSelected = lib.ImGuiSelectionBasicStorage_SetItemSelected
+ImGuiSelectionBasicStorage.Swap = lib.ImGuiSelectionBasicStorage_Swap
+M.ImGuiSelectionBasicStorage = ffi.metatype("ImGuiSelectionBasicStorage",ImGuiSelectionBasicStorage)
+--------------------------ImGuiSelectionExternalStorage----------------------------
+local ImGuiSelectionExternalStorage= {}
+ImGuiSelectionExternalStorage.__index = ImGuiSelectionExternalStorage
+ImGuiSelectionExternalStorage.ApplyRequests = lib.ImGuiSelectionExternalStorage_ApplyRequests
+function ImGuiSelectionExternalStorage.__new(ctype)
+    local ptr = lib.ImGuiSelectionExternalStorage_ImGuiSelectionExternalStorage()
+    return ffi.gc(ptr,lib.ImGuiSelectionExternalStorage_destroy)
+end
+M.ImGuiSelectionExternalStorage = ffi.metatype("ImGuiSelectionExternalStorage",ImGuiSelectionExternalStorage)
 --------------------------ImGuiSettingsHandler----------------------------
 local ImGuiSettingsHandler= {}
 ImGuiSettingsHandler.__index = ImGuiSettingsHandler
@@ -5346,6 +5397,7 @@ function M.Begin(name,p_open,flags)
     p_open = p_open or nil
     return lib.igBegin(name,p_open,flags)
 end
+M.BeginBoxSelect = lib.igBeginBoxSelect
 function M.BeginChild_Str(str_id,size,child_flags,window_flags)
     child_flags = child_flags or 0
     size = size or ImVec2(0,0)
@@ -5404,6 +5456,11 @@ M.BeginMenuBar = lib.igBeginMenuBar
 function M.BeginMenuEx(label,icon,enabled)
     if enabled == nil then enabled = true end
     return lib.igBeginMenuEx(label,icon,enabled)
+end
+function M.BeginMultiSelect(flags,selection_size,items_count)
+    items_count = items_count or -1
+    selection_size = selection_size or -1
+    return lib.igBeginMultiSelect(flags,selection_size,items_count)
 end
 function M.BeginPopup(str_id,flags)
     flags = flags or 0
@@ -5640,6 +5697,8 @@ M.DebugNodeDrawList = lib.igDebugNodeDrawList
 M.DebugNodeFont = lib.igDebugNodeFont
 M.DebugNodeFontGlyph = lib.igDebugNodeFontGlyph
 M.DebugNodeInputTextState = lib.igDebugNodeInputTextState
+M.DebugNodeMultiSelectState = lib.igDebugNodeMultiSelectState
+M.DebugNodePlatformMonitor = lib.igDebugNodePlatformMonitor
 M.DebugNodeStorage = lib.igDebugNodeStorage
 M.DebugNodeTabBar = lib.igDebugNodeTabBar
 M.DebugNodeTable = lib.igDebugNodeTable
@@ -5821,6 +5880,7 @@ function M.DragScalarN(label,data_type,p_data,components,v_speed,p_min,p_max,for
 end
 M.Dummy = lib.igDummy
 M.End = lib.igEnd
+M.EndBoxSelect = lib.igEndBoxSelect
 M.EndChild = lib.igEndChild
 M.EndColumns = lib.igEndColumns
 M.EndCombo = lib.igEndCombo
@@ -5835,6 +5895,7 @@ M.EndListBox = lib.igEndListBox
 M.EndMainMenuBar = lib.igEndMainMenuBar
 M.EndMenu = lib.igEndMenu
 M.EndMenuBar = lib.igEndMenuBar
+M.EndMultiSelect = lib.igEndMultiSelect
 M.EndPopup = lib.igEndPopup
 M.EndTabBar = lib.igEndTabBar
 M.EndTabItem = lib.igEndTabItem
@@ -5892,6 +5953,7 @@ function M.GetBackgroundDrawList(viewport)
     viewport = viewport or nil
     return lib.igGetBackgroundDrawList(viewport)
 end
+M.GetBoxSelectState = lib.igGetBoxSelectState
 M.GetClipboardText = lib.igGetClipboardText
 function M.GetColorU32_Col(idx,alpha_mul)
     alpha_mul = alpha_mul or 1.0
@@ -5925,16 +5987,6 @@ M.GetColumnsID = lib.igGetColumnsID
 function M.GetContentRegionAvail()
     local nonUDT_out = ffi.new("ImVec2")
     lib.igGetContentRegionAvail(nonUDT_out)
-    return nonUDT_out
-end
-function M.GetContentRegionMax()
-    local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetContentRegionMax(nonUDT_out)
-    return nonUDT_out
-end
-function M.GetContentRegionMaxAbs()
-    local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetContentRegionMaxAbs(nonUDT_out)
     return nonUDT_out
 end
 M.GetCurrentContext = lib.igGetCurrentContext
@@ -5990,10 +6042,12 @@ M.GetHoveredID = lib.igGetHoveredID
 M.GetID_Str = lib.igGetID_Str
 M.GetID_StrStr = lib.igGetID_StrStr
 M.GetID_Ptr = lib.igGetID_Ptr
+M.GetID_Int = lib.igGetID_Int
 function M.GetID(a1,a2) -- generic version
     if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and a2==nil then return M.GetID_Str(a1) end
     if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') and (ffi.istype('const char*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.GetID_StrStr(a1,a2) end
     if ffi.istype('void *',a1) then return M.GetID_Ptr(a1) end
+    if (ffi.istype('int32_t',a1) or type(a1)=='number') then return M.GetID_Int(a1) end
     print(a1,a2)
     error'M.GetID could not find overloaded'
 end
@@ -6063,6 +6117,7 @@ function M.GetMousePosOnOpeningCurrentPopup()
     lib.igGetMousePosOnOpeningCurrentPopup(nonUDT_out)
     return nonUDT_out
 end
+M.GetMultiSelectState = lib.igGetMultiSelectState
 M.GetNavTweakPressedAmount = lib.igGetNavTweakPressedAmount
 M.GetPlatformIO = lib.igGetPlatformIO
 function M.GetPopupAllowedExtentRect(window)
@@ -6094,16 +6149,6 @@ end
 M.GetVersion = lib.igGetVersion
 M.GetViewportPlatformMonitor = lib.igGetViewportPlatformMonitor
 M.GetWindowAlwaysWantOwnTabBar = lib.igGetWindowAlwaysWantOwnTabBar
-function M.GetWindowContentRegionMax()
-    local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetWindowContentRegionMax(nonUDT_out)
-    return nonUDT_out
-end
-function M.GetWindowContentRegionMin()
-    local nonUDT_out = ffi.new("ImVec2")
-    lib.igGetWindowContentRegionMin(nonUDT_out)
-    return nonUDT_out
-end
 M.GetWindowDockID = lib.igGetWindowDockID
 M.GetWindowDockNode = lib.igGetWindowDockNode
 M.GetWindowDpiScale = lib.igGetWindowDpiScale
@@ -6168,6 +6213,7 @@ M.ImBitArraySetBitRange = lib.igImBitArraySetBitRange
 M.ImBitArrayTestBit = lib.igImBitArrayTestBit
 M.ImCharIsBlankA = lib.igImCharIsBlankA
 M.ImCharIsBlankW = lib.igImCharIsBlankW
+M.ImCharIsXdigitA = lib.igImCharIsXdigitA
 function M.ImClamp(v,mn,mx)
     local nonUDT_out = ffi.new("ImVec2")
     lib.igImClamp(nonUDT_out,v,mn,mx)
@@ -6265,6 +6311,7 @@ function M.ImLineClosestPoint(a,b,p)
     lib.igImLineClosestPoint(nonUDT_out,a,b,p)
     return nonUDT_out
 end
+M.ImLinearRemapClamp = lib.igImLinearRemapClamp
 M.ImLinearSweep = lib.igImLinearSweep
 M.ImLog_Float = lib.igImLog_Float
 M.ImLog_double = lib.igImLog_double
@@ -6759,6 +6806,10 @@ function M.MenuItemEx(label,icon,shortcut,selected,enabled)
     return lib.igMenuItemEx(label,icon,shortcut,selected,enabled)
 end
 M.MouseButtonToKey = lib.igMouseButtonToKey
+M.MultiSelectAddSetAll = lib.igMultiSelectAddSetAll
+M.MultiSelectAddSetRange = lib.igMultiSelectAddSetRange
+M.MultiSelectItemFooter = lib.igMultiSelectItemFooter
+M.MultiSelectItemHeader = lib.igMultiSelectItemHeader
 M.NavClearPreferredPosForAxis = lib.igNavClearPreferredPosForAxis
 M.NavHighlightActivated = lib.igNavHighlightActivated
 M.NavInitRequestApplyResult = lib.igNavInitRequestApplyResult
@@ -6846,7 +6897,6 @@ function M.PlotLines(a1,a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
     print(a1,a2,a3,a4,a5,a6,a7,a8,a9)
     error'M.PlotLines could not find overloaded'
 end
-M.PopButtonRepeat = lib.igPopButtonRepeat
 M.PopClipRect = lib.igPopClipRect
 M.PopColumnsBackground = lib.igPopColumnsBackground
 M.PopFocusScope = lib.igPopFocusScope
@@ -6862,14 +6912,12 @@ function M.PopStyleVar(count)
     count = count or 1
     return lib.igPopStyleVar(count)
 end
-M.PopTabStop = lib.igPopTabStop
 M.PopTextWrapPos = lib.igPopTextWrapPos
 function M.ProgressBar(fraction,size_arg,overlay)
     overlay = overlay or nil
     size_arg = size_arg or ImVec2(-M.FLT_MIN,0)
     return lib.igProgressBar(fraction,size_arg,overlay)
 end
-M.PushButtonRepeat = lib.igPushButtonRepeat
 M.PushClipRect = lib.igPushClipRect
 M.PushColumnClipRect = lib.igPushColumnClipRect
 M.PushColumnsBackground = lib.igPushColumnsBackground
@@ -6907,7 +6955,6 @@ function M.PushStyleVar(a1,a2) -- generic version
     print(a1,a2)
     error'M.PushStyleVar could not find overloaded'
 end
-M.PushTabStop = lib.igPushTabStop
 function M.PushTextWrapPos(wrap_local_pos_x)
     wrap_local_pos_x = wrap_local_pos_x or 0.0
     return lib.igPushTextWrapPos(wrap_local_pos_x)
@@ -7055,9 +7102,13 @@ end
 M.SetFocusID = lib.igSetFocusID
 M.SetHoveredID = lib.igSetHoveredID
 M.SetItemDefaultFocus = lib.igSetItemDefaultFocus
-function M.SetItemKeyOwner(key,flags)
-    flags = flags or 0
-    return lib.igSetItemKeyOwner(key,flags)
+M.SetItemKeyOwner_Nil = lib.igSetItemKeyOwner_Nil
+M.SetItemKeyOwner_InputFlags = lib.igSetItemKeyOwner_InputFlags
+function M.SetItemKeyOwner(a1,a2) -- generic version
+    if a2==nil then return M.SetItemKeyOwner_Nil(a1) end
+    if (ffi.istype('int32_t',a2) or type(a2)=='number') then return M.SetItemKeyOwner_InputFlags(a1,a2) end
+    print(a1,a2)
+    error'M.SetItemKeyOwner could not find overloaded'
 end
 M.SetItemTooltip = lib.igSetItemTooltip
 M.SetItemTooltipV = lib.igSetItemTooltipV
@@ -7091,6 +7142,7 @@ function M.SetNextItemShortcut(key_chord,flags)
     flags = flags or 0
     return lib.igSetNextItemShortcut(key_chord,flags)
 end
+M.SetNextItemStorageID = lib.igSetNextItemStorageID
 M.SetNextItemWidth = lib.igSetNextItemWidth
 M.SetNextWindowBgAlpha = lib.igSetNextWindowBgAlpha
 M.SetNextWindowClass = lib.igSetNextWindowClass
@@ -7529,6 +7581,11 @@ function M.TextEx(text,text_end,flags)
     text_end = text_end or nil
     return lib.igTextEx(text,text_end,flags)
 end
+M.TextLink = lib.igTextLink
+function M.TextLinkOpenURL(label,url)
+    url = url or nil
+    return lib.igTextLinkOpenURL(label,url)
+end
 function M.TextUnformatted(text,text_end)
     text_end = text_end or nil
     return lib.igTextUnformatted(text,text_end)
@@ -7572,6 +7629,7 @@ function M.TreeNodeExV(a1,a2,a3,a4) -- generic version
     print(a1,a2,a3,a4)
     error'M.TreeNodeExV could not find overloaded'
 end
+M.TreeNodeGetOpen = lib.igTreeNodeGetOpen
 M.TreeNodeSetOpen = lib.igTreeNodeSetOpen
 M.TreeNodeUpdateNextOpen = lib.igTreeNodeUpdateNextOpen
 M.TreeNodeV_Str = lib.igTreeNodeV_Str
@@ -7635,6 +7693,11 @@ function M.Value(a1,a2,a3) -- generic version
     if (ffi.istype('float',a2) or type(a2)=='number') then return M.Value_Float(a1,a2,a3) end
     print(a1,a2,a3)
     error'M.Value could not find overloaded'
+end
+function M.WindowPosAbsToRel(window,p)
+    local nonUDT_out = ffi.new("ImVec2")
+    lib.igWindowPosAbsToRel(nonUDT_out,window,p)
+    return nonUDT_out
 end
 function M.WindowPosRelToAbs(window,p)
     local nonUDT_out = ffi.new("ImVec2")

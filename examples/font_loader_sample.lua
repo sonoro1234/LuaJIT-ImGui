@@ -162,7 +162,7 @@ function win:draw(ig)
 			ig.PushFont(font)
 			if ig.BeginChild("glyphs",ig.ImVec2(0,ig.GetFrameHeightWithSpacing() * 12),true, ig.lib.ImGuiWindowFlags_HorizontalScrollbar) then
 				local txsize = ig.CalcTextSize(codepoint_to_utf8(fontcps[1]))
-				local cols = math.floor(ig.GetWindowContentRegionMax().x/(txsize.x + ig.GetStyle().ItemSpacing.x +2*ig.GetStyle().FramePadding.x ))
+				local cols = math.floor((ig.GetContentRegionAvail().x + ig.GetCursorPos().x)/(txsize.x + ig.GetStyle().ItemSpacing.x +2*ig.GetStyle().FramePadding.x ))
 				local base_pos = ig.GetCursorScreenPos();
 				local scrly = ig.GetScrollY()
 				local canvas_size = ig.GetContentRegionAvail()
