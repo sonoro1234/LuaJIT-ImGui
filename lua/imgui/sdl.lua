@@ -788,6 +788,7 @@ ImDrawList._PathArcToFastEx = lib.ImDrawList__PathArcToFastEx
 ImDrawList._PathArcToN = lib.ImDrawList__PathArcToN
 ImDrawList._PopUnusedDrawCmd = lib.ImDrawList__PopUnusedDrawCmd
 ImDrawList._ResetForNewFrame = lib.ImDrawList__ResetForNewFrame
+ImDrawList._SetTextureID = lib.ImDrawList__SetTextureID
 ImDrawList._TryMergeDrawCmds = lib.ImDrawList__TryMergeDrawCmds
 M.ImDrawList = ffi.metatype("ImDrawList",ImDrawList)
 --------------------------ImDrawListSharedData----------------------------
@@ -1652,14 +1653,14 @@ M.ImGuiViewport = ffi.metatype("ImGuiViewport",ImGuiViewport)
 --------------------------ImGuiViewportP----------------------------
 local ImGuiViewportP= {}
 ImGuiViewportP.__index = ImGuiViewportP
-function ImGuiViewportP:CalcWorkRectPos(off_min)
+function ImGuiViewportP:CalcWorkRectPos(inset_min)
     local nonUDT_out = ffi.new("ImVec2")
-    lib.ImGuiViewportP_CalcWorkRectPos(nonUDT_out,self,off_min)
+    lib.ImGuiViewportP_CalcWorkRectPos(nonUDT_out,self,inset_min)
     return nonUDT_out
 end
-function ImGuiViewportP:CalcWorkRectSize(off_min,off_max)
+function ImGuiViewportP:CalcWorkRectSize(inset_min,inset_max)
     local nonUDT_out = ffi.new("ImVec2")
-    lib.ImGuiViewportP_CalcWorkRectSize(nonUDT_out,self,off_min,off_max)
+    lib.ImGuiViewportP_CalcWorkRectSize(nonUDT_out,self,inset_min,inset_max)
     return nonUDT_out
 end
 ImGuiViewportP.ClearRequestFlags = lib.ImGuiViewportP_ClearRequestFlags
@@ -1701,6 +1702,7 @@ function ImGuiWindow:GetID(a2,a3) -- generic version
     print(a2,a3)
     error'ImGuiWindow:GetID could not find overloaded'
 end
+ImGuiWindow.GetIDFromPos = lib.ImGuiWindow_GetIDFromPos
 ImGuiWindow.GetIDFromRectangle = lib.ImGuiWindow_GetIDFromRectangle
 function ImGuiWindow.__new(ctype,context,name)
     local ptr = lib.ImGuiWindow_ImGuiWindow(context,name)
@@ -5626,11 +5628,11 @@ function M.ColorPicker4(label,col,flags,ref_col)
 end
 M.ColorPickerOptionsPopup = lib.igColorPickerOptionsPopup
 M.ColorTooltip = lib.igColorTooltip
-function M.Columns(count,id,border)
-    if border == nil then border = true end
+function M.Columns(count,id,borders)
+    if borders == nil then borders = true end
     count = count or 1
     id = id or nil
-    return lib.igColumns(count,id,border)
+    return lib.igColumns(count,id,borders)
 end
 function M.Combo_Str_arr(label,current_item,items,items_count,popup_max_height_in_items)
     popup_max_height_in_items = popup_max_height_in_items or -1
@@ -6604,8 +6606,8 @@ function M.IsKeyReleased(a1,a2) -- generic version
     error'M.IsKeyReleased could not find overloaded'
 end
 M.IsKeyboardKey = lib.igIsKeyboardKey
+M.IsLRModKey = lib.igIsLRModKey
 M.IsLegacyKey = lib.igIsLegacyKey
-M.IsModKey = lib.igIsModKey
 function M.IsMouseClicked_Bool(button,_repeat)
     _repeat = _repeat or false
     return lib.igIsMouseClicked_Bool(button,_repeat)
@@ -6955,6 +6957,8 @@ function M.PushStyleVar(a1,a2) -- generic version
     print(a1,a2)
     error'M.PushStyleVar could not find overloaded'
 end
+M.PushStyleVarX = lib.igPushStyleVarX
+M.PushStyleVarY = lib.igPushStyleVarY
 function M.PushTextWrapPos(wrap_local_pos_x)
     wrap_local_pos_x = wrap_local_pos_x or 0.0
     return lib.igPushTextWrapPos(wrap_local_pos_x)
@@ -6984,10 +6988,10 @@ function M.RenderColorRectWithAlphaCheckerboard(draw_list,p_min,p_max,fill_col,g
     return lib.igRenderColorRectWithAlphaCheckerboard(draw_list,p_min,p_max,fill_col,grid_step,grid_off,rounding,flags)
 end
 M.RenderDragDropTargetRect = lib.igRenderDragDropTargetRect
-function M.RenderFrame(p_min,p_max,fill_col,border,rounding)
-    if border == nil then border = true end
+function M.RenderFrame(p_min,p_max,fill_col,borders,rounding)
+    if borders == nil then borders = true end
     rounding = rounding or 0.0
-    return lib.igRenderFrame(p_min,p_max,fill_col,border,rounding)
+    return lib.igRenderFrame(p_min,p_max,fill_col,borders,rounding)
 end
 function M.RenderFrameBorder(p_min,p_max,rounding)
     rounding = rounding or 0.0
@@ -7463,6 +7467,7 @@ M.TableBeginCell = lib.igTableBeginCell
 M.TableBeginContextMenuPopup = lib.igTableBeginContextMenuPopup
 M.TableBeginInitMemory = lib.igTableBeginInitMemory
 M.TableBeginRow = lib.igTableBeginRow
+M.TableCalcMaxColumnWidth = lib.igTableCalcMaxColumnWidth
 M.TableDrawBorders = lib.igTableDrawBorders
 M.TableDrawDefaultContextMenu = lib.igTableDrawDefaultContextMenu
 M.TableEndCell = lib.igTableEndCell
@@ -7513,7 +7518,6 @@ M.TableGetHoveredColumn = lib.igTableGetHoveredColumn
 M.TableGetHoveredRow = lib.igTableGetHoveredRow
 M.TableGetInstanceData = lib.igTableGetInstanceData
 M.TableGetInstanceID = lib.igTableGetInstanceID
-M.TableGetMaxColumnWidth = lib.igTableGetMaxColumnWidth
 M.TableGetRowIndex = lib.igTableGetRowIndex
 M.TableGetSortSpecs = lib.igTableGetSortSpecs
 M.TableHeader = lib.igTableHeader
