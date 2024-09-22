@@ -17,3 +17,6 @@
 [submodule "cimnodes_r"]
 	path = cimnodes_r
 	url = https://github.com/cimgui/cimnodes_r.git
+[submodule "cimCTE"]
+	path = cimCTE
+	url = https://github.com/cimgui/cimCTE.git

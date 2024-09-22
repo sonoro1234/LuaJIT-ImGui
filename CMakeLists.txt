@@ -30,6 +30,8 @@ set(IMGUI_SOURCES ./cimgui/cimgui.cpp
 ./cimnodes_r/cimnodes_r.cpp
 ./cimnodes_r/ImNodes/ImNodes.cpp
 ./cimnodes_r/ImNodes/ImNodesEz.cpp
+./cimCTE/cimCTE.cpp
+./cimCTE/ImGuiColorTextEdit/TextEditor.cpp
 )
 
 if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cimgui/imgui/imgui_tables.cpp)
