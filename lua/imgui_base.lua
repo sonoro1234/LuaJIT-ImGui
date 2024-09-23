@@ -303,6 +303,138 @@ function Log:Draw(title)
     lib.Log_Draw(self,title)
 end
 M.Log = ffi.metatype("Log",Log)
+------------CTE ImGuiColorTextEdit
+local TextEditor = {}
+TextEditor.__index = TextEditor
+function TextEditor.__new(ctype)
+    local ptr = lib.TextEditor_TextEditor()
+    ffi.gc(ptr,lib.TextEditor_destroy)
+    return ptr
+end
+function TextEditor:SetLangDef(lang)
+	lib.TextEditor_SetLangDef(self,lang);
+end
+function TextEditor:SetText(text)
+	lib.TextEditor_SetText(self,text);
+end
+function TextEditor:GetCursorPosition()
+	return lib.TextEditor_GetCursorPosition(self);
+end
+function TextEditor:Render(title)
+	lib.TextEditor_Render(self,title);
+end
+function TextEditor:GetLanguageDefinition()
+	return lib.TextEditor_GetLanguageDefinition(self);
+end
+function TextEditor:SetErrorMarkers(mark)
+	lib.TextEditor_SetErrorMarkers(self,mark);
+end
+function TextEditor:GetTotalLines()
+	return lib.TextEditor_GetTotalLines(self);
+end
+function TextEditor:IsOverwrite()
+	return lib.TextEditor_IsOverwrite(self);
+end
+function TextEditor:CanUndo()
+	return lib.TextEditor_CanUndo(self);
+end
+function TextEditor:CanRedo()
+	return lib.TextEditor_CanRedo(self);
+end
+function TextEditor:IsReadOnly()
+	return lib.TextEditor_IsReadOnly(self);
+end
+function TextEditor:HasSelection()
+	return lib.TextEditor_HasSelection(self);
+end
+function TextEditor:SetSelection(aStart,aEnd,sem)
+	lib.TextEditor_SetSelection(self,aStart,aEnd,sem);
+end
+function TextEditor:SetReadOnly(aValue)
+	lib.TextEditor_SetReadOnly(self,aValue);
+end
+function TextEditor:Undo(aSteps)
+	aSteps = aSteps or 1
+	lib.TextEditor_Undo(self,aSteps);
+end
+function TextEditor:Redo(aSteps)
+	aSteps = aSteps or 1
+	lib.TextEditor_Redo(self,aSteps);
+end
+function TextEditor:Copy()
+	lib.TextEditor_Copy(self);
+end
+function TextEditor:Cut()
+	lib.TextEditor_Cut(self);
+end
+function TextEditor:Paste()
+	lib.TextEditor_Paste(self);
+end
+function TextEditor:Delete()
+	lib.TextEditor_Delete(self);
+end
+function TextEditor:DarkPalette()
+	lib.TextEditor_SetPalette_DarkPalette(self);
+end
+function TextEditor:LightPalette()
+	lib.TextEditor_SetPalette_LightPalette(self);
+end
+function TextEditor:RetroBluePalette()
+	lib.TextEditor_SetPalette_RetroBluePalette(self);
+end
+TextEditor = ffi.metatype("TextEditor",TextEditor)
+M.TextEditor = TextEditor
+
+local LangDef = {}
+function M.LangDef_CPP()
+	return lib.LanguageDefinition_CPlusPlus()
+end
+function M.LangDef_Lua()
+	return lib.LanguageDefinition_Lua()
+end
+function LangDef:getName()
+	return lib.LanguageDefinition_getName(self)
+end
+function LangDef:Pid_insert(ppnames, ppvalues)
+	lib.LanguageDefinition_PIdentifiers_insert(self,ppnames,ppvalues)
+end
+function LangDef:id_insert(identifier,idcl)
+	lib.LanguageDefinition_Identifiers_insert(self,identifier,idcl)
+end
+LangDef.__index = LangDef
+M.LangDef = ffi.metatype("LangDef",LangDef)
+
+local ErrorMarkers = {}
+function ErrorMarkers.__new(ctype)
+	local ptr = lib.TextEditor_ErrorMarkers()
+    ffi.gc(ptr,lib.ErrorMarkers_destroy)
+    return ptr
+end
+function ErrorMarkers:insert(n, text)
+	lib.ErrorMarkers_insert(self,n,text)
+end
+ErrorMarkers.__index = ErrorMarkers
+M.ErrorMarkers = ffi.metatype("ErrorMarkers",ErrorMarkers)
+
+local Coordinates = {}
+function Coordinates.Coordinates_Nil()
+	local ptr = lib.TextEditor_Coordinates_Nil()
+    ffi.gc(ptr,lib.TextEditor_Coordinates_destroy)
+    return ptr
+end
+function Coordinates.Coordinates_Int(aLine,aColumn)
+	local ptr = lib.TextEditor_Coordinates_Int(aLine,aColumn)
+    ffi.gc(ptr,lib.TextEditor_Coordinates_destroy)
+    return ptr
+end
+function Coordinates.__new(ctype, a1,a2)
+	if a1==nil then return Coordinates.Coordinates_Nil() 
+	else 
+		return Coordinates.Coordinates_Int(a1,a2)
+	end
+end
+Coordinates.__index = Coordinates
+M.Coordinates = ffi.metatype("Coordinates",Coordinates)
 ------------convenience function
 function M.U32(a,b,c,d) return lib.igGetColorU32_Vec4(ImVec4(a,b,c,d or 1)) end
 

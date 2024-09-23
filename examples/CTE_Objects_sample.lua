@@ -2,198 +2,11 @@ local igwin = require"imgui.window"
 --local win = igwin:SDL(800,600, "ColorTextEditor",{vsync=true})
 local win = igwin:GLFW(800,600, "ColorTextEditor",{vsync=true})
 
-
 local ffi = require"ffi"
-ffi.cdef[[
-typedef struct LanguageDefinition LangDef;
-typedef struct TextEditor TextEditor;
-typedef struct Coordinates Coordinates;
-struct Coordinates
-{
-    int mLine, mColumn;
-};
-typedef enum 
-	{
-		Normal,
-		Word,
-		Line
-	} SelectionMode;
-typedef struct ErrorMarkers ErrorMarkers;
- TextEditor* TextEditor_TextEditor();
- void TextEditor_destroy(TextEditor * self);
- void TextEditor_SetLangDef(TextEditor* self, LangDef* lang);
- void TextEditor_SetText(TextEditor* self, const char* text);
- Coordinates* TextEditor_GetCursorPosition(TextEditor* self);
- void TextEditor_Render(TextEditor* self, const char *title);
-LangDef* TextEditor_GetLanguageDefinition(TextEditor* ed);
- LangDef* LanguageDefinition_CPlusPlus();
- LangDef* LanguageDefinition_Lua();
- const char* LanguageDefinition_getName(LangDef* self);
- void LanguageDefinition_PIdentifiers_insert(LangDef *self, const char* ppnames, const char* ppvalues);
- void LanguageDefinition_Identifiers_insert(LangDef *self, const char* identifier, const char* idcl);
- ErrorMarkers* TextEditor_ErrorMarkers();
-void ErrorMarkers_destroy(ErrorMarkers *mark);
-void ErrorMarkers_insert(ErrorMarkers *mark, int n,const char* text);
-void TextEditor_SetErrorMarkers(TextEditor* ed, ErrorMarkers* mark);
-int TextEditor_GetTotalLines(TextEditor* ed);
-bool TextEditor_IsOverwrite(TextEditor* ed);
-bool TextEditor_CanUndo(TextEditor* ed);
-bool TextEditor_CanRedo(TextEditor* ed);
-bool TextEditor_IsReadOnly(TextEditor* ed);
-void TextEditor_SetReadOnly(TextEditor* ed,bool aValue);
-void TextEditor_Undo(TextEditor* ed, int aSteps);
-void TextEditor_Redo(TextEditor* ed, int aSteps);
-bool TextEditor_HasSelection(TextEditor* ed);
-void TextEditor_Copy(TextEditor* ed);
-void TextEditor_Cut(TextEditor* ed);
-void TextEditor_Paste(TextEditor* ed);
-void TextEditor_Delete(TextEditor* ed);
-Coordinates* TextEditor_Coordinates_Nil();
-Coordinates* TextEditor_Coordinates_Int(int aLine, int aColumn);
-void TextEditor_Coordinates_destroy(Coordinates * co);
-void TextEditor_SetSelection(TextEditor* ed, Coordinates* aStart, Coordinates* aEnd, SelectionMode sem);
-void TextEditor_SetPalette_DarkPalette(TextEditor* ed);
-void TextEditor_SetPalette_LightPalette(TextEditor* ed);
-void TextEditor_SetPalette_RetroBluePalette(TextEditor* ed);
-]]
 
-local lib = win.ig.lib
------------------Lua objects for TextEditor
-local M = {}
-local TextEditor = {}
-TextEditor.__index = TextEditor
-function TextEditor.__new(ctype)
-    local ptr = lib.TextEditor_TextEditor()
-    ffi.gc(ptr,lib.TextEditor_destroy)
-    return ptr
-end
-function TextEditor:SetLangDef(lang)
-	lib.TextEditor_SetLangDef(self,lang);
-end
-function TextEditor:SetText(text)
-	lib.TextEditor_SetText(self,text);
-end
-function TextEditor:GetCursorPosition()
-	return lib.TextEditor_GetCursorPosition(self);
-end
-function TextEditor:Render(title)
-	lib.TextEditor_Render(self,title);
-end
-function TextEditor:GetLanguageDefinition()
-	return lib.TextEditor_GetLanguageDefinition(self);
-end
-function TextEditor:SetErrorMarkers(mark)
-	lib.TextEditor_SetErrorMarkers(self,mark);
-end
-function TextEditor:GetTotalLines()
-	return lib.TextEditor_GetTotalLines(self);
-end
-function TextEditor:IsOverwrite()
-	return lib.TextEditor_IsOverwrite(self);
-end
-function TextEditor:CanUndo()
-	return lib.TextEditor_CanUndo(self);
-end
-function TextEditor:CanRedo()
-	return lib.TextEditor_CanRedo(self);
-end
-function TextEditor:IsReadOnly()
-	return lib.TextEditor_IsReadOnly(self);
-end
-function TextEditor:HasSelection()
-	return lib.TextEditor_HasSelection(self);
-end
-function TextEditor:SetSelection(aStart,aEnd,sem)
-	lib.TextEditor_SetSelection(self,aStart,aEnd,sem);
-end
-function TextEditor:SetReadOnly(aValue)
-	lib.TextEditor_SetReadOnly(self,aValue);
-end
-function TextEditor:Undo(aSteps)
-	aSteps = aSteps or 1
-	lib.TextEditor_Undo(self,aSteps);
-end
-function TextEditor:Redo(aSteps)
-	aSteps = aSteps or 1
-	lib.TextEditor_Redo(self,aSteps);
-end
-function TextEditor:Copy()
-	lib.TextEditor_Copy(self);
-end
-function TextEditor:Cut()
-	lib.TextEditor_Cut(self);
-end
-function TextEditor:Paste()
-	lib.TextEditor_Paste(self);
-end
-function TextEditor:Delete()
-	lib.TextEditor_Delete(self);
-end
-function TextEditor:DarkPalette()
-	lib.TextEditor_SetPalette_DarkPalette(self);
-end
-function TextEditor:LightPalette()
-	lib.TextEditor_SetPalette_LightPalette(self);
-end
-function TextEditor:RetroBluePalette()
-	lib.TextEditor_SetPalette_RetroBluePalette(self);
-end
-TextEditor = ffi.metatype("TextEditor",TextEditor)
-M.TextEditor = TextEditor
-
-local LangDef = {}
-function M.LangDef_CPP()
-	return lib.LanguageDefinition_CPlusPlus()
-end
-function M.LangDef_Lua()
-	return lib.LanguageDefinition_Lua()
-end
-function LangDef:getName()
-	return lib.LanguageDefinition_getName(self)
-end
-function LangDef:Pid_insert(ppnames, ppvalues)
-	lib.LanguageDefinition_PIdentifiers_insert(self,ppnames,ppvalues)
-end
-function LangDef:id_insert(identifier,idcl)
-	lib.LanguageDefinition_Identifiers_insert(self,identifier,idcl)
-end
-LangDef.__index = LangDef
-M.LangDef = ffi.metatype("LangDef",LangDef)
-
-local ErrorMarkers = {}
-function ErrorMarkers.__new(ctype)
-	local ptr = lib.TextEditor_ErrorMarkers()
-    ffi.gc(ptr,lib.ErrorMarkers_destroy)
-    return ptr
-end
-function ErrorMarkers:insert(n, text)
-	lib.ErrorMarkers_insert(self,n,text)
-end
-ErrorMarkers.__index = ErrorMarkers
-M.ErrorMarkers = ffi.metatype("ErrorMarkers",ErrorMarkers)
-
-local Coordinates = {}
-function Coordinates.Coordinates_Nil()
-	local ptr = lib.TextEditor_Coordinates_Nil()
-    ffi.gc(ptr,lib.TextEditor_Coordinates_destroy)
-    return ptr
-end
-function Coordinates.Coordinates_Int(aLine,aColumn)
-	local ptr = lib.TextEditor_Coordinates_Int(aLine,aColumn)
-    ffi.gc(ptr,lib.TextEditor_Coordinates_destroy)
-    return ptr
-end
-function Coordinates.__new(ctype, a1,a2)
-	if a1==nil then return Coordinates.Coordinates_Nil() 
-	else 
-		return Coordinates.Coordinates_Int(a1,a2)
-	end
-end
-Coordinates.__index = Coordinates
-M.Coordinates = ffi.metatype("Coordinates",Coordinates)
--------------------------------------------------------------------
-local editor = M.TextEditor()
-local lang = M.LangDef_CPP();
+local ig = win.ig
+local editor = ig.TextEditor()
+local lang = ig.LangDef_CPP();
 -- set your own known preprocessor symbols...
 local ppnames = { "NULL", "PM_REMOVE",
 		"ZeroMemory", "DXGI_SWAP_EFFECT_DISCARD", "D3D_FEATURE_LEVEL", "D3D_DRIVER_TYPE_HARDWARE", "WINAPI","D3D11_SDK_VERSION", "assert" };
@@ -217,7 +30,7 @@ for i=1,#ppnames do
 end
 editor:SetLangDef(lang)
 -- error markers
-local markers =	M.ErrorMarkers()
+local markers =	ig.ErrorMarkers()
 markers:insert( 6, "Example error here:\nInclude file not found: \"TextEditor.h\"")
 markers:insert( 41, "Another example error")
 editor:SetErrorMarkers( markers)
@@ -286,7 +99,7 @@ function win:draw(ig)
 				ig.Separator();
 
 				if (ig.MenuItem("Select all", nil, nil)) then
-					editor:SetSelection(M.Coordinates(), M.Coordinates(editor:GetTotalLines(), 0),ig.lib.Normal);
+					editor:SetSelection(ig.Coordinates(), ig.Coordinates(editor:GetTotalLines(), 0),ig.lib.Normal);
 				end
 				ig.EndMenu();
 			end

@@ -4,57 +4,6 @@ local win = igwin:GLFW(800,600, "ColorTextEditor",{vsync=true})
 
 
 local ffi = require"ffi"
-ffi.cdef[[
-typedef struct LanguageDefinition LangDef;
-typedef struct TextEditor TextEditor;
-typedef struct Coordinates Coordinates;
-struct Coordinates
-{
-    int mLine, mColumn;
-};
-typedef enum 
-	{
-		Normal,
-		Word,
-		Line
-	} SelectionMode;
-typedef struct ErrorMarkers ErrorMarkers;
- void* TextEditor_TextEditor();
- void TextEditor_destroy(TextEditor * self);
- void TextEditor_SetLangDef(TextEditor* self, LangDef* lang);
- void TextEditor_SetText(TextEditor* self, const char* text);
- Coordinates* TextEditor_GetCursorPosition(TextEditor* self);
- void TextEditor_Render(TextEditor* self, const char *title);
-LangDef* TextEditor_GetLanguageDefinition(TextEditor* ed);
- LangDef* LanguageDefinition_CPlusPlus();
- LangDef* LanguageDefinition_Lua();
- const char* LanguageDefinition_getName(LangDef* self);
- void LanguageDefinition_PIdentifiers_insert(LangDef *self, const char* ppnames, const char* ppvalues);
- void LanguageDefinition_Identifiers_insert(LangDef *self, const char* identifier, const char* idcl);
- void* TextEditor_ErrorMarkers();
-void ErrorMarkers_insert(ErrorMarkers *mark, int n,const char* text);
-void TextEditor_SetErrorMarkers(TextEditor* ed, ErrorMarkers* mark);
-int TextEditor_GetTotalLines(TextEditor* ed);
-bool TextEditor_IsOverwrite(TextEditor* ed);
-bool TextEditor_CanUndo(TextEditor* ed);
-bool TextEditor_CanRedo(TextEditor* ed);
-bool TextEditor_IsReadOnly(TextEditor* ed);
-void TextEditor_SetReadOnly(TextEditor* ed,bool aValue);
-void TextEditor_Undo(TextEditor* ed, int aSteps);
-void TextEditor_Redo(TextEditor* ed, int aSteps);
-bool TextEditor_HasSelection(TextEditor* ed);
-void TextEditor_Copy(TextEditor* ed);
-void TextEditor_Cut(TextEditor* ed);
-void TextEditor_Paste(TextEditor* ed);
-void TextEditor_Delete(TextEditor* ed);
-Coordinates* TextEditor_Coordinates_Nil();
-Coordinates* TextEditor_Coordinates_Int(int aLine, int aColumn);
-void TextEditor_Coordinates_destroy(Coordinates * co);
-void TextEditor_SetSelection(TextEditor* ed, Coordinates* aStart, Coordinates* aEnd, SelectionMode sem);
-void TextEditor_SetPalette_DarkPalette(TextEditor* ed);
-void TextEditor_SetPalette_LightPalette(TextEditor* ed);
-void TextEditor_SetPalette_RetroBluePalette(TextEditor* ed);
-]]
 local lib = win.ig.lib
 local editor = lib.TextEditor_TextEditor()
 local lang = lib.LanguageDefinition_CPlusPlus();
