@@ -123,7 +123,6 @@ function win:draw(ig)
 		ig.Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", toint(cpos.mLine + 1), toint(cpos.mColumn + 1), toint(editor:GetTotalLines()),
 		editor:IsOverwrite() and "Ovr" or "Ins",
 		editor:CanUndo() and "*" or " ",
-		--ig.lib.LanguageDefinition_getName(ig.lib.TextEditor_GetLanguageDefinition(editor)),
 		editor:GetLanguageDefinition():getName(),
 		fileN)
 		

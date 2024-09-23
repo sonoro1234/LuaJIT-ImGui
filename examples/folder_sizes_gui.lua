@@ -68,7 +68,7 @@ local igwin = require"imgui.window"
 --local win = igwin:SDL(800,400, "dirsizes")
 local win = igwin:GLFW(800,400, "dirsizes",{vsync=true})
 
-local gui = require"filebrowser"(win.ig)
+local gui = require"libs.filebrowser"(win.ig)
 
 local allsizes = {}
 local thesizes = {}
