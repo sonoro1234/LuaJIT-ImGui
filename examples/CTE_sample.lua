@@ -1,6 +1,6 @@
 local igwin = require"imgui.window"
 --local win = igwin:SDL(800,600, "ColorTextEditor",{vsync=true})
-local win = igwin:GLFW(800,600, "ColorTextEditor",{vsync=true,gl2=true})
+local win = igwin:GLFW(800,600, "ColorTextEditor",{vsync=true})
 
 
 local ffi = require"ffi"
