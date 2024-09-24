@@ -1,5 +1,40 @@
 local ig
 local ffi = require"ffi"
+------------------- LuaCombo
+local function LuaCombo(label,strs,action)
+    action = action or function() end
+    strs = strs or {"none"}
+    local combo = {}
+    local strings 
+    combo.currItem = ffi.new("int[?]",1)
+    local Items, anchors
+    function combo:set(strs, ini)
+        anchors = {}
+        strings = strs
+        self.currItem[0] = ini or 0
+        Items = ffi.new("const char*[?]",#strs)
+        for i = 0,#strs-1  do
+            anchors[#anchors+1] = ffi.new("const char*",strs[i+1])
+            Items[i] = anchors[#anchors]
+        end
+        action(ffi.string(Items[self.currItem[0]]),self.currItem[0])
+    end
+    function combo:set_index(ind)
+        self.currItem[0] = ind or 0
+        action(ffi.string(Items[self.currItem[0]]),self.currItem[0])
+    end
+    combo:set(strs)
+    function combo:draw()
+        if ig.Combo(label,self.currItem,Items,#strings,-1) then
+            action(ffi.string(Items[self.currItem[0]]),self.currItem[0])
+        end
+    end
+    function combo:get()
+        return ffi.string(Items[self.currItem[0]]),self.currItem[0]
+    end
+    return combo
+end
+--local Lang_combo = LuaCombo("Lang",{"CPP","Lua","HLSL","GLSL","C","SQL","AngelScript"},function(a,b) print(a,b) end)
 local function toint(x) return ffi.new("int",x) end
 local function Render(self)
 	local editor = self.editor
@@ -80,7 +115,8 @@ local function Render(self)
 		editor:CanUndo() and "*" or " ",
 		editor:GetLanguageDefinition():getName(),
 		self.file_name)
-		
+		ig.SameLine()
+		self.lang_combo:draw()
 		editor:Render("texteditor")
 	ig.End()
 end
@@ -99,16 +135,27 @@ local function CTEwindow(file_name)
 	local editor = ig.TextEditor()
 	W.editor = editor
 	editor:SetText( strtext)
-	local lang
+	--local lang
+	local langF = {ig.LangDef, ig.LangDef_CPP, ig.LangDef_Lua, ig.LangDef_HLSL, ig.LangDef_GLSL, ig.LangDef_C, ig.LangDef_SQL, ig.LangDef_AngelScript}
+	W.lang_combo = LuaCombo("Lang",{"none","CPP","Lua","HLSL","GLSL","C","SQL","AngelScript"},
+				function(name,ind) 
+					print(name,ind)
+					if ind > 0 then
+						editor:SetLangDef(langF[ind+1]())
+					end
+				end)
 	if ext == "cpp" or ext == "hpp" then
-		lang = ig.LangDef_CPP();
+		W.lang_combo:set_index(1)
+		--lang = ig.LangDef_CPP();
 	elseif ext == "lua" then
-		lang = ig.LangDef_Lua()
+		W.lang_combo:set_index(2)
+		--lang = ig.LangDef_Lua()
 	else
+		W.lang_combo:set_index(0)
 		print"unknown language"
-		lang = ig.LangDef_CPP()
+		--lang = nil --ig.LangDef_CPP()
 	end
-	editor:SetLangDef(lang)
+	--editor:SetLangDef(lang)
 	W.Render = Render
 	W.ID = "CTE##"..tostring(W)
 	return W

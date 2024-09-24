@@ -386,11 +386,29 @@ TextEditor = ffi.metatype("TextEditor",TextEditor)
 M.TextEditor = TextEditor
 
 local LangDef = {}
+function M.LangDef()
+	return lib.LanguageDefinition()
+end
 function M.LangDef_CPP()
 	return lib.LanguageDefinition_CPlusPlus()
 end
 function M.LangDef_Lua()
 	return lib.LanguageDefinition_Lua()
+end
+function M.LangDef_HLSL()
+	return lib.LanguageDefinition_HLSL()
+end
+function M.LangDef_GLSL()
+	return lib.LanguageDefinition_GLSL()
+end
+function M.LangDef_C()
+	return lib.LanguageDefinition_C()
+end
+function M.LangDef_SQL()
+	return lib.LanguageDefinition_SQL()
+end
+function M.LangDef_AngelScript()
+	return lib.LanguageDefinition_AngelScript()
 end
 function LangDef:getName()
 	return lib.LanguageDefinition_getName(self)
