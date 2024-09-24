@@ -304,156 +304,7 @@ function Log:Draw(title)
     lib.Log_Draw(self,title)
 end
 M.Log = ffi.metatype("Log",Log)
-------------CTE ImGuiColorTextEdit
-local TextEditor = {}
-TextEditor.__index = TextEditor
-function TextEditor.__new(ctype)
-    local ptr = lib.TextEditor_TextEditor()
-    ffi.gc(ptr,lib.TextEditor_destroy)
-    return ptr
-end
-function TextEditor:SetLangDef(lang)
-	lib.TextEditor_SetLangDef(self,lang);
-end
-function TextEditor:SetText(text)
-	lib.TextEditor_SetText(self,text);
-end
-function TextEditor:GetCursorPosition()
-	return lib.TextEditor_GetCursorPosition(self);
-end
-function TextEditor:Render(title)
-	lib.TextEditor_Render(self,title);
-end
-function TextEditor:GetLanguageDefinition()
-	return lib.TextEditor_GetLanguageDefinition(self);
-end
-function TextEditor:SetErrorMarkers(mark)
-	lib.TextEditor_SetErrorMarkers(self,mark);
-end
-function TextEditor:GetTotalLines()
-	return lib.TextEditor_GetTotalLines(self);
-end
-function TextEditor:IsOverwrite()
-	return lib.TextEditor_IsOverwrite(self);
-end
-function TextEditor:CanUndo()
-	return lib.TextEditor_CanUndo(self);
-end
-function TextEditor:CanRedo()
-	return lib.TextEditor_CanRedo(self);
-end
-function TextEditor:IsReadOnly()
-	return lib.TextEditor_IsReadOnly(self);
-end
-function TextEditor:HasSelection()
-	return lib.TextEditor_HasSelection(self);
-end
-function TextEditor:SetSelection(aStart,aEnd,sem)
-	lib.TextEditor_SetSelection(self,aStart,aEnd,sem);
-end
-function TextEditor:SetReadOnly(aValue)
-	lib.TextEditor_SetReadOnly(self,aValue);
-end
-function TextEditor:Undo(aSteps)
-	aSteps = aSteps or 1
-	lib.TextEditor_Undo(self,aSteps);
-end
-function TextEditor:Redo(aSteps)
-	aSteps = aSteps or 1
-	lib.TextEditor_Redo(self,aSteps);
-end
-function TextEditor:Copy()
-	lib.TextEditor_Copy(self);
-end
-function TextEditor:Cut()
-	lib.TextEditor_Cut(self);
-end
-function TextEditor:Paste()
-	lib.TextEditor_Paste(self);
-end
-function TextEditor:Delete()
-	lib.TextEditor_Delete(self);
-end
-function TextEditor:DarkPalette()
-	lib.TextEditor_SetPalette_DarkPalette(self);
-end
-function TextEditor:LightPalette()
-	lib.TextEditor_SetPalette_LightPalette(self);
-end
-function TextEditor:RetroBluePalette()
-	lib.TextEditor_SetPalette_RetroBluePalette(self);
-end
-TextEditor = ffi.metatype("TextEditor",TextEditor)
-M.TextEditor = TextEditor
 
-local LangDef = {}
-function M.LangDef()
-	return lib.LanguageDefinition()
-end
-function M.LangDef_CPP()
-	return lib.LanguageDefinition_CPlusPlus()
-end
-function M.LangDef_Lua()
-	return lib.LanguageDefinition_Lua()
-end
-function M.LangDef_HLSL()
-	return lib.LanguageDefinition_HLSL()
-end
-function M.LangDef_GLSL()
-	return lib.LanguageDefinition_GLSL()
-end
-function M.LangDef_C()
-	return lib.LanguageDefinition_C()
-end
-function M.LangDef_SQL()
-	return lib.LanguageDefinition_SQL()
-end
-function M.LangDef_AngelScript()
-	return lib.LanguageDefinition_AngelScript()
-end
-function LangDef:getName()
-	return lib.LanguageDefinition_getName(self)
-end
-function LangDef:Pid_insert(ppnames, ppvalues)
-	lib.LanguageDefinition_PIdentifiers_insert(self,ppnames,ppvalues)
-end
-function LangDef:id_insert(identifier,idcl)
-	lib.LanguageDefinition_Identifiers_insert(self,identifier,idcl)
-end
-LangDef.__index = LangDef
-M.LangDef = ffi.metatype("LangDef",LangDef)
-
-local ErrorMarkers = {}
-function ErrorMarkers.__new(ctype)
-	local ptr = lib.TextEditor_ErrorMarkers()
-    ffi.gc(ptr,lib.ErrorMarkers_destroy)
-    return ptr
-end
-function ErrorMarkers:insert(n, text)
-	lib.ErrorMarkers_insert(self,n,text)
-end
-ErrorMarkers.__index = ErrorMarkers
-M.ErrorMarkers = ffi.metatype("ErrorMarkers",ErrorMarkers)
-
-local Coordinates = {}
-function Coordinates.Coordinates_Nil()
-	local ptr = lib.TextEditor_Coordinates_Nil()
-    ffi.gc(ptr,lib.TextEditor_Coordinates_destroy)
-    return ptr
-end
-function Coordinates.Coordinates_Int(aLine,aColumn)
-	local ptr = lib.TextEditor_Coordinates_Int(aLine,aColumn)
-    ffi.gc(ptr,lib.TextEditor_Coordinates_destroy)
-    return ptr
-end
-function Coordinates.__new(ctype, a1,a2)
-	if a1==nil then return Coordinates.Coordinates_Nil() 
-	else 
-		return Coordinates.Coordinates_Int(a1,a2)
-	end
-end
-Coordinates.__index = Coordinates
-M.Coordinates = ffi.metatype("Coordinates",Coordinates)
 ------------convenience function
 function M.U32(a,b,c,d) return lib.igGetColorU32_Vec4(ImVec4(a,b,c,d or 1)) end
 
@@ -2498,6 +2349,86 @@ function Style.__new(ctype)
     return ffi.gc(ptr,lib.Style_destroy)
 end
 M.Style = ffi.metatype("Style",Style)
+--------------------------TextEditor----------------------------
+local TextEditor= {}
+TextEditor.__index = TextEditor
+TextEditor.AllCursorsHaveSelection = lib.TextEditor_AllCursorsHaveSelection
+TextEditor.AnyCursorHasSelection = lib.TextEditor_AnyCursorHasSelection
+TextEditor.CanRedo = lib.TextEditor_CanRedo
+TextEditor.CanUndo = lib.TextEditor_CanUndo
+TextEditor.ClearExtraCursors = lib.TextEditor_ClearExtraCursors
+TextEditor.ClearSelections = lib.TextEditor_ClearSelections
+TextEditor.Copy = lib.TextEditor_Copy
+TextEditor.Cut = lib.TextEditor_Cut
+TextEditor.GetCursorPosition = lib.TextEditor_GetCursorPosition
+M.TextEditor_GetDefaultPalette = lib.TextEditor_GetDefaultPalette
+TextEditor.GetFirstVisibleLine = lib.TextEditor_GetFirstVisibleLine
+TextEditor.GetLanguageDefinition = lib.TextEditor_GetLanguageDefinition
+TextEditor.GetLanguageDefinitionName = lib.TextEditor_GetLanguageDefinitionName
+TextEditor.GetLastVisibleLine = lib.TextEditor_GetLastVisibleLine
+TextEditor.GetLineCount = lib.TextEditor_GetLineCount
+TextEditor.GetLineSpacing = lib.TextEditor_GetLineSpacing
+TextEditor.GetPalette = lib.TextEditor_GetPalette
+TextEditor.GetTabSize = lib.TextEditor_GetTabSize
+TextEditor.GetText = lib.TextEditor_GetText
+
+TextEditor.GetUndoIndex = lib.TextEditor_GetUndoIndex
+function TextEditor:ImGuiDebugPanel(panelName)
+    panelName = panelName or "Debug"
+    return lib.TextEditor_ImGuiDebugPanel(self,panelName)
+end
+TextEditor.IsAutoIndentEnabled = lib.TextEditor_IsAutoIndentEnabled
+TextEditor.IsOverwriteEnabled = lib.TextEditor_IsOverwriteEnabled
+TextEditor.IsReadOnlyEnabled = lib.TextEditor_IsReadOnlyEnabled
+TextEditor.IsShortTabsEnabled = lib.TextEditor_IsShortTabsEnabled
+TextEditor.IsShowLineNumbersEnabled = lib.TextEditor_IsShowLineNumbersEnabled
+TextEditor.IsShowWhitespacesEnabled = lib.TextEditor_IsShowWhitespacesEnabled
+TextEditor.Paste = lib.TextEditor_Paste
+function TextEditor:Redo(aSteps)
+    aSteps = aSteps or 1
+    return lib.TextEditor_Redo(self,aSteps)
+end
+function TextEditor:Render(aTitle,aParentIsFocused,aSize,aBorder)
+    aBorder = aBorder or false
+    aParentIsFocused = aParentIsFocused or false
+    aSize = aSize or ImVec2()
+    return lib.TextEditor_Render(self,aTitle,aParentIsFocused,aSize,aBorder)
+end
+TextEditor.SelectAll = lib.TextEditor_SelectAll
+function TextEditor:SelectAllOccurrencesOf(aText,aTextSize,aCaseSensitive)
+    if aCaseSensitive == nil then aCaseSensitive = true end
+    return lib.TextEditor_SelectAllOccurrencesOf(self,aText,aTextSize,aCaseSensitive)
+end
+TextEditor.SelectLine = lib.TextEditor_SelectLine
+function TextEditor:SelectNextOccurrenceOf(aText,aTextSize,aCaseSensitive)
+    if aCaseSensitive == nil then aCaseSensitive = true end
+    return lib.TextEditor_SelectNextOccurrenceOf(self,aText,aTextSize,aCaseSensitive)
+end
+TextEditor.SelectRegion = lib.TextEditor_SelectRegion
+TextEditor.SetAutoIndentEnabled = lib.TextEditor_SetAutoIndentEnabled
+TextEditor.SetCursorPosition = lib.TextEditor_SetCursorPosition
+M.TextEditor_SetDefaultPalette = lib.TextEditor_SetDefaultPalette
+TextEditor.SetLanguageDefinition = lib.TextEditor_SetLanguageDefinition
+TextEditor.SetLineSpacing = lib.TextEditor_SetLineSpacing
+TextEditor.SetPalette = lib.TextEditor_SetPalette
+TextEditor.SetReadOnlyEnabled = lib.TextEditor_SetReadOnlyEnabled
+TextEditor.SetShortTabsEnabled = lib.TextEditor_SetShortTabsEnabled
+TextEditor.SetShowLineNumbersEnabled = lib.TextEditor_SetShowLineNumbersEnabled
+TextEditor.SetShowWhitespacesEnabled = lib.TextEditor_SetShowWhitespacesEnabled
+TextEditor.SetTabSize = lib.TextEditor_SetTabSize
+TextEditor.SetText = lib.TextEditor_SetText
+
+TextEditor.SetViewAtLine = lib.TextEditor_SetViewAtLine
+function TextEditor.__new(ctype)
+    local ptr = lib.TextEditor_TextEditor()
+    return ffi.gc(ptr,lib.TextEditor_destroy)
+end
+function TextEditor:Undo(aSteps)
+    aSteps = aSteps or 1
+    return lib.TextEditor_Undo(self,aSteps)
+end
+TextEditor.UnitTests = lib.TextEditor_UnitTests
+M.TextEditor = ffi.metatype("TextEditor",TextEditor)
 --------------------------imguiGizmo----------------------------
 local imguiGizmo= {}
 imguiGizmo.__index = imguiGizmo

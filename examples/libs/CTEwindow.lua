@@ -35,10 +35,13 @@ local function LuaCombo(label,strs,action)
     return combo
 end
 --local Lang_combo = LuaCombo("Lang",{"CPP","Lua","HLSL","GLSL","C","SQL","AngelScript"},function(a,b) print(a,b) end)
+local langNames = {"None", "Cpp", "C", "Cs", "Python", "Lua", "Json", "Sql", "AngelScript", "Glsl", "Hlsl"}
 local function toint(x) return ffi.new("int",x) end
+local mLine = ffi.new("int[?]",1)
+local mColumn = ffi.new("int[?]",1)
 local function Render(self)
 	local editor = self.editor
-	local cpos = editor:GetCursorPosition()
+	editor:GetCursorPosition(mLine, mColumn)
 	ig.Begin(self.ID, nil, ig.lib.ImGuiWindowFlags_HorizontalScrollbar + ig.lib.ImGuiWindowFlags_MenuBar);
 		ig.SetWindowSize(ig.ImVec2(800, 600), ig.lib.ImGuiCond_FirstUseEver);
 		if (ig.BeginMenuBar())
@@ -59,9 +62,9 @@ local function Render(self)
 	
 			if (ig.BeginMenu("Edit"))
 			then
-				local ro = ffi.new("bool[?]",1,editor:IsReadOnly());
+				local ro = ffi.new("bool[?]",1,editor:IsReadOnlyEnabled());
 				if (ig.MenuItem("Read-only mode", nil, ro)) then
-					editor:SetReadOnly(ro[0])
+					editor:SetReadOnlyEnabled(ro[0])
 				end
 				ig.Separator();
 
@@ -74,14 +77,11 @@ local function Render(self)
 				end
 				ig.Separator();
 
-				if (ig.MenuItem("Copy", "Ctrl-C", nil, editor:HasSelection())) then
+				if (ig.MenuItem("Copy", "Ctrl-C", nil, editor:AnyCursorHasSelection())) then
 					editor:Copy();
 				end
-				if (ig.MenuItem("Cut", "Ctrl-X", nil, not ro[0] and editor:HasSelection())) then
+				if (ig.MenuItem("Cut", "Ctrl-X", nil, not ro[0] and editor:AnyCursorHasSelection())) then
 					editor:Cut();
-				end
-				if (ig.MenuItem("Delete", "Del", nil, not ro[0] and editor:HasSelection())) then
-					editor:Delete();
 				end
 				if (ig.MenuItem("Paste", "Ctrl-V", nil, not ro[0] and ig.GetClipboardText() ~= nil)) then
 					editor:Paste();
@@ -89,7 +89,7 @@ local function Render(self)
 				ig.Separator();
 
 				if (ig.MenuItem("Select all", nil, nil)) then
-					editor:SetSelection(ig.Coordinates(), ig.Coordinates(editor:GetTotalLines(), 0),ig.lib.Normal);
+					editor:SelectAll();
 				end
 				ig.EndMenu();
 			end
@@ -97,29 +97,33 @@ local function Render(self)
 			if (ig.BeginMenu("View")) then
 			
 				if (ig.MenuItem("Dark palette")) then
-					editor:DarkPalette();
+					editor:SetPalette(ig.lib.Dark);
 				end
 				if (ig.MenuItem("Light palette")) then
-					editor:LightPalette();
+					editor:SetPalette(ig.lib.Light);
+				end
+				if (ig.MenuItem("Mariana palette")) then
+					editor:SetPalette(ig.lib.Mariana);
 				end
 				if (ig.MenuItem("Retro blue palette")) then
-					editor:RetroBluePalette();
+					editor:SetPalette(ig.lib.RetroBlue);
 				end
 				ig.EndMenu()
 			end
 			ig.EndMenuBar();
 		end
 		
-		ig.Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", toint(cpos.mLine + 1), toint(cpos.mColumn + 1), toint(editor:GetTotalLines()),
-		editor:IsOverwrite() and "Ovr" or "Ins",
+		ig.Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", toint(mLine[0] + 1), toint(mColumn[0] + 1), toint(editor:GetLineCount()),
+		editor:IsOverwriteEnabled() and "Ovr" or "Ins",
 		editor:CanUndo() and "*" or " ",
-		editor:GetLanguageDefinition():getName(),
+		langNames[tonumber(editor:GetLanguageDefinition())],
 		self.file_name)
 		ig.SameLine()
 		self.lang_combo:draw()
 		editor:Render("texteditor")
 	ig.End()
 end
+
 local function CTEwindow(file_name)
 	local strtext = ""
 	local ext = ""
@@ -135,27 +139,20 @@ local function CTEwindow(file_name)
 	local editor = ig.TextEditor()
 	W.editor = editor
 	editor:SetText( strtext)
-	--local lang
-	local langF = {ig.LangDef, ig.LangDef_CPP, ig.LangDef_Lua, ig.LangDef_HLSL, ig.LangDef_GLSL, ig.LangDef_C, ig.LangDef_SQL, ig.LangDef_AngelScript}
-	W.lang_combo = LuaCombo("Lang",{"none","CPP","Lua","HLSL","GLSL","C","SQL","AngelScript"},
+
+	W.lang_combo = LuaCombo("Lang",langNames,
 				function(name,ind) 
 					print(name,ind)
-					if ind > 0 then
-						editor:SetLangDef(langF[ind+1]())
-					end
+					editor:SetLanguageDefinition(ind)
 				end)
 	if ext == "cpp" or ext == "hpp" then
 		W.lang_combo:set_index(1)
-		--lang = ig.LangDef_CPP();
 	elseif ext == "lua" then
-		W.lang_combo:set_index(2)
-		--lang = ig.LangDef_Lua()
+		W.lang_combo:set_index(5)
 	else
 		W.lang_combo:set_index(0)
 		print"unknown language"
-		--lang = nil --ig.LangDef_CPP()
 	end
-	--editor:SetLangDef(lang)
 	W.Render = Render
 	W.ID = "CTE##"..tostring(W)
 	return W

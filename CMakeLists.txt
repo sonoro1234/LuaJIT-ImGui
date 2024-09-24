@@ -13,6 +13,7 @@ add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
 add_definitions(-DIMNODES_NAMESPACE=imnodes)
 include_directories(cimgui)
 add_subdirectory(cimCTE)
+include_directories(${cimCTE_inc})
 set(IMGUI_SOURCES ./cimgui/cimgui.cpp 
 ./cimgui/imgui/imgui.cpp 
 ./cimgui/imgui/imgui_draw.cpp 

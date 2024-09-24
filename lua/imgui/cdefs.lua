@@ -6851,6 +6851,71 @@ void ImNodes_Ez_PopStyleVar(int count);
 void ImNodes_Ez_PushStyleColor_U32(ImNodesStyleCol idx,ImU32 col);
 void ImNodes_Ez_PushStyleColor_Vec4(ImNodesStyleCol idx,const ImVec4 col);
 void ImNodes_Ez_PopStyleColor(int count);
+typedef struct TextEditor TextEditor;
+struct TextEditor
+{
+};
+typedef enum {
+  Dark, Light, Mariana, RetroBlue
+ }PaletteId;
+typedef enum {
+  None, Cpp, C, Cs, Python, Lua, Json, Sql, AngelScript, Glsl, Hlsl
+ }LanguageDefinitionId;
+typedef enum {
+  FirstVisibleLine, Centered, LastVisibleLine
+ }SetViewAtLineMode;
+TextEditor* TextEditor_TextEditor(void);
+void TextEditor_destroy(TextEditor* self);
+void TextEditor_SetReadOnlyEnabled(TextEditor* self,                                                              _Bool                                                                    aValue);
+_Bool                TextEditor_IsReadOnlyEnabled(TextEditor* self);
+void TextEditor_SetAutoIndentEnabled(TextEditor* self,                                                                _Bool                                                                      aValue);
+_Bool                TextEditor_IsAutoIndentEnabled(TextEditor* self);
+void TextEditor_SetShowWhitespacesEnabled(TextEditor* self,                                                                     _Bool                                                                           aValue);
+_Bool                TextEditor_IsShowWhitespacesEnabled(TextEditor* self);
+void TextEditor_SetShowLineNumbersEnabled(TextEditor* self,                                                                     _Bool                                                                           aValue);
+_Bool                TextEditor_IsShowLineNumbersEnabled(TextEditor* self);
+void TextEditor_SetShortTabsEnabled(TextEditor* self,                                                               _Bool                                                                     aValue);
+_Bool                TextEditor_IsShortTabsEnabled(TextEditor* self);
+int TextEditor_GetLineCount(TextEditor* self);
+_Bool                TextEditor_IsOverwriteEnabled(TextEditor* self);
+void TextEditor_SetPalette(TextEditor* self,PaletteId aValue);
+PaletteId TextEditor_GetPalette(TextEditor* self);
+void TextEditor_SetLanguageDefinition(TextEditor* self,LanguageDefinitionId aValue);
+LanguageDefinitionId TextEditor_GetLanguageDefinition(TextEditor* self);
+const char* TextEditor_GetLanguageDefinitionName(TextEditor* self);
+void TextEditor_SetTabSize(TextEditor* self,int aValue);
+int TextEditor_GetTabSize(TextEditor* self);
+void TextEditor_SetLineSpacing(TextEditor* self,float aValue);
+float TextEditor_GetLineSpacing(TextEditor* self);
+void TextEditor_SetDefaultPalette(PaletteId aValue);
+PaletteId TextEditor_GetDefaultPalette(void);
+void TextEditor_SelectAll(TextEditor* self);
+void TextEditor_SelectLine(TextEditor* self,int aLine);
+void TextEditor_SelectRegion(TextEditor* self,int aStartLine,int aStartChar,int aEndLine,int aEndChar);
+void TextEditor_SelectNextOccurrenceOf(TextEditor* self,const char* aText,int aTextSize,                                                                                                  _Bool                                                                                                        aCaseSensitive);
+void TextEditor_SelectAllOccurrencesOf(TextEditor* self,const char* aText,int aTextSize,                                                                                                  _Bool                                                                                                        aCaseSensitive);
+_Bool                TextEditor_AnyCursorHasSelection(TextEditor* self);
+_Bool                TextEditor_AllCursorsHaveSelection(TextEditor* self);
+void TextEditor_ClearExtraCursors(TextEditor* self);
+void TextEditor_ClearSelections(TextEditor* self);
+void TextEditor_SetCursorPosition(TextEditor* self,int aLine,int aCharIndex);
+void TextEditor_GetCursorPosition(TextEditor* self,int* outLine,int* outColumn);
+int TextEditor_GetFirstVisibleLine(TextEditor* self);
+int TextEditor_GetLastVisibleLine(TextEditor* self);
+void TextEditor_SetViewAtLine(TextEditor* self,int aLine,SetViewAtLineMode aMode);
+void TextEditor_Copy(TextEditor* self);
+void TextEditor_Cut(TextEditor* self);
+void TextEditor_Paste(TextEditor* self);
+void TextEditor_Undo(TextEditor* self,int aSteps);
+void TextEditor_Redo(TextEditor* self,int aSteps);
+_Bool                TextEditor_CanUndo(TextEditor* self);
+_Bool                TextEditor_CanRedo(TextEditor* self);
+int TextEditor_GetUndoIndex(TextEditor* self);
+_Bool                TextEditor_Render(TextEditor* self,const char* aTitle,                                                                     _Bool                                                                           aParentIsFocused,const ImVec2 aSize,                                                                                                              _Bool                                                                                                                    aBorder);
+void TextEditor_UnitTests(TextEditor* self);
+void TextEditor_SetText(TextEditor* self,const char* aText);
+const char* TextEditor_GetText(TextEditor* self);
+void TextEditor_ImGuiDebugPanel(TextEditor* self,const char* panelName);
 typedef struct GLFWwindow GLFWwindow;
 typedef struct GLFWmonitor GLFWmonitor;
 struct GLFWwindow;
@@ -6961,63 +7026,6 @@ void Log_Add(Log* log,const char* fmt, ...);
 void Log_Draw(Log* log, const char* title); //, bool* p_open = NULL
 void Log_delete(Log* log); 
 
-//CTE ImGuiColorTextEdit 
-typedef struct LanguageDefinition LangDef;
-typedef struct TextEditor TextEditor;
-typedef struct Coordinates Coordinates;
-struct Coordinates
-{
-    int mLine, mColumn;
-};
-typedef enum 
-	{
-		Normal,
-		Word,
-		Line
-	} SelectionMode;
-typedef struct ErrorMarkers ErrorMarkers;
-TextEditor* TextEditor_TextEditor();
-void TextEditor_destroy(TextEditor * self);
-void TextEditor_SetLangDef(TextEditor* self, LangDef* lang);
-void TextEditor_SetText(TextEditor* self, const char* text);
-Coordinates* TextEditor_GetCursorPosition(TextEditor* self);
-void TextEditor_Render(TextEditor* self, const char *title);
-LangDef* TextEditor_GetLanguageDefinition(TextEditor* ed);
-LangDef* LanguageDefinition();
-LangDef* LanguageDefinition_CPlusPlus();
-LangDef* LanguageDefinition_Lua();
-LangDef* LanguageDefinition_HLSL();
-LangDef* LanguageDefinition_GLSL();
-LangDef* LanguageDefinition_C();
-LangDef* LanguageDefinition_SQL();
-LangDef* LanguageDefinition_AngelScript();
-const char* LanguageDefinition_getName(LangDef* self);
-void LanguageDefinition_PIdentifiers_insert(LangDef *self, const char* ppnames, const char* ppvalues);
-void LanguageDefinition_Identifiers_insert(LangDef *self, const char* identifier, const char* idcl);
-ErrorMarkers* TextEditor_ErrorMarkers();
-void ErrorMarkers_destroy(ErrorMarkers *mark);
-void ErrorMarkers_insert(ErrorMarkers *mark, int n,const char* text);
-void TextEditor_SetErrorMarkers(TextEditor* ed, ErrorMarkers* mark);
-int TextEditor_GetTotalLines(TextEditor* ed);
-bool TextEditor_IsOverwrite(TextEditor* ed);
-bool TextEditor_CanUndo(TextEditor* ed);
-bool TextEditor_CanRedo(TextEditor* ed);
-bool TextEditor_IsReadOnly(TextEditor* ed);
-void TextEditor_SetReadOnly(TextEditor* ed,bool aValue);
-void TextEditor_Undo(TextEditor* ed, int aSteps);
-void TextEditor_Redo(TextEditor* ed, int aSteps);
-bool TextEditor_HasSelection(TextEditor* ed);
-void TextEditor_Copy(TextEditor* ed);
-void TextEditor_Cut(TextEditor* ed);
-void TextEditor_Paste(TextEditor* ed);
-void TextEditor_Delete(TextEditor* ed);
-Coordinates* TextEditor_Coordinates_Nil();
-Coordinates* TextEditor_Coordinates_Int(int aLine, int aColumn);
-void TextEditor_Coordinates_destroy(Coordinates * co);
-void TextEditor_SetSelection(TextEditor* ed, Coordinates* aStart, Coordinates* aEnd, SelectionMode sem);
-void TextEditor_SetPalette_DarkPalette(TextEditor* ed);
-void TextEditor_SetPalette_LightPalette(TextEditor* ed);
-void TextEditor_SetPalette_RetroBluePalette(TextEditor* ed);
 ]]
 
 

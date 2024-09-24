@@ -20,3 +20,4 @@
 [submodule "cimCTE"]
 	path = cimCTE
 	url = https://github.com/cimgui/cimCTE.git
+	branch = main_santaclose
