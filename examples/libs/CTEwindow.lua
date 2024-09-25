@@ -42,9 +42,8 @@ local mColumn = ffi.new("int[?]",1)
 local function Render(self)
 	local editor = self.editor
 	editor:GetCursorPosition(mLine, mColumn)
-	ig.Begin(self.ID, nil, ig.lib.ImGuiWindowFlags_HorizontalScrollbar + ig.lib.ImGuiWindowFlags_MenuBar);
-		ig.SetWindowSize(ig.ImVec2(800, 600), ig.lib.ImGuiCond_FirstUseEver);
-		if (ig.BeginMenuBar())
+	
+	if (ig.BeginMenuBar())
 		then
 			if (ig.BeginMenu("File"))
 			then
@@ -112,7 +111,10 @@ local function Render(self)
 			end
 			ig.EndMenuBar();
 		end
-		
+	
+	ig.BeginChild(self.ID)--, nil, ig.lib.ImGuiWindowFlags_HorizontalScrollbar + ig.lib.ImGuiWindowFlags_MenuBar);
+		--ig.SetWindowSize(ig.ImVec2(800, 600), ig.lib.ImGuiCond_FirstUseEver);
+	
 		ig.Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", toint(mLine[0] + 1), toint(mColumn[0] + 1), toint(editor:GetLineCount()),
 		editor:IsOverwriteEnabled() and "Ovr" or "Ins",
 		editor:CanUndo() and "*" or " ",
@@ -121,7 +123,8 @@ local function Render(self)
 		ig.SameLine()
 		self.lang_combo:draw()
 		editor:Render("texteditor")
-	ig.End()
+		--ig.lib.TextEditor_ImGuiDebugPanel(editor,"deb##"..self.ID)
+	ig.EndChild()
 end
 
 local function CTEwindow(file_name)
