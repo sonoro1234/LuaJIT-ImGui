@@ -5,6 +5,7 @@ local function LuaCombo(label,strs,action)
     action = action or function() end
     strs = strs or {"none"}
     local combo = {}
+	local combowidth = 0
     local strings 
     combo.currItem = ffi.new("int[?]",1)
     local Items, anchors
@@ -24,7 +25,15 @@ local function LuaCombo(label,strs,action)
         action(ffi.string(Items[self.currItem[0]]),self.currItem[0])
     end
     combo:set(strs)
+	local function calcwidth()
+		for i = 1,#strings  do
+			combowidth = math.max(combowidth, ig.CalcTextSize(strings[i]).x)
+        end
+		combowidth = combowidth + ig.GetStyle().FramePadding.x * 2.0
+	end
     function combo:draw()
+		if combowidth == 0 then calcwidth() end
+		ig.SetNextItemWidth(combowidth)
         if ig.Combo(label,self.currItem,Items,#strings,-1) then
             action(ffi.string(Items[self.currItem[0]]),self.currItem[0])
         end
@@ -39,6 +48,7 @@ local langNames = {"None", "Cpp", "C", "Cs", "Python", "Lua", "Json", "Sql", "An
 local function toint(x) return ffi.new("int",x) end
 local mLine = ffi.new("int[?]",1)
 local mColumn = ffi.new("int[?]",1)
+
 local function Render(self)
 	local editor = self.editor
 	editor:GetCursorPosition(mLine, mColumn)
@@ -122,6 +132,11 @@ local function Render(self)
 		self.file_name)
 		ig.SameLine()
 		self.lang_combo:draw()
+		ig.SameLine()
+		ig.SetNextItemWidth(100)
+		if (ig.DragFloat("window scale", self.window_scale, 0.005, 0.3, 2 , "%.2f", ig.lib.ImGuiSliderFlags_AlwaysClamp)) then
+            ig.SetWindowFontScale(self.window_scale[0]);
+		end		
 		editor:Render("texteditor")
 		--ig.lib.TextEditor_ImGuiDebugPanel(editor,"deb##"..self.ID)
 	ig.EndChild()
@@ -145,17 +160,20 @@ local function CTEwindow(file_name)
 
 	W.lang_combo = LuaCombo("Lang",langNames,
 				function(name,ind) 
-					print(name,ind)
+					--print(name,ind)
 					editor:SetLanguageDefinition(ind)
 				end)
 	if ext == "cpp" or ext == "hpp" then
 		W.lang_combo:set_index(1)
+	elseif ext == "c" or ext == "h" then
+		W.lang_combo:set_index(2)
 	elseif ext == "lua" then
 		W.lang_combo:set_index(5)
 	else
 		W.lang_combo:set_index(0)
 		print"unknown language"
 	end
+	W.window_scale = ffi.new("float[?]",1,1)
 	W.Render = Render
 	W.ID = "CTE##"..tostring(W)
 	return W

@@ -4,11 +4,12 @@ local win = igwin:GLFW(800,600, "ColorTextEditor",{vsync=true,use_imgui_viewport
 
 local CTE = require"libs.CTEwindow"(win.ig)
 
+--local ctew = CTE.CTEwindow([[../cimgui/imgui/imgui.cpp]])
 local ctew = CTE.CTEwindow([[../cimCTE/cimCTE.cpp]])
 local ctew2 = CTE.CTEwindow("CTE_sample.lua")
 
 function win:draw(ig)
-	
+	ig.ShowDemoWindow()
 	ig.Begin("Documents",nil,ig.lib.ImGuiWindowFlags_MenuBar)
 	ig.SetWindowSize(ig.ImVec2(800, 600), ig.lib.ImGuiCond_FirstUseEver);
 	if (ig.BeginTabBar("##Tabs", ig.lib.ImGuiTabBarFlags_None)) then
