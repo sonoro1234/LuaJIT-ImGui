@@ -65,7 +65,7 @@ local pathut = M
 
 function loader(ig)
     -----------------------YesNo dialog ---------------
-local gui = {}
+local gui = {pathut = M}
 function gui.YesNo(msg)
     local D = {}
     function D.open() 
@@ -205,7 +205,7 @@ function gui.FileBrowser(filename_p, args, funcOK)
             doit = yesnoD.draw(doit)
             if doit then
                 if funcOK then
-                    funcOK(fullname, curr_dir)
+                    funcOK(fullname, curr_dir, savefilename)
                 else
                     filename_p[0] = fullname
                 end

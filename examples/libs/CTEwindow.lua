@@ -53,24 +53,9 @@ local function Render(self)
 	local editor = self.editor
 	editor:GetCursorPosition(mLine, mColumn)
 	
-	if (ig.BeginMenuBar())
-		then
-			if (ig.BeginMenu("File"))
-			then
-				if (ig.MenuItem("Save"))
-				then
-					--auto textToSave = editor.GetText();
-					--/// save text....
-				end
-				if (ig.MenuItem("Quit", "Alt-F4"))
-				then
-					print("quit")--break;
-				end
-				ig.EndMenu();
-			end
+	if (ig.BeginMenuBar()) then
 	
-			if (ig.BeginMenu("Edit"))
-			then
+			if (ig.BeginMenu("Edit")) then
 				local ro = ffi.new("bool[?]",1,editor:IsReadOnlyEnabled());
 				if (ig.MenuItem("Read-only mode", nil, ro)) then
 					editor:SetReadOnlyEnabled(ro[0])
@@ -80,8 +65,7 @@ local function Render(self)
 				if (ig.MenuItem("Undo", "ALT-Backspace", nil, not ro[0] and editor:CanUndo())) then
 					editor:Undo()
 				end
-				if (ig.MenuItem("Redo", "Ctrl-Y", nil,not ro[0] and editor:CanRedo()))
-				then
+				if (ig.MenuItem("Redo", "Ctrl-Y", nil,not ro[0] and editor:CanRedo())) then
 					editor:Redo();
 				end
 				ig.Separator();
@@ -121,14 +105,14 @@ local function Render(self)
 			end
 			ig.EndMenuBar();
 		end
-	
-	ig.BeginChild(self.ID)--, nil, ig.lib.ImGuiWindowFlags_HorizontalScrollbar + ig.lib.ImGuiWindowFlags_MenuBar);
+
+	--ig.BeginChild(self.ID)--, nil, ig.lib.ImGuiWindowFlags_HorizontalScrollbar + ig.lib.ImGuiWindowFlags_MenuBar);
 		--ig.SetWindowSize(ig.ImVec2(800, 600), ig.lib.ImGuiCond_FirstUseEver);
 	
-		ig.Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", toint(mLine[0] + 1), toint(mColumn[0] + 1), toint(editor:GetLineCount()),
+		ig.Text("%6d/%-6d %6d lines  | %s | %s | %s", toint(mLine[0] + 1), toint(mColumn[0] + 1), toint(editor:GetLineCount()),
 		editor:IsOverwriteEnabled() and "Ovr" or "Ins",
 		editor:CanUndo() and "*" or " ",
-		langNames[tonumber(editor:GetLanguageDefinition())],
+		--langNames[tonumber(editor:GetLanguageDefinition())+1],
 		self.file_name)
 		ig.SameLine()
 		self.lang_combo:draw()
@@ -137,9 +121,10 @@ local function Render(self)
 		if (ig.DragFloat("window scale", self.window_scale, 0.005, 0.3, 2 , "%.2f", ig.lib.ImGuiSliderFlags_AlwaysClamp)) then
             ig.SetWindowFontScale(self.window_scale[0]);
 		end		
-		editor:Render("texteditor")
+		editor:Render("texteditor"..self.ID)
 		--ig.lib.TextEditor_ImGuiDebugPanel(editor,"deb##"..self.ID)
-	ig.EndChild()
+	--ig.EndChild()
+
 end
 
 local function CTEwindow(file_name)
