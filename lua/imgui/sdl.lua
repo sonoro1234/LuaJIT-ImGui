@@ -1105,15 +1105,14 @@ ImGuiInputTextState.ClearText = lib.ImGuiInputTextState_ClearText
 ImGuiInputTextState.CursorAnimReset = lib.ImGuiInputTextState_CursorAnimReset
 ImGuiInputTextState.CursorClamp = lib.ImGuiInputTextState_CursorClamp
 ImGuiInputTextState.GetCursorPos = lib.ImGuiInputTextState_GetCursorPos
-ImGuiInputTextState.GetRedoAvailCount = lib.ImGuiInputTextState_GetRedoAvailCount
 ImGuiInputTextState.GetSelectionEnd = lib.ImGuiInputTextState_GetSelectionEnd
 ImGuiInputTextState.GetSelectionStart = lib.ImGuiInputTextState_GetSelectionStart
-ImGuiInputTextState.GetUndoAvailCount = lib.ImGuiInputTextState_GetUndoAvailCount
 ImGuiInputTextState.HasSelection = lib.ImGuiInputTextState_HasSelection
 function ImGuiInputTextState.__new(ctype)
     local ptr = lib.ImGuiInputTextState_ImGuiInputTextState()
     return ffi.gc(ptr,lib.ImGuiInputTextState_destroy)
 end
+ImGuiInputTextState.OnCharPressed = lib.ImGuiInputTextState_OnCharPressed
 ImGuiInputTextState.OnKeyPressed = lib.ImGuiInputTextState_OnKeyPressed
 ImGuiInputTextState.ReloadUserBufAndKeepSelection = lib.ImGuiInputTextState_ReloadUserBufAndKeepSelection
 ImGuiInputTextState.ReloadUserBufAndMoveToEnd = lib.ImGuiInputTextState_ReloadUserBufAndMoveToEnd
@@ -6460,7 +6459,7 @@ function M.ImSign(a1) -- generic version
 end
 M.ImStrSkipBlank = lib.igImStrSkipBlank
 M.ImStrTrimBlanks = lib.igImStrTrimBlanks
-M.ImStrbolW = lib.igImStrbolW
+M.ImStrbol = lib.igImStrbol
 M.ImStrchrRange = lib.igImStrchrRange
 M.ImStrdup = lib.igImStrdup
 M.ImStrdupcpy = lib.igImStrdupcpy
