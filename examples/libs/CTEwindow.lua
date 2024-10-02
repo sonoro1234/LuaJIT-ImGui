@@ -126,7 +126,16 @@ local function Render(self)
 	--ig.EndChild()
 
 end
-
+local function Save(self,fname)
+	local editor = self.editor
+	if fname then
+		local file,err = io.open(fname,"w")
+		assert(file,err)
+		local str = ffi.string(editor:GetText())
+		file:write(str)
+		file:close()
+	end
+end
 local function CTEwindow(file_name)
 	local strtext = ""
 	local ext = ""
@@ -145,7 +154,6 @@ local function CTEwindow(file_name)
 
 	W.lang_combo = LuaCombo("Lang",langNames,
 				function(name,ind) 
-					--print(name,ind)
 					editor:SetLanguageDefinition(ind)
 				end)
 	if ext == "cpp" or ext == "hpp" then
@@ -161,6 +169,7 @@ local function CTEwindow(file_name)
 	W.window_scale = ffi.new("float[?]",1,1)
 	W.Render = Render
 	W.ID = "CTE##"..tostring(W)
+	W.Save = Save
 	return W
 end
 

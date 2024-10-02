@@ -3,46 +3,67 @@ local igwin = require"imgui.window"
 local win = igwin:GLFW(800,600, "ColorTextEditor",{vsync=true,use_imgui_viewport=true})
 
 local CTE = require"libs.CTEwindow"(win.ig)
+local gui = require"libs.filebrowser"(win.ig)
 
 local opendocs = {}
 local opendocfnames = {}
-local new_doc = -1
+local set_tab = -1
 local function addEditor(fullname)
 		if opendocfnames[fullname] then return end -- to avoid reopening
 		opendocfnames[fullname] = true
         local doc = CTE.CTEwindow(fullname)
         table.insert(opendocs,doc);
-        new_doc = #opendocs
+        set_tab = #opendocs
 		doc.shrt_name = fullname:match([[([^/\]+)$]])
-        print("load",fullname,new_doc) 
+end
+local confirm_close = gui.YesNo("There are unsaved changes. Do you still want to close?")
+local function CheckCloseEditor(id)
+	local doc = opendocs[id]
+	if doc.editor:CanUndo() then
+		confirm_close.open()
+		return false
+	end
+	return true
+end
+local function CloseEditor(id)
+	local doc = table.remove(opendocs,id)
+	opendocfnames[doc.file_name] = nil
 end
 
-local gui = require"libs.filebrowser"(win.ig)
+local ffi = require"ffi"
+local curr_opendoc = 1
+
 local fb = gui.FileBrowser(nil,{key="loader",pattern=nil},
     function(fullname,dir,fname)
 		addEditor(fullname)
     end)
-
+local fbs = gui.FileBrowser(nil,{key="saver",check_existence=true},
+	function(fname)
+		local doc = opendocs[curr_opendoc]
+		doc:Save(fname)
+	end)
+	
 --add two editors
 addEditor(gui.pathut.abspath([[../cimgui/imgui/imgui.cpp]]))
 addEditor(gui.pathut.abspath("CTE_sample.lua"))
-
-local ffi = require"ffi"
-local curr_opendoc = 1
 
 function win:draw(ig)
     ig.ShowDemoWindow()
     
     local openfilepopup = false
+	local savefilepopup = false
+	local doclosefile = false
     ig.Begin("Documents",nil,ig.lib.ImGuiWindowFlags_MenuBar)
         if (ig.BeginMenuBar()) then
             if (ig.BeginMenu("File")) then
                 if (ig.MenuItem("Load")) then
                     openfilepopup = true
                 end
+				if (ig.MenuItem("Save As")) then
+                    savefilepopup = true
+                end
                 if (ig.MenuItem("Close")) then
-                    local doc = table.remove(opendocs,curr_opendoc)
-					opendocfnames[doc.file_name] = nil
+				   doclosefile = true
                 end
                 ig.EndMenu();
             end
@@ -50,22 +71,36 @@ function win:draw(ig)
     end
     if openfilepopup then fb.open() end
     fb.draw()
+	if savefilepopup then fbs.open() end
+	fbs.draw()
 
     ig.SetWindowSize(ig.ImVec2(800, 600), ig.lib.ImGuiCond_FirstUseEver);
     if (ig.BeginTabBar("##Tabs", ig.lib.ImGuiTabBarFlags_None)) then
+		local opened =  ffi.new("bool[?]",1,true)
         for i,v in ipairs(opendocs) do
-            --if (ig.BeginTabItem(v.file_name)) then
-            --if (ig.BeginTabItem(v.file_name,ffi.new("bool[?]",1,i==curr_opendoc))) then
-            --if (ig.BeginTabItem(v.file_name, nil,(i==curr_opendoc) and ig.lib.ImGuiTabItemFlags_SetSelected or 0)) then
-            if (ig.BeginTabItem(v.shrt_name.."##"..i, nil,(i==new_doc) and ig.lib.ImGuiTabItemFlags_SetSelected or 0)) then
-                if new_doc == i then new_doc = -1 end
+			local opentab = ig.BeginTabItem(v.shrt_name.."##"..i, opened,(i==set_tab) and ig.lib.ImGuiTabItemFlags_SetSelected or 0)
+			if ig.IsItemHovered() then ig.SetTooltip(v.file_name) end
+			if opentab then
+                if set_tab == i then set_tab = -1 end
                 curr_opendoc = i
                 v:Render()
                 ig.EndTabItem();
             end
+			if not opened[0] then 
+				doclosefile = true
+				break
+			end
         end
         ig.EndTabBar();
     end
+	local doit = false
+	if doclosefile then 
+		doit = CheckCloseEditor(curr_opendoc)
+	end
+	if confirm_close.draw(doit) then
+		CloseEditor(curr_opendoc)
+	end
+
     ig.End()
 end
 
