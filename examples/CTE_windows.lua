@@ -1,6 +1,6 @@
 local igwin = require"imgui.window"
---local win = igwin:SDL(800,600, "ColorTextEditor",{vsync=true,use_imgui_viewport=true})
-local win = igwin:GLFW(800,600, "ColorTextEditor",{vsync=true,use_imgui_viewport=false})
+local win = igwin:SDL(800,600, "ColorTextEditor",{vsync=true,use_imgui_viewport=false})
+--local win = igwin:GLFW(800,600, "ColorTextEditor",{vsync=true,use_imgui_viewport=false})
 
 local CTE = require"libs.CTEwindow"(win.ig)
 local gui = require"libs.filebrowser"(win.ig)
