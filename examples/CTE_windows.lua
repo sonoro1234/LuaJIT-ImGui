@@ -1,6 +1,6 @@
 local igwin = require"imgui.window"
 --local win = igwin:SDL(800,600, "ColorTextEditor",{vsync=true,use_imgui_viewport=true})
-local win = igwin:GLFW(800,600, "ColorTextEditor",{vsync=true,use_imgui_viewport=true})
+local win = igwin:GLFW(800,600, "ColorTextEditor",{vsync=true,use_imgui_viewport=false})
 
 local CTE = require"libs.CTEwindow"(win.ig)
 local gui = require"libs.filebrowser"(win.ig)
@@ -53,7 +53,17 @@ function win:draw(ig)
     local openfilepopup = false
 	local savefilepopup = false
 	local doclosefile = false
-    ig.Begin("Documents",nil,ig.lib.ImGuiWindowFlags_MenuBar)
+	
+	local viewport = ig.GetMainViewport();
+
+    --Submit a window filling the entire viewport
+    ig.SetNextWindowPos(viewport.WorkPos);
+    ig.SetNextWindowSize(viewport.WorkSize);
+    ig.SetNextWindowViewport(viewport.ID);
+	
+	local host_window_flags = bit.bor( ig.lib.ImGuiWindowFlags_NoTitleBar , ig.lib.ImGuiWindowFlags_NoCollapse, ig.lib.ImGuiWindowFlags_NoResize , ig.lib.ImGuiWindowFlags_NoMove , ig.lib.ImGuiWindowFlags_NoDocking, ig.lib.ImGuiWindowFlags_NoBringToFrontOnFocus, ig.lib.ImGuiWindowFlags_NoNavFocus,ig.lib.ImGuiWindowFlags_MenuBar)
+	
+    ig.Begin("Documents",nil, host_window_flags) --ig.lib.ImGuiWindowFlags_MenuBar)
         if (ig.BeginMenuBar()) then
             if (ig.BeginMenu("File")) then
                 if (ig.MenuItem("Load")) then
@@ -102,6 +112,7 @@ function win:draw(ig)
 	end
 
     ig.End()
+	
 end
 
 win:start()
