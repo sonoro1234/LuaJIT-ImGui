@@ -132,7 +132,7 @@ local function startSDL(W, postf)
             if bit.band(igio.ConfigFlags , ig.lib.ImGuiConfigFlags_ViewportsEnable) ~= 0 then
                 ig.UpdatePlatformWindows();
                 ig.RenderPlatformWindowsDefault();
-                sdl.gL_MakeCurrent(window, gl_context)
+                sdl.gL_MakeCurrent(window, W.gl_context)
             end
         end
         
@@ -143,7 +143,7 @@ local function startSDL(W, postf)
     if postf then postf() end
     W.ig_Impl:destroy()
 
-    sdl.gL_DeleteContext(gl_context);
+    sdl.gL_DeleteContext(W.gl_context);
     sdl.destroyWindow(window);
     sdl.quit();
 end
