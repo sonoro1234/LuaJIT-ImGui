@@ -80,6 +80,7 @@ typedef struct ImGuiDockContext ImGuiDockContext;
 typedef struct ImGuiDockRequest ImGuiDockRequest;
 typedef struct ImGuiDockNode ImGuiDockNode;
 typedef struct ImGuiDockNodeSettings ImGuiDockNodeSettings;
+typedef struct ImGuiErrorRecoveryState ImGuiErrorRecoveryState;
 typedef struct ImGuiGroupData ImGuiGroupData;
 typedef struct ImGuiInputTextState ImGuiInputTextState;
 typedef struct ImGuiInputTextDeactivateData ImGuiInputTextDeactivateData;
@@ -96,7 +97,6 @@ typedef struct ImGuiOldColumnData ImGuiOldColumnData;
 typedef struct ImGuiOldColumns ImGuiOldColumns;
 typedef struct ImGuiPopupData ImGuiPopupData;
 typedef struct ImGuiSettingsHandler ImGuiSettingsHandler;
-typedef struct ImGuiStackSizes ImGuiStackSizes;
 typedef struct ImGuiStyleMod ImGuiStyleMod;
 typedef struct ImGuiTabBar ImGuiTabBar;
 typedef struct ImGuiTabItem ImGuiTabItem;
@@ -809,11 +809,13 @@ typedef enum {
 }ImGuiColorEditFlags_;
 typedef enum {
     ImGuiSliderFlags_None = 0,
-    ImGuiSliderFlags_AlwaysClamp = 1 << 4,
     ImGuiSliderFlags_Logarithmic = 1 << 5,
     ImGuiSliderFlags_NoRoundToFormat = 1 << 6,
     ImGuiSliderFlags_NoInput = 1 << 7,
     ImGuiSliderFlags_WrapAround = 1 << 8,
+    ImGuiSliderFlags_ClampOnInput = 1 << 9,
+    ImGuiSliderFlags_ClampZeroRange = 1 << 10,
+    ImGuiSliderFlags_AlwaysClamp = ImGuiSliderFlags_ClampOnInput | ImGuiSliderFlags_ClampZeroRange,
     ImGuiSliderFlags_InvalidMask_ = 0x7000000F,
 }ImGuiSliderFlags_;
 typedef enum {
@@ -1037,12 +1039,17 @@ struct ImGuiIO
    _Bool         ConfigDragClickToInputText;
    _Bool         ConfigWindowsResizeFromEdges;
    _Bool         ConfigWindowsMoveFromTitleBarOnly;
+   _Bool         ConfigScrollbarScrollByPage;
     float ConfigMemoryCompactTimer;
     float MouseDoubleClickTime;
     float MouseDoubleClickMaxDist;
     float MouseDragThreshold;
     float KeyRepeatDelay;
     float KeyRepeatRate;
+   _Bool         ConfigErrorRecovery;
+   _Bool         ConfigErrorRecoveryEnableAssert;
+   _Bool         ConfigErrorRecoveryEnableDebugLog;
+   _Bool         ConfigErrorRecoveryEnableTooltip;
    _Bool         ConfigDebugIsDebuggerPresent;
    _Bool         ConfigDebugHighlightIdConflicts;
    _Bool         ConfigDebugBeginReturnValueOnce;
@@ -1559,6 +1566,7 @@ struct ImGuiDockContext;
 struct ImGuiDockRequest;
 struct ImGuiDockNode;
 struct ImGuiDockNodeSettings;
+struct ImGuiErrorRecoveryState;
 struct ImGuiGroupData;
 struct ImGuiInputTextState;
 struct ImGuiInputTextDeactivateData;
@@ -1575,7 +1583,6 @@ struct ImGuiOldColumnData;
 struct ImGuiOldColumns;
 struct ImGuiPopupData;
 struct ImGuiSettingsHandler;
-struct ImGuiStackSizes;
 struct ImGuiStyleMod;
 struct ImGuiTabBar;
 struct ImGuiTabItem;
@@ -1610,7 +1617,6 @@ typedef int ImGuiTextFlags;
 typedef int ImGuiTooltipFlags;
 typedef int ImGuiTypingSelectFlags;
 typedef int ImGuiWindowRefreshFlags;
-typedef void (*ImGuiErrorLogCallback)(void* user_data, const char* fmt, ...);
 extern ImGuiContext* GImGui;
 typedef FILE* ImFileHandle;
 typedef struct ImVec1 ImVec1;
@@ -1964,9 +1970,11 @@ struct ImGuiTreeNodeStackData
     ImGuiItemFlags InFlags;
     ImRect NavRect;
 };
-struct ImGuiStackSizes
+struct ImGuiErrorRecoveryState
 {
+    short SizeOfWindowStack;
     short SizeOfIDStack;
+    short SizeOfTreeStack;
     short SizeOfColorStack;
     short SizeOfStyleVarStack;
     short SizeOfFontStack;
@@ -1981,7 +1989,7 @@ struct ImGuiWindowStackData
 {
     ImGuiWindow* Window;
     ImGuiLastItemData ParentLastItemDataBackup;
-    ImGuiStackSizes StackSizesOnBegin;
+    ImGuiErrorRecoveryState StackSizesInBegin;
    _Bool         DisabledOverrideReenable;
 };
 typedef struct ImGuiShrinkWidthItem ImGuiShrinkWidthItem;
@@ -2501,19 +2509,21 @@ struct ImGuiLocEntry
     ImGuiLocKey Key;
     const char* Text;
 };
+typedef void (*ImGuiErrorCallback)(ImGuiContext* ctx, void* user_data, const char* msg);
 typedef enum {
     ImGuiDebugLogFlags_None = 0,
-    ImGuiDebugLogFlags_EventActiveId = 1 << 0,
-    ImGuiDebugLogFlags_EventFocus = 1 << 1,
-    ImGuiDebugLogFlags_EventPopup = 1 << 2,
-    ImGuiDebugLogFlags_EventNav = 1 << 3,
-    ImGuiDebugLogFlags_EventClipper = 1 << 4,
-    ImGuiDebugLogFlags_EventSelection = 1 << 5,
-    ImGuiDebugLogFlags_EventIO = 1 << 6,
-    ImGuiDebugLogFlags_EventInputRouting = 1 << 7,
-    ImGuiDebugLogFlags_EventDocking = 1 << 8,
-    ImGuiDebugLogFlags_EventViewport = 1 << 9,
-    ImGuiDebugLogFlags_EventMask_ = ImGuiDebugLogFlags_EventActiveId | ImGuiDebugLogFlags_EventFocus | ImGuiDebugLogFlags_EventPopup | ImGuiDebugLogFlags_EventNav | ImGuiDebugLogFlags_EventClipper | ImGuiDebugLogFlags_EventSelection | ImGuiDebugLogFlags_EventIO | ImGuiDebugLogFlags_EventInputRouting | ImGuiDebugLogFlags_EventDocking | ImGuiDebugLogFlags_EventViewport,
+    ImGuiDebugLogFlags_EventError = 1 << 0,
+    ImGuiDebugLogFlags_EventActiveId = 1 << 1,
+    ImGuiDebugLogFlags_EventFocus = 1 << 2,
+    ImGuiDebugLogFlags_EventPopup = 1 << 3,
+    ImGuiDebugLogFlags_EventNav = 1 << 4,
+    ImGuiDebugLogFlags_EventClipper = 1 << 5,
+    ImGuiDebugLogFlags_EventSelection = 1 << 6,
+    ImGuiDebugLogFlags_EventIO = 1 << 7,
+    ImGuiDebugLogFlags_EventInputRouting = 1 << 8,
+    ImGuiDebugLogFlags_EventDocking = 1 << 9,
+    ImGuiDebugLogFlags_EventViewport = 1 << 10,
+    ImGuiDebugLogFlags_EventMask_ = ImGuiDebugLogFlags_EventError | ImGuiDebugLogFlags_EventActiveId | ImGuiDebugLogFlags_EventFocus | ImGuiDebugLogFlags_EventPopup | ImGuiDebugLogFlags_EventNav | ImGuiDebugLogFlags_EventClipper | ImGuiDebugLogFlags_EventSelection | ImGuiDebugLogFlags_EventIO | ImGuiDebugLogFlags_EventInputRouting | ImGuiDebugLogFlags_EventDocking | ImGuiDebugLogFlags_EventViewport,
     ImGuiDebugLogFlags_OutputToTTY = 1 << 20,
     ImGuiDebugLogFlags_OutputToTestEngine = 1 << 21,
 }ImGuiDebugLogFlags_;
@@ -2856,6 +2866,7 @@ struct ImGuiContext
     short DisabledStackSize;
     short LockMarkEdited;
     short TooltipOverrideCount;
+    ImGuiWindow* TooltipPreviousWindow;
     ImVector_char ClipboardHandlerData;
     ImVector_ImGuiID MenusIdSubmittedThisFrame;
     ImGuiTypingSelectState TypingSelectState;
@@ -2884,9 +2895,18 @@ struct ImGuiContext
     int LogDepthRef;
     int LogDepthToExpand;
     int LogDepthToExpandDefault;
+    ImGuiErrorCallback ErrorCallback;
+    void* ErrorCallbackUserData;
+    ImVec2 ErrorTooltipLockedPos;
+   _Bool         ErrorFirst;
+    int ErrorCountCurrentFrame;
+    ImGuiErrorRecoveryState StackSizesInNewFrame;
+    ImGuiErrorRecoveryState*StackSizesInBeginForCurrentWindow;
+    int DebugDrawIdConflictsCount;
     ImGuiDebugLogFlags DebugLogFlags;
     ImGuiTextBuffer DebugLogBuf;
     ImGuiTextIndex DebugLogIndex;
+    int DebugLogSkippedErrors;
     ImGuiDebugLogFlags DebugLogAutoDisableFlags;
     ImU8 DebugLogAutoDisableFrames;
     ImU8 DebugLocateFrames;
@@ -3103,6 +3123,7 @@ struct ImGuiTabItem
 typedef struct ImVector_ImGuiTabItem {int Size;int Capacity;ImGuiTabItem* Data;} ImVector_ImGuiTabItem;
 struct ImGuiTabBar
 {
+    ImGuiWindow* Window;
     ImVector_ImGuiTabItem Tabs;
     ImGuiTabBarFlags Flags;
     ImGuiID ID;
@@ -4243,10 +4264,8 @@ void ImGuiNextItemData_destroy(ImGuiNextItemData* self);
 void ImGuiNextItemData_ClearFlags(ImGuiNextItemData* self);
 ImGuiLastItemData* ImGuiLastItemData_ImGuiLastItemData(void);
 void ImGuiLastItemData_destroy(ImGuiLastItemData* self);
-ImGuiStackSizes* ImGuiStackSizes_ImGuiStackSizes(void);
-void ImGuiStackSizes_destroy(ImGuiStackSizes* self);
-void ImGuiStackSizes_SetToContextState(ImGuiStackSizes* self,ImGuiContext* ctx);
-void ImGuiStackSizes_CompareWithContextState(ImGuiStackSizes* self,ImGuiContext* ctx);
+ImGuiErrorRecoveryState* ImGuiErrorRecoveryState_ImGuiErrorRecoveryState(void);
+void ImGuiErrorRecoveryState_destroy(ImGuiErrorRecoveryState* self);
 ImGuiPtrOrIndex* ImGuiPtrOrIndex_ImGuiPtrOrIndex_Ptr(void* ptr);
 void ImGuiPtrOrIndex_destroy(ImGuiPtrOrIndex* self);
 ImGuiPtrOrIndex* ImGuiPtrOrIndex_ImGuiPtrOrIndex_Int(int index);
@@ -4670,7 +4689,8 @@ const char* igTabBarGetTabName(ImGuiTabBar* tab_bar,ImGuiTabItem* tab);
 void igTabBarAddTab(ImGuiTabBar* tab_bar,ImGuiTabItemFlags tab_flags,ImGuiWindow* window);
 void igTabBarRemoveTab(ImGuiTabBar* tab_bar,ImGuiID tab_id);
 void igTabBarCloseTab(ImGuiTabBar* tab_bar,ImGuiTabItem* tab);
-void igTabBarQueueFocus(ImGuiTabBar* tab_bar,ImGuiTabItem* tab);
+void igTabBarQueueFocus_TabItemPtr(ImGuiTabBar* tab_bar,ImGuiTabItem* tab);
+void igTabBarQueueFocus_Str(ImGuiTabBar* tab_bar,const char* tab_name);
 void igTabBarQueueReorder(ImGuiTabBar* tab_bar,ImGuiTabItem* tab,int offset);
 void igTabBarQueueReorderFromMousePos(ImGuiTabBar* tab_bar,ImGuiTabItem* tab,ImVec2 mouse_pos);
 _Bool                igTabBarProcessReorder(ImGuiTabBar* tab_bar);
@@ -4729,6 +4749,7 @@ void igDataTypeApplyOp(ImGuiDataType data_type,int op,void* output,const void* a
 _Bool                igDataTypeApplyFromText(const char* buf,ImGuiDataType data_type,void* p_data,const char* format,void* p_data_when_empty);
 int igDataTypeCompare(ImGuiDataType data_type,const void* arg_1,const void* arg_2);
 _Bool                igDataTypeClamp(ImGuiDataType data_type,void* p_data,const void* p_min,const void* p_max);
+_Bool                igDataTypeIsZero(ImGuiDataType data_type,const void* p_data);
 _Bool                igInputTextEx(const char* label,const char* hint,char* buf,int buf_size,const ImVec2 size_arg,ImGuiInputTextFlags flags,ImGuiInputTextCallback callback,void* user_data);
 void igInputTextDeactivateHook(ImGuiID id);
 _Bool                igTempInputText(const ImRect bb,ImGuiID id,const char* label,char* buf,int buf_size,ImGuiInputTextFlags flags);
@@ -4746,10 +4767,15 @@ void igShadeVertsTransformPos(ImDrawList* draw_list,int vert_start_idx,int vert_
 void igGcCompactTransientMiscBuffers(void);
 void igGcCompactTransientWindowBuffers(ImGuiWindow* window);
 void igGcAwakeTransientWindowBuffers(ImGuiWindow* window);
-void igDebugAllocHook(ImGuiDebugAllocInfo* info,int frame_count,void* ptr,size_t size);
-void igErrorCheckEndFrameRecover(ImGuiErrorLogCallback log_callback,void* user_data);
-void igErrorCheckEndWindowRecover(ImGuiErrorLogCallback log_callback,void* user_data);
+_Bool                igErrorLog(const char* msg);
+void igErrorRecoveryStoreState(ImGuiErrorRecoveryState* state_out);
+void igErrorRecoveryTryToRecoverState(const ImGuiErrorRecoveryState* state_in);
+void igErrorRecoveryTryToRecoverWindowState(const ImGuiErrorRecoveryState* state_in);
 void igErrorCheckUsingSetCursorPosToExtendParentBoundaries(void);
+void igErrorCheckEndFrameFinalizeErrorTooltip(void);
+_Bool                igBeginErrorTooltip(void);
+void igEndErrorTooltip(void);
+void igDebugAllocHook(ImGuiDebugAllocInfo* info,int frame_count,void* ptr,size_t size);
 void igDebugDrawCursorPos(ImU32 col);
 void igDebugDrawLineExtents(ImU32 col);
 void igDebugDrawItemRect(ImU32 col);

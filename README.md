@@ -8,7 +8,7 @@ This is a LuaJIT binding for the excellent C++ immediate gui [imgui](https://git
 Uses cimgui to be the most "up to date" as possible.
 
 Notes:
-* currently this wrapper is based on version [1.91.2 docking of imgui]
+* currently this wrapper is based on version [1.91.3 docking of imgui]
 
 # cloning
 

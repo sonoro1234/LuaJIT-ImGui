@@ -1028,6 +1028,14 @@ end
 ImGuiDockNode.SetLocalFlags = lib.ImGuiDockNode_SetLocalFlags
 ImGuiDockNode.UpdateMergedFlags = lib.ImGuiDockNode_UpdateMergedFlags
 M.ImGuiDockNode = ffi.metatype("ImGuiDockNode",ImGuiDockNode)
+--------------------------ImGuiErrorRecoveryState----------------------------
+local ImGuiErrorRecoveryState= {}
+ImGuiErrorRecoveryState.__index = ImGuiErrorRecoveryState
+function ImGuiErrorRecoveryState.__new(ctype)
+    local ptr = lib.ImGuiErrorRecoveryState_ImGuiErrorRecoveryState()
+    return ffi.gc(ptr,lib.ImGuiErrorRecoveryState_destroy)
+end
+M.ImGuiErrorRecoveryState = ffi.metatype("ImGuiErrorRecoveryState",ImGuiErrorRecoveryState)
 --------------------------ImGuiIDStackTool----------------------------
 local ImGuiIDStackTool= {}
 ImGuiIDStackTool.__index = ImGuiIDStackTool
@@ -1366,16 +1374,6 @@ function ImGuiStackLevelInfo.__new(ctype)
     return ffi.gc(ptr,lib.ImGuiStackLevelInfo_destroy)
 end
 M.ImGuiStackLevelInfo = ffi.metatype("ImGuiStackLevelInfo",ImGuiStackLevelInfo)
---------------------------ImGuiStackSizes----------------------------
-local ImGuiStackSizes= {}
-ImGuiStackSizes.__index = ImGuiStackSizes
-ImGuiStackSizes.CompareWithContextState = lib.ImGuiStackSizes_CompareWithContextState
-function ImGuiStackSizes.__new(ctype)
-    local ptr = lib.ImGuiStackSizes_ImGuiStackSizes()
-    return ffi.gc(ptr,lib.ImGuiStackSizes_destroy)
-end
-ImGuiStackSizes.SetToContextState = lib.ImGuiStackSizes_SetToContextState
-M.ImGuiStackSizes = ffi.metatype("ImGuiStackSizes",ImGuiStackSizes)
 --------------------------ImGuiStorage----------------------------
 local ImGuiStorage= {}
 ImGuiStorage.__index = ImGuiStorage
@@ -5523,6 +5521,7 @@ function M.BeginDragDropSource(flags)
 end
 M.BeginDragDropTarget = lib.igBeginDragDropTarget
 M.BeginDragDropTargetCustom = lib.igBeginDragDropTargetCustom
+M.BeginErrorTooltip = lib.igBeginErrorTooltip
 M.BeginGroup = lib.igBeginGroup
 M.BeginItemTooltip = lib.igBeginItemTooltip
 function M.BeginListBox(label,size)
@@ -5748,6 +5747,7 @@ M.DataTypeClamp = lib.igDataTypeClamp
 M.DataTypeCompare = lib.igDataTypeCompare
 M.DataTypeFormatString = lib.igDataTypeFormatString
 M.DataTypeGetInfo = lib.igDataTypeGetInfo
+M.DataTypeIsZero = lib.igDataTypeIsZero
 M.DebugAllocHook = lib.igDebugAllocHook
 M.DebugBreakButton = lib.igDebugBreakButton
 M.DebugBreakButtonTooltip = lib.igDebugBreakButtonTooltip
@@ -5971,6 +5971,7 @@ M.EndDisabled = lib.igEndDisabled
 M.EndDisabledOverrideReenable = lib.igEndDisabledOverrideReenable
 M.EndDragDropSource = lib.igEndDragDropSource
 M.EndDragDropTarget = lib.igEndDragDropTarget
+M.EndErrorTooltip = lib.igEndErrorTooltip
 M.EndFrame = lib.igEndFrame
 M.EndGroup = lib.igEndGroup
 M.EndListBox = lib.igEndListBox
@@ -5983,15 +5984,12 @@ M.EndTabBar = lib.igEndTabBar
 M.EndTabItem = lib.igEndTabItem
 M.EndTable = lib.igEndTable
 M.EndTooltip = lib.igEndTooltip
-function M.ErrorCheckEndFrameRecover(log_callback,user_data)
-    user_data = user_data or nil
-    return lib.igErrorCheckEndFrameRecover(log_callback,user_data)
-end
-function M.ErrorCheckEndWindowRecover(log_callback,user_data)
-    user_data = user_data or nil
-    return lib.igErrorCheckEndWindowRecover(log_callback,user_data)
-end
+M.ErrorCheckEndFrameFinalizeErrorTooltip = lib.igErrorCheckEndFrameFinalizeErrorTooltip
 M.ErrorCheckUsingSetCursorPosToExtendParentBoundaries = lib.igErrorCheckUsingSetCursorPosToExtendParentBoundaries
+M.ErrorLog = lib.igErrorLog
+M.ErrorRecoveryStoreState = lib.igErrorRecoveryStoreState
+M.ErrorRecoveryTryToRecoverState = lib.igErrorRecoveryTryToRecoverState
+M.ErrorRecoveryTryToRecoverWindowState = lib.igErrorRecoveryTryToRecoverWindowState
 function M.FindBestWindowPosForPopup(window)
     local nonUDT_out = ffi.new("ImVec2")
     lib.igFindBestWindowPosForPopup(nonUDT_out,window)
@@ -7513,7 +7511,14 @@ M.TabBarGetCurrentTab = lib.igTabBarGetCurrentTab
 M.TabBarGetTabName = lib.igTabBarGetTabName
 M.TabBarGetTabOrder = lib.igTabBarGetTabOrder
 M.TabBarProcessReorder = lib.igTabBarProcessReorder
-M.TabBarQueueFocus = lib.igTabBarQueueFocus
+M.TabBarQueueFocus_TabItemPtr = lib.igTabBarQueueFocus_TabItemPtr
+M.TabBarQueueFocus_Str = lib.igTabBarQueueFocus_Str
+function M.TabBarQueueFocus(a1,a2) -- generic version
+    if (ffi.istype('ImGuiTabItem*',a2) or ffi.istype('ImGuiTabItem',a2) or ffi.istype('ImGuiTabItem[]',a2)) then return M.TabBarQueueFocus_TabItemPtr(a1,a2) end
+    if (ffi.istype('const char*',a2) or ffi.istype('char[]',a2) or type(a2)=='string') then return M.TabBarQueueFocus_Str(a1,a2) end
+    print(a1,a2)
+    error'M.TabBarQueueFocus could not find overloaded'
+end
 M.TabBarQueueReorder = lib.igTabBarQueueReorder
 M.TabBarQueueReorderFromMousePos = lib.igTabBarQueueReorderFromMousePos
 M.TabBarRemoveTab = lib.igTabBarRemoveTab
