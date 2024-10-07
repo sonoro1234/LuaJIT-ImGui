@@ -97,6 +97,7 @@ function win:draw(ig)
                 ig.EndTabItem();
             end
 			if not opened[0] then 
+				curr_opendoc = i
 				doclosefile = true
 				break
 			end
