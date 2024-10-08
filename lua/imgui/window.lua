@@ -177,7 +177,7 @@ function M:SDL(w,h,title,args)
     sdl.gL_SetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 2);
     local current = ffi.new("SDL_DisplayMode[1]")
     sdl.getCurrentDisplayMode(0, current);
-    local window = sdl.createWindow(title or "", sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, w, h, sdl.WINDOW_OPENGL+sdl.WINDOW_RESIZABLE); 
+    local window = sdl.createWindow(title or "", sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, w, h, sdl.WINDOW_OPENGL + sdl.WINDOW_RESIZABLE + sdl.SDL_WINDOW_ALLOW_HIGHDPI); 
     W.gl_context = sdl.gL_CreateContext(window);
     if args.vsync then sdl.gL_SetSwapInterval(1) end
 
