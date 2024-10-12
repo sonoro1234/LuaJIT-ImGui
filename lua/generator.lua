@@ -83,11 +83,13 @@ local class_gen = require"class_gen"
 local classes = class_gen(sources)
 local iniclass = "local cimguimodule = 'cimgui_glfw' --set imgui directory location\n"
 local base = read_data("./imgui_base.lua")
-save_data("./imgui/glfw.lua",iniclass, base, classes)
+local base_glfw = read_data("./imgui_base_glfw.lua")
+save_data("./imgui/glfw.lua",iniclass, base, base_glfw, classes)
 
 ----- generate imgui/sdl.lua
 print"save sdl.lua"
 local iniclass = "local cimguimodule = 'cimgui_sdl' --set imgui directory location\n"
-save_data("./imgui/sdl.lua",iniclass, base, classes)
+local base_sdl = read_data("./imgui_base_sdl.lua")
+save_data("./imgui/sdl.lua",iniclass, base, base_sdl, classes)
 
 print"-----------------------------done generation"
