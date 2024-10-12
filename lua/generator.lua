@@ -92,4 +92,10 @@ local iniclass = "local cimguimodule = 'cimgui_sdl' --set imgui directory locati
 local base_sdl = read_data("./imgui_base_sdl.lua")
 save_data("./imgui/sdl.lua",iniclass, base, base_sdl, classes)
 
+----- generate imgui/sdl3.lua
+print"save sdl3.lua"
+local iniclass = "local cimguimodule = 'cimgui_sdl3' --set imgui directory location\n"
+local base_sdl3 = read_data("./imgui_base_sdl3.lua")
+save_data("./imgui/sdl3.lua",iniclass, base, base_sdl3, classes)
+
 print"-----------------------------done generation"

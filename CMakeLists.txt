@@ -48,6 +48,7 @@ endif()
 
 set(IMGUI_SOURCES_glfw)
 set(IMGUI_SOURCES_sdl)
+set(IMGUI_SOURCES_sdl3)
 set(IMGUI_LIBRARIES )
 set(IMGUI_ft_LIBRARIES )
 
@@ -63,6 +64,7 @@ add_definitions("-DIMGUIZMO_IMGUI_FOLDER=")
 #optional adding implementations
 option(IMPL_GLFW "add GLFW implementation" ON)
 option(IMPL_SDL "add SDL implementation" ON)
+option(IMPL_SDL3 "add SDL3 implementation" ON)
 option(IMPL_OPENGL2 "add OPENGL2 implementation" ON)
 option(IMPL_OPENGL3 "add OPENGL3 implementation" ON)
 option(IMGUI_FREETYPE "add Freetype2" OFF)
@@ -159,6 +161,36 @@ if(IMPL_SDL)
               #ARCHIVE DESTINATION lib 
               )
 endif(IMPL_SDL)
+
+if(IMPL_SDL3)
+    list(APPEND IMGUI_SOURCES_sdl3 ${BACKENDS_FOLDER}imgui_impl_sdl3.cpp)
+	if(DEFINED SDL3_PATH)
+		message(STATUS "SDL_PATH defined as " ${SDL3_PATH})
+		FIND_PACKAGE(SDL3 REQUIRED PATHS ${SDL3_PATH})
+		message(STATUS "sdl3found")
+		get_target_property(SDL_INCLUDE SDL3::SDL3 INTERFACE_INCLUDE_DIRECTORIES)
+		message(STATUS "sdlinclude is " ${SDL_INCLUDE} " or " ${SDL2_INCLUDE_DIRS})
+		#if not found latest SDL2 cmake config use older
+		if (("${SDL_INCLUDE}" STREQUAL "") OR ("${SDL_INCLUDE}" STREQUAL "SDL_INCLUDE-NOTFOUND"))
+			message(STATUS "sdlinclude2 is " ${SDL2_INCLUDE_DIRS})
+			include_directories(${SDL2_INCLUDE_DIRS})
+			set(IMGUI_SDL3_LIBRARY ${SDL2_LIBRARIES})
+		else()#use new one SDL2 config
+			include_directories(${SDL_INCLUDE})
+			set(IMGUI_SDL3_LIBRARY SDL3::SDL3)
+		endif()
+	else(DEFINED SDL3_PATH) #using SDL3 submodule from anima
+		message(STATUS "SDL3_PATH not defined")
+		set(IMGUI_SDL3_LIBRARY SDL3::SDL3)
+	endif(DEFINED SDL3_PATH)
+	add_library(cimgui_sdl3 SHARED  ${IMGUI_SOURCES_sdl3} $<TARGET_OBJECTS:cimgui_base>)
+	target_link_libraries(cimgui_sdl3 PUBLIC ${IMGUI_LIBRARIES} ${IMGUI_SDL3_LIBRARY})
+	install(TARGETS cimgui_sdl3
+              RUNTIME DESTINATION  ${LUAJIT_BIN}
+              LIBRARY DESTINATION  ${LUAJIT_BIN}
+              #ARCHIVE DESTINATION lib 
+              )
+endif(IMPL_SDL3)
 
 
 #install
