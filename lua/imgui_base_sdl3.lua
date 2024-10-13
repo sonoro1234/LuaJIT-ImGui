@@ -33,7 +33,7 @@ end
 M.Imgui_Impl_SDL3_opengl3 = setmetatable({},Imgui_Impl_SDL3_opengl3)
 -----------------------Imgui_Impl_SDL3_opengl2
 local Imgui_Impl_SDL3_opengl2 = {}
-Imgui_Impl_SDL_opengl2.__index = Imgui_Impl_SDL3_opengl2
+Imgui_Impl_SDL3_opengl2.__index = Imgui_Impl_SDL3_opengl2
 
 function Imgui_Impl_SDL3_opengl2.__call()
     return setmetatable({ctx = lib.igCreateContext(nil)},Imgui_Impl_SDL3_opengl2)

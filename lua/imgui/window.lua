@@ -218,7 +218,7 @@ local function startSDL3(W, postf)
         --SDL_Event 
         local event = ffi.new"SDL_Event"
         while (sdl.pollEvent(event)) do
-            ig.lib.ImGui_ImplSDL2_ProcessEvent(event);
+            ig.lib.ImGui_ImplSDL3_ProcessEvent(event);
             if (event.type == sdl.EVENT_QUIT) then
                 done = true;
             end
@@ -261,11 +261,12 @@ local function startSDL3(W, postf)
     if postf then postf() end
     W.ig_Impl:destroy()
 
-    sdl.gL_DeleteContext(W.gl_context);
+    sdl.gL_DestroyContext(W.gl_context);
     sdl.destroyWindow(window);
     sdl.quit();
 end
 function M:SDL3(w,h,title,args)
+
     args = args or {}
     local W = {args = args}
     local ffi = require "ffi"
@@ -276,9 +277,9 @@ function M:SDL3(w,h,title,args)
     --local gl, glc, glu, glext = gllib.libraries()
     W.ig = require"imgui.sdl3"
 
-    if (sdl.init(sdl.INIT_VIDEO+sdl.INIT_GAMEPAD)) then
-        print(string.format("Error: %s\n", sdl.getError()));
-        return -1;
+    if not (sdl.init(sdl.INIT_VIDEO+sdl.INIT_GAMEPAD)) then
+        print(string.format("Error: %s\n", ffi.string(sdl.getError())));
+        error"failed sdl3_init";
     end
 
 
@@ -294,7 +295,7 @@ function M:SDL3(w,h,title,args)
     end
     sdl.gL_SetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 2);
 
-    local window = sdl.createWindow(title or "", w, h, sdl.WINDOW_OPENGL + sdl.WINDOW_RESIZABLE + sdl.SDL_WINDOW_HIDDEN); 
+    local window = sdl.createWindow(title or "", w, h, sdl.WINDOW_OPENGL + sdl.WINDOW_RESIZABLE)-- + sdl.SDL_WINDOW_HIDDEN); 
     W.gl_context = sdl.gL_CreateContext(window);
     if args.vsync then sdl.gL_SetSwapInterval(1) end
 
@@ -319,6 +320,7 @@ function M:SDL3(w,h,title,args)
 
     W.window = window
     W.start = startSDL3
+
     return W
 end
 

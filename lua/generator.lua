@@ -34,7 +34,7 @@ local sources = {"cimgui", "cimplot", "cimguizmo", "cimguizmo_quat", "cimnodes",
 local cdefs = get_all_cdefs(sources)
 
 print"get cimgui_impl cdefs"
-cdefs = get_cdefs([[gcc -E -DCIMGUI_API="" -DCIMGUI_USE_OPENGL3 -DCIMGUI_USE_SDL2 -DCIMGUI_USE_GLFW -DCIMGUI_USE_OPENGL2 ../cimgui/generator/output/cimgui_impl.h]],"cimgui_impl",cdefs)
+cdefs = get_cdefs([[gcc -E -DCIMGUI_API="" -DCIMGUI_USE_OPENGL3 -DCIMGUI_USE_SDL2 -DCIMGUI_USE_SDL3 -DCIMGUI_USE_GLFW -DCIMGUI_USE_OPENGL2 ../cimgui/generator/output/cimgui_impl.h]],"cimgui_impl",cdefs)
 
 table.insert(cdefs,1,"typedef void FILE;")
 

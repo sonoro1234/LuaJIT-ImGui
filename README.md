@@ -7,6 +7,8 @@
 This is a LuaJIT binding for the excellent C++ immediate gui [imgui](https://github.com/ocornut/imgui).
 Uses cimgui to be the most "up to date" as possible.
 
+There are backends for glfw, SDL2 and SDL3.
+
 Notes:
 * currently this wrapper is based on version [1.91.3 docking of imgui]
 
