@@ -64,11 +64,15 @@ function gui.FileBrowser(filename_p, args, funcOK)
     local fullname
     
     local function funcdir(path, patt)
-        for file in lfs.dir(path) do
+        for file,obj in lfs.dir(path) do
             if file ~= "."  then --and file ~= ".." then
                     local f = pathut.chain(path, file)
                     local attr = lfs.attributes (f)
-                    assert (type(attr) == "table")
+                    --assert (type(attr) == "table")
+                    if not (type(attr) == "table") then 
+                        --print(f,attr,obj,obj:attr());
+                        attr = obj:attr()
+                    end
                     if attr.mode == "directory" then
                         table.insert(curr_dir_dirs, {path=f,name=file,is_dir=true})
                     elseif (not patt) or file:match(patt) then

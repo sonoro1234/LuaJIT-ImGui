@@ -209,7 +209,7 @@ function M.pad(label,value,sz,minv,maxv)
     maxv = maxv or 1
     local b = maxv - minv
     local function clip(val,mini,maxi) return math.min(maxi,math.max(mini,val)) end
-    sz = sz or 200
+    sz = sz or 300
     local canvas_pos = M.GetCursorScreenPos();
     M.InvisibleButton(label.."t",M.ImVec2(sz, sz)) -- + style.ItemInnerSpacing.y))
     local is_active = M.IsItemActive()
