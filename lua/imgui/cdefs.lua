@@ -5800,6 +5800,8 @@ typedef enum {
     ImPlotMarker_Cross,
     ImPlotMarker_Plus,
     ImPlotMarker_Asterisk,
+    ImPlotMarker_Vertical,
+    ImPlotMarker_Horizontal,
     ImPlotMarker_COUNT
 }ImPlotMarker_;
 typedef enum {
@@ -7012,6 +7014,8 @@ ImU32 ImPlot_GetColormapColorU32(int idx,ImPlotColormap cmap);
 ImU32 ImPlot_NextColormapColorU32(void);
 ImU32 ImPlot_SampleColormapU32(float t,ImPlotColormap cmap);
 void ImPlot_RenderColorBar(const ImU32* colors,int size,ImDrawList* DrawList,const ImRect_c bounds,                                                                                                             _Bool                                                                                                                   vert,                                                                                                                       _Bool                                                                                                                             reversed,                                                                                                                                     _Bool                                                                                                                                           continuous);
+void ImPlot_AddLineH(ImDrawList* draw_list,float x1,float x2,float y,ImU32 col,float thickness);
+void ImPlot_AddLineV(ImDrawList* draw_list,float x,float y1,float y2,ImU32 col,float thickness);
 double ImPlot_NiceNum(double x,                                         _Bool                                               round);
 int ImPlot_OrderOfMagnitude(double val);
 int ImPlot_OrderToPrecision(int order);

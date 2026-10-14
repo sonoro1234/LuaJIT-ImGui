@@ -4115,6 +4115,14 @@ function M.ImPlot_AddColormap(a1,a2,a3,a4) -- generic version
     print(a1,a2,a3,a4)
     error'M.ImPlot_AddColormap could not find overloaded'
 end
+function M.ImPlot_AddLineH(draw_list,x1,x2,y,col,thickness)
+    thickness = thickness or 1.0
+    return lib.ImPlot_AddLineH(draw_list,x1,x2,y,col,thickness)
+end
+function M.ImPlot_AddLineV(draw_list,x,y1,y2,col,thickness)
+    thickness = thickness or 1.0
+    return lib.ImPlot_AddLineV(draw_list,x,y1,y2,col,thickness)
+end
 function M.ImPlot_AddTextCentered(DrawList,top_center,col,text_begin,text_end)
     text_end = text_end or nil
     return lib.ImPlot_AddTextCentered(DrawList,top_center,col,text_begin,text_end)
