@@ -131,12 +131,12 @@ local function toggleTrieAutoComplete(self)
 
         -- connect autocomplete helper to editor
         trieAutoComplete:Connect(editor);
-        self.notifications:Add(ig.lib.info, "Autocomplete activated");
+        self.notifications:Add(self.notifications.Type.info, "Autocomplete activated");
 
     else 
         --// disconnect autocomplete helper from editor
         trieAutoComplete:Disconnect();
-        self.notifications:Add(ig.lib.info, "Autocomplete deactivated");
+        self.notifications:Add(self.notifications.Type.info, "Autocomplete deactivated");
     end
 end
 
@@ -149,10 +149,10 @@ local function toggleNavigationMode(self)
 
     if bit.band(iog.ConfigFlags, ig.lib.ImGuiConfigFlags_NavEnableKeyboard)~=0 then
         iog.ConfigFlags = bit.band(iog.ConfigFlags, bit.bnot(ig.lib.ImGuiConfigFlags_NavEnableKeyboard), bit.bnot( ig.lib.ImGuiConfigFlags_NavEnableGamepad))
-        self.notifications:Add(ig.lib.info, "Keyboard/gamepad navigation mode deactivated");
+        self.notifications:Add(self.notifications.Type.info, "Keyboard/gamepad navigation mode deactivated");
     else
         iog.ConfigFlags = bit.bor(iog.ConfigFlags, ig.lib.ImGuiConfigFlags_NavEnableKeyboard, ig.lib.ImGuiConfigFlags_NavEnableGamepad)
-        self.notifications:Add(ig.lib.info, "Keyboard/gamepad navigation mode activated");
+        self.notifications:Add(self.notifications.Type.info, "Keyboard/gamepad navigation mode activated");
     end
 end
 local function renderMenuBar(self)

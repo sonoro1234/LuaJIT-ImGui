@@ -7686,6 +7686,10 @@ typedef enum {
   alignMiddle,
   alignBottom
  }Scroll;
+typedef enum {
+SquiggleStyle_wave=0,
+SquiggleStyle_background=1,
+}SquiggleStyle;
 struct Decorator
 {
   size_t line;
@@ -7745,7 +7749,9 @@ matchingBracketLevel3=18,
 matchingBracketError=19,
 lineNumber=20,
 currentLineNumber=21,
-count=22,
+currentLineHighlight=22,
+currentLineHighlightBorder=23,
+count=24,
 }Color;
 typedef enum {
 mustBreak=0,
@@ -7793,16 +7799,6 @@ typedef struct TrieAutoComplete TrieAutoComplete;
 struct TrieAutoComplete
 {
 };
-typedef struct Notifications Notifications;
-typedef enum {
-  success,
-  warning,
-  error,
-  info
- }Type;
-struct Notifications
-{
-};
 typedef struct DocPos_c DocPos;
 typedef struct VisPos_c VisPos;
 typedef struct DocSelection_c DocSelection;
@@ -7827,6 +7823,8 @@ void TextEditor_SetWordWrapEnabled(TextEditor* self,                            
 _Bool                TextEditor_IsWordWrapEnabled(TextEditor* self);
 void TextEditor_SetReadOnlyEnabled(TextEditor* self,                                                              _Bool                                                                    value);
 _Bool                TextEditor_IsReadOnlyEnabled(TextEditor* self);
+void TextEditor_SetFindReplaceEnabled(TextEditor* self,                                                                 _Bool                                                                       value);
+_Bool                TextEditor_IsFindReplaceEnabled(TextEditor* self);
 void TextEditor_SetCaretsVisible(TextEditor* self,                                                            _Bool                                                                  value);
 _Bool                TextEditor_IsCaretsVisible(TextEditor* self);
 void TextEditor_SetAutoIndentEnabled(TextEditor* self,                                                                _Bool                                                                      value);
@@ -7847,6 +7845,8 @@ void TextEditor_SetShowScrollbarMiniMapEnabled(TextEditor* self,                
 _Bool                TextEditor_IsShowScrollbarMiniMapEnabled(TextEditor* self);
 void TextEditor_SetShowPanScrollIndicatorEnabled(TextEditor* self,                                                                            _Bool                                                                                  value);
 _Bool                TextEditor_IsShowPanScrollIndicatorEnabled(TextEditor* self);
+void TextEditor_SetShowCurrentLineHighlightEnabled(TextEditor* self,                                                                              _Bool                                                                                    value);
+_Bool                TextEditor_IsShowCurrentLineHighlightEnabled(TextEditor* self);
 void TextEditor_SetShowMatchingBrackets(TextEditor* self,                                                                   _Bool                                                                         value);
 _Bool                TextEditor_IsShowingMatchingBrackets(TextEditor* self);
 void TextEditor_SetCompletePairedGlyphs(TextEditor* self,                                                                   _Bool                                                                         value);
@@ -7921,6 +7921,7 @@ float TextEditor_GetLineHeight(TextEditor* self);
 float TextEditor_GetGlyphWidth(TextEditor* self);
 VisPos_c TextEditor_DocPos2VisPos(TextEditor* self,DocPos_c pos);
 DocPos_c TextEditor_VisPos2DocPos(TextEditor* self,VisPos_c pos);
+ImVec2_c TextEditor_DocPos2ScreenPos(TextEditor* self,DocPos_c pos);
 _Bool                TextEditor_IsDocPosVisible(TextEditor* self,DocPos_c pos);
 _Bool                TextEditor_IsVisPosOverGlyph(TextEditor* self,VisPos_c pos);
 DocPos_c TextEditor_FindWordStart(TextEditor* self,DocPos_c pos,                                                                          _Bool                                                                                wholeWord);
@@ -7942,7 +7943,7 @@ void TextEditor_SetReplaceAllButtonLabel(TextEditor* self,const char* label);
 void TextEditor_AddMarker(TextEditor* self,size_t line,ImU32 lineNumberColor,ImU32 textColor,const char* lineNumberTooltip,const char* textTooltip);
 void TextEditor_ClearMarkers(TextEditor* self);
 _Bool                TextEditor_HasMarkers(TextEditor* self);
-void TextEditor_AddSquiggle(TextEditor* self,DocPos_c start,DocPos_c end,size_t type,ImU32 color,const char* tooltip);
+void TextEditor_AddSquiggle(TextEditor* self,DocPos_c start,DocPos_c end,size_t type,ImU32 color,const char* tooltip,SquiggleStyle style);
 void TextEditor_ClearSquiggles_DocPos(TextEditor* self,DocPos_c start,DocPos_c end);
 void TextEditor_ClearSquiggles_size_t(TextEditor* self,size_t type);
 void TextEditor_ClearSquiggles_Nil(TextEditor* self);
@@ -8085,10 +8086,6 @@ void TrieAutoComplete_destroy(TrieAutoComplete* self);
 void TrieAutoComplete_Connect(TrieAutoComplete* self,TextEditor* editor);
 void TrieAutoComplete_Disconnect(TrieAutoComplete* self);
 _Bool                TrieAutoComplete_IsConnected(TrieAutoComplete* self);
-Notifications* Notifications_Notifications(void);
-void Notifications_destroy(Notifications* self);
-void Notifications_Add(Notifications* self,Type type,const char* message,int dismissTime);
-void Notifications_Render(Notifications* self,ImVec2_c pos);
 Palette* Palette_Palette();
 void Palette_destroy(Palette*);
 void Palette_set(Palette*,ImU32,int);

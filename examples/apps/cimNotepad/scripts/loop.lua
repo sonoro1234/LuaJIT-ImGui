@@ -24,7 +24,7 @@ local function run()
 		print("hello",i)
 		i = i + 1
 		Sleep(1)
-		-- error"debug"
+		 error"debug"
 		-- while true do  end
 	end
 	print(a)

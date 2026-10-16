@@ -44,7 +44,6 @@ set(IMGUI_SOURCES ./cimgui/cimgui.cpp
 ./cimCTE/ImGuiColorTextEdit/TextEditor.cpp
 ./cimCTE/ImGuiColorTextEdit/TextDiff.cpp
 ./cimCTE/ImGuiColorTextEdit/extras/TrieAutoComplete.cpp
-./cimCTE/ImGuiColorTextEdit/extras/Notifications.h
 ./cimCTE/ImGuiColorTextEdit/example/dejavu.cpp
 ./cimCTE/ImGuiColorTextEdit/example/notosans.cpp
 ./cimnodes_editor/cimnodes_editor.cpp

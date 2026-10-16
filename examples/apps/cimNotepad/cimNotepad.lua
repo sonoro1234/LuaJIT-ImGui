@@ -61,7 +61,7 @@ local close_doc
 
 local style_module = dofile(pathut.chain(currpath,"style_module.lua"))(win.ig, opendocs)
 
-local notifications = ig.Notifications()
+local notifications = dofile(pathut.chain(currpath,"Notifications.lua"))(ig) --ig.Notifications()
 local showhelp = false
 
 local Stack = {}
@@ -527,6 +527,7 @@ end
 
 local selected_text
 function win:draw(ig)
+
     --ig.ShowDemoWindow()
     checkModification()
 

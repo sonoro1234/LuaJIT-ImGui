@@ -2854,19 +2854,6 @@ function NodeId.__new(ctype,val)
 end
 NodeId.value = lib.ax_NodeEditor_NodeId_value
 M.NodeId = ffi.metatype("NodeId",NodeId)
---------------------------Notifications----------------------------
-local Notifications= {}
-Notifications.__index = Notifications
-function Notifications:Add(type,message,dismissTime)
-    dismissTime = dismissTime or 4000
-    return lib.Notifications_Add(self,type,message,dismissTime)
-end
-function Notifications.__new(ctype)
-    local ptr = lib.Notifications_Notifications()
-    return ffi.gc(ptr,lib.Notifications_destroy)
-end
-Notifications.Render = lib.Notifications_Render
-M.Notifications = ffi.metatype("Notifications",Notifications)
 --------------------------Palette----------------------------
 local Palette= {}
 Palette.__index = Palette
@@ -2940,9 +2927,9 @@ function TextEditor:AddNextOccurrence(wholeWord)
     wholeWord = wholeWord or false
     return lib.TextEditor_AddNextOccurrence(self,wholeWord)
 end
-function TextEditor:AddSquiggle(start,_end,type,color,tooltip)
+function TextEditor:AddSquiggle(start,_end,type,color,tooltip,style)
     tooltip = tooltip or ""
-    return lib.TextEditor_AddSquiggle(self,start,_end,type,color,tooltip)
+    return lib.TextEditor_AddSquiggle(self,start,_end,type,color,tooltip,style)
 end
 TextEditor.AllCursorsHaveSelection = lib.TextEditor_AllCursorsHaveSelection
 TextEditor.AnyCursorHasSelection = lib.TextEditor_AnyCursorHasSelection
@@ -2977,6 +2964,7 @@ TextEditor.CurrentCursorHasSelection = lib.TextEditor_CurrentCursorHasSelection
 TextEditor.CursorHasSelection = lib.TextEditor_CursorHasSelection
 TextEditor.Cut = lib.TextEditor_Cut
 TextEditor.DeindentLines = lib.TextEditor_DeindentLines
+TextEditor.DocPos2ScreenPos = lib.TextEditor_DocPos2ScreenPos
 TextEditor.DocPos2VisPos = lib.TextEditor_DocPos2VisPos
 TextEditor.FilterLines = lib.TextEditor_FilterLines
 TextEditor.FilterSelections = lib.TextEditor_FilterSelections
@@ -3058,6 +3046,7 @@ TextEditor.IsCaretsVisible = lib.TextEditor_IsCaretsVisible
 TextEditor.IsCompletingPairedGlyphs = lib.TextEditor_IsCompletingPairedGlyphs
 TextEditor.IsDocPosVisible = lib.TextEditor_IsDocPosVisible
 TextEditor.IsEmpty = lib.TextEditor_IsEmpty
+TextEditor.IsFindReplaceEnabled = lib.TextEditor_IsFindReplaceEnabled
 TextEditor.IsInsertSpacesOnTabs = lib.TextEditor_IsInsertSpacesOnTabs
 TextEditor.IsLineFoldable = lib.TextEditor_IsLineFoldable
 TextEditor.IsLineFolded = lib.TextEditor_IsLineFolded
@@ -3069,6 +3058,7 @@ TextEditor.IsMousePosOverGlyph = lib.TextEditor_IsMousePosOverGlyph
 TextEditor.IsMousePosOverTextArea = lib.TextEditor_IsMousePosOverTextArea
 TextEditor.IsOverwriteEnabled = lib.TextEditor_IsOverwriteEnabled
 TextEditor.IsReadOnlyEnabled = lib.TextEditor_IsReadOnlyEnabled
+TextEditor.IsShowCurrentLineHighlightEnabled = lib.TextEditor_IsShowCurrentLineHighlightEnabled
 TextEditor.IsShowLineNumbersEnabled = lib.TextEditor_IsShowLineNumbersEnabled
 TextEditor.IsShowMiniMapEnabled = lib.TextEditor_IsShowMiniMapEnabled
 TextEditor.IsShowPanScrollIndicatorEnabled = lib.TextEditor_IsShowPanScrollIndicatorEnabled
@@ -3153,6 +3143,7 @@ M.TextEditor_SetDefaultPalette = lib.TextEditor_SetDefaultPalette
 TextEditor.SetDeletor = lib.TextEditor_SetDeletor
 TextEditor.SetFindAllButtonLabel = lib.TextEditor_SetFindAllButtonLabel
 TextEditor.SetFindButtonLabel = lib.TextEditor_SetFindButtonLabel
+TextEditor.SetFindReplaceEnabled = lib.TextEditor_SetFindReplaceEnabled
 TextEditor.SetFocus = lib.TextEditor_SetFocus
 M.TextEditor_SetImGuiContext = lib.TextEditor_SetImGuiContext
 TextEditor.SetInsertSpacesOnTabs = lib.TextEditor_SetInsertSpacesOnTabs
@@ -3173,6 +3164,7 @@ TextEditor.SetPalette = lib.TextEditor_SetPalette
 TextEditor.SetReadOnlyEnabled = lib.TextEditor_SetReadOnlyEnabled
 TextEditor.SetReplaceAllButtonLabel = lib.TextEditor_SetReplaceAllButtonLabel
 TextEditor.SetReplaceButtonLabel = lib.TextEditor_SetReplaceButtonLabel
+TextEditor.SetShowCurrentLineHighlightEnabled = lib.TextEditor_SetShowCurrentLineHighlightEnabled
 TextEditor.SetShowLineNumbersEnabled = lib.TextEditor_SetShowLineNumbersEnabled
 TextEditor.SetShowMatchingBrackets = lib.TextEditor_SetShowMatchingBrackets
 TextEditor.SetShowMiniMapEnabled = lib.TextEditor_SetShowMiniMapEnabled

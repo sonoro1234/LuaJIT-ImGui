@@ -194,16 +194,16 @@ ExecutePull = function(self)
                
                 if err == 1 then
                     self.setStack() -- clear Stack
-                    self.notifications:Add(self.ig.lib.success, "Execute finished",10000);
+                    self.notifications:Add(self.notifications.Type.success, "Execute finished",10);
                     color = self.ig.U32(0,1,0,1)
                 elseif err==2 then
-                    self.notifications:Add(self.ig.lib.warning, "Compile error",10000);
+                    self.notifications:Add(self.notifications.Type.warning, "Compile error",10);
                     color = self.ig.U32(1,1,0,1)
                 elseif err==3 then
-                    self.notifications:Add(self.ig.lib.error, "Execute error",10000);
+                    self.notifications:Add(self.notifications.Type.error, "Execute error",10);
                     color = self.ig.U32(1,0,0,1)
                 elseif err==4 then
-                    self.notifications:Add(self.ig.lib.error, "stack overflow",10000);
+                    self.notifications:Add(self.notifications.Type.error, "stack overflow",10);
                     color = self.ig.U32(1,0,1,1)
                     self.Log:Add(string.format("stack overflow in %q \n", self.shrt_name), color)
                 end
