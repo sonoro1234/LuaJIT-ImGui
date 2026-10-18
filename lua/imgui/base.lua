@@ -2989,13 +2989,13 @@ TextEditor.FilterLines = lib.TextEditor_FilterLines
 TextEditor.FilterSelections = lib.TextEditor_FilterSelections
 TextEditor.FindAll = lib.TextEditor_FindAll
 TextEditor.FindNext = lib.TextEditor_FindNext
-function TextEditor:FindWordEnd(pos,wholeWord)
-    wholeWord = wholeWord or false
-    return lib.TextEditor_FindWordEnd(self,pos,wholeWord)
+function TextEditor:FindWordEnd(pos,wordOnly)
+    wordOnly = wordOnly or false
+    return lib.TextEditor_FindWordEnd(self,pos,wordOnly)
 end
-function TextEditor:FindWordStart(pos,wholeWord)
-    wholeWord = wholeWord or false
-    return lib.TextEditor_FindWordStart(self,pos,wholeWord)
+function TextEditor:FindWordStart(pos,wordOnly)
+    wordOnly = wordOnly or false
+    return lib.TextEditor_FindWordStart(self,pos,wordOnly)
 end
 TextEditor.FoldAroundLine = lib.TextEditor_FoldAroundLine
 TextEditor.GetCurrentCursorPosition = lib.TextEditor_GetCurrentCursorPosition
