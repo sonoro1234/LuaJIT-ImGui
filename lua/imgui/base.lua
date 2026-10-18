@@ -827,36 +827,43 @@ M.ImDrawDataBuilder = ffi.metatype("ImDrawDataBuilder",ImDrawDataBuilder)
 --------------------------ImDrawList----------------------------
 local ImDrawList= {}
 ImDrawList.__index = ImDrawList
-function ImDrawList:AddBezierCubic(p1,p2,p3,p4,col,thickness,num_segments)
+function ImDrawList:AddBezierCubic(p1,p2,p3,p4,col,thickness,num_segments,flags)
+    flags = flags or 0
     num_segments = num_segments or 0
-    return lib.ImDrawList_AddBezierCubic(self,p1,p2,p3,p4,col,thickness,num_segments)
+    return lib.ImDrawList_AddBezierCubic(self,p1,p2,p3,p4,col,thickness,num_segments,flags)
 end
-function ImDrawList:AddBezierQuadratic(p1,p2,p3,col,thickness,num_segments)
+function ImDrawList:AddBezierQuadratic(p1,p2,p3,col,thickness,num_segments,flags)
+    flags = flags or 0
     num_segments = num_segments or 0
-    return lib.ImDrawList_AddBezierQuadratic(self,p1,p2,p3,col,thickness,num_segments)
+    return lib.ImDrawList_AddBezierQuadratic(self,p1,p2,p3,col,thickness,num_segments,flags)
 end
 function ImDrawList:AddCallback(callback,userdata,userdata_size)
     userdata = userdata or nil
     userdata_size = userdata_size or 0
     return lib.ImDrawList_AddCallback(self,callback,userdata,userdata_size)
 end
-function ImDrawList:AddCircle(center,radius,col,num_segments,thickness)
+function ImDrawList:AddCircle(center,radius,col,num_segments,thickness,flags)
+    flags = flags or 0
     num_segments = num_segments or 0
     thickness = thickness or 1.0
-    return lib.ImDrawList_AddCircle(self,center,radius,col,num_segments,thickness)
+    return lib.ImDrawList_AddCircle(self,center,radius,col,num_segments,thickness,flags)
 end
 function ImDrawList:AddCircleFilled(center,radius,col,num_segments)
     num_segments = num_segments or 0
     return lib.ImDrawList_AddCircleFilled(self,center,radius,col,num_segments)
 end
 ImDrawList.AddConcavePolyFilled = lib.ImDrawList_AddConcavePolyFilled
-ImDrawList.AddConvexPolyFilled = lib.ImDrawList_AddConvexPolyFilled
+function ImDrawList:AddConvexPolyFilled(points,num_points,col,flags)
+    flags = flags or 0
+    return lib.ImDrawList_AddConvexPolyFilled(self,points,num_points,col,flags)
+end
 ImDrawList.AddDrawCmd = lib.ImDrawList_AddDrawCmd
-function ImDrawList:AddEllipse(center,radius,col,rot,num_segments,thickness)
+function ImDrawList:AddEllipse(center,radius,col,rot,num_segments,thickness,flags)
+    flags = flags or 0
     num_segments = num_segments or 0
     rot = rot or 0.0
     thickness = thickness or 1.0
-    return lib.ImDrawList_AddEllipse(self,center,radius,col,rot,num_segments,thickness)
+    return lib.ImDrawList_AddEllipse(self,center,radius,col,rot,num_segments,thickness,flags)
 end
 function ImDrawList:AddEllipseFilled(center,radius,col,rot,num_segments)
     num_segments = num_segments or 0
@@ -881,30 +888,35 @@ function ImDrawList:AddImageRounded(tex_ref,p_min,p_max,uv_min,uv_max,col,roundi
     flags = flags or 0
     return lib.ImDrawList_AddImageRounded(self,tex_ref,p_min,p_max,uv_min,uv_max,col,rounding,flags)
 end
-function ImDrawList:AddLine(p1,p2,col,thickness)
+function ImDrawList:AddLine(p1,p2,col,thickness,flags)
+    flags = flags or 0
     thickness = thickness or 1.0
-    return lib.ImDrawList_AddLine(self,p1,p2,col,thickness)
+    return lib.ImDrawList_AddLine(self,p1,p2,col,thickness,flags)
 end
-function ImDrawList:AddLineH(min_x,max_x,y,col,thickness)
+function ImDrawList:AddLineH(min_x,max_x,y,col,thickness,flags)
+    flags = flags or 0
     thickness = thickness or 1.0
-    return lib.ImDrawList_AddLineH(self,min_x,max_x,y,col,thickness)
+    return lib.ImDrawList_AddLineH(self,min_x,max_x,y,col,thickness,flags)
 end
-function ImDrawList:AddLineV(x,min_y,max_y,col,thickness)
+function ImDrawList:AddLineV(x,min_y,max_y,col,thickness,flags)
+    flags = flags or 0
     thickness = thickness or 1.0
-    return lib.ImDrawList_AddLineV(self,x,min_y,max_y,col,thickness)
+    return lib.ImDrawList_AddLineV(self,x,min_y,max_y,col,thickness,flags)
 end
-function ImDrawList:AddNgon(center,radius,col,num_segments,thickness)
+function ImDrawList:AddNgon(center,radius,col,num_segments,thickness,flags)
+    flags = flags or 0
     thickness = thickness or 1.0
-    return lib.ImDrawList_AddNgon(self,center,radius,col,num_segments,thickness)
+    return lib.ImDrawList_AddNgon(self,center,radius,col,num_segments,thickness,flags)
 end
 ImDrawList.AddNgonFilled = lib.ImDrawList_AddNgonFilled
 function ImDrawList:AddPolyline(points,num_points,col,thickness,flags)
     flags = flags or 0
     return lib.ImDrawList_AddPolyline(self,points,num_points,col,thickness,flags)
 end
-function ImDrawList:AddQuad(p1,p2,p3,p4,col,thickness)
+function ImDrawList:AddQuad(p1,p2,p3,p4,col,thickness,flags)
+    flags = flags or 0
     thickness = thickness or 1.0
-    return lib.ImDrawList_AddQuad(self,p1,p2,p3,p4,col,thickness)
+    return lib.ImDrawList_AddQuad(self,p1,p2,p3,p4,col,thickness,flags)
 end
 ImDrawList.AddQuadFilled = lib.ImDrawList_AddQuadFilled
 function ImDrawList:AddRect(p_min,p_max,col,rounding,thickness,flags)
@@ -935,9 +947,10 @@ function ImDrawList:AddText(a2,a3,a4,a5,a6,a7,a8,a9) -- generic version
     print(a2,a3,a4,a5,a6,a7,a8,a9)
     error'ImDrawList:AddText could not find overloaded'
 end
-function ImDrawList:AddTriangle(p1,p2,p3,col,thickness)
+function ImDrawList:AddTriangle(p1,p2,p3,col,thickness,flags)
+    flags = flags or 0
     thickness = thickness or 1.0
-    return lib.ImDrawList_AddTriangle(self,p1,p2,p3,col,thickness)
+    return lib.ImDrawList_AddTriangle(self,p1,p2,p3,col,thickness,flags)
 end
 ImDrawList.AddTriangleFilled = lib.ImDrawList_AddTriangleFilled
 ImDrawList.ChannelsMerge = lib.ImDrawList_ChannelsMerge
@@ -969,7 +982,10 @@ function ImDrawList:PathEllipticalArcTo(center,radius,rot,a_min,a_max,num_segmen
     return lib.ImDrawList_PathEllipticalArcTo(self,center,radius,rot,a_min,a_max,num_segments)
 end
 ImDrawList.PathFillConcave = lib.ImDrawList_PathFillConcave
-ImDrawList.PathFillConvex = lib.ImDrawList_PathFillConvex
+function ImDrawList:PathFillConvex(col,flags)
+    flags = flags or 0
+    return lib.ImDrawList_PathFillConvex(self,col,flags)
+end
 ImDrawList.PathLineTo = lib.ImDrawList_PathLineTo
 ImDrawList.PathLineToMergeDuplicate = lib.ImDrawList_PathLineToMergeDuplicate
 function ImDrawList:PathRect(rect_min,rect_max,rounding,flags)
@@ -983,6 +999,7 @@ function ImDrawList:PathStroke(col,thickness,flags)
     return lib.ImDrawList_PathStroke(self,col,thickness,flags)
 end
 ImDrawList.PopClipRect = lib.ImDrawList_PopClipRect
+ImDrawList.PopDrawFlag = lib.ImDrawList_PopDrawFlag
 ImDrawList.PopTexture = lib.ImDrawList_PopTexture
 ImDrawList.PrimQuadUV = lib.ImDrawList_PrimQuadUV
 ImDrawList.PrimRect = lib.ImDrawList_PrimRect
@@ -997,8 +1014,15 @@ function ImDrawList:PushClipRect(clip_rect_min,clip_rect_max,intersect_with_curr
     return lib.ImDrawList_PushClipRect(self,clip_rect_min,clip_rect_max,intersect_with_current_clip_rect)
 end
 ImDrawList.PushClipRectFullScreen = lib.ImDrawList_PushClipRectFullScreen
+ImDrawList.PushDrawFlag = lib.ImDrawList_PushDrawFlag
 ImDrawList.PushTexture = lib.ImDrawList_PushTexture
+ImDrawList._AddLine = lib.ImDrawList__AddLine
+ImDrawList._AddPolyline = lib.ImDrawList__AddPolyline
+ImDrawList._AddRectBaked = lib.ImDrawList__AddRectBaked
+ImDrawList._AddRectFilledBaked = lib.ImDrawList__AddRectFilledBaked
+ImDrawList._AddRectTinyRounding = lib.ImDrawList__AddRectTinyRounding
 ImDrawList._CalcCircleAutoSegmentCount = lib.ImDrawList__CalcCircleAutoSegmentCount
+ImDrawList._CalculateCenterBiasedOffset = lib.ImDrawList__CalculateCenterBiasedOffset
 ImDrawList._ClearFreeMemory = lib.ImDrawList__ClearFreeMemory
 ImDrawList._OnChangedClipRect = lib.ImDrawList__OnChangedClipRect
 ImDrawList._OnChangedTexture = lib.ImDrawList__OnChangedTexture
@@ -1007,7 +1031,9 @@ ImDrawList._PathArcToFastEx = lib.ImDrawList__PathArcToFastEx
 ImDrawList._PathArcToN = lib.ImDrawList__PathArcToN
 ImDrawList._PopUnusedDrawCmd = lib.ImDrawList__PopUnusedDrawCmd
 ImDrawList._ResetForNewFrame = lib.ImDrawList__ResetForNewFrame
+ImDrawList._SelectLineTexture = lib.ImDrawList__SelectLineTexture
 ImDrawList._SetDrawListSharedData = lib.ImDrawList__SetDrawListSharedData
+ImDrawList._SetPixelDensity = lib.ImDrawList__SetPixelDensity
 ImDrawList._SetTexture = lib.ImDrawList__SetTexture
 ImDrawList._TryMergeDrawCmds = lib.ImDrawList__TryMergeDrawCmds
 M.ImDrawList = ffi.metatype("ImDrawList",ImDrawList)
@@ -1036,7 +1062,8 @@ M.ImDrawListSplitter = ffi.metatype("ImDrawListSplitter",ImDrawListSplitter)
 --------------------------ImFont----------------------------
 local ImFont= {}
 ImFont.__index = ImFont
-ImFont.AddRemapChar = lib.ImFont_AddRemapChar
+ImFont.AddRemapCodepoint = lib.ImFont_AddRemapCodepoint
+ImFont.AddRemapCodepointToGlyphIndex = lib.ImFont_AddRemapCodepointToGlyphIndex
 function ImFont:CalcTextSizeA(size,max_width,wrap_width,text_begin,text_end,out_remaining)
     out_remaining = out_remaining or nil
     text_end = text_end or nil
@@ -1853,10 +1880,14 @@ local ImGuiTextFilter= {}
 ImGuiTextFilter.__index = ImGuiTextFilter
 ImGuiTextFilter.Build = lib.ImGuiTextFilter_Build
 ImGuiTextFilter.Clear = lib.ImGuiTextFilter_Clear
-function ImGuiTextFilter:Draw(label,width)
-    label = label or "Filter(inc,-exc)"
-    width = width or 0.0
-    return lib.ImGuiTextFilter_Draw(self,label,width)
+function ImGuiTextFilter:Draw(label)
+    label = label or "Filter"
+    return lib.ImGuiTextFilter_Draw(self,label)
+end
+function ImGuiTextFilter:DrawWithHint(label,hint)
+    hint = hint or "incl -excl"
+    label = label or "Filter"
+    return lib.ImGuiTextFilter_DrawWithHint(self,label,hint)
 end
 function ImGuiTextFilter.__new(ctype,default_filter)
     if default_filter == nil then default_filter = "" end
@@ -1869,6 +1900,14 @@ function ImGuiTextFilter:PassFilter(text,text_end)
     return lib.ImGuiTextFilter_PassFilter(self,text,text_end)
 end
 M.ImGuiTextFilter = ffi.metatype("ImGuiTextFilter",ImGuiTextFilter)
+--------------------------ImGuiTextFilterItem----------------------------
+local ImGuiTextFilterItem= {}
+ImGuiTextFilterItem.__index = ImGuiTextFilterItem
+function ImGuiTextFilterItem.__new(ctype,b,e)
+    local ptr = lib.ImGuiTextFilterItem_ImGuiTextFilterItem(b,e)
+    return ffi.gc(ptr,lib.ImGuiTextFilterItem_destroy)
+end
+M.ImGuiTextFilterItem = ffi.metatype("ImGuiTextFilterItem",ImGuiTextFilterItem)
 --------------------------ImGuiTextIndex----------------------------
 local ImGuiTextIndex= {}
 ImGuiTextIndex.__index = ImGuiTextIndex
@@ -1878,26 +1917,6 @@ ImGuiTextIndex.get_line_begin = lib.ImGuiTextIndex_get_line_begin
 ImGuiTextIndex.get_line_end = lib.ImGuiTextIndex_get_line_end
 ImGuiTextIndex.size = lib.ImGuiTextIndex_size
 M.ImGuiTextIndex = ffi.metatype("ImGuiTextIndex",ImGuiTextIndex)
---------------------------ImGuiTextRange----------------------------
-local ImGuiTextRange= {}
-ImGuiTextRange.__index = ImGuiTextRange
-function ImGuiTextRange.ImGuiTextRange_Nil()
-    local ptr = lib.ImGuiTextRange_ImGuiTextRange_Nil()
-    return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
-end
-function ImGuiTextRange.ImGuiTextRange_Str(_b,_e)
-    local ptr = lib.ImGuiTextRange_ImGuiTextRange_Str(_b,_e)
-    return ffi.gc(ptr,lib.ImGuiTextRange_destroy)
-end
-function ImGuiTextRange.__new(ctype,a1,a2) -- generic version
-    if a1==nil then return ImGuiTextRange.ImGuiTextRange_Nil() end
-    if (ffi.istype('const char*',a1) or ffi.istype('char[]',a1) or type(a1)=='string') then return ImGuiTextRange.ImGuiTextRange_Str(a1,a2) end
-    print(ctype,a1,a2)
-    error'ImGuiTextRange.__new could not find overloaded'
-end
-ImGuiTextRange.empty = lib.ImGuiTextRange_empty
-ImGuiTextRange.split = lib.ImGuiTextRange_split
-M.ImGuiTextRange = ffi.metatype("ImGuiTextRange",ImGuiTextRange)
 --------------------------ImGuiTypingSelectState----------------------------
 local ImGuiTypingSelectState= {}
 ImGuiTypingSelectState.__index = ImGuiTypingSelectState
@@ -7545,7 +7564,6 @@ M.GetDrawListSharedData = lib.igGetDrawListSharedData
 M.GetFocusID = lib.igGetFocusID
 M.GetFont = lib.igGetFont
 M.GetFontBaked = lib.igGetFontBaked
-M.GetFontRasterizerDensity = lib.igGetFontRasterizerDensity
 M.GetFontSize = lib.igGetFontSize
 M.GetFontTexUvWhitePixel = lib.igGetFontTexUvWhitePixel
 function M.GetForegroundDrawList_ViewportPtr(viewport)
@@ -7630,6 +7648,7 @@ M.GetMousePos = lib.igGetMousePos
 M.GetMousePosOnOpeningCurrentPopup = lib.igGetMousePosOnOpeningCurrentPopup
 M.GetMultiSelectState = lib.igGetMultiSelectState
 M.GetNavTweakPressedAmount = lib.igGetNavTweakPressedAmount
+M.GetPixelDensity = lib.igGetPixelDensity
 M.GetPlatformIO_Nil = lib.igGetPlatformIO_Nil
 M.GetPlatformIO_ContextPtr = lib.igGetPlatformIO_ContextPtr
 function M.GetPlatformIO(a1) -- generic version
@@ -7703,7 +7722,16 @@ M.ImCeilFast = lib.igImCeilFast
 M.ImCharIsBlankA = lib.igImCharIsBlankA
 M.ImCharIsBlankW = lib.igImCharIsBlankW
 M.ImCharIsXdigitA = lib.igImCharIsXdigitA
-M.ImClamp = lib.igImClamp
+M.ImClamp_Int = lib.igImClamp_Int
+M.ImClamp_Float = lib.igImClamp_Float
+M.ImClamp_Vec2 = lib.igImClamp_Vec2
+function M.ImClamp(a1,a2,a3) -- generic version
+    if (ffi.istype('int32_t',a1) or type(a1)=='number') then return M.ImClamp_Int(a1,a2,a3) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImClamp_Float(a1,a2,a3) end
+    if ffi.istype('const ImVec2',a1) then return M.ImClamp_Vec2(a1,a2,a3) end
+    print(a1,a2,a3)
+    error'M.ImClamp could not find overloaded'
+end
 M.ImCountSetBits = lib.igImCountSetBits
 M.ImDot = lib.igImDot
 M.ImExponentialMovingAverage = lib.igImExponentialMovingAverage
@@ -7817,6 +7845,8 @@ function M.ImIsPowerOfTwo(a1) -- generic version
     print(a1)
     error'M.ImIsPowerOfTwo could not find overloaded'
 end
+M.ImIsTruncated = lib.igImIsTruncated
+M.ImIsTruncated4 = lib.igImIsTruncated4
 M.ImLengthSqr_Vec2 = lib.igImLengthSqr_Vec2
 M.ImLengthSqr_Vec4 = lib.igImLengthSqr_Vec4
 function M.ImLengthSqr(a1) -- generic version
@@ -7847,9 +7877,27 @@ function M.ImLog(a1) -- generic version
     error'M.ImLog could not find overloaded'
 end
 M.ImLowerBound = lib.igImLowerBound
-M.ImMax = lib.igImMax
+M.ImMax_Int = lib.igImMax_Int
+M.ImMax_Float = lib.igImMax_Float
+M.ImMax_Vec2 = lib.igImMax_Vec2
+function M.ImMax(a1,a2) -- generic version
+    if (ffi.istype('int32_t',a1) or type(a1)=='number') then return M.ImMax_Int(a1,a2) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImMax_Float(a1,a2) end
+    if ffi.istype('const ImVec2',a1) then return M.ImMax_Vec2(a1,a2) end
+    print(a1,a2)
+    error'M.ImMax could not find overloaded'
+end
 M.ImMemdup = lib.igImMemdup
-M.ImMin = lib.igImMin
+M.ImMin_Int = lib.igImMin_Int
+M.ImMin_Float = lib.igImMin_Float
+M.ImMin_Vec2 = lib.igImMin_Vec2
+function M.ImMin(a1,a2) -- generic version
+    if (ffi.istype('int32_t',a1) or type(a1)=='number') then return M.ImMin_Int(a1,a2) end
+    if (ffi.istype('float',a1) or type(a1)=='number') then return M.ImMin_Float(a1,a2) end
+    if ffi.istype('const ImVec2',a1) then return M.ImMin_Vec2(a1,a2) end
+    print(a1,a2)
+    error'M.ImMin could not find overloaded'
+end
 M.ImModPositive = lib.igImModPositive
 M.ImMul = lib.igImMul
 M.ImParseFormatFindEnd = lib.igImParseFormatFindEnd
@@ -7868,7 +7916,8 @@ function M.ImPow(a1,a2) -- generic version
 end
 M.ImQsort = lib.igImQsort
 M.ImRotate = lib.igImRotate
-M.ImRound64 = lib.igImRound64
+M.ImRoundPositive64 = lib.igImRoundPositive64
+M.ImRoundSigned64 = lib.igImRoundSigned64
 M.ImRsqrt_Float = lib.igImRsqrt_Float
 M.ImRsqrt_double = lib.igImRsqrt_double
 function M.ImRsqrt(a1) -- generic version
@@ -7877,6 +7926,7 @@ function M.ImRsqrt(a1) -- generic version
     print(a1)
     error'M.ImRsqrt could not find overloaded'
 end
+M.ImRsqrtPrecise = lib.igImRsqrtPrecise
 M.ImSaturate = lib.igImSaturate
 M.ImSign_Float = lib.igImSign_Float
 M.ImSign_double = lib.igImSign_double
@@ -8519,13 +8569,14 @@ M.RenderArrowPointingAt = lib.igRenderArrowPointingAt
 M.RenderBullet = lib.igRenderBullet
 M.RenderCheckMark = lib.igRenderCheckMark
 M.RenderColorComponentMarker = lib.igRenderColorComponentMarker
-function M.RenderColorRectWithAlphaCheckerboard(draw_list,p_min,p_max,fill_col,grid_step,grid_off,rounding,flags)
+function M.RenderColorRectWithAlphaCheckerboard(draw_list,p_min,p_max,col,alpha,grid_step,grid_off,rounding,flags)
     flags = flags or 0
     rounding = rounding or 0.0
-    return lib.igRenderColorRectWithAlphaCheckerboard(draw_list,p_min,p_max,fill_col,grid_step,grid_off,rounding,flags)
+    return lib.igRenderColorRectWithAlphaCheckerboard(draw_list,p_min,p_max,col,alpha,grid_step,grid_off,rounding,flags)
 end
 M.RenderDragDropTargetRectEx = lib.igRenderDragDropTargetRectEx
 M.RenderDragDropTargetRectForItem = lib.igRenderDragDropTargetRectForItem
+M.RenderDragDropTargetRectForViewport = lib.igRenderDragDropTargetRectForViewport
 function M.RenderFrame(p_min,p_max,fill_col,borders,rounding)
     if borders == nil then borders = true end
     rounding = rounding or 0.0
@@ -8644,7 +8695,6 @@ function M.SetDragDropPayload(type,data,sz,cond)
     return lib.igSetDragDropPayload(type,data,sz,cond)
 end
 M.SetFocusID = lib.igSetFocusID
-M.SetFontRasterizerDensity = lib.igSetFontRasterizerDensity
 M.SetHoveredID = lib.igSetHoveredID
 M.SetItemDefaultFocus = lib.igSetItemDefaultFocus
 M.SetItemKeyOwner_Nil = lib.igSetItemKeyOwner_Nil
@@ -8693,6 +8743,7 @@ end
 M.SetNextItemStorageID = lib.igSetNextItemStorageID
 M.SetNextItemWidth = lib.igSetNextItemWidth
 M.SetNextWindowBgAlpha = lib.igSetNextWindowBgAlpha
+M.SetNextWindowChildFlags = lib.igSetNextWindowChildFlags
 M.SetNextWindowClass = lib.igSetNextWindowClass
 function M.SetNextWindowCollapsed(collapsed,cond)
     cond = cond or 0
@@ -8703,6 +8754,7 @@ function M.SetNextWindowDockID(dock_id,cond)
     cond = cond or 0
     return lib.igSetNextWindowDockID(dock_id,cond)
 end
+M.SetNextWindowFlags = lib.igSetNextWindowFlags
 M.SetNextWindowFocus = lib.igSetNextWindowFocus
 function M.SetNextWindowPos(pos,cond,pivot)
     cond = cond or 0
@@ -8721,6 +8773,7 @@ function M.SetNextWindowSizeConstraints(size_min,size_max,custom_callback,custom
     return lib.igSetNextWindowSizeConstraints(size_min,size_max,custom_callback,custom_callback_data)
 end
 M.SetNextWindowViewport = lib.igSetNextWindowViewport
+M.SetPixelDensity = lib.igSetPixelDensity
 function M.SetScrollFromPosX_Float(local_x,center_x_ratio)
     center_x_ratio = center_x_ratio or 0.5
     return lib.igSetScrollFromPosX_Float(local_x,center_x_ratio)
@@ -8977,6 +9030,7 @@ M.TabBarFindTabByOrder = lib.igTabBarFindTabByOrder
 M.TabBarGetCurrentTab = lib.igTabBarGetCurrentTab
 M.TabBarGetTabName = lib.igTabBarGetTabName
 M.TabBarGetTabOrder = lib.igTabBarGetTabOrder
+M.TabBarGetTabPos = lib.igTabBarGetTabPos
 M.TabBarProcessReorder = lib.igTabBarProcessReorder
 M.TabBarQueueFocus_TabItemPtr = lib.igTabBarQueueFocus_TabItemPtr
 M.TabBarQueueFocus_Str = lib.igTabBarQueueFocus_Str

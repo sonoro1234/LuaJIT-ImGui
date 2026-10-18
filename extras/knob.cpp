@@ -39,7 +39,12 @@ struct Log
         ImGui::SameLine();
         bool copy = ImGui::Button("Copy");
         ImGui::SameLine();
+#if IMGUI_VERSION_NUM < 19300
         Filter.Draw("Filter", -100.0f);
+#else
+        ImGui::SetNextItemWidth(-100.0f);
+        Filter.Draw("Filter");
+#endif
         ImGui::Separator();
         ImGui::BeginChild("scrolling", ImVec2(0,0), false, ImGuiWindowFlags_HorizontalScrollbar);
         if (copy) ImGui::LogToClipboard();
