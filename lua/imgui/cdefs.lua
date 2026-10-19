@@ -7528,6 +7528,7 @@ ImNodesStyle* imnodes_GetStyle(void);
 void imnodes_StyleColorsDark(ImNodesStyle* dest);
 void imnodes_StyleColorsClassic(ImNodesStyle* dest);
 void imnodes_StyleColorsLight(ImNodesStyle* dest);
+const char* imnodes_GetStyleColorName(ImNodesCol idx);
 void imnodes_BeginNodeEditor(void);
 void imnodes_EndNodeEditor(void);
 void imnodes_MiniMap(const float minimap_size_fraction,const ImNodesMiniMapLocation location,const ImNodesMiniMapNodeHoveringCallback node_hovering_callback,const ImNodesMiniMapNodeHoveringCallbackUserData node_hovering_callback_data);

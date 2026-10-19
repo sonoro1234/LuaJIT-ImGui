@@ -9438,6 +9438,7 @@ M.imnodes_GetNodeScreenSpacePos = lib.imnodes_GetNodeScreenSpacePos
 M.imnodes_GetSelectedLinks = lib.imnodes_GetSelectedLinks
 M.imnodes_GetSelectedNodes = lib.imnodes_GetSelectedNodes
 M.imnodes_GetStyle = lib.imnodes_GetStyle
+M.imnodes_GetStyleColorName = lib.imnodes_GetStyleColorName
 function M.imnodes_IsAnyAttributeActive(attribute_id)
     attribute_id = attribute_id or nil
     return lib.imnodes_IsAnyAttributeActive(attribute_id)
