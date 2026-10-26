@@ -2213,6 +2213,7 @@ ImPlotAxis.HasGridLines = lib.ImPlotAxis_HasGridLines
 ImPlotAxis.HasLabel = lib.ImPlotAxis_HasLabel
 ImPlotAxis.HasMenus = lib.ImPlotAxis_HasMenus
 ImPlotAxis.HasTickLabels = lib.ImPlotAxis_HasTickLabels
+ImPlotAxis.HasTickLabelsInside = lib.ImPlotAxis_HasTickLabelsInside
 ImPlotAxis.HasTickMarks = lib.ImPlotAxis_HasTickMarks
 function ImPlotAxis.__new(ctype)
     local ptr = lib.ImPlotAxis_ImPlotAxis()
@@ -4394,6 +4395,7 @@ M.ImPlot_ImConstrainInf = lib.ImPlot_ImConstrainInf
 M.ImPlot_ImConstrainLog = lib.ImPlot_ImConstrainLog
 M.ImPlot_ImConstrainNan = lib.ImPlot_ImConstrainNan
 M.ImPlot_ImConstrainTime = lib.ImPlot_ImConstrainTime
+M.ImPlot_ImDoubleBits = lib.ImPlot_ImDoubleBits
 M.ImPlot_ImLerpU32 = lib.ImPlot_ImLerpU32
 M.ImPlot_ImLog10_Float = lib.ImPlot_ImLog10_Float
 M.ImPlot_ImLog10_double = lib.ImPlot_ImLog10_double
@@ -4642,6 +4644,8 @@ function M.ImPlot_IsColorAuto(a1) -- generic version
     print(a1)
     error'M.ImPlot_IsColorAuto could not find overloaded'
 end
+M.ImPlot_IsItemHidden = lib.ImPlot_IsItemHidden
+M.ImPlot_IsLastItemHidden = lib.ImPlot_IsLastItemHidden
 M.ImPlot_IsLeapYear = lib.ImPlot_IsLeapYear
 M.ImPlot_IsLegendEntryHovered = lib.ImPlot_IsLegendEntryHovered
 M.ImPlot_IsPlotHovered = lib.ImPlot_IsPlotHovered

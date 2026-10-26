@@ -5653,6 +5653,7 @@ typedef enum {
     ImPlotAxisFlags_PanStretch = 1 << 13,
     ImPlotAxisFlags_LockMin = 1 << 14,
     ImPlotAxisFlags_LockMax = 1 << 15,
+    ImPlotAxisFlags_TickLabelsInside = 1 << 16,
     ImPlotAxisFlags_Lock = ImPlotAxisFlags_LockMin | ImPlotAxisFlags_LockMax,
     ImPlotAxisFlags_NoDecorations = ImPlotAxisFlags_NoLabel | ImPlotAxisFlags_NoGridLines | ImPlotAxisFlags_NoTickMarks | ImPlotAxisFlags_NoTickLabels,
     ImPlotAxisFlags_AuxDefault = ImPlotAxisFlags_NoGridLines | ImPlotAxisFlags_Opposite
@@ -5694,6 +5695,8 @@ typedef enum {
     ImPlotDragToolFlags_NoFit = 1 << 1,
     ImPlotDragToolFlags_NoInputs = 1 << 2,
     ImPlotDragToolFlags_Delayed = 1 << 3,
+    ImPlotDragToolFlags_NoMove = 1 << 4,
+    ImPlotDragToolFlags_NoResize = 1 << 5,
 }ImPlotDragToolFlags_;
 typedef enum {
     ImPlotColormapScaleFlags_None = 0,
@@ -6281,6 +6284,7 @@ typedef struct ImVector_ImPlotSubplot {int Size;int Capacity;ImPlotSubplot* Data
 typedef struct ImPool_ImPlotSubplot {ImVector_ImPlotSubplot Buf;ImGuiStorage Map;ImPoolIdx FreeIdx;ImPoolIdx AliveCount;} ImPool_ImPlotSubplot;
 typedef struct ImVector_ImPlotColormap {int Size;int Capacity;ImPlotColormap* Data;} ImVector_ImPlotColormap;
 typedef struct ImVector_double {int Size;int Capacity;double* Data;} ImVector_double;
+typedef struct ImVector_ImRect {int Size;int Capacity;ImRect_c* Data;} ImVector_ImRect;
 typedef struct ImPool_ImPlotAlignmentData {ImVector_ImPlotAlignmentData Buf;ImGuiStorage Map;ImPoolIdx FreeIdx;ImPoolIdx AliveCount;} ImPool_ImPlotAlignmentData;
 struct ImPlotContext
 {
@@ -6302,6 +6306,7 @@ struct ImPlotContext
     tm Tm;
     ImVector_double TempDouble1, TempDouble2;
     ImVector_int TempInt1;
+    ImVector_ImRect TempRect1;
     int DigitalPlotItemCnt;
     int DigitalPlotOffset;
     ImPlotNextPlotData NextPlotData;
@@ -6705,6 +6710,7 @@ _Bool                ImPlot_IsPlotSelected(void);
 ImPlotRect_c ImPlot_GetPlotSelection(ImAxis x_axis,ImAxis y_axis);
 void ImPlot_CancelPlotSelection(void);
 void ImPlot_HideNextItem(                                   _Bool                                         hidden,ImPlotCond cond);
+_Bool                ImPlot_IsItemHidden(const char* label_id);
 _Bool                ImPlot_BeginAlignedPlots(const char* group_id,                                                             _Bool                                                                   vertical);
 void ImPlot_EndAlignedPlots(void);
 _Bool                ImPlot_BeginLegendPopup(const char* label_id,ImGuiMouseButton mouse_button);
@@ -6731,6 +6737,7 @@ void ImPlot_PushStyleVar_Int(ImPlotStyleVar idx,int val);
 void ImPlot_PushStyleVar_Vec2(ImPlotStyleVar idx,const ImVec2_c val);
 void ImPlot_PopStyleVar(int count);
 ImVec4_c ImPlot_GetLastItemColor(void);
+_Bool                ImPlot_IsLastItemHidden(void);
 const char* ImPlot_GetStyleColorName(ImPlotCol idx);
 const char* ImPlot_GetMarkerName(ImPlotMarker idx);
 ImPlotMarker ImPlot_NextMarker(void);
@@ -6793,6 +6800,7 @@ ImU32 ImPlot_ImRemap01_U32(ImU32 x,ImU32 x0,ImU32 x1);
 ImS64 ImPlot_ImRemap01_S64(ImS64 x,ImS64 x0,ImS64 x1);
 ImU64 ImPlot_ImRemap01_U64(ImU64 x,ImU64 x0,ImU64 x1);
 int ImPlot_ImPosMod(int l,int r);
+ImU64 ImPlot_ImDoubleBits(double val);
 _Bool                ImPlot_ImNan(double val);
 _Bool                ImPlot_ImNanOrInf(double val);
 double ImPlot_ImConstrainNan(double val);
@@ -6950,6 +6958,7 @@ void ImPlotAxis_ApplyFit(ImPlotAxis* self,float padding);
 _Bool                ImPlotAxis_HasLabel(ImPlotAxis* self);
 _Bool                ImPlotAxis_HasGridLines(ImPlotAxis* self);
 _Bool                ImPlotAxis_HasTickLabels(ImPlotAxis* self);
+_Bool                ImPlotAxis_HasTickLabelsInside(ImPlotAxis* self);
 _Bool                ImPlotAxis_HasTickMarks(ImPlotAxis* self);
 _Bool                ImPlotAxis_WillRender(ImPlotAxis* self);
 _Bool                ImPlotAxis_IsOpposite(ImPlotAxis* self);
