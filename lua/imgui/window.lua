@@ -116,6 +116,18 @@ function M:GLFW(w,h,title,args)
     W.lj_glfw.init()
     local main_scale = W.ig.lib.ImGui_ImplGlfw_GetContentScaleForMonitor(W.lj_glfw.getPrimaryMonitor()); -- Valid on GLFW 3.3+ only
     local window = W.lj_glfw.Window(w * main_scale, h * main_scale,title or "")
+    
+    ---drag and drop
+    local function drop_callback(window,count,paths)
+        if W.drop_file_cb then
+            for i=0,count-1 do
+                W.drop_file_cb(ffi.string(paths[i]))
+            end
+        end
+    end
+    W.lj_glfw.glfw.glfwSetDropCallback(window, drop_callback);
+
+    
     window:makeContextCurrent()
     W.lj_glfw.swapInterval(args.vsync or 1)
 
@@ -173,9 +185,11 @@ local function startSDL(W, postf)
             ig.lib.ImGui_ImplSDL2_ProcessEvent(event);
             if (event.type == sdl.QUIT) then
                 done = true;
-            end
-            if (event.type == sdl.WINDOWEVENT and event.window.event == sdl.WINDOWEVENT_CLOSE and event.window.windowID == sdl.getWindowID(window)) then
+            elseif (event.type == sdl.WINDOWEVENT and event.window.event == sdl.WINDOWEVENT_CLOSE and event.window.windowID == sdl.getWindowID(window)) then
                 done = true;
+            elseif event.type == sdl.DROPFILE then
+                if W.drop_file_cb then W.drop_file_cb(ffi.string(event.drop.file)) end
+                sdl.free(event.drop.file);
             end
         end
         if (bit.band(sdl.GetWindowFlags(window), sdl.WINDOW_MINIMIZED) > 0) then
@@ -333,9 +347,10 @@ local function startSDL3(W, postf)
             ig.lib.ImGui_ImplSDL3_ProcessEvent(event);
             if (event.type == sdl.EVENT_QUIT) then
                 done = true;
-            end
-            if (event.type == sdl.EVENT_WINDOW_CLOSE_REQUESTED and event.window.windowID == sdl.getWindowID(window)) then
+            elseif (event.type == sdl.EVENT_WINDOW_CLOSE_REQUESTED and event.window.windowID == sdl.getWindowID(window)) then
                 done = true;
+            elseif event.type == sdl.EVENT_DROP_FILE then
+                if W.drop_file_cb then W.drop_file_cb(ffi.string(event.drop.data)) end
             end
         end
         if (bit.band(sdl.GetWindowFlags(window), sdl.WINDOW_MINIMIZED) > 0) then

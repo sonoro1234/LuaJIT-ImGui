@@ -217,7 +217,7 @@ function win:draw(ig)
             ---------------------
             local ti = math.fmod(dac:get_stream_time() , audioLengthInSeconds)
             dac:set_stream_time(ti)
-            if ti>=t2 then
+            if ti>=t2 or ti<t1 then
                 local siz = Xrect:Size()
                 -- set X range for next frame
                 t1n = ti; t2n = ti+siz
