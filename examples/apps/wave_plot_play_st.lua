@@ -136,13 +136,28 @@ end
 -- imgui
 local igwin = require"imgui.window"
 local win = igwin:GLFW(800,400, "wav",{vsync=true})
+local ig = win.ig
 win.ig.ImPlot_CreateContext()
+
+local function DragRect(n,plotrect)
+    local off = ffi.offsetof
+    local function get_double_ptr(rect,f1,f2)
+        return ffi.cast("double*", ffi.cast("char*",rect)+off("ImPlotRect",f1)+off("ImPlotRange",f2))
+    end
+    ig.ImPlot_DragRect(n, get_double_ptr(plotrect,"X","Min"),
+    get_double_ptr(plotrect,"Y","Min"),
+    get_double_ptr(plotrect,"X","Max"),
+    get_double_ptr(plotrect,"Y","Max"),ig.ImVec4(1,0,1,1));
+    plotrect.Y.Min = -1
+    plotrect.Y.Max = 1
+end
 
 local info,audioLengthInSeconds,dummyX,dummyY
 local a,b,c
 local Bt,Byl,Byh,BylR,ByhR
 local filename
-
+local selection
+local autofit = true
 local function load_file(f)
     info = load_sound(f)
     if not info then return end
@@ -152,10 +167,12 @@ local function load_file(f)
     dac:set_stream_time(0)
     a = nil --to trigger resample
     filename = f
+    selection = nil
+    autofit = true
 end
 
 function win.drop_file_cb(f)
-	load_file(f)
+    load_file(f)
 end
 
 local gui = require"imgui.libs.filebrowser"(win.ig)
@@ -164,7 +181,6 @@ local fB = gui.FileBrowser(nil,{curr_dir=inipath}, function(f,dir) load_file(f) 
 
 
 -- specs
-local ig = win.ig
 local spec1 = ig.ImPlotSpec()
 spec1.FillAlpha = 0.15
 spec1.FillColor = ig.ImVec4(0,1,0.5,1)
@@ -178,7 +194,7 @@ spec_ti.LineColor = ig.ImVec4(1,0,0,1)
 
 -- for setting time limits next frame
 local t1n,t2n
-local autofit = true
+
 function win:draw(ig)
     --ig.ImPlot_ShowDemoWindow()
     --ig.ShowDemoWindow()
@@ -199,25 +215,26 @@ function win:draw(ig)
         ig.SameLine()
         if ig.SmallButton("load") then fB.open() end
         fB.draw()
+        if selection then ig.SameLine() if ig.SmallButton("clear selection") then selection = nil end end
         ig.SameLine()
         ig.TextUnformatted(filename or "")
-		
+        
         if info then
-			-- needed because ImPlotSubplotFlags_LinkAllX avoids initial fitting
-			local iniflag = autofit and ig.lib.ImPlotAxisFlags_AutoFit or 0
-			autofit = false
+            -- needed because ImPlotSubplotFlags_LinkAllX avoids initial fitting
+            local iniflag = autofit and ig.lib.ImPlotAxisFlags_AutoFit or 0
+            autofit = false
 
-		if ig.ImPlot_BeginSubplots("##subplots",2,1,ig.ImVec2(-1,-1),ig.lib.ImPlotSubplotFlags_LinkAllX ) then
-		ig.ImPlot_PushStyleVar(ig.lib.ImPlotStyleVar_PlotPadding, ig.ImVec2(0,0));
-		ig.ImPlot_PushStyleVar(ig.lib.ImPlotStyleVar_LabelPadding, ig.ImVec2(0,0));
-		--ig.ImPlot_PushStyleColor(ig.lib.ImPlotCol_PlotBg, ig.ImVec4(0.1,0.4,0,1));
-		ig.PushFont(nil, ig.GetStyle().FontSizeBase*0.75)
-		local widthPix
-		local ti = math.fmod(dac:get_stream_time() , audioLengthInSeconds)
+        if ig.ImPlot_BeginSubplots("##subplots",2,1,ig.ImVec2(-1,-1),ig.lib.ImPlotSubplotFlags_LinkAllX ) then
+        ig.ImPlot_PushStyleVar(ig.lib.ImPlotStyleVar_PlotPadding, ig.ImVec2(0,0));
+        ig.ImPlot_PushStyleVar(ig.lib.ImPlotStyleVar_LabelPadding, ig.ImVec2(0,0));
+        --ig.ImPlot_PushStyleColor(ig.lib.ImPlotCol_PlotBg, ig.ImVec4(0.1,0.4,0,1));
+        ig.PushFont(nil, ig.GetStyle().FontSizeBase*0.75)
+        local widthPix
+        local ti = math.fmod(dac:get_stream_time() , audioLengthInSeconds)
         dac:set_stream_time(ti)
         if ig.ImPlot_BeginPlot("##wav",nil,ig.lib.ImPlotFlags_NoLegend) then
             --ig.ImPlot_SetupAxes("Time [s]","Amplitude");
-			ig.ImPlot_SetupAxes(nil,nil,ig.lib.ImPlotAxisFlags_NoTickLabels | iniflag);
+            ig.ImPlot_SetupAxes(nil,nil,ig.lib.ImPlotAxisFlags_NoTickLabels | iniflag);
             ig.ImPlot_SetupAxisLimits(ig.lib.ImAxis_Y1, -1, 1, ig.lib.ImPlotCond_Always);
             if t1n then
                 ig.ImPlot_SetupAxisLimits(ig.lib.ImAxis_X1,t1n,t2n, ig.lib.ImPlotCond_Always)
@@ -250,11 +267,28 @@ function win:draw(ig)
             ig.ImPlot_PlotLine("##DummyPointsForFitting",dummyX,dummyY,2, spec_dummy[0])
             local ti2 = ffi.new("double[?]",1,ti)
             ig.ImPlot_PlotInfLines("ti",ti2,1,spec_ti[0])
+            
+            -- selections
+            if ig.ImPlot_IsPlotSelected() then
+                selection = nil
+                local rect = ig.ImPlot_GetPlotSelection()
+                if (ig.IsMouseClicked(ig.ImPlot_GetInputMap().SelectCancel)) then
+                    ig.ImPlot_CancelPlotSelection();
+                    selection = ig.ImPlotRect(rect.X.Min, rect.X.Max, rect.Y.Min, rect.Y.Max);
+                end
+            end
+            if selection then
+                DragRect(1,selection)
+                if ti< selection.X.Min or ti > selection.X.Max then
+                    dac:set_stream_time(selection.X.Min)
+                end
+            end
+            
             ig.ImPlot_EndPlot();
         end
-		if ig.ImPlot_BeginPlot("##wavR",nil,ig.lib.ImPlotFlags_NoLegend) then
-			ig.ImPlot_SetupAxes(nil,nil,ig.lib.ImPlotAxisFlags_TickLabelsInside | iniflag);
-			ig.ImPlot_SetupAxisLimits(ig.lib.ImAxis_Y1, -1, 1, ig.lib.ImPlotCond_Always);
+        if ig.ImPlot_BeginPlot("##wavR",nil,ig.lib.ImPlotFlags_NoLegend) then
+            ig.ImPlot_SetupAxes(nil,nil,ig.lib.ImPlotAxisFlags_TickLabelsInside | iniflag);
+            ig.ImPlot_SetupAxisLimits(ig.lib.ImAxis_Y1, -1, 1, ig.lib.ImPlotCond_Always);
             if (ig.ImPlot_IsPlotHovered() and ig.IsMouseClicked(0) and ig.GetIO().KeyCtrl) then
                 local pt = ig.ImPlot_GetPlotMousePos();
                 dac:set_stream_time(pt.x)
@@ -262,16 +296,34 @@ function win:draw(ig)
             ig.ImPlot_PlotShaded("R",Bt, BylR,ByhR,widthPix, spec1[0]);
             ig.ImPlot_PlotLine("R",Bt, BylR,widthPix, spec1[0]);
             ig.ImPlot_PlotLine("R",Bt, ByhR,widthPix, spec1[0]);
-			ig.ImPlot_PlotLine("##DummyPointsForFitting",dummyX,dummyY,2, spec_dummy[0])
-			local ti2 = ffi.new("double[?]",1,ti)
+            ig.ImPlot_PlotLine("##DummyPointsForFitting",dummyX,dummyY,2, spec_dummy[0])
+            local ti2 = ffi.new("double[?]",1,ti)
             ig.ImPlot_PlotInfLines("ti",ti2,1,spec_ti[0])
-			ig.ImPlot_EndPlot();
-		end
-		ig.PopFont()
-		--ig.ImPlot_PopStyleColor()
-		ig.ImPlot_PopStyleVar(2);
-		ig.ImPlot_EndSubplots()
-		end
+            
+            -- selections
+            if ig.ImPlot_IsPlotSelected() then
+                selection = nil
+                local rect = ig.ImPlot_GetPlotSelection()
+                if (ig.IsMouseClicked(ig.ImPlot_GetInputMap().SelectCancel)) then
+                    ig.ImPlot_CancelPlotSelection();
+                    selection = ig.ImPlotRect(rect.X.Min, rect.X.Max, rect.Y.Min, rect.Y.Max);
+                end
+            end
+            if selection then
+                DragRect(1,selection)
+                -- done in L wave
+                -- if ti< selection.X.Min or ti > selection.X.Max then
+                    -- dac:set_stream_time(selection.X.Min)
+                -- end
+            end
+            
+            ig.ImPlot_EndPlot();
+        end
+        ig.PopFont()
+        --ig.ImPlot_PopStyleColor()
+        ig.ImPlot_PopStyleVar(2);
+        ig.ImPlot_EndSubplots()
+        end
         end --info
     ig.End()
 end
