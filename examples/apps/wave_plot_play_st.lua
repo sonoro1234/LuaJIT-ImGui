@@ -1,10 +1,17 @@
 local ffi = require"ffi"
+local rt = require 'rtaudio_ffi'
+-- imgui
+local igwin = require"imgui.window"
+local win = igwin:GLFW(800,400, "wav",{vsync=true})
+local ig = win.ig
+ig.GetIO().IniFilename = nil
+win.ig.ImPlot_CreateContext()
 
-function PrepareAudioRT(args)--asio,dev_id)
+
+local function PrepareAudioRT(args)
     args = args or {}
     offset = offset or 0
-    local dev_id = args.dev_id or 0
-    local rt = require 'rtaudio_ffi'
+    --local dev_id = args.dev_id or 0
     local AudioPlayer = require("rtAudioPlayer")
     local sndf = require"sndfile_ffi"
     
@@ -24,26 +31,84 @@ function PrepareAudioRT(args)--asio,dev_id)
     end
     
     local dac = rt.create(api)
-    local device = rt.get_default_output_device(dac)
+    local device = args.dev_id or rt.get_default_output_device(dac)
     print("dac using",ffi.string(rt.api_name(api)))
+    print("SR",args.SR,"frames",args.nFrames)
 --copy specs from file
     --local info = sndf.get_info(soundfile)
     local audioplayer,err = AudioPlayer({
     dac = dac,
     device = device,
-    freq = 48000, --info.samplerate, 
+    freq = args.SR or 48000,
     format = rt.FORMAT_FLOAT32,
     channels = 2, --info.channels, 
-    samples = 1024})
+    samples = args.nFrames or 1024})
     
     assert(audioplayer,err)
     
-    
-    --audioplayer:insert(soundfile,1,offset)
-    --local DURAMUSICA = info.frames/info.samplerate
-    
     return audioplayer
 end
+
+--- device setting
+local dac = PrepareAudioRT()
+dac:start()
+local auinf = rt.GetAllInfo()
+local ocombos = auinf.out_combos(ig)
+local oAPI,odevice = auinf.first_out()
+ocombos.Set(oAPI, odevice)
+
+local standardSampleRates = {
+    11025.0, 12000.0, 16000.0, 22050.0, 24000.0, 32000.0,
+    44100.0, 48000.0}
+for i,v in ipairs(standardSampleRates) do standardSampleRates[i] = tostring(v) end
+local SRcombo = ig.LuaCombo("SampleRate##in",standardSampleRates)
+SRcombo:set_name("44100")
+
+local bufsizes = {}
+for i= 6,11 do table.insert(bufsizes, tostring(2^i)) end
+local BScombo = ig.LuaCombo("buffer size##in",bufsizes)
+BScombo:set_name("1024")
+
+local function GetDeviceVals()
+    if dac then
+        SRcombo:set_name(tostring(dac.sample_rate))
+        BScombo:set_name(tostring(dac.bufferFrames[0]))
+        local oAPI = ffi.string(rt.api_name(dac.dac:current_api()))
+        local odevice = dac.outpar[0].device_id
+        ocombos.Set(oAPI, odevice)
+    end
+end
+local filename
+local function DevicesSet()
+    ig.SetNextWindowSize(ig.ImVec2(500,0));
+    if ig.BeginPopupModal("Audio##p") then
+        ig.Text"Audio settings"
+        ocombos:draw()
+        ig.Separator()
+        SRcombo:draw()
+        BScombo:draw()
+        if ig.Button("set devices.") then
+            if dac then
+                dac:stop()
+                dac:close()
+                dac = nil
+            end
+            local api,dev = ocombos.Get()
+            local SR = SRcombo:get(); SR = tonumber(SR)
+            local nFrames = BScombo:get(); nFrames = tonumber(nFrames)
+            dac = PrepareAudioRT{api=api,dev_id=dev,SR=SR, nFrames=nFrames}
+            dac:start()
+            if filename then
+                dac:insert(filename)
+            end
+            ig.CloseCurrentPopup()
+        end
+        ig.SameLine()
+        if ig.Button("cancel") then ig.CloseCurrentPopup() end
+        ig.EndPopup()
+    end
+end
+
 
 local function Do_gc()
     print("DO_gc====================================================",collectgarbage"count")
@@ -54,8 +119,7 @@ end
 Do_gc()
 
 ----------------
-local dac = PrepareAudioRT()
-dac:start()
+
 
 --- load soundfile
 
@@ -65,8 +129,6 @@ local function load_sound(filename)
         dac:erase(node)
     end
     local sndf = require"sndfile_ffi"
-    --local filename = [[C:\Users\sonor\Desktop\musicas victor\morning_in_india.wav]]--"african_room.wav";
-    --local filename = [[C:\Users\sonor\Desktop\musicas victor\kyrie5d-2_peli.wav]]--"african_room.wav";
     local ok,info = pcall(sndf.get_info,filename)
     if not ok then print(info); return end
     print(info.frames,info.channels)
@@ -109,12 +171,13 @@ local function Resample(W,t1,t2,info,Buf)
     local facx = tonumber(nbins/W)
     local binle = math.floor(facx+0.5)
     local frames = tonumber(info.frames)
+    local ti_per_pix = (t2-t1)/(W-1)
     --print(nbins,facx,binle)
     for i=0,W-1 do
         local binini = math.floor(t1*info.samplerate+i*facx)
         local inibin = clip(binini,0,frames-1)
         local endbin = clip(binini+binle,0,frames-1)
-        Bt[i] = t1+ i*(t2-t1)/(W-1)
+        Bt[i] = t1+ i*ti_per_pix
         Byl[i] = math.huge
         Byh[i] = -math.huge
         BylR[i] = math.huge
@@ -134,10 +197,7 @@ local function Resample(W,t1,t2,info,Buf)
 end
 
 -- imgui
-local igwin = require"imgui.window"
-local win = igwin:GLFW(800,400, "wav",{vsync=true})
-local ig = win.ig
-win.ig.ImPlot_CreateContext()
+
 
 local function DragRect(n,plotrect)
     local off = ffi.offsetof
@@ -155,7 +215,6 @@ end
 local info,audioLengthInSeconds,dummyX,dummyY
 local a,b,c
 local Bt,Byl,Byh,BylR,ByhR
-local filename
 local selection
 local autofit = true
 local function load_file(f)
@@ -179,12 +238,13 @@ local gui = require"imgui.libs.filebrowser"(win.ig)
 local inipath = [[C:\Users\sonor\Desktop\musicas victor]]
 local fB = gui.FileBrowser(nil,{curr_dir=inipath}, function(f,dir) load_file(f) end)
 
-
+--------------- wave st ----------------------------
 -- specs
 local spec1 = ig.ImPlotSpec()
-spec1.FillAlpha = 0.15
-spec1.FillColor = ig.ImVec4(0,1,0.5,1)
-spec1.LineColor = ig.ImVec4(0,1,0.5,0.75)
+spec1.FillAlpha = 0.40
+local blue = ig.ImVec4(0,0.5,1,1)
+spec1.FillColor = blue --ig.ImVec4(0,1,0.5,1)
+spec1.LineColor = blue --ig.ImVec4(0,1,0.5,0.75)
 local spec_dummy = ig.ImPlotSpec()
 spec_dummy.LineColor = ig.ImVec4(0,0,0,0)
 
@@ -195,62 +255,40 @@ spec_ti.LineColor = ig.ImVec4(1,0,0,1)
 -- for setting time limits next frame
 local t1n,t2n
 
-function win:draw(ig)
-    --ig.ImPlot_ShowDemoWindow()
-    --ig.ShowDemoWindow()
-    local viewport = ig.GetMainViewport();
-    ig.SetNextWindowPos(viewport.WorkPos);
-    ig.SetNextWindowSize(viewport.WorkSize);
+local function PlotWaveSt()
+        -- needed because ImPlotSubplotFlags_LinkAllX avoids initial fitting
+        local iniflag = autofit and ig.lib.ImPlotAxisFlags_AutoFit or 0
+        autofit = false
 
-    ig.Begin("##Waveform",nil,ig.lib.ImGuiWindowFlags_NoTitleBar)
-        ig.Text("(%05.1f Mb)", collectgarbage("count")/1024)
-        ig.SameLine()
-        if ig.SmallButton("Do_gc") then Do_gc() end
-        ig.SameLine()
-        local playing = dac:is_playing()
-        local play_but_text = playing and " || " or "  > "
-        if ig.SmallButton(play_but_text) then
-            if playing then dac:stop() else dac:start() end
-        end
-        ig.SameLine()
-        if ig.SmallButton("load") then fB.open() end
-        fB.draw()
-        if selection then ig.SameLine() if ig.SmallButton("clear selection") then selection = nil end end
-        ig.SameLine()
-        ig.TextUnformatted(filename or "")
-        
-        if info then
-            -- needed because ImPlotSubplotFlags_LinkAllX avoids initial fitting
-            local iniflag = autofit and ig.lib.ImPlotAxisFlags_AutoFit or 0
-            autofit = false
-
-        if ig.ImPlot_BeginSubplots("##subplots",2,1,ig.ImVec2(-1,-1),ig.lib.ImPlotSubplotFlags_LinkAllX ) then
+        if ig.ImPlot_BeginSubplots("##subplots",2,1,ig.ImVec2(-1,-1),ig.lib.ImPlotSubplotFlags_LinkAllX | ig.lib.ImPlotSubplotFlags_NoResize) then
         ig.ImPlot_PushStyleVar(ig.lib.ImPlotStyleVar_PlotPadding, ig.ImVec2(0,0));
         ig.ImPlot_PushStyleVar(ig.lib.ImPlotStyleVar_LabelPadding, ig.ImVec2(0,0));
         --ig.ImPlot_PushStyleColor(ig.lib.ImPlotCol_PlotBg, ig.ImVec4(0.1,0.4,0,1));
         ig.PushFont(nil, ig.GetStyle().FontSizeBase*0.75)
         local widthPix
         local ti = math.fmod(dac:get_stream_time() , audioLengthInSeconds)
-        dac:set_stream_time(ti)
+        dac:set_stream_time(ti) -- loop at the end
         if ig.ImPlot_BeginPlot("##wav",nil,ig.lib.ImPlotFlags_NoLegend) then
             --ig.ImPlot_SetupAxes("Time [s]","Amplitude");
             ig.ImPlot_SetupAxes(nil,nil,ig.lib.ImPlotAxisFlags_NoTickLabels | iniflag);
             ig.ImPlot_SetupAxisLimits(ig.lib.ImAxis_Y1, -1, 1, ig.lib.ImPlotCond_Always);
+            ig.ImPlot_SetupAxisLimitsConstraints(ig.lib.ImAxis_X1, 0, audioLengthInSeconds);
             if t1n then
                 ig.ImPlot_SetupAxisLimits(ig.lib.ImAxis_X1,t1n,t2n, ig.lib.ImPlotCond_Always)
-                t1n = nil
+                t1n = nil -- so just once window following
             end
             if (ig.ImPlot_IsPlotHovered() and ig.IsMouseClicked(0) and ig.GetIO().KeyCtrl) then
                 local pt = ig.ImPlot_GetPlotMousePos();
                 dac:set_stream_time(pt.x)
             end
             widthPix = ig.ImPlot_GetPlotSize().x;
+            --widthPix = 20 --math.floor(widthPix*0.25)
             local Xrect = ig.ImPlot_GetPlotLimits().X
             local t1 = Xrect.Min;
             local t2 = Xrect.Max;
             ---------------------
-
-            if ti>=t2 or ti<t1 then
+            -- make window follow play
+            if (ti>=t2 or ti<t1) and dac:is_playing() then
                 local siz = Xrect:Size()
                 -- set X range for next frame
                 t1n = ti; t2n = ti+siz
@@ -272,7 +310,7 @@ function win:draw(ig)
             if ig.ImPlot_IsPlotSelected() then
                 selection = nil
                 local rect = ig.ImPlot_GetPlotSelection()
-                if (ig.IsMouseClicked(ig.ImPlot_GetInputMap().SelectCancel)) then
+                if (ig.IsMouseClicked(ig.ImPlot_GetInputMap().SelectCancel)) or ig.IsKeyDown(ig.lib.ImGuiKey_S) then
                     ig.ImPlot_CancelPlotSelection();
                     selection = ig.ImPlotRect(rect.X.Min, rect.X.Max, rect.Y.Min, rect.Y.Max);
                 end
@@ -289,6 +327,7 @@ function win:draw(ig)
         if ig.ImPlot_BeginPlot("##wavR",nil,ig.lib.ImPlotFlags_NoLegend) then
             ig.ImPlot_SetupAxes(nil,nil,ig.lib.ImPlotAxisFlags_TickLabelsInside | iniflag);
             ig.ImPlot_SetupAxisLimits(ig.lib.ImAxis_Y1, -1, 1, ig.lib.ImPlotCond_Always);
+            ig.ImPlot_SetupAxisLimitsConstraints(ig.lib.ImAxis_X1, 0, audioLengthInSeconds);
             if (ig.ImPlot_IsPlotHovered() and ig.IsMouseClicked(0) and ig.GetIO().KeyCtrl) then
                 local pt = ig.ImPlot_GetPlotMousePos();
                 dac:set_stream_time(pt.x)
@@ -324,10 +363,75 @@ function win:draw(ig)
         ig.ImPlot_PopStyleVar(2);
         ig.ImPlot_EndSubplots()
         end
-        end --info
-    ig.End()
 end
 
+local help_text = 
+[[
+* Ctrl+Lclick to set play position. 
+* Right drag to zoom. (key S or Lclick to select)
+* wheel to zoom.
+* L drag to pan.
+* Space to toggle playing.
+]]
+
+function win:draw(ig)
+    --ig.ImPlot_ShowDemoWindow()
+    --ig.ShowDemoWindow()
+    local viewport = ig.GetMainViewport();
+    ig.SetNextWindowPos(viewport.WorkPos);
+    ig.SetNextWindowSize(viewport.WorkSize);
+
+    ig.Begin("##Waveform",nil,ig.lib.ImGuiWindowFlags_NoTitleBar)
+        ig.Text("(%05.1f Mb)", collectgarbage("count")/1024)
+        ig.SameLine()
+        if ig.SmallButton("Do_gc") then Do_gc() end
+        ig.SameLine()
+        local playing = dac:is_playing()
+        local play_but_text = playing and " || " or "  > "
+        if ig.SmallButton(play_but_text) then
+            if playing then dac:stop() else dac:start() end
+        end
+        if ig.Shortcut(ig.lib.ImGuiKey_Space) then
+            if dac:is_playing() then dac:stop() else dac:start() end
+        end
+        ig.SameLine()
+        if ig.SmallButton("load") then fB.open() end
+        fB.draw()
+        ig.SameLine()
+        ig.TextDisabled("(?)");
+        if ig.BeginItemTooltip() then
+            local style = ig.GetStyle()
+            local wrap_pos = ig.GetWindowViewport().WorkSize.x - style.DisplaySafeAreaPadding.x - style.WindowPadding.x;
+            ig.PushTextWrapPos(wrap_pos);
+            ig.TextWrapped(help_text)
+            ig.PopTextWrapPos()
+            ig.EndTooltip()
+        end
+
+        if selection then ig.SameLine() if ig.SmallButton("clear selection") then selection = nil end end
+        ig.SameLine()
+        ig.TextUnformatted(filename or "")
+        ig.SameLine()
+        if ig.SmallButton("set audio") then 
+            ig.OpenPopup("Audio##p")
+            GetDeviceVals()
+        end
+        DevicesSet()
+        if info then
+            PlotWaveSt()
+        else
+            if ig.BeginChild("drop on me!!") then
+                local avail = ig.GetContentRegionAvail();
+                local sc_pos = ig.GetCursorScreenPos()
+                local txt = "Drop a soundfile or load it."
+                local txt_sz = ig.CalcTextSize(txt)
+                ig.SetCursorScreenPos(sc_pos + 0.5*avail - 0.5*txt_sz)
+                ig.TextUnformatted(txt)
+            end
+            ig.EndChild()
+        end 
+    ig.End()
+end
 
 win:start()
 
