@@ -8,7 +8,7 @@ local ig = win.ig
 --local langNames = {[0]="None", "Cpp", "C", "Cs", "Python", "Lua", "Json", "Sql", "AngelScript", "Glsl", "Hlsl"}
 local editor = ig.TextEditor()
 
-editor:SetLanguage(ig.Language_Cpp())
+editor:SetLanguage(ig.TextEditor_LookupLanguage("C++"))
 
 local open_here = require"imgui.libs.path".file_open_here()
 local fileN = [[../cimCTE/cimCTE.cpp]]

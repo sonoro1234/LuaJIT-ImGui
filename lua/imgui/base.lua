@@ -2816,32 +2816,24 @@ function Iterator.Iterator_Nil()
     local ptr = lib.Iterator_Iterator_Nil()
     return ffi.gc(ptr,lib.Iterator_destroy)
 end
-function Iterator.Iterator_GlyphPtr(g)
-    local ptr = lib.Iterator_Iterator_GlyphPtr(g)
+function Iterator.Iterator_GlyphPtr(glyph)
+    local ptr = lib.Iterator_Iterator_GlyphPtr(glyph)
     return ffi.gc(ptr,lib.Iterator_destroy)
 end
-function Iterator.__new(ctype,a1) -- generic version
+function Iterator.Iterator_GlyphPtrGlyphPtr(glyph,start)
+    local ptr = lib.Iterator_Iterator_GlyphPtrGlyphPtr(glyph,start)
+    return ffi.gc(ptr,lib.Iterator_destroy)
+end
+function Iterator.__new(ctype,a1,a2) -- generic version
     if a1==nil then return Iterator.Iterator_Nil() end
-    if (ffi.istype('Glyph*',a1) or ffi.istype('Glyph',a1) or ffi.istype('Glyph[]',a1)) then return Iterator.Iterator_GlyphPtr(a1) end
-    print(ctype,a1)
+    if (ffi.istype('Glyph*',a1) or ffi.istype('Glyph',a1) or ffi.istype('Glyph[]',a1)) and a2==nil then return Iterator.Iterator_GlyphPtr(a1) end
+    if (ffi.istype('Glyph*',a1) or ffi.istype('Glyph',a1) or ffi.istype('Glyph[]',a1)) and (ffi.istype('Glyph*',a2) or ffi.istype('Glyph',a2) or ffi.istype('Glyph[]',a2)) then return Iterator.Iterator_GlyphPtrGlyphPtr(a1,a2) end
+    print(ctype,a1,a2)
     error'Iterator.__new could not find overloaded'
 end
+Iterator.hasPrevious = lib.Iterator_hasPrevious
+Iterator.previous = lib.Iterator_previous
 M.Iterator = ffi.metatype("Iterator",Iterator)
---------------------------Language----------------------------
-local Language= {}
-Language.__index = Language
-M.Language_AngelScript = lib.Language_AngelScript
-M.Language_C = lib.Language_C
-M.Language_Cpp = lib.Language_Cpp
-M.Language_Cs = lib.Language_Cs
-M.Language_Glsl = lib.Language_Glsl
-M.Language_Hlsl = lib.Language_Hlsl
-M.Language_Json = lib.Language_Json
-M.Language_Lua = lib.Language_Lua
-M.Language_Markdown = lib.Language_Markdown
-M.Language_Python = lib.Language_Python
-M.Language_Sql = lib.Language_Sql
-M.Language = ffi.metatype("Language",Language)
 --------------------------LinkDetachWithModifierClick----------------------------
 local LinkDetachWithModifierClick= {}
 LinkDetachWithModifierClick.__index = LinkDetachWithModifierClick
@@ -3015,10 +3007,10 @@ TextEditor.GetLanguage = lib.TextEditor_GetLanguage
 TextEditor.GetLanguageName = lib.TextEditor_GetLanguageName
 TextEditor.GetLastVisibleColumn = lib.TextEditor_GetLastVisibleColumn
 TextEditor.GetLastVisibleRow = lib.TextEditor_GetLastVisibleRow
+TextEditor.GetLeftMargin = lib.TextEditor_GetLeftMargin
 M.TextEditor_GetLightPalette = lib.TextEditor_GetLightPalette
 TextEditor.GetLineCount = lib.TextEditor_GetLineCount
 TextEditor.GetLineHeight = lib.TextEditor_GetLineHeight
-TextEditor.GetLineNumberLeftMargin = lib.TextEditor_GetLineNumberLeftMargin
 TextEditor.GetLineSpacing = lib.TextEditor_GetLineSpacing
 TextEditor.GetLineText = lib.TextEditor_GetLineText
 TextEditor.GetMainCursorPosition = lib.TextEditor_GetMainCursorPosition
@@ -3026,6 +3018,7 @@ TextEditor.GetMainCursorSelection = lib.TextEditor_GetMainCursorSelection
 TextEditor.GetMiniMapColumns = lib.TextEditor_GetMiniMapColumns
 TextEditor.GetNumberOfCursors = lib.TextEditor_GetNumberOfCursors
 TextEditor.GetPalette = lib.TextEditor_GetPalette
+
 TextEditor.GetSectionText_DocPos = lib.TextEditor_GetSectionText_DocPos
 TextEditor.GetSectionText_DocSelection = lib.TextEditor_GetSectionText_DocSelection
 function TextEditor:GetSectionText(a2,a3) -- generic version
@@ -3087,16 +3080,20 @@ TextEditor.IsShowSpacesEnabled = lib.TextEditor_IsShowSpacesEnabled
 TextEditor.IsShowTabsEnabled = lib.TextEditor_IsShowTabsEnabled
 TextEditor.IsShowWhitespacesEnabled = lib.TextEditor_IsShowWhitespacesEnabled
 TextEditor.IsShowingMatchingBrackets = lib.TextEditor_IsShowingMatchingBrackets
+TextEditor.IsSmoothScrollingEnabled = lib.TextEditor_IsSmoothScrollingEnabled
 TextEditor.IsVisPosOverGlyph = lib.TextEditor_IsVisPosOverGlyph
 TextEditor.IsWordWrapEnabled = lib.TextEditor_IsWordWrapEnabled
 TextEditor.IterateIdentifiers = lib.TextEditor_IterateIdentifiers
 TextEditor.IterateUserData = lib.TextEditor_IterateUserData
+M.TextEditor_LookupLanguage = lib.TextEditor_LookupLanguage
+M.TextEditor_LookupLanguageByExtension = lib.TextEditor_LookupLanguageByExtension
 TextEditor.MainCursorHasSelection = lib.TextEditor_MainCursorHasSelection
 TextEditor.MoveDownLines = lib.TextEditor_MoveDownLines
 TextEditor.MoveUpLines = lib.TextEditor_MoveUpLines
 TextEditor.OpenFindReplaceWindow = lib.TextEditor_OpenFindReplaceWindow
 TextEditor.Paste = lib.TextEditor_Paste
 TextEditor.Redo = lib.TextEditor_Redo
+
 function TextEditor:Render(title,size,childFlags,windowFlags)
     childFlags = childFlags or 0
     size = size or ImVec2()
@@ -3170,11 +3167,11 @@ TextEditor.SetInsertSpacesOnTabs = lib.TextEditor_SetInsertSpacesOnTabs
 TextEditor.SetInsertor = lib.TextEditor_SetInsertor
 TextEditor.SetLanguage = lib.TextEditor_SetLanguage
 TextEditor.SetLanguageChangeCallback = lib.TextEditor_SetLanguageChangeCallback
+TextEditor.SetLeftMargin = lib.TextEditor_SetLeftMargin
 TextEditor.SetLineBreakConfig = lib.TextEditor_SetLineBreakConfig
 TextEditor.SetLineDecorator = lib.TextEditor_SetLineDecorator
 TextEditor.SetLineFoldingEnabled = lib.TextEditor_SetLineFoldingEnabled
 TextEditor.SetLineNumberContextMenuCallback = lib.TextEditor_SetLineNumberContextMenuCallback
-TextEditor.SetLineNumberLeftMargin = lib.TextEditor_SetLineNumberLeftMargin
 TextEditor.SetLineSpacing = lib.TextEditor_SetLineSpacing
 TextEditor.SetMiddleMousePanMode = lib.TextEditor_SetMiddleMousePanMode
 TextEditor.SetMiddleMouseScrollMode = lib.TextEditor_SetMiddleMouseScrollMode
@@ -3193,6 +3190,7 @@ TextEditor.SetShowScrollbarMiniMapEnabled = lib.TextEditor_SetShowScrollbarMiniM
 TextEditor.SetShowSpacesEnabled = lib.TextEditor_SetShowSpacesEnabled
 TextEditor.SetShowTabsEnabled = lib.TextEditor_SetShowTabsEnabled
 TextEditor.SetShowWhitespacesEnabled = lib.TextEditor_SetShowWhitespacesEnabled
+TextEditor.SetSmoothScrollingEnabled = lib.TextEditor_SetSmoothScrollingEnabled
 TextEditor.SetTabSize = lib.TextEditor_SetTabSize
 TextEditor.SetText_std_string_view = lib.TextEditor_SetText_std_string_view
 

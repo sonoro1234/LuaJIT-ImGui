@@ -9,7 +9,7 @@ local lib = win.ig.lib
 local langNames = {[0]="None", "Cpp", "C", "Cs", "Python", "Lua", "Json", "Sql", "AngelScript", "Glsl", "Hlsl"}
 local editor = lib.TextEditor_TextEditor()
 
-lib.TextEditor_SetLanguage(editor,lib.Language_Cpp());
+lib.TextEditor_SetLanguage(editor,lib.TextEditor_LookupLanguage("C++"));
 
 
 
@@ -21,7 +21,8 @@ local file,err = open_here(fileN,"r")
 assert(file,err)
 local strtext = file:read"*a"
 file:close()
-lib.TextEditor_SetText(editor, strtext)
+--lib.TextEditor_SetText(editor, strtext)
+editor:SetText(strtext)
 
 local function toint(x) return ffi.new("int",x) end
 -- local mLine = ffi.new("int[?]",1)

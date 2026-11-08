@@ -5,7 +5,7 @@ local ffi = require"ffi"
 
 
 
-local langNames = {"None", "Cpp", "C", "Cs", "Python", "Lua", "Json", "Sql", "AngelScript", "Glsl", "Hlsl","Markdown"}
+local langNames = {"None", "C++", "C", "Cs", "Python", "Lua", "Json", "Sql", "AngelScript", "Glsl", "Hlsl","Markdown"}
 local function toint(x) return ffi.new("int",x) end
 
 local it_cb = ffi.cast("void(*)(const char *)", function(ident)
@@ -526,7 +526,7 @@ local function CTEwindow(file_name, args)
                     if name=="None" then
                         editor:SetLanguage(nil)
                     else
-                        editor:SetLanguage(ig["Language_"..name]())
+                        editor:SetLanguage(ig.TextEditor_LookupLanguage(name))
                     end
                 end,{calcwidth=true})
     if ext == "cpp" or ext == "hpp" then
