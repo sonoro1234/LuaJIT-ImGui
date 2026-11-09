@@ -6,6 +6,9 @@ local ffi = require"ffi"
 
 
 local langNames = {"None", "C++", "C", "Cs", "Python", "Lua", "Json", "Sql", "AngelScript", "Glsl", "Hlsl","Markdown"}
+local langNames = {"None", "AngelScript", "C", "C++", "C#", "GLSL", "HLSL", "JSON", "Julia", "Lua", "Markdown", "Python", "SQL", "WGSL"}
+
+
 local function toint(x) return ffi.new("int",x) end
 
 local it_cb = ffi.cast("void(*)(const char *)", function(ident)
@@ -529,18 +532,34 @@ local function CTEwindow(file_name, args)
                         editor:SetLanguage(ig.TextEditor_LookupLanguage(name))
                     end
                 end,{calcwidth=true})
+    local lang = ig.TextEditor_LookupLanguageByExtension("."..(ext or ""))
+    if lang~=nil then
+        editor:SetLanguage(lang)
+        local lname = ffi.string(editor:GetLanguageName())
+        for i,name in ipairs(langNames) do
+                                print(name,lname)
+            if name==lname then
+                W.lang_combo:set_index(i)
+                break
+            end
+        end
+    else
+        W.lang_combo:set_index(1)
+    end
+--[[
     if ext == "cpp" or ext == "hpp" then
-        W.lang_combo:set_index(2)
+        W.lang_combo:set_index(4)
     elseif ext == "c" or ext == "h" then
         W.lang_combo:set_index(3)
     elseif ext == "lua" then
-        W.lang_combo:set_index(6)
+        W.lang_combo:set_index(10)
     elseif ext == "json" then
-        W.lang_combo:set_index(7)
+        W.lang_combo:set_index(8)
     else
         W.lang_combo:set_index(1)
         print"unknown language"
     end
+--]]
     --------------------------------
     W.Render = Render
     W.notifications = args.notifications
