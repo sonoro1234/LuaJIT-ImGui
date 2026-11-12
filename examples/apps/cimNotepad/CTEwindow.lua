@@ -537,7 +537,6 @@ local function CTEwindow(file_name, args)
         editor:SetLanguage(lang)
         local lname = ffi.string(editor:GetLanguageName())
         for i,name in ipairs(langNames) do
-                                print(name,lname)
             if name==lname then
                 W.lang_combo:set_index(i)
                 break

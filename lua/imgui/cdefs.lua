@@ -7813,7 +7813,16 @@ lineNumber=20,
 currentLineNumber=21,
 currentLineHighlight=22,
 currentLineHighlightBorder=23,
-count=24,
+customColor1=24,
+customColor2=25,
+customColor3=26,
+customColor4=27,
+customColor5=28,
+customColor6=29,
+customColor7=30,
+customColor8=31,
+customColor9=32,
+count=33,
 }Color;
 typedef enum {
 mustBreak=0,
@@ -8151,6 +8160,41 @@ ImU32 Palette_const_get(const Palette*,Color);
 char* TextEditor_GetText_alloc(TextEditor* self);
 void TextEditor_GetText_free(char* ptr);
 const char* TextEditor_GetText_static(TextEditor* self);
+AutoCompleteConfig* AutoCompleteConfig_AutoCompleteConfig();
+void AutoCompleteConfig_destroy(AutoCompleteConfig* self);
+void AutoCompleteConfig_SetTriggerOnTyping(AutoCompleteConfig* self,                                                                              _Bool                                                                                    value);
+void AutoCompleteConfig_SetTriggerOnShortcut(AutoCompleteConfig* self,                                                                                _Bool                                                                                      value);
+void AutoCompleteConfig_SetTriggerInComments(AutoCompleteConfig* self,                                                                                _Bool                                                                                      value);
+void AutoCompleteConfig_SetTriggerInStrings(AutoCompleteConfig* self,                                                                               _Bool                                                                                     value);
+void AutoCompleteConfig_SetTriggerCharacters(AutoCompleteConfig* self,const char* characters);
+void AutoCompleteConfig_SetWordCharacters(AutoCompleteConfig* self,const char* characters);
+void AutoCompleteConfig_SetTriggerShortcut(AutoCompleteConfig* self,ImGuiKeyChord shortcut);
+void AutoCompleteConfig_SetAutoInsertSingleSuggestions(AutoCompleteConfig* self,                                                                                          _Bool                                                                                                value);
+void AutoCompleteConfig_SetTriggerDelay(AutoCompleteConfig* self,int milliseconds);
+void AutoCompleteConfig_SetNoSuggestionsLabel(AutoCompleteConfig* self,const char* label);
+void AutoCompleteConfig_SetSuggestionWidth(AutoCompleteConfig* self,size_t width);
+void AutoCompleteConfig_SetCallback(AutoCompleteConfig* self,void(*cb)(AutoCompleteState*));
+void AutoCompleteConfig_SetUserData(AutoCompleteConfig* self,void* userData);
+const char* AutoCompleteState_GetSearchTerm(AutoCompleteState* self);
+DocPos_c AutoCompleteState_GetSearchTermStart(AutoCompleteState* self);
+DocPos_c AutoCompleteState_GetSearchTermEnd(AutoCompleteState* self);
+DocPos_c AutoCompleteState_GetReplacementStart(AutoCompleteState* self);
+void AutoCompleteState_SetReplacementStart(AutoCompleteState* self,DocPos_c pos);
+DocPos_c AutoCompleteState_GetReplacementEnd(AutoCompleteState* self);
+void AutoCompleteState_SetReplacementEnd(AutoCompleteState* self,DocPos_c pos);
+_Bool                AutoCompleteState_InIdentifier(AutoCompleteState* self);
+_Bool                AutoCompleteState_InNumber(AutoCompleteState* self);
+_Bool                AutoCompleteState_InComment(AutoCompleteState* self);
+_Bool                AutoCompleteState_InString(AutoCompleteState* self);
+const Language* AutoCompleteState_GetLanguage(AutoCompleteState* self);
+void* AutoCompleteState_GetUserData(AutoCompleteState* self);
+void AutoCompleteState_ClearSuggestions(AutoCompleteState* self);
+void AutoCompleteState_AddSuggestion(AutoCompleteState* self,const char* suggestion,const char* label);
+size_t AutoCompleteState_GetSuggestionCount(AutoCompleteState* self);
+const char* AutoCompleteState_GetSuggestion(AutoCompleteState* self,size_t index);
+const char* AutoCompleteState_GetLabel(AutoCompleteState* self,size_t index);
+void AutoCompleteState_SetSuggestionsPromise(AutoCompleteState* self,                                                                               _Bool                                                                                     value);
+void TextEditor_SetAutoCompleteSuggestions_array(TextEditor* self,const char** suggestions,const char** labels,size_t count);
 int GetDejavu(void** deja);
 int Getnotosans(void** noto);
 void SetDejavu();
